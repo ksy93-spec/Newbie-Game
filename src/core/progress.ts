@@ -1,3 +1,5 @@
+import type { Episode } from '@/data/episodes';
+import { epBest, epTier } from '@/data/episodes';
 import type { Boss, Quest } from '@/data/pack';
 import { allItems } from '@/data/items';
 import { TIERS, tierFor } from '@/data/tiers';
@@ -140,4 +142,42 @@ export function finishBoss(s: GameState, win: boolean, boss: Boss): { unlocked: 
   }
   record(s, win ? 'boss_win' : 'boss_lose', { id: boss.id, lv: s.lv, ju: s.stats.ju });
   return { unlocked: s.peak > beforePeak, lost: s.peak < beforePeak };
+}
+
+export interface EpisodeResult {
+  tier: 0 | 1 | 2;
+  /** 이번 판이 이 사건의 최고 기록인지 */
+  better: boolean;
+  xp: number;
+  coin: number;
+  stat: number;
+  leveledUp: boolean;
+}
+
+/* 보상은 그 사건에서 세운 최고 기록에만 준다. 두 번째부터는 더 나은 결말을 냈을 때
+   차액만 들어온다. 같은 사건을 반복해서 코인을 긁는 짓을 막는다. */
+export function finishEpisode(s: GameState, ep: Episode, risk: number): EpisodeResult {
+  const tier = epTier(risk);
+  const was = epBest(s.epBest, ep.id);
+  const better = was === null || tier < was;
+  const out: EpisodeResult = { tier, better, xp: 0, coin: 0, stat: 0, leveledUp: false };
+  if (better) {
+    const prev = was === null ? { xp: 0, coin: 0, stat: 0 } : ep.ends[was as 0 | 1 | 2];
+    const end = ep.ends[tier];
+    out.xp = Math.max(0, end.xp - prev.xp);
+    out.coin = Math.max(0, end.coin - prev.coin);
+    out.stat = Math.max(0, end.stat - prev.stat);
+    s.epBest[ep.id] = tier;
+    s.coin += out.coin;
+    s.xp += out.xp;
+    const lv0 = s.lv;
+    while (s.xp >= needXp(s.lv)) {
+      s.xp -= needXp(s.lv);
+      s.lv++;
+    }
+    out.leveledUp = s.lv > lv0;
+    s.stats[ep.stat] = Math.min(100, s.stats[ep.stat] + out.stat);
+  }
+  record(s, 'ep_end', { id: ep.id, risk, tier });
+  return out;
 }

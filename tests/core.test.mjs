@@ -226,3 +226,43 @@ test('시연이 아니면 스탯이 모자란 보스는 잠겨 있다', () => {
   s.stats.geum = 40;
   assert.equal(combatM.bossReady(s, fp), true);
 });
+
+test('사건은 더 나은 결말을 냈을 때만 차액을 준다', async () => {
+  const epM = await import('../src/data/episodes.ts');
+  const eps = epM.EPISODES;
+  assert.ok(eps.length >= 3, '사건이 셋 이상');
+  eps.forEach((e) => {
+    assert.ok(e.beats.length >= 5, `${e.title} 장면 5개 이상`);
+    assert.equal(e.ends.length, 3, `${e.title} 결말 셋`);
+    e.beats.forEach((b, i) => {
+      assert.ok(b.opts.length >= 2, `${e.title} ${i}번째 선택지`);
+      assert.ok(b.opts.some((o) => o.risk === 0), `${e.title} ${i}번째에 안전한 길이 있어야 한다`);
+      b.opts.forEach((o) => assert.ok(o.note && o.note.length > 10, '해설 없는 선택지'));
+    });
+  });
+
+  const s = newGame();
+  const ep = eps[0];
+  const bad = progressM.finishEpisode(s, ep, 9);       // 사고
+  assert.equal(bad.tier, 2);
+  assert.equal(bad.better, true);
+  const coinAfterBad = s.coin;
+
+  const again = progressM.finishEpisode(s, ep, 9);     // 같은 결말 — 보상 없음
+  assert.equal(again.better, false);
+  assert.equal(s.coin, coinAfterBad, '두 번째 판은 코인을 안 준다');
+
+  const good = progressM.finishEpisode(s, ep, 0);      // 무사 — 차액만
+  assert.equal(good.tier, 0);
+  assert.equal(good.coin, ep.ends[0].coin - ep.ends[2].coin, '차액만 들어온다');
+  assert.equal(s.epBest[ep.id], 0);
+});
+
+test('사건 결말 등급은 위험 누적으로 갈린다', async () => {
+  const { epTier } = await import('../src/data/episodes.ts');
+  assert.equal(epTier(0), 0);
+  assert.equal(epTier(1), 0);
+  assert.equal(epTier(2), 1);
+  assert.equal(epTier(4), 1);
+  assert.equal(epTier(5), 2);
+});

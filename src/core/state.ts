@@ -59,6 +59,8 @@ export interface GameState {
   bossCleared: boolean;
   /** 물리친 보스 id 목록. 보스가 하나이던 시절에는 bossCleared 하나로 됐다 */
   bossDone: string[];
+  /** 사건별로 지금까지 낸 최고 결말 (0 무사 · 1 아슬 · 2 사고) */
+  epBest: Record<string, number>;
   stats: Record<ThemeKey, number>;
 
   /* 겉모습 */
@@ -115,6 +117,7 @@ export function freshState(demo = true): GameState {
     done: [],
     bossCleared: false,
     bossDone: [],
+    epBest: {},
     stats: { ju: 5, sik: 5, ui: 5, geum: 5, jik: 5 },
 
     avatar: 'stuM',
@@ -159,6 +162,7 @@ export function migrate(raw: unknown): GameState {
   });
   out.owned = out.owned.filter((id) => !!allItems(id));
   if (!Array.isArray(out.bossDone)) out.bossDone = out.bossCleared ? ['jeonse'] : [];
+  if (!out.epBest || typeof out.epBest !== 'object') out.epBest = {};
   // 그림체가 달라 물러난 옛 아바타는 같은 성별로 옮긴다.
   // (avatars.ts를 import하면 PNG require가 테스트 빌드로 끌려와 깨진다)
   if (out.avatar === 'imgM') out.avatar = 'stuM';

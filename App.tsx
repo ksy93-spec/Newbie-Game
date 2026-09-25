@@ -4,6 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import type { Episode as Ep } from '@/data/episodes';
+import { EPISODES, epBest } from '@/data/episodes';
 import type { Boss as BossDef, Quest } from '@/data/pack';
 import { curated } from '@/core/curate';
 import type { ReviewQuest } from '@/core/review';
@@ -15,6 +17,8 @@ import { Codex } from '@/screens/Codex';
 import { Wiki } from '@/screens/Wiki';
 import { Home, QuestRow } from '@/screens/Home';
 import { Boss } from '@/screens/Boss';
+import { Episode } from '@/screens/Episode';
+import { NpcSprite } from '@/sprite/Cast';
 import { Onboarding } from '@/screens/Onboarding';
 import { QuestRun } from '@/screens/QuestRun';
 import { THEMES } from '@/data/themes';
@@ -39,6 +43,7 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('home');
   const [run, setRun] = useState<Quest | ReviewQuest | null>(null);
   const [fight, setFight] = useState<BossDef | null>(null);
+  const [ep, setEp] = useState<Ep | null>(null);
 
   const [fontsLoaded] = useFonts({
     Galmuri14: require('./assets/fonts/Galmuri14.ttf'),
@@ -86,6 +91,17 @@ export default function App() {
     );
   }
 
+  if (ep) {
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.bg }}>
+          <StatusBar style="dark" />
+          <Episode ep={ep} onExit={() => setEp(null)} />
+        </SafeAreaView>
+      </SafeAreaProvider>
+    );
+  }
+
   if (fight) {
     return (
       <SafeAreaProvider>
@@ -119,7 +135,7 @@ export default function App() {
         <StatusBar style="dark" />
         <View style={{ flex: 1 }}>
           {tab === 'home' ? <Home onStartQuest={start} /> : null}
-          {tab === 'quests' ? <AllQuests onStart={start} onFight={setFight} /> : null}
+          {tab === 'quests' ? <AllQuests onStart={start} onFight={setFight} onEpisode={setEp} /> : null}
           {tab === 'wiki' ? <Wiki onStartQuest={start} /> : null}
           {tab === 'char' ? <Character mode="char" /> : null}
           {tab === 'shop' ? <Character mode="shop" /> : null}
@@ -144,11 +160,44 @@ export default function App() {
   );
 }
 
-function AllQuests({ onStart, onFight }: { onStart: (q: Quest) => void; onFight: (b: BossDef) => void }) {
+function AllQuests({
+  onStart,
+  onFight,
+  onEpisode,
+}: {
+  onStart: (q: Quest) => void;
+  onFight: (b: BossDef) => void;
+  onEpisode: (e: Ep) => void;
+}) {
   const { s, pack, quests } = useGame();
   const list = curated(quests(), s);
   return (
     <ScrollView contentContainerStyle={{ padding: U[4], gap: U[3], backgroundColor: COLORS.bg }}>
+      <SectionLabel>사건 · 고른 것들이 합쳐져 결말이 갈립니다</SectionLabel>
+      {EPISODES.map((e) => {
+        const best = epBest(s.epBest, e.id);
+        return (
+          <Card key={e.id} style={{ flexDirection: 'row', gap: U[3], alignItems: 'center' }}>
+            <NpcSprite name={e.npc} scale={1} />
+            <View style={{ flex: 1, gap: U[1] }}>
+              <T size="uiBold">
+                {e.title} · {e.beats.length}장면
+              </T>
+              <T size="micro" color={COLORS.inkSoft}>
+                {e.one}
+                {'\n'}
+                {best === null ? '아직 안 걸어 봤습니다' : `최고 결말 · ${e.ends[best as 0 | 1 | 2].big}`}
+              </T>
+              <PixelButton
+                label="걸어 보기"
+                tone="plain"
+                onPress={() => onEpisode(e)}
+                style={{ alignSelf: 'flex-start', minHeight: 38, paddingHorizontal: U[3] }}
+              />
+            </View>
+          </Card>
+        );
+      })}
       <SectionLabel>보스</SectionLabel>
       {pack.bosses.map((b) => {
         const plan = bossPlan(s, b);

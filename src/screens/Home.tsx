@@ -11,7 +11,7 @@ import { reviewQuest, type ReviewQuest } from '@/core/review';
 import { needXp, totals } from '@/core/state';
 import { afterClaim } from '@/notify';
 import { Avatar, AvatarHead } from '@/sprite/Avatar';
-import { PetSprite } from '@/sprite/Cast';
+import { PET_FACES_RIGHT, PetSprite } from '@/sprite/Cast';
 import { PETS } from '@/data/items';
 import { useGame } from '@/store';
 import { P } from '@/theme/palette';
@@ -75,9 +75,10 @@ export function Home({ onStartQuest }: { onStartQuest: (q: Quest | ReviewQuest) 
             marginBottom: STAND,
           }}
         >
-          {/* 아바타 캔버스는 64칸 정사각이라 좌우로 빈 칸이 남는다. 펫을 그만큼 당겨 붙인다. */}
+          {/* 아바타 캔버스는 64칸 정사각이라 좌우로 빈 칸이 남는다. 펫을 그만큼 당겨 붙인다.
+              펫 손그림은 왼쪽을 보고 아바타는 오른쪽을 본다. 뒤집지 않으면 둘이 등지고 선다. */}
           <View style={{ marginRight: -30 }}>
-            <PetSprite kind={PETS[s.equip.pet]?.kind} scale={2} />
+            <PetSprite kind={PETS[s.equip.pet]?.kind} scale={2} flip={!PET_FACES_RIGHT} />
           </View>
           <Avatar state={s} pose="walk" frame={frame} scale={3} flip />
         </View>
