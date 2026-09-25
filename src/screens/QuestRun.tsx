@@ -10,10 +10,18 @@ import { Avatar } from '@/sprite/Avatar';
 import { useGame } from '@/store';
 import { P } from '@/theme/palette';
 import { COLORS, U } from '@/theme/tokens';
-import { Card, PixelButton, SectionLabel, T } from '@/ui/Pixel';
+import { ChoiceBox, MessageBox } from '@/ui/MessageBox';
+import { Card, PixelButton, T } from '@/ui/Pixel';
 import { cue } from '@/ui/feedback';
 
-type Phase = { kind: 'intro' } | { kind: 'ask'; i: number } | { kind: 'explain'; i: number; ok: boolean } | { kind: 'done'; r: FinishResult };
+/* 보스전과 같은 문법으로 맞춘다. 대사는 한 글자씩 찍히고, 선택지는 같은 상자에서 고른다.
+   차이는 체력 대신 하트 셋이라는 것뿐이다. */
+
+type Phase =
+  | { kind: 'intro' }
+  | { kind: 'ask'; i: number }
+  | { kind: 'explain'; i: number; ok: boolean }
+  | { kind: 'done'; r: FinishResult };
 
 export function QuestRun({ quest, onExit }: { quest: Quest | ReviewQuest; onExit: () => void }) {
   const { s, set, ev, pack, quests } = useGame();
@@ -66,8 +74,8 @@ export function QuestRun({ quest, onExit }: { quest: Quest | ReviewQuest; onExit
         </T>
         <Card>
           <Row k="정답" v={`${r.correct} / ${r.total}`} />
-          {Object.keys(quest.stat).map((k) => (
-            <Row key={k} k={`${THEMES[k as keyof typeof THEMES].full} · ${THEMES[k as keyof typeof THEMES].role}`} v={String(s.stats[k as keyof typeof s.stats])} />
+          {(Object.keys(quest.stat) as (keyof typeof THEMES)[]).map((k) => (
+            <Row key={k} k={`${THEMES[k].full} · ${THEMES[k].role}`} v={String(s.stats[k])} />
           ))}
           {r.queuedForReview ? <Row k="복습 예약" v={`${r.queuedForReview}문항 · 내일`} /> : null}
           {r.gotItemId ? <Row k="획득" v={allItems(r.gotItemId)?.name ?? ''} /> : null}
@@ -93,90 +101,94 @@ export function QuestRun({ quest, onExit }: { quest: Quest | ReviewQuest; onExit
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: U[3],
+          paddingHorizontal: U[3],
+          paddingVertical: U[2],
           backgroundColor: COLORS.card,
+          borderBottomWidth: 3,
+          borderBottomColor: COLORS.line,
         }}
       >
-        <PixelButton tone="plain" label="‹ 나가기" onPress={onExit} style={{ paddingHorizontal: U[2] }} />
+        <PixelButton
+          tone="plain"
+          label="‹ 나가기"
+          onPress={onExit}
+          style={{ paddingHorizontal: U[2], minHeight: 40, borderBottomWidth: 4 }}
+        />
         <T size="micro" color={COLORS.inkSoft}>
           {idx + 1} / {total}
         </T>
         <T size="ui" color={P.r1}>
           {'♥'.repeat(Math.max(0, hearts))}
+          <T size="ui" color={P.s1}>
+            {'♥'.repeat(Math.max(0, 3 - hearts))}
+          </T>
         </T>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: U[4], gap: U[3] }}>
-        <Card tone="surface">
-          <T size="uiBold" color={P.g3}>
-            {quest.npc}
-          </T>
-          <T size="body">{phase.kind === 'intro' ? quest.intro : item.q}</T>
-        </Card>
+      {/* NPC 무대 */}
+      <View style={{ flex: 1, backgroundColor: COLORS.sky, alignItems: 'center', justifyContent: 'center' }}>
+        <Avatar
+          state={{ ...s, avatar: 'imgF', haircol: -1, equip: { ...s.equip, top: 'badge', bottom: 'slack' } }}
+          pose="idle"
+          scale={3}
+        />
+      </View>
 
-        {phase.kind === 'intro' ? (
-          <PixelButton label="들어보기" onPress={() => setPhase({ kind: 'ask', i: 0 })} />
-        ) : (
-          item.a.map((text, i) => {
-            const revealed = phase.kind === 'explain';
-            const tone = revealed && i === item.ok ? 'primary' : revealed && i === picked ? 'danger' : 'plain';
-            return (
-              <PixelButton
-                key={i}
-                tone={tone}
-                sound={null}
-                disabled={revealed}
-                onPress={() => answer(i)}
+      {phase.kind === 'intro' ? (
+        <>
+          <MessageBox text={quest.intro} speaker={quest.npc} onAdvance={() => setPhase({ kind: 'ask', i: 0 })} />
+        </>
+      ) : (
+        <>
+          <MessageBox text={item.q} speaker={quest.npc} minHeight={84} />
+          <ChoiceBox
+            options={item.a}
+            onPick={answer}
+            revealed={phase.kind === 'explain'}
+            correct={item.ok}
+            picked={picked}
+            disabled={phase.kind === 'explain'}
+          />
+        </>
+      )}
+
+      {phase.kind === 'explain' ? (
+        <ScrollView style={{ maxHeight: 220 }} contentContainerStyle={{ padding: U[3], paddingTop: 0, gap: U[2] }}>
+          <Card tone="surface" style={{ borderLeftWidth: 8, borderLeftColor: phase.ok ? P.g2 : P.r1 }}>
+            <T size="body">
+              <T size="uiBold">{phase.ok ? '정답' : '오답'}</T> · {item.why}
+            </T>
+            <T size="micro" color={COLORS.inkSoft}>
+              기준일 {pack.asOf} · 확인처{' '}
+              <T
+                size="micro"
+                color={P.k4}
+                style={{ textDecorationLine: 'underline' }}
+                onPress={() => quest.src[1] && Linking.openURL(quest.src[1])}
               >
-                <View style={{ flexDirection: 'row', width: '100%', gap: U[2] }}>
-                  <T size="uiBold">{'ABC'[i]}</T>
-                  <T size="body" style={{ flex: 1 }}>
-                    {text}
-                  </T>
-                </View>
-              </PixelButton>
-            );
-          })
-        )}
-
-        {phase.kind === 'explain' ? (
-          <>
-            <Card tone="surface" style={{ borderLeftWidth: 8, borderLeftColor: phase.ok ? P.g2 : P.r1 }}>
-              <T size="body">
-                <T size="uiBold">{phase.ok ? '정답' : '오답'}</T> · {item.why}
+                {quest.src[0]}
               </T>
-              <T size="micro" color={COLORS.inkSoft}>
-                기준일 {pack.asOf} · 확인처{' '}
-                <T
-                  size="micro"
-                  color={P.k4}
-                  style={{ textDecorationLine: 'underline' }}
-                  onPress={() => quest.src[1] && Linking.openURL(quest.src[1])}
-                >
-                  {quest.src[0]}
-                </T>
-              </T>
-              <T size="micro" color={COLORS.inkSoft}>
-                제도는 바뀝니다. 실제 결정 전에 원문을 확인하세요.
-              </T>
-            </Card>
-            <PixelButton label={idx + 1 < total ? '다음 문제' : '결과 보기'} onPress={advance} />
-          </>
-        ) : null}
-      </ScrollView>
+            </T>
+            <T size="micro" color={COLORS.inkSoft}>
+              제도는 바뀝니다. 실제 결정 전에 원문을 확인하세요.
+            </T>
+          </Card>
+          <PixelButton label={idx + 1 < total ? '다음 문제' : '결과 보기'} onPress={advance} />
+        </ScrollView>
+      ) : null}
     </View>
   );
 }
 
 function Row({ k, v }: { k: string; v: string }) {
   return (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: U[2] }}>
       <T size="ui" color={COLORS.inkSoft}>
         {k}
       </T>
-      <T size="uiBold">{v}</T>
+      <T size="uiBold" style={{ flexShrink: 1, textAlign: 'right' }}>
+        {v}
+      </T>
     </View>
   );
 }
-
-export { SectionLabel };

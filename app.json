@@ -7,7 +7,9 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "assetBundlePatterns": ["assets/**/*"],
+    "assetBundlePatterns": [
+      "assets/**/*"
+    ],
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#FFF8EC"
@@ -21,23 +23,50 @@
     },
     "android": {
       "package": "com.ksy93.newbiequest",
-      "adaptiveIcon": { "backgroundColor": "#FFC53C" },
+      "adaptiveIcon": {
+        "backgroundColor": "#FFC53C"
+      },
       "edgeToEdgeEnabled": true
     },
-    "web": { "bundler": "metro", "output": "static" },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
     "plugins": [
       "expo-font",
       "expo-updates",
-      ["expo-splash-screen", { "backgroundColor": "#FFF8EC", "resizeMode": "contain" }],
-      ["expo-image-picker", { "photosPermission": "캐릭터 프리셋을 맞추기 위해 사진 한 장을 읽습니다. 기기 안에서만 분석합니다." }],
-      ["expo-notifications", { "color": "#FFC53C" }]
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FFF8EC",
+          "resizeMode": "contain"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "캐릭터 프리셋을 맞추기 위해 사진 한 장을 읽습니다. 기기 안에서만 분석합니다."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#FFC53C"
+        }
+      ]
     ],
     "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 3000
     },
-    "runtimeVersion": { "policy": "appVersion" },
-    "extra": { "eas": { "projectId": "" } }
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "extra": {
+      "eas": {
+        "projectId": ""
+      }
+    }
   }
 }

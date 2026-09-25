@@ -13,6 +13,7 @@ import { useGame } from '@/store';
 import { Character } from '@/screens/Character';
 import { Codex } from '@/screens/Codex';
 import { Home, QuestRow } from '@/screens/Home';
+import { Boss } from '@/screens/Boss';
 import { Onboarding } from '@/screens/Onboarding';
 import { QuestRun } from '@/screens/QuestRun';
 import { COLORS, U } from '@/theme/tokens';
@@ -34,6 +35,7 @@ export default function App() {
   const { s, ready, boot, ev, quests, pack } = useGame();
   const [tab, setTab] = useState<Tab>('home');
   const [run, setRun] = useState<Quest | ReviewQuest | null>(null);
+  const [fight, setFight] = useState(false);
 
   const [fontsLoaded] = useFonts({
     Galmuri14: require('./assets/fonts/Galmuri14.ttf'),
@@ -79,6 +81,17 @@ export default function App() {
     );
   }
 
+  if (fight) {
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.bg }}>
+          <StatusBar style="dark" />
+          <Boss onExit={() => setFight(false)} />
+        </SafeAreaView>
+      </SafeAreaProvider>
+    );
+  }
+
   if (run) {
     return (
       <SafeAreaProvider>
@@ -101,7 +114,7 @@ export default function App() {
         <StatusBar style="dark" />
         <View style={{ flex: 1 }}>
           {tab === 'home' ? <Home onStartQuest={start} /> : null}
-          {tab === 'quests' ? <AllQuests onStart={start} /> : null}
+          {tab === 'quests' ? <AllQuests onStart={start} onFight={() => setFight(true)} /> : null}
           {tab === 'char' ? <Character mode="char" /> : null}
           {tab === 'shop' ? <Character mode="shop" /> : null}
           {tab === 'codex' ? <Codex /> : null}
@@ -125,7 +138,7 @@ export default function App() {
   );
 }
 
-function AllQuests({ onStart }: { onStart: (q: Quest) => void }) {
+function AllQuests({ onStart, onFight }: { onStart: (q: Quest) => void; onFight: () => void }) {
   const { s, pack, quests } = useGame();
   const plan = bossPlan(s, pack.boss);
   const ready = bossReady(s);
@@ -145,6 +158,12 @@ function AllQuests({ onStart }: { onStart: (q: Quest) => void }) {
               : '패배하면 거처 해금이 한 단계 내려갑니다.'
             : `주 스탯 30 이상부터 도전할 수 있습니다. 현재 ${s.stats.ju}`}
         </T>
+        <PixelButton
+          label={ready ? '맞선다' : '아직 이르다'}
+          tone={ready ? 'danger' : 'plain'}
+          disabled={!ready}
+          onPress={onFight}
+        />
       </Card>
       <SectionLabel>전체 퀘스트</SectionLabel>
       {list.map((q) => (
