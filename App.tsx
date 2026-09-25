@@ -18,7 +18,7 @@ import { Onboarding } from '@/screens/Onboarding';
 import { QuestRun } from '@/screens/QuestRun';
 import { COLORS, U } from '@/theme/tokens';
 import { Card, PixelButton, SectionLabel, T } from '@/ui/Pixel';
-import { setFeedbackPrefs } from '@/ui/feedback';
+import { primeAudio, releaseAudio, setFeedbackPrefs } from '@/ui/feedback';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -47,6 +47,8 @@ export default function App() {
   useEffect(() => {
     boot();
     ensureChannel().catch(() => {});
+    primeAudio();          // 무음 스위치를 켠 아이폰에서도 효과음이 나게 한다
+    return releaseAudio;
   }, [boot]);
 
   useEffect(() => {
