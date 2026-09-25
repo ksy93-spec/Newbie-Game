@@ -117,10 +117,10 @@ test('오늘 셋을 다 끝내면 완주 보너스가 붙는다', () => {
 
 test('만점이면 장비와 상관없이 보스를 이긴다', () => {
   const s = newGame();
-  const plan = combatM.bossPlan(s, pack.boss);
-  assert.ok(plan.need <= pack.boss.qs.length, '문항 수 안에서 잡을 수 있어야 한다');
+  const plan = combatM.bossPlan(s, pack.bosses[0]);
+  assert.ok(plan.need <= pack.bosses[0].qs.length, '문항 수 안에서 잡을 수 있어야 한다');
   s.equip.weapon = 'card'; // 공격 32
-  const strong = combatM.bossPlan(s, pack.boss);
+  const strong = combatM.bossPlan(s, pack.bosses[0]);
   assert.ok(strong.need <= plan.need, '장비는 필요한 정답 수를 줄인다');
   assert.ok(strong.survive >= plan.survive - 1, '장비는 버티는 횟수를 늘린다');
 });
@@ -129,7 +129,7 @@ test('보스에게 지면 거처 해금이 한 단계 내려간다', () => {
   const s = newGame();
   s.peak = 3;
   s.tier = 3;
-  progressM.finishBoss(s, false);
+  progressM.finishBoss(s, false, pack.bosses[0]);
   assert.equal(s.peak, 2);
   assert.equal(s.tier, 2, '살던 집도 같이 내려온다');
 });
@@ -189,4 +189,40 @@ test('하나만 틀리면 통과한다', () => {
   assert.equal(r.failed, false);
   assert.ok(r.xp > 0);
   assert.ok(s.done.indexOf(q.id) >= 0);
+});
+
+test('보스는 셋이고, 격파 기록은 보스별로 남는다', () => {
+  assert.ok(pack.bosses.length >= 3, '보스가 셋 이상');
+  const ids = pack.bosses.map((b) => b.id);
+  assert.equal(new Set(ids).size, ids.length, 'id가 겹치지 않는다');
+  pack.bosses.forEach((b) => {
+    assert.ok(b.qs.length >= 5, `${b.name} 문항 5개 이상`);
+    assert.ok(b.src && b.src.length === 2, `${b.name} 출처`);
+  });
+
+  const s = newGame();
+  const mlm = pack.bosses.find((b) => b.id === 'mlm');
+  assert.equal(combatM.bossCleared(s, mlm), false);
+  progressM.finishBoss(s, true, mlm);
+  assert.equal(combatM.bossCleared(s, mlm), true, '이긴 보스만 격파로 찍힌다');
+  assert.equal(combatM.bossCleared(s, pack.bosses[0]), false, '다른 보스는 그대로');
+});
+
+test('보상은 그 보스가 걸고 있던 스탯으로 들어온다', () => {
+  const s = newGame();
+  const before = { ...s.stats };
+  const mlm = pack.bosses.find((b) => b.id === 'mlm'); // 금 스탯 보스
+  progressM.finishBoss(s, true, mlm);
+  assert.equal(s.stats.geum, before.geum + 15, '금이 오른다');
+  assert.equal(s.stats.ju, before.ju, '주는 그대로 — 거처가 엉뚱하게 해금되지 않는다');
+});
+
+test('시연이 아니면 스탯이 모자란 보스는 잠겨 있다', () => {
+  const s = newGame();
+  s.demo = false;
+  const fp = pack.bosses.find((b) => b.id === 'fp'); // 금 40 필요
+  s.stats.geum = 10;
+  assert.equal(combatM.bossReady(s, fp), false);
+  s.stats.geum = 40;
+  assert.equal(combatM.bossReady(s, fp), true);
 });

@@ -366,7 +366,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
   <section class="screen" id="quests">
     <div class="scroll">
       <div class="sectlab">보스</div>
-      <button class="bosscard pix" id="bosscard"></button>
+      <div id="bosscards" style="display:flex;flex-direction:column;gap:var(--u2)"></div>
       <div class="sectlab">전체 퀘스트</div>
       <div style="display:flex;flex-direction:column;gap:var(--u2)" id="allquests"></div>
     </div>
@@ -408,11 +408,11 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
       <canvas id="bossspr" width="64" height="64" style="width:128px;height:128px"></canvas>
     </div>
     <div style="padding:var(--u3) var(--u4) 0;display:flex;flex-direction:column;gap:2px">
-      <div class="hprow"><span>전세 먹튀 집주인</span><span id="bbosshp">100/100</span></div>
+      <div class="hprow"><span id="bbossname">보스</span><span id="bbosshp">100/100</span></div>
       <div class="hpbar hp-boss"><i id="bbossbar" style="width:100%"></i></div>
     </div>
     <div class="scroll" style="gap:var(--u3)">
-      <div class="dlg pix"><span class="nm" style="color:var(--r3)">전세 먹튀 집주인</span><span id="btext">—</span></div>
+      <div class="dlg pix"><span class="nm" style="color:var(--r3)">보스</span><span id="btext">—</span></div>
       <div style="display:flex;flex-direction:column;gap:var(--u2)" id="bchoices"></div>
       <div id="bhit"></div>
       <div id="bexplain" hidden></div>
@@ -876,7 +876,7 @@ var CCACHE={};
    서류가방은 지우고 두 손을 비웠다. 각 장이 자기 옷감만 담고 있으니 색을 바꾸면
    반드시 눈에 보이고, 실루엣 변형(후드·패딩 기장·옆선)은 장착 아이템이 얹는다. */
 var AVATARS={
-  stuM:{name:'남',faceRight:1,w:30,h:64,hip:47,split:15,eye:19,fcx:17,hx:25,hy:44,
+  stuM:{name:'남',faceRight:1,w:30,h:64,hip:47,split:15,eye:19,fcx:17,hx:17,hy:42,
     hairBase:[45, 52, 73],topBase:[51, 64, 96],botBase:[192, 158, 145],
     L:{
       body:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABACAYAAAANtMclAAAEQ0lEQVR42u1YXWgTWRT+bjtJkylN/0hbInRxS1laH6psjbQlUELr87KydEFYltJ9WCj0QaQgiPgkQx6WBd8ii2/qy67uwwq67ArRyiZd3MWtrMS02+IWY5hoUkxqGr0+yB1mJnMnM5OkKnpgYGbuvfPd75xzzzlzgA/yQXZDIlKUXv/tFt0NrCb1w/6DwwCA3QBvemtVH5Gi9I1vop7fI8Vsmnq7eomTxTd++J4CwHgoiKT8Epl7y5rxydkFw+8Ws2lK7AKNh4K2NrcUi1dsoJhN06ZGgjJtMM1oVN1IULW4B8eII8a1ipq1t6uXCNUWiO39Grb+0BwAYKe4BQB4unyJu7ZjdEa5/+W7Y2jv20dzj1aIJVWXkrfrdow6RmdQyG0Qx5GrY3RGw4Yn/tCcZp7L22YeMnks9YBm4OLIEcUc/tAclmJxMDVXAJeStykD5YFf+emCci+vJbjArb5OhWWPvwdT85JmXDA68Dx5unwJL7o/BgAMHQhXVfXQgTBu/iihWV6FOHLEPDupPdiIdbO8Cpe3DQ/+TaBZXuWCZmLnNHPcLoHP2D04Rqx4cSZ2zpITqueVdsrmjJdicYyHghgPBU3Vbjty6RhXnOP2vn2UeSM7+LWGS/0ZNmSce7RCCrkNUshtEHktgcnZBWKFudmcpVhcA1o1gHi7eklEilIr4DytGKVFy9nJSabiAToG1mcaIzEDrAm4mE3TPy5ftAWEejAsZtOUXWysmE3bymKWstPk7ALRJ3L1+H/3/qFnoz/bIiM41YK3q5cUs2l66LMvd7d80au8Iao2Y/3O/TsJPJVOzUsYCR5W3uXl9dcLxAAtFzaJ3tY1M2YfUYMymZqX8OvZRcMP3fzrgTPGZrvOy+vwdX8EpO5XlDBOba0sEMQAHQkext/xa0ru5JU3f944T/Rx2z04RvTPtlR95tRpBZDZlRc2zcqkavG8SV8hXLx6S8M2L69XXACgjtVWshHXxupim4mnxYNUcgV7+ge4GYgxU4NWU7OhjY0cS7+Zu8tXSd3OsREogNfebLIRxjqREXF88RvSkMiVl9fhafEYjtkBtQ1sBBqRojSREat6MdfGn05+TauxZeBfffE5l2VEilIr7DXOtXfgkwqbGtk2efd3wrp/0+EJUpNzlQubZC0FOqRS5/bzbYWlp8WD7efbWEvdBwOspfVoultBDFAWXE6fOKn0O52ytOxc5cImKRc2ifovYDo8QdRd3oa2HMX2fmrnfcP7mMwU71Tp4wi4Ho10R8DT4QkiiAG69fAO3g9V8zxbEAOWO/qWAoHee90uQelxde89qDRWWBWj//uvmfHRo98qjTN9M63V1wmXtw2lnbKlY0asqnNP/wAeZx4DAJ7lnwAAth7eQd8wv9H2LP8E6uLfEXBpp4xWXyd6/D3K+/83Upr+VauvE+qOkZnarVeFYoC6XYKmKDRixOZVA34FXb0iGAQWH2cAAAAASUVORK5CYII=',
@@ -884,7 +884,7 @@ var AVATARS={
       top:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABACAYAAAANtMclAAACCElEQVR42u2XMUvDQBiG3yuxQxCDiFiqRkoqbS0liLaIk2YouPkPdPEPuDv5M1z0Vwgd1LkqEgRr0VBaUHAoYtEOtXAOErnGnKbXoCL3TE1y+d57v/vuuxSQSCQSiUQikUgk/xctlqW/Jq5qOv1V9/1OYGNrN5wJK2qcBhFXNZ2GliVV06kWy9LZ3OqngLO5VapqOlXUeGCxSBCX7u9kOo+RsZlPY5aXLLSfGsQ7XlhYi2WpWShCUePUDQwACyubPcEP9nYIACSMFMxCMdBOiHzlNJnOAwDMQhEAYJdLqFwc+YoDwF3DQef5Ae57A6WaXeNu+55k5i3umMy8hcqVjSApj/BEokOK7wt2uQReylkSRqp/x53Xrq8bNu2316e+Ad3n37kmIluLdWqXS+i274lbjMl0Hna5BLNQ7HkmvMY8WIcvrUe0mnUkjBQ6zw/IzJmDFxdLq1lHq1kHAFQujsA2lppTRc2pYnwqg+jwBPppKoFS7Q3ovc4trtGFlU3KK0DhVHvXznt9eXZIvLtgYPz6tZ9rRY1z+7ewY++hwO5993RKGCluVRNR0Und6GmVAMDeqzlVrigAKKKO2VPq5vKYvN+zPjIQbTjohtGrv+ts/W4bIWG2j5+f7BO3qtkK9ptc6Hi/rX7k49Ba3xYSGbhXT4+P/p0/AaH1Z16gUA8AiUQikfw53gCfrsLIZAcEdQAAAABJRU5ErkJggg==',
       hand:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABACAYAAAANtMclAAAAHElEQVR42u3BAQEAAACAkP6v7ggKAAAAAAAAAGoeQAABHZMTQwAAAABJRU5ErkJggg==',
       hair:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABACAYAAAANtMclAAACI0lEQVR42u2WP2/TQBjGn4vs0hjcCKEYFMIxmEiUtEJFsLAx8imY+CR8EUZGJAZWdsqAIlNQaiG9uFXUDMiKlDik0jFUrzkfjpMWuSz3W2I5r+55/zx3Z4E1cLyO2nAdAEDY6y+Ni4cRfi1OcTo9FqvWrAxo3eorAAjaATavbGJdKCEAQDqKxLmEHa+jAODq1nUAgOxKXJSDL59LOyDKqmShbJ7hiOJCeykhLGaTypaXMdh/X9BqmJXq1Z2MT/IEsnmGeBitnHOVT1a2evfxc2WahnGbfmXr293t/HmcHOTP2TzD9/hb3nahZ6TPwhTXk7gtw8IIHu09BQD8GP/8K14Xp4Rywzn8cvvBQwz2jwsZljk57PVBCcFt+ti4dhM7vRBv370pxCxmk0I8I7sSg1H0p9VeS6qyubEhyqqnhHDv/hMcfv2IxWwCt+nni/N2MkfCZp2mJITp5CpX9nafKb0LLMBV8gjcpo+gHeTmlF2JbJ5h68ZdAMCnD6/XF9a3EjNNqfIA8lpSmSPig8XhPymhSrfGw2ilkAnH6wnkZl5ngYuImglQ4qulBwglVDgo+N2/iJpO51/htaRiRy6j6rA/D3zppKPozFyO11F8IdQlqhtumpJo4JLhsTUAgC/5y6RRth/TUSQWswmCdlCbsKO7Tk/g7DlUtVa8jDvhXv09Lztdap8x8+LlK4X/gfl5YrFYLBaLxWKxWCwWi8VisViq+Q1JvweW9URpEQAAAABJRU5ErkJggg=='}},
-  stuF:{name:'여',faceRight:1,w:34,h:64,hip:48,split:19,eye:20,fcx:21,hx:28,hy:45,
+  stuF:{name:'여',faceRight:1,w:34,h:64,hip:48,split:19,eye:20,fcx:21,hx:21,hy:42,
     hairBase:[41, 48, 68],topBase:[51, 63, 93],botBase:[212, 194, 184],
     L:{
       body:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAABACAYAAAB/e6WTAAAEP0lEQVR42u2YTWhTWRTH/y8+37w20gQ1qUadCYWWztRq0foBVoUu/ABXxUWF+rFwMTN+gOJKFFyICxGFSMCFOyt2EdwoGLKIGrKQiXZhUqa0WmrVapOZkoitIUauC73x5eXe95G8JF14ICS57777fvd/7jn3vAv8tDpZwO8jFQ0Qi0+QWHyCWAXDA7Jp3TicsAaA2v5jJwWeOjYtJb4QYJHw7WOVMhTGEIjygV++/6JAlfqb3qsegwmyqbNFoJ9FCv6Dh//iDmR2TahN1OuwYW1LAeVB+AmZ+/cf5gyVkgf8PsJzAa9dNCPr3t6tgh6E0Qf/tAWTQSvOrFal8UQkqBlBNqsgEpEg6d3Vw73uWemunVtmx4cJr513jVpZobWsuY1kPqQxdOUc1Cq41+0p+p98HixWprsPAJDNTAoVgyhnRweefnpX9z5Pdx+e3ruBrt2HkP+UNAcyOz5MlrZuELQgqPFg1P1YitiMzFz9TQdPT8VglyVdJVat9sIuS7DLEtJTMeRz8+ajZvpdEuFQtCQ0lbPv6NqO9FRMcxxv+xY4l3uY60bXNbPjwyQcigIAtEKztacf49EhTRB1H6W7DYEAQDgULQGZfpc0nSPoPZ6V7hIQTdfQzlpqqKGM9KEqlx2+Ab+P6EEZMU93n7moYdUWrNmwjNeP115WQitXmXAoioGzV63LrLLDSwBg8NJptHe26S7WcCiK/jMXIUqN3IRmSRnH297NlIkVg2QzKQIA9wfvoL2zDaPxsbLqVNP1SCISJIlIkPxwk0sAgH0DBzAaH0PwhVCAqyrI2h17BArEun757204fmEIVQdRwihVuT94B/sGDqDRvaY6VRdPZpYi2UyK0I/litA1oLbR+NjCeUXQUqXugFVzDS86AKC9s43pyofPXlo/ay0QK01XEaOLMuD3Efr+Ql2WiASL/lcEwpJfz3p39SDg9xEzb3cib3ft6NoOADh8/jY27jxI0v+9LurzcuSRoLXb7j92UjBTLpjKrG/fTOLtm0lIi0XmTksrfqoiLaSMbIJMRVjvHa2/dxd+5z7nNVO/ck0Y3YmZIOs37y5pS6Vm4Fy+pn5RwzKXq7msMxLLQFyuZsMQZoFErYemUjMlCtA2Xml49NR1cvPaCdMVGvvMs8FNfmv5o2SRKmGePb5l6bElO2o+JYVXEyDKqluWf6lqijc8K7HBTQBAlBpLXgUWnFHYmoUvF0ThSrNwtoWips0q+cUGN2FtDXVxTc1TPMs+vh9hrpG6KFJT16gPamue0NRnI/ncPESpEfncPD6+HylcX7KioxDKdlnC/zNjQtVcY5clHPnzPOyyBEeTs9Du/HUTHE1OOJqchYNg2eElRnKJUE74Kh8+l80BANJTMSxZ0VEEpjYtdcoCobKrbS6bg12WkPmQBgA4mpwFUNZxlaF6RGuxipKX0IeqIZSzzgCEl/rV9hWdfSE7Ilb8VgAAAABJRU5ErkJggg==',
@@ -1001,49 +1001,81 @@ function avatarSheet(id,o){
         ctx.fillRect(Math.round((s[0]+s[1])/2),y,1,1); } }
   }
   if(topC){
+    /* 옷 장식은 옷 자체의 모양에서 좌표를 뽑는다. 예전에는 얼굴 중심(fcx)을 기준으로 삼아서
+       아바타가 바뀌자 후드가 턱을 덮고 롱패딩이 몸 전체를 판때기로 만들었다.
+       ty0·ty1은 옷의 위아래, cx는 가슴 한가운데다. */
     var ts=rowSpans(topC),ty0=-1,ty1=-1,yy;
     for(yy=0;yy<av.h;yy++) if(ts[yy]&&ts[yy][0]>=0){ if(ty0<0) ty0=yy; ty1=yy; }
-    if(o.ts==='puff'){                                  /* 롱패딩: 앞을 여미고 기장을 늘린다 */
+    var midRow=Math.round((ty0+ty1)/2),ms=ts[midRow]||[0,0];
+    var cx=Math.round((ms[0]+ms[1])/2);
+    /** 옷 위에만 칠한다. 살이나 얼굴로 번지지 않는다. */
+    function onGarment(paint){
+      var tmp=mkcv(av.w,av.h+8),tc=tmp.getContext('2d');
+      tc.drawImage(topC,0,0);
+      tc.globalCompositeOperation='source-atop';
+      paint(tc);
+      ctx.drawImage(tmp,0,0);
+    }
+
+    if(o.ts==='puff'){                                  /* 롱패딩: 한 겹 부풀리고 기장을 늘린다 */
       var base=o.top||'#4C4A52';
       ctx.drawImage(topC,-1,0); ctx.drawImage(topC,1,0); ctx.drawImage(topC,0,0);
-      for(yy=ty0+3;yy<=ty1;yy++){ var sp=ts[yy]; if(!sp||sp[0]<0||sp[1]-sp[0]<4) continue;
-        ctx.fillStyle=base; ctx.fillRect(sp[0],yy,sp[1]-sp[0]+2,1); }
-      var hem=ts[ty1]||ts[ty1-1]||[0,0];
-      if(hem[0]>=0){ var hx0=hem[0]-1,hx1=hem[1]+1,e;
+      var hem=ts[ty1]||[0,0];
+      if(hem[0]>=0){
+        var hx0=hem[0]-1,hx1=hem[1]+1,e;
         for(e=1;e<=8;e++){
           ctx.fillStyle=base; ctx.fillRect(hx0,ty1+e,hx1-hx0+1,1);
-          ctx.fillStyle='rgba(0,0,0,.55)';
+          ctx.fillStyle='rgba(0,0,0,.45)';
           ctx.fillRect(hx0,ty1+e,1,1); ctx.fillRect(hx1,ty1+e,1,1);
-          if(e===8) ctx.fillRect(hx0,ty1+e,hx1-hx0+1,1); }
-        ctx.clearRect(hx0,ty1+8,1,1); ctx.clearRect(hx1,ty1+8,1,1);
-        ctx.fillStyle='rgba(255,255,255,.13)';
-        [ty0+6,ty0+11,ty1+4].forEach(function(q){ var m=ts[Math.min(q,ty1)]||hem;
-          if(m&&m[0]>=0) ctx.fillRect(m[0],q,m[1]-m[0]+2,1); });
-        ctx.fillStyle='rgba(0,0,0,.28)';
-        [ty0+7,ty0+12,ty1+5].forEach(function(q){ var m=ts[Math.min(q,ty1)]||hem;
-          if(m&&m[0]>=0) ctx.fillRect(m[0],q,m[1]-m[0]+2,1); }); }
+        }
+        ctx.fillStyle='rgba(0,0,0,.45)'; ctx.fillRect(hx0,ty1+8,hx1-hx0+1,1);
+      }
+      /* 누빔선. 옷 위에만 그어야 팔과 가방을 안 지운다 */
+      onGarment(function(tc){
+        [ty0+5,ty0+10,ty0+15].forEach(function(q){
+          if(q>=ty1) return;
+          tc.fillStyle='rgba(255,255,255,.14)'; tc.fillRect(0,q,av.w,1);
+          tc.fillStyle='rgba(0,0,0,.24)'; tc.fillRect(0,q+1,av.w,1);
+        });
+      });
     } else ctx.drawImage(topC,0,0);
-    if(o.ts==='hood'){                                  /* 후드: 목 뒤 칼라 + 끈 */
-      var sp2=ts[ty0+4]||ts[ty0+2]||[0,0];
-      if(sp2[0]>=0){ ctx.fillStyle=o.top||'#555';
-        for(var r=0;r<3;r++) ctx.fillRect(sp2[0]-1+r,ty0-1+r,sp2[1]-sp2[0]+3-2*r,1);
-        ctx.fillStyle='rgba(0,0,0,.35)'; ctx.fillRect(sp2[0]-1,ty0-1,sp2[1]-sp2[0]+3,1); }
-      if(o.ac){ ctx.fillStyle=o.ac;
-        ctx.fillRect(av.fcx-3,ty0+3,1,5); ctx.fillRect(av.fcx+2,ty0+3,1,5); } }
+
+    if(o.ts==='hood'){                                  /* 후드: 목 뒤에 접힌 칼라 + 끈 */
+      onGarment(function(tc){
+        tc.fillStyle=o.top||'#555';
+        tc.fillRect(0,ty0,av.w,3);
+        tc.fillStyle='rgba(0,0,0,.32)'; tc.fillRect(0,ty0+3,av.w,1);
+      });
+      if(o.ac){                                         /* 끈은 가슴 한가운데에서 내려온다 */
+        ctx.fillStyle=o.ac;
+        ctx.fillRect(cx-2,ty0+4,1,5); ctx.fillRect(cx+2,ty0+4,1,5);
+      }
+    }
     if(o.ts==='badge'&&o.ac){                           /* 사원증 목걸이 */
-      ctx.fillStyle=P.s4;
-      ctx.fillRect(av.fcx-4,ty0+2,1,4); ctx.fillRect(av.fcx+3,ty0+2,1,4);
-      ctx.fillRect(av.fcx-3,ty0+6,1,2); ctx.fillRect(av.fcx+2,ty0+6,1,2);
-      ctx.fillRect(av.fcx-3,ty0+8,6,6);
-      ctx.fillStyle=o.ac; ctx.fillRect(av.fcx-2,ty0+9,4,4);
-      ctx.fillStyle='rgba(0,0,0,.30)'; ctx.fillRect(av.fcx-2,ty0+12,4,1); }
+      onGarment(function(tc){
+        tc.fillStyle=P.s4;
+        tc.fillRect(cx-4,ty0+1,1,5); tc.fillRect(cx+4,ty0+1,1,5);
+        tc.fillRect(cx-3,ty0+6,1,2); tc.fillRect(cx+3,ty0+6,1,2);
+      });
+      var by=Math.min(ty0+8,ty1-6);
+      ctx.fillStyle=P.s4; ctx.fillRect(cx-3,by,7,7);
+      ctx.fillStyle=o.ac; ctx.fillRect(cx-2,by+1,5,5);
+      ctx.fillStyle='rgba(0,0,0,.30)'; ctx.fillRect(cx-2,by+5,5,1);
+    }
     if(o.ts==='sharp'&&o.ac){                           /* 필살기 정장: 금색 라펠 + 포켓치프 */
-      ctx.fillStyle=o.ac;
-      for(yy=ty0+4;yy<=ty0+10;yy++){ var rn=rowRuns(topC,yy);
-        if(rn.length<2) continue;
-        ctx.fillRect(rn[0][1],yy,1,1); ctx.fillRect(rn[rn.length-1][0],yy,1,1); }
-      var s3=ts[ty0+8]||[0,0];
-      if(s3[0]>=0) ctx.fillRect(s3[1]-4,ty0+9,2,1); } }
+      onGarment(function(tc){
+        tc.fillStyle=o.ac;
+        for(var y2=ty0+3;y2<=Math.min(ty0+10,ty1);y2++){
+          var rn=rowRuns(topC,y2);
+          if(!rn.length) continue;
+          tc.fillRect(rn[0][0]+1,y2,1,1);
+          tc.fillRect(rn[rn.length-1][1]-1,y2,1,1);
+        }
+        var pk=ts[Math.min(ty0+11,ty1)]||[0,0];
+        if(pk[0]>=0) tc.fillRect(pk[1]-4,Math.min(ty0+11,ty1),2,1);
+      });
+    }
+  }
   if(handC) ctx.drawImage(handC,0,0);
   if(hairC) ctx.drawImage(hairC,0,0);
   BCACHE[k]=cv; return cv;
@@ -1382,6 +1414,8 @@ function mountG(kind){
    NPC 넷과 펫 셋은 손으로 그린 한 장짜리다. 절차 생성으로는 이 질감이 안 나온다.
    data URI로 박아 두면 파일 하나로 끝난다. Expo 앱의 assets/sprites와 같은 그림이다. */
 var CAST={
+ npc_mlmf:{w:34,h:64,d:'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'},
+ npc_fp:{w:24,h:64,d:'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'},
  npc_peerm:{w:24,h:64,d:'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'},
  npc_peerf:{w:24,h:64,d:'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'},
  npc_deskf:{w:29,h:64,d:'iVBORw0KGgoAAAANSUhEUgAAAB0AAABACAYAAADmg3wmAAAFg0lEQVR42s1ZW0hjRxj+zjFoghFjV1fZGolkdd0ab3SNqwitUCwUFZZaFvatlD6JUErtm/TBp/ZhKVifWtq30octpSpCZYtSFq8tq4mr6CFE1G11tU2WRKLhJNMHO+Ock3PJRXc7EEzOmZnvv3z/P/8/CjAZVruT6L07ie4KyGJYzICqaxoU78QCGwAgeRpDUALJBlzQAnR7vOx38jQGAAhKfvaMfw8AgbWljIAFI0C6oVpjqm22wKIRoFqroORHUPIzQdTzjPyvqWlT510iy7LuRC2g6poGhdZnfvabamzhiWOxWBA/jiC/sAi8AIG1JWwvP0hZPDE+g/s//AaxwIbkaQz5hUXp+7T+9rsMlB/x4wiCkl8TkAf+auIxADBBnyz8KJj6lDJUlmXIsoz4cQQAkF9YZAgIAL19XdhcmVNYxsy3FqvdSbTYGD+OIBQO4TKGqPmwwAaxwIaVqS/T3kiLaBmBBtaWMtrEzAWmoBQs040ymS/yYL9+92nKhLc/vA9Xaz9crf2aG/DPA2tLjJSmcUrjcGJ8JkXiX77+GF33Ipj5/jPNDdQHQjoHgKim/8T4TMokPUCzd4ag1TUNzEy9fV1Zh4KW1rqgYoENbo/X0HeXHqd6wBPjMyitvYXS2lspbshEWIE/1ugpYRQGFIx3w8T4DAZHxph5Nx5PmZ8yfP5VSz86PKAAUPtcrSEvtOl5yh/iWtlIDa4Gc3u8aVcPQjqV38LiQ1SIYVP/ZVsdMnCr3UlutrxD5ESCyIkEsdqdZH9jkexvLLLfVruTrK6skpzZS7V1e7wQC2ywF7uQJ4oYHR5AoaNUwdrqmga0dfakXRtp1r1Wu5NEn2/DXuwCX0nYiqpwKM0i8I+M9z8ZQuzZtqIqXHw0ibbOHqI2r54wCk2jz7fZX0qmG80dcHu8KKt5E56662dCXHUpqsT6Bo+mi7aXH2B0eIARkX4X0i0xeKHsxeeggbUl9tySlyeoQflY7u3rgqu1X1kNLj6a1AVsbGqEragKc/PTAICP7rTig6EhJMmZELHIDqx2J9FjcG9fFyputgkKU5iN1ZVVxuimzruMvfRDGQ0Akb8CCoarrch8+s0XnyORTGpqSUiSESYo+SHLMtweL/vw8SwnEkQ6igMADqVZzfgVqa8GR8b0M4hwzjdHWWVKfQwAsWfbjGjN9bXwrW9BOoprJgwLVf1QmmW+odpRMFtRlYJIB093FJvMzU9DOoqjpUJkaxtfq2WhpxmnogBIR3GMDg9gdX0LALA8+RMAYHBkjJ02R1u/I3y4B0dZJQCgxFGiSPBUUEEQ8cTn002LFmq+Fk8dWjx1bKH7lfdgu+pKOcK0Rkd7N+bmp5EkAEgSvvUtdHT2mKdBShZBEOFb9QEAXn/jnu7CEkcJ6wBOortCR3s3fOtbZ4Dt3YbJX7DanWR0eACtPXfOW75kEn9M/czMq1cLhcIhhA/3smv/9bKRo6wSU+PfpphSXYCl05Om+JRfYLU7ycLiQ3jqriNPPGdjkgC+/0jGX3Zc2O3K7ba3DBdlC2YISk0LAOHDvRR/8mFC5+UMeqO5Q9FZU7bSRtnt8eLvgz8BAFfKr6UIlrWm9BAvf7Uq7ec5FdtGY3Nl7nIqfPU1AP+d9yH/LifQk+iuoKdNUPIrzBoKh2B093Rh5r20BiojJlosLxaUhtFLMW+mCd+SC1goHEI4jS4tbU0pK40uGa+UX7s4855EdwV1u7i5MsdqpBeaHC6Cuf/fNMiPPFFkJ9BLSw7ZpEDTkKFFdbkGgw+e7mRVlGWsKd/rZJuNDEFzurTI5HZF7/6Bb4r5/uTCBeNvU3jwiup2UlHdnvI8Z03pRRbNSo6ySuwH5wUKyvuTVoZZ/6/N6P6BbqqnXSag/wJ+IvLdWnZi0AAAAABJRU5ErkJggg=='},
@@ -1747,9 +1781,7 @@ Q('jik3','jik','실업급여 기본 조건',80,70,{status:['직장인','취준�
  {q:"구직급여를 받는 동안 해야 하는 것은?",a:["정해진 주기마다 재취업 활동을 하고 신고한다","아무것도 하지 않아도 된다","매일 고용센터에 출석한다"],ok:0,
   why:"실업 인정을 받아야 그 회차 급여가 나간다. 조건 없이 나오는 돈이 아니라 구직 중임을 확인받는 돈이다."}],{jik:15})
 ];
-var BOSS={name:'전세 먹튀 집주인',hp:100,atk:24,
- intro:'보증금? 다음 세입자 들어오면 준다니까. 왜 그렇게 못 믿어?',
- qs:[
+var BOSS_JEONSE_QS=[
  {q:'전세보증금 반환보증에 가입하면 무엇이 달라질까?',
   a:['집주인이 안 돌려줘도 보증기관이 대신 지급한다','집주인이 보증금을 못 올린다','세금이 줄어든다'],ok:0,
   why:'보증기관이 먼저 지급하고 집주인에게 구상한다. 가입 요건과 보증료는 기관마다 다르니 계약 전에 확인한다.'},
@@ -1768,7 +1800,75 @@ var BOSS={name:'전세 먹튀 집주인',hp:100,atk:24,
  {q:"계약이 끝났는데 집주인이 보증금을 안 준다. 이사부터 나가면?",a:["점유와 주민등록이 빠져 순위를 잃는다","이사해도 순위는 그대로다","오히려 우선순위가 올라간다"],ok:0,
   why:"대항력과 우선변제권은 살고 있고 전입돼 있다는 것이 전제다. 먼저 임차권등기명령을 받아 등기를 확인하고 나가야 한다."},
  {q:"집주인의 세금 체납은 계약 전에 확인할 수 있을까?",a:["미납국세 열람 제도로 확인할 수 있다","확인할 방법이 없다","중개사에게 물어보는 수밖에 없다"],ok:0,
-  why:"국세가 보증금보다 먼저 배당되는 경우가 있어 체납 규모가 곧 위험이다. 열람 제도가 그래서 생겼다."}]};
+  why:"국세가 보증금보다 먼저 배당되는 경우가 있어 체납 규모가 곧 위험이다. 열람 제도가 그래서 생겼다."}];
+/* ══════════ 보스 ══════════
+   제도를 아는 것과 눈앞의 사람에게 안 넘어가는 것은 다른 능력이다. 보스는 후자를 연습시킨다.
+   셋 다 말이 그럴듯하고, 틀린 선택지도 현실에서 실제로 듣는 말로 썼다.
+   need는 도전 조건이 되는 스탯이고, face는 세울 손그림이다. */
+var BOSSES=[
+{id:'jeonse',name:'전세 먹튀 집주인',face:'boss',stat:'ju',need:30,hp:100,atk:24,
+ src:['찾기쉬운 생활법령정보','https://easylaw.go.kr'],
+ intro:'보증금? 다음 세입자 들어오면 준다니까. 왜 그렇게 못 믿어?',
+ win:'등기부등본, 선순위 보증금, 대항력 승계를 전부 짚었습니다.',
+ lose:'다음에 오겠다는 말을 믿고 돌아섰습니다.',
+ qs:BOSS_JEONSE_QS},
+
+{id:'mlm',name:'다단계 선배',face:'mlmf',stat:'geum',need:20,hp:80,atk:20,
+ src:['공정거래위원회','https://www.ftc.go.kr'],
+ intro:'너 요즘 힘들다며? 나 이거 하고 월 300 벌어. 설명회만 한 번 와 봐, 응?',
+ win:'설명회 자료를 덮었다. 선배는 더 말을 잇지 못했다.',
+ lose:'일단 한 번만, 하고 카드를 꺼냈다.',
+ qs:[
+ {q:'이 회사가 합법인지 확인하려면 어디를 봐야 할까?',
+  a:['공정거래위원회에 등록된 다단계판매업자인지 조회한다','사업설명회에서 직접 물어본다','권유한 선배 말을 믿는다'],ok:0,
+  why:'다단계판매업자는 공정거래위원회나 시·도에 등록해야 한다. 등록 여부는 공개돼 있어 이름만 넣으면 확인된다.'},
+ {q:'판매원으로 가입하려면 먼저 물건을 사야 한다고 한다면?',
+  a:['가입 조건으로 상품 구입을 요구하는 것은 금지된 행위다','원래 그런 절차다','싸게 사는 기회다'],ok:0,
+  why:'가입이나 등급 유지를 조건으로 상품 구입을 강요하는 행위는 방문판매법이 금지한다. 그 말이 나오는 순간 더 들을 것이 없다.'},
+ {q:'"이 정도 하면 월 수백은 보장된다"는 말을 들었다면?',
+  a:['수익을 보장한다는 말 자체가 금지된 표현이다','실적이 좋은 회사라는 뜻이다','계약서에 적어달라고 하면 된다'],ok:0,
+  why:'거짓이나 과장으로 유인하는 행위는 금지된다. 보장이라는 단어가 나오면 그 사업이 아니라 그 말이 문제다.'},
+ {q:'이미 물건을 샀는데 후회된다면?',
+  a:['법으로 정해진 기간 안에 청약철회를 할 수 있다','한 번 사면 되돌릴 수 없다','다른 사람에게 넘겨야 한다'],ok:0,
+  why:'방문판매법은 일정 기간 안의 청약철회를 보장한다. 기간과 조건은 계약서와 공정거래위원회 안내에서 확인한다.'},
+ {q:'"돈이 없으면 대출을 받아서라도 시작하라"고 한다면?',
+  a:['그 자리에서 끊는다. 빚으로 시작하라는 순간 사업이 아니다','투자니까 감수한다','소액이면 괜찮다'],ok:0,
+  why:'초기 비용을 빚으로 메우게 하는 구조는 손실을 개인에게 떠넘긴다. 남는 것은 재고와 이자다.'}
+]},
+
+{id:'fp',name:'자칭 재무설계사',face:'fp',stat:'geum',need:40,hp:120,atk:28,
+ src:['금융감독원 파인','https://fine.fss.or.kr'],
+ intro:'무료로 재무설계 해드립니다. 요즘 이 상품이 예금보다 훨씬 낫거든요.',
+ win:'설계안을 돌려줬다. 그는 다음 약속이 있다며 일어섰다.',
+ lose:'서명란에 이름을 적었다. 20년짜리였다.',
+ qs:[
+ {q:'무료 재무설계 뒤에 보통 따라오는 것은?',
+  a:['특정 금융상품 가입 권유','정말 아무것도 없다','세무 대리 서비스'],ok:0,
+  why:'상담이 공짜라면 수익은 상품 판매 수수료에서 나온다. 무엇을 파는 사람인지 먼저 확인하면 설명이 다르게 들린다.'},
+ {q:'"원금은 보장되는데 수익률도 높다"는 설명을 들었다면?',
+  a:['둘 다 성립하는 상품은 없다고 보고 자료를 요구한다','좋은 기회다','계약서에 적어달라고 하면 된다'],ok:0,
+  why:'수익이 높으면 위험이 따른다. 보장과 고수익을 함께 말하는 설명은 둘 중 하나가 사실이 아니다.'},
+ {q:'저축성보험을 예금처럼 권한다면 무엇을 확인해야 할까?',
+  a:['사업비를 떼고 낸 돈에 도달하는 시점','보험사 로고','설계사 경력'],ok:0,
+  why:'저축성보험은 초기에 사업비가 빠져나가 한동안 해지환급금이 낸 돈보다 적다. 몇 년을 유지해야 하는지가 핵심이다.'},
+ {q:'이 사람이 판매 자격이 있는지 확인하려면?',
+  a:['금융소비자 정보포털에서 등록된 판매업자·모집인인지 조회한다','명함을 본다','사무실이 크면 믿는다'],ok:0,
+  why:'등록 여부는 공개돼 있다. 조회 한 번이 가장 싼 검증이다.'},
+ {q:'이미 가입했는데 설명과 다르다면?',
+  a:['정해진 기간 안에 청약을 철회하거나 불완전판매를 이유로 다툴 수 있다','방법이 없다','해지하면 낸 돈을 전부 돌려받는다'],ok:0,
+  why:'청약철회 기간이 지나도 설명 의무를 지키지 않았다면 다툴 여지가 있다. 상담 내용과 자료를 남겨 두는 편이 안전하다.'}
+]}
+];
+/** 받침을 보고 조사를 고른다. "선배가 나타났다"와 "집주인이 나타났다"를 갈라 쓴다. */
+function 이가(w){
+  var c=(w||'').charCodeAt((w||'').length-1)-0xAC00;
+  var hasFinal=(c>=0&&c<=11171)&&(c%28!==0);
+  return w+(hasFinal?'이':'가'); }
+function bossById(id){ for(var i=0;i<BOSSES.length;i++) if(BOSSES[i].id===id) return BOSSES[i]; return BOSSES[0]; }
+function bossCleared(id){ return (S.bossDone||[]).indexOf(id)>=0; }
+/** 도전 조건. 시연에서는 전부 열어 둔다. */
+function bossReady(b){ return S.demo||S.stats[b.stat]>=b.need; }
+
 
 var QMAP={};
 QUESTS.forEach(function(q){ QMAP[q.id]=q; });
@@ -1880,7 +1980,7 @@ function ev(n,p){
 /* ══════════ 상태 ══════════ */
 var KEY='nq.v8';
 function fresh(){ return {onboarded:false,status:null,age:null,years:null,company:null,living:null,prep:null,region:null,
- lv:1,xp:0,coin:150,tier:0,peak:0,done:[],bossCleared:false,
+ lv:1,xp:0,coin:150,tier:0,peak:0,done:[],bossCleared:false,bossDone:[],
  stats:{ju:5,sik:5,ui:5,geum:5,jik:5},
  avatar:'stuM',
  look:{hair:0,haircol:-1,skin:0},
@@ -1897,6 +1997,7 @@ function load(){ var o=null;
   var f=fresh();                                  /* 새 필드가 생겨도 예전 저장이 깨지지 않게 메운다 */
   Object.keys(f).forEach(function(k){ if(o[k]===undefined) o[k]=f[k]; });
   /* 그림체가 다른 옛 정장 한 쌍은 목록에서 뺐다. 그걸 쓰던 저장은 같은 성별로 옮긴다. */
+  if(!o.bossDone) o.bossDone=o.bossCleared?['jeonse']:[];   /* 보스가 하나이던 시절의 저장 */
   if(o.avatar==='imgM') o.avatar='stuM';
   if(o.avatar==='imgF') o.avatar='stuF';
   return o; }
@@ -2352,22 +2453,29 @@ function renderProfileCard(){
       ev('profile_fill',{k:key}); save(); renderHome(); };
     box.appendChild(b); });
   card.appendChild(box); host.appendChild(card); }
-function bossPlan(){ var tt=totals();
-  var dmg=Math.max(25,Math.round(tt.atk*1.5)),take=Math.max(8,BOSS.atk-Math.floor(tt.def/4));
+function bossPlan(b){ var tt=totals();
+  var dmg=Math.max(25,Math.round(tt.atk*1.5)),take=Math.max(8,b.atk-Math.floor(tt.def/4));
   var hp=30+Math.floor(tt.def/2);
   return {atk:tt.atk,def:tt.def,dmg:dmg,take:take,hp:hp,
-   need:Math.ceil(BOSS.hp/dmg),survive:Math.max(0,Math.ceil(hp/take)-1)}; }
+   need:Math.ceil(b.hp/dmg),survive:Math.max(0,Math.ceil(hp/take)-1)}; }
 function renderQuests(){
-  /* 시연에서는 잠금을 걸지 않는다. 처음 열어 본 사람이 보스전을 못 보고 나가면 의미가 없다.
-     실제 앱에서는 주 스탯 30이 조건이다. */
-  var pl=bossPlan(),ready=(S.demo||S.stats.ju>=30),bc=document.getElementById('bosscard');
-  bc.innerHTML='<span class="bt">'+BOSS.name+'</span><span class="bm">보스 HP '+BOSS.hp+' · 공격 '+BOSS.atk+' · 문항 '+BOSS.qs.length+'개'+
-   '<br>내 공격 '+pl.atk+' → 한 방 '+pl.dmg+' · '+pl.need+'개 맞추면 승리'+
-   '<br>내 방어 '+pl.def+' → 오답 '+pl.take+' 피해 · '+pl.survive+'번까지 버팀'+
-   '<br>'+(S.bossCleared?'이미 물리쳤습니다. 다시 붙을 수 있습니다.'
-    :S.stats.ju>=30?'패배하면 거처 해금이 한 단계 내려갑니다.'
-    :'시연 모드라 바로 붙을 수 있습니다. 실제 앱은 주 스탯 30부터 (지금 '+S.stats.ju+')')+'</span>';
-  bc.disabled=!ready; bc.onclick=ready?startBoss:null;
+  /* 보스가 셋이 됐다. 시연에서는 조건을 걸지 않는다. 처음 열어 본 사람이 보스전을
+     못 보고 나가면 시연이 아니다. 실제 앱에서는 각자 스탯 조건이 있다. */
+  var wrap=document.getElementById('bosscards'); wrap.innerHTML='';
+  BOSSES.forEach(function(b){
+    var pl=bossPlan(b),ready=bossReady(b),done=bossCleared(b.id);
+    var bc=document.createElement('button'); bc.className='bosscard pix';
+    bc.innerHTML='<span class="bt">'+b.name+(done?' · 격파':'')+'</span>'+
+      '<span class="bm">HP '+b.hp+' · 공격 '+b.atk+' · 문항 '+b.qs.length+'개'+
+      '<br>내 공격 '+pl.atk+' → 한 방 '+pl.dmg+' · '+pl.need+'개 맞추면 승리'+
+      '<br>내 방어 '+pl.def+' → 오답 '+pl.take+' 피해 · '+pl.survive+'번까지 버팀'+
+      '<br>'+(done?'이미 물리쳤습니다. 다시 붙을 수 있습니다.'
+        :S.stats[b.stat]>=b.need?'패배하면 거처 해금이 한 단계 내려갑니다.'
+        :'시연이라 바로 붙을 수 있습니다. 실제 앱은 '+THEMES[b.stat].k+' 스탯 '+b.need+'부터 (지금 '+S.stats[b.stat]+')')+'</span>';
+    bc.disabled=!ready;
+    if(ready) bc.onclick=function(){ startBoss(b); };
+    wrap.appendChild(bc);
+  });
   var all=document.getElementById('allquests'); all.innerHTML='';
   QUESTS.filter(fits).forEach(function(q){ all.appendChild(questRow(q,function(){ startQuest(q); })); });
   buildTabs(document.getElementById('tab-quests'),'quests'); }
@@ -2512,7 +2620,7 @@ function renderCodex(){
    '<b>레벨</b><span>Lv.'+S.lv+' · '+S.xp+' XP</span><b>코인</b><span>￦'+S.coin+'</span>'+
    '<b>거처</b><span>'+TIERS[S.tier].name+' (해금 '+(S.peak+1)+'/'+TIERS.length+')</span>'+
    '<b>전투</b><span>공격 '+tt.atk+' · 방어 '+tt.def+'</span>'+
-   '<b>보스</b><span>'+(S.bossCleared?'전세 먹튀 집주인 격퇴':'미격퇴')+'</span>';
+   '<b>보스</b><span>'+((S.bossDone||[]).length?(S.bossDone||[]).map(function(x){ return bossById(x).name; }).join(', ')+' 격퇴':'미격퇴')+'</span>';
   var hidden=QUESTS.filter(function(q){ return !fits(q); }).map(function(q){ return q.title; });
   document.getElementById('mewhy').innerHTML=
    '전체 '+QUESTS.length+'개 중 이 조건으로 '+QUESTS.filter(fits).length+'개가 노출되고 있습니다.<br>'+
@@ -2949,12 +3057,14 @@ function finish(failed){
 
 /* ══════════ 보스전 ══════════ */
 var FIGHT=null;
-function startBoss(){
-  var pl=bossPlan();
-  ev('boss_start',{atk:pl.atk,def:pl.def,cleared:!!S.bossCleared});
-  FIGHT={i:0,myMax:pl.hp,my:pl.hp,boss:BOSS.hp,dmg:pl.dmg,take:pl.take};
+function startBoss(b){
+  var pl=bossPlan(b);
+  ev('boss_start',{id:b.id,atk:pl.atk,def:pl.def,cleared:bossCleared(b.id)});
+  FIGHT={b:b,i:0,myMax:pl.hp,my:pl.hp,boss:b.hp,dmg:pl.dmg,take:pl.take};
   document.getElementById('bmename').textContent=S.status+' Lv.'+S.lv;
-  (function(){ var bc=document.getElementById('bossspr'),c=CAST.npc_boss,src=castCv('npc_boss');
+  document.querySelector('#boss .dlg .nm').textContent=b.name;
+  document.getElementById('bbossname').textContent=b.name;
+  (function(){ var bc=document.getElementById('bossspr'),key='npc_'+b.face,c=CAST[key],src=castCv(key);
     bc.width=c.w; bc.height=c.h; bc.style.width=(c.w*3)+'px'; bc.style.height=(c.h*3)+'px';
     var bx=bc.getContext('2d'); bx.imageSmoothingEnabled=false;
     bx.clearRect(0,0,c.w,c.h); if(src) bx.drawImage(src,0,0); })();
@@ -2965,17 +3075,17 @@ function startBoss(){
   var bt=document.getElementById('btext');
   battleWipe(function(){ bt.textContent=''; go('boss'); }, function(){
     /* 등장 대사부터 한 글자씩. 다 찍혀야 "맞선다"가 열린다. */
-    typeInto(bt,BOSS.name+'이 나타났다! '+BOSS.intro,function(){
+    typeInto(bt,이가(FIGHT.b.name)+' 나타났다! '+FIGHT.b.intro,function(){
       caretOn(bt); nx.hidden=false; nx.textContent='맞선다';
       nx.onclick=function(){ box.hidden=false; bossStep(); }; });
   }); }
 function paintFight(){
   document.getElementById('bmehp').textContent=Math.max(0,FIGHT.my)+' / '+FIGHT.myMax;
   document.getElementById('bmebar').style.width=Math.max(0,FIGHT.my/FIGHT.myMax*100)+'%';
-  document.getElementById('bbosshp').textContent=Math.max(0,FIGHT.boss)+' / '+BOSS.hp;
-  document.getElementById('bbossbar').style.width=Math.max(0,FIGHT.boss/BOSS.hp*100)+'%'; }
+  document.getElementById('bbosshp').textContent=Math.max(0,FIGHT.boss)+' / '+FIGHT.b.hp;
+  document.getElementById('bbossbar').style.width=Math.max(0,FIGHT.boss/FIGHT.b.hp*100)+'%'; }
 function bossStep(){
-  var item=BOSS.qs[FIGHT.i];
+  var item=FIGHT.b.qs[FIGHT.i];
   document.getElementById('bexplain').hidden=true; document.getElementById('bnext').hidden=true;
   var box=document.getElementById('bchoices'); box.innerHTML=''; box.hidden=true;
   typeInto(document.getElementById('btext'),item.q,function(){ box.hidden=false; });
@@ -2983,7 +3093,7 @@ function bossStep(){
     b.innerHTML='<span class="k">\u25B6</span><span>'+text+'</span>';
     b.onclick=function(){ bossAnswer(idx,b); }; box.appendChild(b); }); }
 function bossAnswer(idx,btn){
-  var item=BOSS.qs[FIGHT.i],right=(idx===item.ok);
+  var item=FIGHT.b.qs[FIGHT.i],right=(idx===item.ok);
   document.querySelectorAll('#bchoices .choice').forEach(function(b,i){ b.disabled=true;
     if(i===item.ok) b.classList.add('ok'); else if(b===btn) b.classList.add('no'); });
   var log=document.getElementById('bhit'); log.innerHTML='';
@@ -2994,7 +3104,7 @@ function bossAnswer(idx,btn){
     blinkEl(document.getElementById('bossspr'));
     damagePop(stage,FIGHT.dmg,P.y1); }
   else { FIGHT.my-=FIGHT.take; row.className='hit hurt';
-    row.innerHTML='<span>당했다 · 보스 '+BOSS.atk+' − 경감 '+Math.floor(totals().def/4)+'</span><b>-'+FIGHT.take+'</b>';
+    row.innerHTML='<span>당했다 · 보스 '+FIGHT.b.atk+' − 경감 '+Math.floor(totals().def/4)+'</span><b>-'+FIGHT.take+'</b>';
     damagePop(stage,FIGHT.take,P.r1);
     stage.classList.add('shake');
     setTimeout(function(){ stage.classList.remove('shake'); },700); }
@@ -3008,34 +3118,46 @@ function bossAnswer(idx,btn){
   if(FIGHT.boss<=0){ nx.textContent='마무리'; nx.onclick=function(){ bossEnd(true); }; return; }
   if(FIGHT.my<=0){ nx.textContent='결과'; nx.onclick=function(){ bossEnd(false); }; return; }
   FIGHT.i++;
-  if(FIGHT.i>=BOSS.qs.length){ nx.textContent='결과'; nx.onclick=function(){ bossEnd(FIGHT.boss<=0); }; return; }
+  if(FIGHT.i>=FIGHT.b.qs.length){ nx.textContent='결과'; nx.onclick=function(){ bossEnd(FIGHT.boss<=0); }; return; }
   nx.textContent='다음 공격'; nx.onclick=bossStep; }
 function bossEnd(win){
   var before=S.peak;
   sfx(win?'win':'hit');
-  ev(win?'boss_win':'boss_lose',{lv:S.lv,ju:S.stats.ju});
-  if(win){ S.bossCleared=true; S.coin+=200; S.stats.ju=Math.min(100,S.stats.ju+15);
-    if(!failed&&tierFor(S.stats.ju)>S.peak){ var wasTop=(S.tier===S.peak);
+  var B=FIGHT.b;
+  ev(win?'boss_win':'boss_lose',{id:B.id,lv:S.lv,ju:S.stats.ju});
+  if(win){ S.bossCleared=true;
+    if(!S.bossDone) S.bossDone=[];
+    if(S.bossDone.indexOf(B.id)<0) S.bossDone.push(B.id);
+    S.coin+=200; S.stats[B.stat]=Math.min(100,S.stats[B.stat]+15);
+    if(tierFor(S.stats.ju)>S.peak){ var wasTop=(S.tier===S.peak);
       S.peak=Math.min(S.peak+1,TIERS.length-1); if(wasTop) S.tier=S.peak; } }
   else { S.peak=Math.max(0,S.peak-1); if(S.tier>S.peak) S.tier=S.peak; }
   save();
   paintHero(document.getElementById('bechar'),win?'cheer':'idle',0);
   var big=document.getElementById('bebig');
-  big.textContent=win?'보스 격파':'보증금을 잃었다';
+  big.textContent=win?'보스 격파':'당했다';
   big.style.color=win?P.y1:P.r1;
   var body=document.getElementById('bebody'); body.innerHTML='';
   var box=document.createElement('div'); box.className='upgrade pix'+(win?'':' bad');
   var lab=document.createElement('span'); lab.className='lbold';
-  lab.textContent=win?('거처 '+TIERS[S.peak].name+' 해금 · ￦200 획득'):(TIERS[before].name+' → '+TIERS[S.peak].name);
-  box.appendChild(lab);
-  var hc=houseCv(S.peak),cv=document.createElement('canvas');
-  cv.width=hc.width; cv.height=hc.height; cv.style.width=hc.width+'px'; cv.style.height=hc.height+'px';
-  cv.getContext('2d').drawImage(hc,0,0); box.appendChild(cv);
-  var d2=document.createElement('span'); d2.className='lbold'; d2.textContent='방어 '+TIERS[S.peak].def;
-  box.appendChild(d2); body.appendChild(box);
-  var pl=bossPlan(),note=document.createElement('div'); note.className='micro'; note.style.textAlign='center';
-  note.innerHTML=win?'등기부등본, 선순위 보증금, 대항력 승계를 전부 짚었습니다.<br>주 스탯 +15'
-   :'틀린 문항의 해설을 다시 읽어보세요.<br>지금 공격력이면 '+pl.need+'개를 맞춰야 이깁니다. 상점에서 장비를 올리면 필요한 정답 수가 줄어듭니다.';
+  /* 거처는 주 스탯에만 걸려 있다. 금 스탯 보스를 이겼는데 "노숙 해금"이 뜨면 이상하다. */
+  var moved=(S.peak!==before);
+  if(moved){
+    lab.textContent=win?('거처 '+TIERS[S.peak].name+' 해금 · ￦200 획득'):(TIERS[before].name+' → '+TIERS[S.peak].name);
+    box.appendChild(lab);
+    var hc=houseCv(S.peak),cv=document.createElement('canvas');
+    cv.width=hc.width; cv.height=hc.height; cv.style.width=hc.width+'px'; cv.style.height=hc.height+'px';
+    cv.getContext('2d').drawImage(hc,0,0); box.appendChild(cv);
+    var d2=document.createElement('span'); d2.className='lbold'; d2.textContent='방어 '+TIERS[S.peak].def;
+    box.appendChild(d2);
+  } else {
+    lab.textContent=win?'￦200 획득':'거처는 그대로입니다';
+    box.appendChild(lab);
+  }
+  body.appendChild(box);
+  var pl=bossPlan(B),note=document.createElement('div'); note.className='micro'; note.style.textAlign='center';
+  note.innerHTML=win?(B.win+'<br>'+THEMES[B.stat].k+' 스탯 +15')
+   :(B.lose+'<br>틀린 문항의 해설을 다시 읽어보세요. 지금 공격력이면 '+pl.need+'개를 맞춰야 이깁니다.');
   body.appendChild(note); go('bossend'); }
 
 document.getElementById('qback').onclick=function(){ render('home'); };

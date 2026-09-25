@@ -5,7 +5,7 @@ import { totals } from './state';
 /* 만점이면 장비와 상관없이 항상 이긴다(피해 하한 25 × 5문항 > HP 100).
    장비는 "몇 번까지 틀려도 되는가"만 바꾼다. 공부가 이기고 과금이 보조하는 구조. */
 
-export const BOSS_READY_JU = 30;
+/* 조건은 이제 보스마다 다르다. 시연에서는 전부 열어 둔다. */
 
 export interface BossPlan {
   atk: number;
@@ -38,6 +38,11 @@ export function bossPlan(s: GameState, boss: Boss): BossPlan {
   };
 }
 
-export function bossReady(s: GameState): boolean {
-  return s.stats.ju >= BOSS_READY_JU;
+export function bossReady(s: GameState, boss: Boss): boolean {
+  return !!s.demo || s.stats[boss.stat] >= boss.need;
+}
+
+/** 이 보스를 이미 물리쳤는지 */
+export function bossCleared(s: GameState, boss: Boss): boolean {
+  return (s.bossDone ?? []).indexOf(boss.id) >= 0;
 }

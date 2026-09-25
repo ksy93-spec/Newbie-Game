@@ -1,4 +1,4 @@
-import type { Quest } from '@/data/pack';
+import type { Boss, Quest } from '@/data/pack';
 import { allItems } from '@/data/items';
 import { TIERS, tierFor } from '@/data/tiers';
 import { completeBonus, todayLeft } from './daily';
@@ -120,12 +120,15 @@ export function finishQuest(
 }
 
 /** 보스전 결과. 지면 거처 해금이 한 단계 내려간다. */
-export function finishBoss(s: GameState, win: boolean): { unlocked: boolean; lost: boolean } {
+export function finishBoss(s: GameState, win: boolean, boss: Boss): { unlocked: boolean; lost: boolean } {
   const beforePeak = s.peak;
   if (win) {
     s.bossCleared = true;
+    if (s.bossDone.indexOf(boss.id) < 0) s.bossDone.push(boss.id);
     s.coin += 200;
-    s.stats.ju = Math.min(100, s.stats.ju + 15);
+    /* 보상은 그 보스가 걸고 있던 스탯으로 준다. 금 스탯 보스를 이겼는데
+       주 스탯이 올라 거처가 해금되면 이야기가 어긋난다. */
+    s.stats[boss.stat] = Math.min(100, s.stats[boss.stat] + 15);
     if (tierFor(s.stats.ju) > s.peak) {
       const wasTop = s.tier === s.peak;
       s.peak = Math.min(s.peak + 1, TIERS.length - 1);
@@ -135,6 +138,6 @@ export function finishBoss(s: GameState, win: boolean): { unlocked: boolean; los
     s.peak = Math.max(0, s.peak - 1);
     if (s.tier > s.peak) s.tier = s.peak;
   }
-  record(s, win ? 'boss_win' : 'boss_lose', { lv: s.lv, ju: s.stats.ju });
+  record(s, win ? 'boss_win' : 'boss_lose', { id: boss.id, lv: s.lv, ju: s.stats.ju });
   return { unlocked: s.peak > beforePeak, lost: s.peak < beforePeak };
 }

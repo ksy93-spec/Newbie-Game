@@ -9,7 +9,7 @@ export interface CastSprite {
   h: number;
 }
 
-export type NpcId = 'gpa' | 'gma' | 'boy' | 'girl' | 'peerm' | 'peerf' | 'deskf' | 'officem' | 'boss';
+export type NpcId = 'gpa' | 'gma' | 'boy' | 'girl' | 'peerm' | 'peerf' | 'deskf' | 'officem' | 'boss' | 'mlmf' | 'fp';
 
 export const NPC: Record<NpcId, CastSprite> = {
   gpa: { src: require('../../assets/sprites/npc_gpa.png'), w: 30, h: 64 },
@@ -21,6 +21,8 @@ export const NPC: Record<NpcId, CastSprite> = {
   deskf: { src: require('../../assets/sprites/npc_deskf.png'), w: 29, h: 64 },
   officem: { src: require('../../assets/sprites/npc_officem.png'), w: 24, h: 64 },
   boss: { src: require('../../assets/sprites/npc_boss.png'), w: 22, h: 64 },
+  mlmf: { src: require('../../assets/sprites/npc_mlmf.png'), w: 24, h: 64 },
+  fp: { src: require('../../assets/sprites/npc_fp.png'), w: 24, h: 64 },
 };
 
 /* 이제 역마다 얼굴이 있다. 노인 둘은 동네 가게와 창구, 나머지는 또래와 직장인.
@@ -42,6 +44,8 @@ const BY_NAME: Record<string, NpcId> = {
   '고용센터 상담원': 'officem',
   '집주인': 'boss',
   '전세 먹튀 집주인': 'boss',
+  '다단계 선배': 'mlmf',
+  '자칭 재무설계사': 'fp',
 };
 
 /** 표에 없는 이름은 해시해서 늘 같은 어른이 나오게 한다 */

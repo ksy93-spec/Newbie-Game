@@ -35,7 +35,10 @@ export function validatePack(x: unknown): Pack | null {
     if (typeof q.id !== 'string' || typeof q.title !== 'string') return null;
     if (!Array.isArray(q.qs) || !q.qs.length || !q.qs.every(validQuestion)) return null;
   }
-  if (!p.boss || !Array.isArray(p.boss.qs) || !p.boss.qs.every(validQuestion)) return null;
+  if (!Array.isArray(p.bosses) || !p.bosses.length) return null;
+  for (const b of p.bosses) {
+    if (typeof b.id !== 'string' || !Array.isArray(b.qs) || !b.qs.every(validQuestion)) return null;
+  }
   return p as Pack;
 }
 

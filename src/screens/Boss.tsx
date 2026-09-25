@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, View } from 'react-native';
+import type { Boss as BossDef } from '@/data/pack';
+import { THEMES } from '@/data/themes';
 import { TIERS } from '@/data/tiers';
 import { bossPlan } from '@/core/combat';
 import { 이가 } from '@/core/korean';
@@ -29,9 +31,8 @@ type Mode = 'wipe' | 'talk' | 'menu' | 'over';
 /** 대사 한 줄. who가 없으면 나레이션이다. */
 type Line = { t: string; who?: string };
 
-export function Boss({ onExit }: { onExit: () => void }) {
-  const { s, set, ev, pack } = useGame();
-  const boss = pack.boss;
+export function Boss({ boss, onExit }: { boss: BossDef; onExit: () => void }) {
+  const { s, set, ev } = useGame();
   const plan = useRef(bossPlan(s, boss)).current;
 
   const [mode, setMode] = useState<Mode>('wipe');
@@ -72,7 +73,7 @@ export function Boss({ onExit }: { onExit: () => void }) {
   );
 
   useEffect(() => {
-    ev('boss_start', { atk: plan.atk, def: plan.def, cleared: s.bossCleared });
+    ev('boss_start', { id: boss.id, atk: plan.atk, def: plan.def });
     // 전환이 끝나면 등장 대사부터
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -110,8 +111,8 @@ export function Boss({ onExit }: { onExit: () => void }) {
     }
 
     const lines = ok
-      ? ['정확히 짚었다!', `집주인에게 ${plan.dmg}의 피해. 말문이 막혔다.`, item.why]
-      : ['집주인이 말을 돌린다!', `${plan.take}의 피해를 입었다.`, item.why];
+      ? ['정확히 짚었다!', `${boss.name}에게 ${plan.dmg}의 피해. 말문이 막혔다.`, item.why]
+      : [`${이가(boss.name)} 말을 돌린다!`, `${plan.take}의 피해를 입었다.`, item.why];
 
     say(lines, () => {
       if (nextBoss <= 0) return end(true);
@@ -128,10 +129,10 @@ export function Boss({ onExit }: { onExit: () => void }) {
     cue(win ? 'win' : 'hit');
     let result!: ReturnType<typeof finishBoss>;
     set((st) => {
-      result = finishBoss(st, win);
+      result = finishBoss(st, win, boss);
     });
     const lines = win
-      ? [boss.win, '보증금을 지켜냈다.', `￦200과 주 스탯 15를 얻었다.`]
+      ? [boss.win, `￦200과 ${THEMES[boss.stat].k} 스탯 15를 얻었다.`]
       : [boss.lose, '거처 해금이 한 단계 내려갔다.', `지금 사는 곳은 ${TIERS[Math.max(0, s.peak - 1)].name}.`];
     say(lines, () => setMode('over'));
   }
@@ -163,8 +164,8 @@ export function Boss({ onExit }: { onExit: () => void }) {
           <View style={{ alignItems: 'center' }}>
             {showSprites ? (
               <Animated.View style={{ opacity: bossBlink }}>
-                {/* 집주인은 이제 손그림이다. 플레이어를 다시 칠해 쓰던 자리 */}
-                <NpcSprite name="집주인" scale={2} />
+                {/* 보스마다 얼굴이 다르다. 플레이어를 다시 칠해 쓰던 자리 */}
+                <NpcSprite name={boss.name} scale={2} />
               </Animated.View>
             ) : null}
             <Platform width={116} />
@@ -224,7 +225,7 @@ export function Boss({ onExit }: { onExit: () => void }) {
         {mode === 'over' ? (
           <View style={{ padding: U[3], gap: U[2] }}>
             <T size="display" style={{ textAlign: 'center' }} color={bossHp <= 0 ? P.y2 : P.r2}>
-              {won ? '보스 격파' : '보증금을 잃었다'}
+              {won ? '보스 격파' : '당했다'}
             </T>
             <PixelButton label="돌아가기" onPress={onExit} />
           </View>
