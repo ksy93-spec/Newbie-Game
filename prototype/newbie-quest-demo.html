@@ -45,6 +45,33 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .pix{clip-path:polygon(4px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),
   calc(100% - 4px) 100%,4px 100%,0 calc(100% - 4px),0 4px);}
 .card{background:var(--p2);border:3px solid var(--s4);box-shadow:inset 0 -4px 0 var(--p3);padding:var(--u3);}
+
+/* ══════════ JRPG 전투 문법 ══════════
+   "붙었다"는 느낌은 셋이 만든다. 가로 띠가 좌우에서 닫혔다 열리는 전환,
+   한 글자씩 찍히는 대사, 그리고 체력이 한 번에 줄지 않고 주르륵 흐르는 것. */
+#wipe{position:fixed;inset:0;z-index:90;display:none;flex-direction:column;pointer-events:none;}
+#wipe.on{display:flex;}
+#wipe i{flex:1;background:var(--s4);transform:translateX(-101%);}
+#wipe i:nth-child(even){transform:translateX(101%);}
+#wipe.close i{transform:translateX(0);transition:transform .42s cubic-bezier(.2,.8,.3,1);}
+#wipe.open i{transform:translateX(101%);transition:transform .42s cubic-bezier(.6,0,.8,.2);}
+#wipe.open i:nth-child(even){transform:translateX(-101%);}
+/* 다음 줄이 있다는 표시 */
+.caret{display:inline-block;margin-left:6px;color:var(--g3);animation:caretblink .62s steps(1) infinite;}
+@keyframes caretblink{0%,50%{opacity:1}50.01%,100%{opacity:0}}
+.dlg{cursor:pointer;}
+/* 체력이 흐른다 */
+.hpbar i{transition:width .52s cubic-bezier(.2,.8,.3,1);}
+/* 피해 숫자가 떠올랐다 사라진다 */
+.pop{position:absolute;left:0;right:0;top:34%;text-align:center;z-index:5;pointer-events:none;
+  font-family:var(--f-display);font-size:30px;line-height:34px;
+  text-shadow:2px 2px 0 var(--s4),-2px 2px 0 var(--s4),2px -2px 0 var(--s4),-2px -2px 0 var(--s4);
+  animation:popup .72s ease-out forwards;}
+@keyframes popup{0%{opacity:0;transform:translateY(0)}18%{opacity:1}72%{opacity:1}100%{opacity:0;transform:translateY(-30px)}}
+/* 맞은 쪽이 몇 번 깜빡인다 */
+.blink{animation:blink3 .42s steps(1) 1;}
+@keyframes blink3{0%,100%{opacity:1}12%,37%,62%{opacity:.15}25%,50%,75%{opacity:1}}
+[hidden]{display:none!important;}
 .dither{background-image:repeating-conic-gradient(var(--d1) 0% 25%,var(--d2) 0% 50%);background-size:6px 6px;}
 
 .btn{font-family:var(--f-ui);font-weight:700;font-size:12px;line-height:18px;padding:11px var(--u4);
@@ -265,6 +292,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
     </div>
   </section>
 
+  <div id="wipe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <section class="screen" id="home">
     <div class="hud">
       <div class="hud-top">
@@ -373,7 +401,6 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
     </div>
     <div class="scroll">
       <div class="sectlab">아바타</div><div class="pickrow" id="pavatar"></div>
-      <div class="sectlab">사진으로 맞추기</div><div id="pphoto"></div>
       <div class="sectlab">머리 색</div><div class="pickrow" id="phaircol"></div>
       <button class="btn btn--wide pix" id="sharebtn">캐릭터 카드 내보내기</button>
       <div class="micro" style="text-align:center" id="sharenote">지금 모습을 이미지로 저장하거나 바로 공유합니다</div>
@@ -800,6 +827,22 @@ var CCACHE={};
    서류가방은 지우고 두 손을 비웠다. 각 장이 자기 옷감만 담고 있으니 색을 바꾸면
    반드시 눈에 보이고, 실루엣 변형(후드·패딩 기장·옆선)은 장착 아이템이 얹는다. */
 var AVATARS={
+  stuM:{name:'대학생 · 남',w:30,h:64,hip:47,split:15,eye:19,fcx:17,hx:25,hy:44,
+    hairBase:[45, 52, 73],topBase:[51, 64, 96],botBase:[192, 158, 145],
+    L:{
+      body:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABACAYAAAANtMclAAAEQ0lEQVR42u1YXWgTWRT+bjtJkylN/0hbInRxS1laH6psjbQlUELr87KydEFYltJ9WCj0QaQgiPgkQx6WBd8ii2/qy67uwwq67ArRyiZd3MWtrMS02+IWY5hoUkxqGr0+yB1mJnMnM5OkKnpgYGbuvfPd75xzzzlzgA/yQXZDIlKUXv/tFt0NrCb1w/6DwwCA3QBvemtVH5Gi9I1vop7fI8Vsmnq7eomTxTd++J4CwHgoiKT8Epl7y5rxydkFw+8Ws2lK7AKNh4K2NrcUi1dsoJhN06ZGgjJtMM1oVN1IULW4B8eII8a1ipq1t6uXCNUWiO39Grb+0BwAYKe4BQB4unyJu7ZjdEa5/+W7Y2jv20dzj1aIJVWXkrfrdow6RmdQyG0Qx5GrY3RGw4Yn/tCcZp7L22YeMnks9YBm4OLIEcUc/tAclmJxMDVXAJeStykD5YFf+emCci+vJbjArb5OhWWPvwdT85JmXDA68Dx5unwJL7o/BgAMHQhXVfXQgTBu/iihWV6FOHLEPDupPdiIdbO8Cpe3DQ/+TaBZXuWCZmLnNHPcLoHP2D04Rqx4cSZ2zpITqueVdsrmjJdicYyHghgPBU3Vbjty6RhXnOP2vn2UeSM7+LWGS/0ZNmSce7RCCrkNUshtEHktgcnZBWKFudmcpVhcA1o1gHi7eklEilIr4DytGKVFy9nJSabiAToG1mcaIzEDrAm4mE3TPy5ftAWEejAsZtOUXWysmE3bymKWstPk7ALRJ3L1+H/3/qFnoz/bIiM41YK3q5cUs2l66LMvd7d80au8Iao2Y/3O/TsJPJVOzUsYCR5W3uXl9dcLxAAtFzaJ3tY1M2YfUYMymZqX8OvZRcMP3fzrgTPGZrvOy+vwdX8EpO5XlDBOba0sEMQAHQkext/xa0ru5JU3f944T/Rx2z04RvTPtlR95tRpBZDZlRc2zcqkavG8SV8hXLx6S8M2L69XXACgjtVWshHXxupim4mnxYNUcgV7+ge4GYgxU4NWU7OhjY0cS7+Zu8tXSd3OsREogNfebLIRxjqREXF88RvSkMiVl9fhafEYjtkBtQ1sBBqRojSREat6MdfGn05+TauxZeBfffE5l2VEilIr7DXOtXfgkwqbGtk2efd3wrp/0+EJUpNzlQubZC0FOqRS5/bzbYWlp8WD7efbWEvdBwOspfVoultBDFAWXE6fOKn0O52ytOxc5cImKRc2ifovYDo8QdRd3oa2HMX2fmrnfcP7mMwU71Tp4wi4Ho10R8DT4QkiiAG69fAO3g9V8zxbEAOWO/qWAoHee90uQelxde89qDRWWBWj//uvmfHRo98qjTN9M63V1wmXtw2lnbKlY0asqnNP/wAeZx4DAJ7lnwAAth7eQd8wv9H2LP8E6uLfEXBpp4xWXyd6/D3K+/83Upr+VauvE+qOkZnarVeFYoC6XYKmKDRixOZVA34FXb0iGAQWH2cAAAAASUVORK5CYII=',
+      bot:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABACAYAAAANtMclAAAAdUlEQVR42u3SwQnAIAyFYdPJMosLOIsLOIub2auIpZLooeX/TorCI09DAAAAAAAAAABgj1pyqyW3cb1CrIEak/T78U5/PnN5pvW0JSdC36Y1BY81W6sWz5Qak1hCXW/s9a3glSqPBM8+2L+rfqpdY5IdzwC43OgIMwFC1AzRAAAAAElFTkSuQmCC',
+      top:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABACAYAAAANtMclAAACCElEQVR42u2XMUvDQBiG3yuxQxCDiFiqRkoqbS0liLaIk2YouPkPdPEPuDv5M1z0Vwgd1LkqEgRr0VBaUHAoYtEOtXAOErnGnKbXoCL3TE1y+d57v/vuuxSQSCQSiUQikUgk/xctlqW/Jq5qOv1V9/1OYGNrN5wJK2qcBhFXNZ2GliVV06kWy9LZ3OqngLO5VapqOlXUeGCxSBCX7u9kOo+RsZlPY5aXLLSfGsQ7XlhYi2WpWShCUePUDQwACyubPcEP9nYIACSMFMxCMdBOiHzlNJnOAwDMQhEAYJdLqFwc+YoDwF3DQef5Ae57A6WaXeNu+55k5i3umMy8hcqVjSApj/BEokOK7wt2uQReylkSRqp/x53Xrq8bNu2316e+Ad3n37kmIluLdWqXS+i274lbjMl0Hna5BLNQ7HkmvMY8WIcvrUe0mnUkjBQ6zw/IzJmDFxdLq1lHq1kHAFQujsA2lppTRc2pYnwqg+jwBPppKoFS7Q3ovc4trtGFlU3KK0DhVHvXznt9eXZIvLtgYPz6tZ9rRY1z+7ewY++hwO5993RKGCluVRNR0Und6GmVAMDeqzlVrigAKKKO2VPq5vKYvN+zPjIQbTjohtGrv+ts/W4bIWG2j5+f7BO3qtkK9ptc6Hi/rX7k49Ba3xYSGbhXT4+P/p0/AaH1Z16gUA8AiUQikfw53gCfrsLIZAcEdQAAAABJRU5ErkJggg==',
+      hand:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABACAYAAAANtMclAAAAHElEQVR42u3BAQEAAACAkP6v7ggKAAAAAAAAAGoeQAABHZMTQwAAAABJRU5ErkJggg==',
+      hair:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABACAYAAAANtMclAAACI0lEQVR42u2WP2/TQBjGn4vs0hjcCKEYFMIxmEiUtEJFsLAx8imY+CR8EUZGJAZWdsqAIlNQaiG9uFXUDMiKlDik0jFUrzkfjpMWuSz3W2I5r+55/zx3Z4E1cLyO2nAdAEDY6y+Ni4cRfi1OcTo9FqvWrAxo3eorAAjaATavbGJdKCEAQDqKxLmEHa+jAODq1nUAgOxKXJSDL59LOyDKqmShbJ7hiOJCeykhLGaTypaXMdh/X9BqmJXq1Z2MT/IEsnmGeBitnHOVT1a2evfxc2WahnGbfmXr293t/HmcHOTP2TzD9/hb3nahZ6TPwhTXk7gtw8IIHu09BQD8GP/8K14Xp4Rywzn8cvvBQwz2jwsZljk57PVBCcFt+ti4dhM7vRBv370pxCxmk0I8I7sSg1H0p9VeS6qyubEhyqqnhHDv/hMcfv2IxWwCt+nni/N2MkfCZp2mJITp5CpX9nafKb0LLMBV8gjcpo+gHeTmlF2JbJ5h68ZdAMCnD6/XF9a3EjNNqfIA8lpSmSPig8XhPymhSrfGw2ilkAnH6wnkZl5ngYuImglQ4qulBwglVDgo+N2/iJpO51/htaRiRy6j6rA/D3zppKPozFyO11F8IdQlqhtumpJo4JLhsTUAgC/5y6RRth/TUSQWswmCdlCbsKO7Tk/g7DlUtVa8jDvhXv09Lztdap8x8+LlK4X/gfl5YrFYLBaLxWKxWCwWi8VisViq+Q1JvweW9URpEQAAAABJRU5ErkJggg=='}},
+  stuF:{name:'대학생 · 여',w:34,h:64,hip:48,split:19,eye:20,fcx:21,hx:28,hy:45,
+    hairBase:[41, 48, 68],topBase:[51, 63, 93],botBase:[212, 194, 184],
+    L:{
+      body:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAABACAYAAAB/e6WTAAAEP0lEQVR42u2YTWhTWRTH/y8+37w20gQ1qUadCYWWztRq0foBVoUu/ABXxUWF+rFwMTN+gOJKFFyICxGFSMCFOyt2EdwoGLKIGrKQiXZhUqa0WmrVapOZkoitIUauC73x5eXe95G8JF14ICS57777fvd/7jn3vAv8tDpZwO8jFQ0Qi0+QWHyCWAXDA7Jp3TicsAaA2v5jJwWeOjYtJb4QYJHw7WOVMhTGEIjygV++/6JAlfqb3qsegwmyqbNFoJ9FCv6Dh//iDmR2TahN1OuwYW1LAeVB+AmZ+/cf5gyVkgf8PsJzAa9dNCPr3t6tgh6E0Qf/tAWTQSvOrFal8UQkqBlBNqsgEpEg6d3Vw73uWemunVtmx4cJr513jVpZobWsuY1kPqQxdOUc1Cq41+0p+p98HixWprsPAJDNTAoVgyhnRweefnpX9z5Pdx+e3ruBrt2HkP+UNAcyOz5MlrZuELQgqPFg1P1YitiMzFz9TQdPT8VglyVdJVat9sIuS7DLEtJTMeRz8+ajZvpdEuFQtCQ0lbPv6NqO9FRMcxxv+xY4l3uY60bXNbPjwyQcigIAtEKztacf49EhTRB1H6W7DYEAQDgULQGZfpc0nSPoPZ6V7hIQTdfQzlpqqKGM9KEqlx2+Ab+P6EEZMU93n7moYdUWrNmwjNeP115WQitXmXAoioGzV63LrLLDSwBg8NJptHe26S7WcCiK/jMXIUqN3IRmSRnH297NlIkVg2QzKQIA9wfvoL2zDaPxsbLqVNP1SCISJIlIkPxwk0sAgH0DBzAaH0PwhVCAqyrI2h17BArEun757204fmEIVQdRwihVuT94B/sGDqDRvaY6VRdPZpYi2UyK0I/litA1oLbR+NjCeUXQUqXugFVzDS86AKC9s43pyofPXlo/ay0QK01XEaOLMuD3Efr+Ql2WiASL/lcEwpJfz3p39SDg9xEzb3cib3ft6NoOADh8/jY27jxI0v+9LurzcuSRoLXb7j92UjBTLpjKrG/fTOLtm0lIi0XmTksrfqoiLaSMbIJMRVjvHa2/dxd+5z7nNVO/ck0Y3YmZIOs37y5pS6Vm4Fy+pn5RwzKXq7msMxLLQFyuZsMQZoFErYemUjMlCtA2Xml49NR1cvPaCdMVGvvMs8FNfmv5o2SRKmGePb5l6bElO2o+JYVXEyDKqluWf6lqijc8K7HBTQBAlBpLXgUWnFHYmoUvF0ThSrNwtoWips0q+cUGN2FtDXVxTc1TPMs+vh9hrpG6KFJT16gPamue0NRnI/ncPESpEfncPD6+HylcX7KioxDKdlnC/zNjQtVcY5clHPnzPOyyBEeTs9Du/HUTHE1OOJqchYNg2eElRnKJUE74Kh8+l80BANJTMSxZ0VEEpjYtdcoCobKrbS6bg12WkPmQBgA4mpwFUNZxlaF6RGuxipKX0IeqIZSzzgCEl/rV9hWdfSE7Ilb8VgAAAABJRU5ErkJggg==',
+      bot:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAABACAYAAAB/e6WTAAAAmklEQVR42u3UwQ1AMBTG8VY6iziwgrMBbCExjMQWtulFLMOJiBDVV0T8fyeatPn63kMpAAAAAAAAAACAX9LSA7q2GdfvZVXrvbWzc4w0SJLFqreDSrJ4CTY/XxGFLG9vB++9RtKO7c332nJrkG0VjlpxpUKRZDZc1l0G1SuIb+mDBzm6YZoX+tEgri169fP9Z5CzYZX81IBPmAC8JCrmLAB64QAAAABJRU5ErkJggg==',
+      top:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAABACAYAAAB/e6WTAAAB+ElEQVR42u2WQUsCQRiG35WldrsYFNtBhQUjoz1kCHYSu/kr+nX9im6Fp4LADkpFxUYaJAUapCbCdIiZdsbZ3NwNor7n4uzsjPN+3/vNzAIEQRAEQRAEQRAE8bcx5plkpV0WfB71fe3/mLbDzIWlqf5M1sVN88iILWQWYQIAYDIefPwOuz8vRCcmLGuc1HfsMG2Hlar7wpZSdV96DlLY2hEZmCUishDTdhgAbJdrUo00G3U0G3XoxNxcX4LP4fMTyYhXrEy1J+OBaKtivGJFvOMBxM9ISOEBQO/pPlIgK2sbLJYQ03aYzmPTdthk2DWWV3NoNuqShTqxr6NxcjUyyzbVAi4QAPLrhXhC1P2u2uFfnMiiSjUGAOenh8hkXWnsVwEZUbcuj9q/OIG7uTsVsVesSKL6Lz2pxvj8s+MD/SkctnDYCchFqDtJXcBKu6K2JkMAqDC1P5I12+Wa5PlXu0O1R3eS8uzxABO59AAg7+0Jvzttf2phvquCGcpkXdzdtrR1l0JCqDeyubAk+qy0y/LrBXTavlZE7Ix02r641j8tfMDz45UxK2ORijUKy6s5sQhvA8DdbUt6z8ckdteEnSXBbISdO+qYRIVY1iIsa1GKNriFg+0oGZkbr1Rj/BRN5ENq3omj0VuigcWy5tcS5UuMIAiCIP49705T46qo2g+DAAAAAElFTkSuQmCC',
+      hand:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAABACAYAAAB/e6WTAAAAHklEQVR42u3BAQEAAACCIP+vbkhAAQAAAAAAAADwbCJAAAETCqnUAAAAAElFTkSuQmCC',
+      hair:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAABACAYAAAB/e6WTAAADSUlEQVR42u2XX0vbUBjGn5PErFWwAyEqLS5dq0EFcfQDuAvBT+EHFbzYF5CKYCWzXTvRuZUNrNAa06RnF917OEmT/pmdF+P8bpo2yTnPed4/55RhRoysxQ1zEfmCjUzmDQDArVWx6ewBADRdBwA06i4Cv4fgqc2mGZfNIiC3/BbW+oaYDAC+3zbFdfzeIAzRvr9B5/FhoiA2jQBn50NkcBl54kbdxVLGxFqhKJ6j+5dnJ8zIWjxNEJskgl7c3j/kSc9oui5cWSsUhUt0LS/g6vyUzexIXD0J0XQ94orsSJyk5y7PTqZ3ZJyFcWfiwmSazTqKxfKI4KQwabOIIGSL00QAQKnsQNN1IWIQhsKR4KnNjKzFEx2hG1SK8Unj7FaOeFLy0m/0Lj3n9wM0Lj+xpEWPCJFFjHMCAEq7HzkNvFs54pSov358ZvK9TM7m+YINAKL3DMIQmq7DrVWH7szSzOL5QcK29w85DZzkWqPuCgFpucWmcSMpIZOqh8rYWt8YebZRd1EqO4k5dXV+yjT8JXJHJau7no+u508s42azPlIgQsi79zupJRhfRfv+RrRzCoffDxD4PXidFqPf2/c34h2v02JurYpBGKJUdkZdp4t4DMdBq5bb+MPPb6IkPe9ZOKTpOq7dC1DJUphShYzrB3GHqAIAwPOeRaUAQG75LcyFYQ0Efi9x3FLZibglhMiNJT4pfcorMxcMYf3dbQtdz8fK6hYHgM7jg3hn09kbhuxPr8jkbO7WqnBr1UiYRdWkVQwJKZUdYedSxhSrfwkrq1vcWt/AtXsxDBnZOQ45prTieSBXj5YWFjnbA78nvk974po24Wm81D5y7V7A67TEBlUqO+L7vMgXbGRyNh8rJE7aOeIlmAsGyO1UIYa5iNeAiiSy6fn9YKbG9lLkTVKTE0duboHfw6REnifGMGstruk60A9EJ6TQGKbN5Qqa5+Ty0UGL76bURZOgDJ8n1GUNKs8OwOP7gec9AwDublsRMfN2JuJI8NRmXc9HvmCLTkqbl7zJzbOHpDY0r9NiX7/UEPi9kYPPvxBDm+jEP1iUtHKLl/tLvmBHTuWvhlzORtbilYNjXjk45lAoFAqFQqFQKBQKhUKhUPw//AbFAfEP5k3MngAAAABJRU5ErkJggg=='}},
   imgM:{name:'정장 · 남',w:36,h:64,hip:49,split:17,eye:21,fcx:14,hx:28,hy:46,
     hairBase:[84, 68, 65],topBase:[53, 57, 76],botBase:[201, 172, 153],
     L:{body:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAABACAYAAAByZdXUAAAEKElEQVR42u2YX0hbdxTHP1eDUROxtl6Sam8cdoldccq0VAYRGQ17EVYY7Wi3wYTCtjL6tKdtdF0HKwjuYYwq4jq2UufqMrYKlTFsh6sPujlHWmGrMkFdoyGKWZMY/yT89iCJRk1MNNo83C/ch9x78ruf3/md3zm/e0CVKlWqVKlKSlKihgP2ViHLRkqKDFH3RWCeiTkvpXUnpT0BGrC3imqLGSknN67doMNBzam3dgyVsZVBIjCpVMZW3kkUptpi3n2gZF4i5eQy1ntL7FlQh0b7Y75s3Onam6C+frUpAmEtN2/YYWG1/9wX9Xvy779o7uwGoMykoM3WotNqsPf8Im0baKz3ljApClJoKakZiswsACYmJ+mwd3Gn/wG//jmE4YDMI9fUzoD6hkf57Nr35GeG+KLpg5geGne6uNxyg+GRfwEotxzi2vvnI88b29r56vY9RsdGpG0Hdd/wKDd/+IlyyyFm/EEut9yIzH69RzrsXQAsLyzy2DPLzMwc5660MDHnRcrJ5eypl5j3e6N274C9VSQFZC038+Hbp5mZmQPgRG3NpssnhZaw1R2P2OVk6/n84gUunX894tGSIgO2F6xRGV+WjWwGFRPIVJCHLBsJ/PeY4gO6LWMnbKcU7cekKJgUJer5idoaAGTZSIe9C7d7mmOVlclnauVwCRlaLdZyc6R2icB8lM2xykoaGl4BoLCwACm0tMGbZYY8gvfvCrd7GlvdcWTZmFxQB+/fFRNz3oi30O9DCi0x6HDELCfhQrvWy+vtxp2uyP3N6p8mFtDagcOxEvbGdhT2ajiuBh0OXn7now12mngxtLYsrJ1hWG73NOuPJJv9TwTmaWxr507/g9XkOevZNC/F9VCsvBPrJBBrGb+5N0RzZ/fOEmPF0SrxY8ulLaHiadzposPexZUvb+L3+xKqdXGNzKUWcfHdN3ntRSsiMyuhMiIys8DnobGtnebObjw+b8IwCVd7c6lFNNTXohx5hldrq+IuTbiwJguS9PEDoNhwUAA8ck1J1VXPi/zMEPvzV5NmgEwAbvf0JD32toA2O5qUGfJ46PJiLTdjUhQ0pVWSudQiEimku6JPLpwTwbGhyJUW31ID9taUwWSkYhBZNvLH0O+kBdD1q03CpCj09P6WHp++9TZbSmNnRx5648xpAaRsuVKyZIWFBTx0edMH6Otvv0tpvslIJ5iUbfu0Alr7dfvEVXG0StTbbCJtPPRcxeEn19LbquKnonumSpUqVapUqdoFJV2hdTq92Kdf6ZLl6vKY93upsDzN2TMnee/jT8nVrXbQnC5n0h0QKRmQI2XPsrywSGDBBxBphnt8Xvbp86JgcrL1/DM+srtA6+8tLi6g1Wbj9/soNhzEWPwUywuLzM5O4fGtwO4aUDxpNBoBEAwG0WhW2pbBYHBbY/8P4aa2xc9tfv8AAAAASUVORK5CYII=',bot:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAABACAYAAAByZdXUAAABSUlEQVR42u3Wv07CUBQG8K9qUgzCYgyPQMIDqGExGlY342SU3RE3F9zZDKMLT+ADQCJhUeKmSQsJIDQMpBYVaBQV6gSJtJpc/rTL99t6c27z3XNPkwJERERERERERERERERErpFm2ZxJp6xwKAAAKLW6OD49k2YNtDKvk4VDAWTSKWv0rKkKzi+vpIV3aLIrmqogtrP5q2bvJAEAMM2e8PuXRIoPYrvjMCNlvYNSq2urnSaMcCCnawKAXOFubkMtFOj6puDYDa1S9yaQLPsc1zXj1ZtAptmTNFWxrdcaVWTzRfcDAUDu9sF2bX91zrWhnvzStiIRlPWON4Fkn/zvmtPQLzRQ/6PvPNiVOrL54rh7fv+aNU2gZdENn4Nh0nj/xpv+jK/VIGqNJtq6gXj8EPdKFcH1DSSO9rEdjeJRfUq2X4wL/jKQm34AlbVtdSKsNm4AAAAASUVORK5CYII=',top:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAABACAYAAAByZdXUAAACFElEQVR42u2Vv2vbQBTHvzIyJ1tS4yJDsAo2lqmHDIHEZOierV0D2fK3dQt0bbcM3ToUWjDFg0tlalqCG4uYWo5O2OQ6JHL1i1SqVOjwPovR+d67r77vnR5AEARBEARBEARBEARB/O882W2Jf5W7kjdAluUHxZydnggAUFVN/GlvGtLfOmMYLRzs9/Dy/JUU32MYLVQVhjX34TiX+D67lEp3SJZlUVd1zJwrmNYAbMcEADw/PhZhd0xrAI+7qDADbMeEaQ2Qx6nMgrptC5OpjW7b2q6NvnpoNh9vnz8OvwAAGrv9RGxWUZWs7gSHhA/b69QiJasqDABw6zu49Z3tvrjAwoK6bQuL2TjiTlozV5hxl/T+N56jNEE1RcNkaifWw+58Gn+L/Lfmfu4bmllQ0MCPGr/fPFyStDWPu5HncGwhQUfPXggAYEyJlOLnwol8d9bcT7gS7AnKyJhSTslGw7fodaKNebNa4uz0RMzn1wkngzLfrJaRmF6nD1XVRCFB79+9ltJKs3DvDvuxUiI3LMzCXaaWtrBDvs8TDdvQdMzn16mCA7camp4oYzxXovGzCNpsNhIAEbytx13UVR1vLi4kANjfOxRr7oPFTKqrOjzuoqo48VzFBAHAcPRBCl/f8HfF4y5qipYaN5na2Njj8mfZQ3y2x1JTlctIlW/ax6d6fIo/tfoifhPzTHqCIAiCIAgC+AU5QMVv678mUAAAAABJRU5ErkJggg==',hand:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAABACAYAAAByZdXUAAAA4ElEQVR42u3SIQvCUBQF4KPYZhAMIkMMgnVFrBZ/hcEipqHJIJhtNnHNYjDI8pJ2wxCeggqCZXmwIG7t2YZFnE4M43z5ncPlvgsQERERERERERERERElnKJk5b+6MlFKKuUqBnorLGrrg9QnQyxmkzA7mS2xP+7iDeQHNzjn09dbec76wQ2xN1TK5zDsdwEAthAAIEfTeaQtjXsd2WzUUdM0AMBme8Dl+vp9OsqfO64HWwhI/w7DXMNYWVALxbd3pRaK0lhZMMw1pH+HLQQc1/vNTSpKVsYpipsnIiKipHgAGVZH4kvxejYAAAAASUVORK5CYII=',hair:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAABACAYAAAByZdXUAAAErElEQVR42u1WQW8bRRh9a28y647TDdlNnGZVCiGxwCKBVmqbigZBw6XhQqWql16QuFXiF3DiwC/gzIEbEvyEokqoonAhKJHaZts6qi3bdeyxso6n2VHHXQ7OTrK2k8aVUnHYd1p9O7vz5n3f977R8BrQdT2QUoLSNC7mcipeZFvqeaOQBwBIKbVB/q0NSoQQAxdzOZx+7wx4vR55v4MkXgoBSnRwISF8gfVCEQBQZbUjkdOOSiSXnQdjFUw672CC6gAA4Qu1hhgElHTiXEgV3x9bdR9jq7UNzlvaaxGiNB1MZabw0bQDattYWX0Cm+ogBsEml3jhCwwZBABgJtvw2kmYyXaE3H6EqhXZFjYK+b6KaYeRuXrpPM5+MI2VB3lwIVFiHEMGgZlsAwBS5kmk0O7Z0GsnlYoJQiJrQjQ8jj9W/ukhpR2Uoq8+W4zIH57stDUKsqtKPxXCbzZ557sJqvekkhId1LZRfPK0h1SiH5mb16+pH5QYR4nxjiJGGinzpCLY8HikXvbXzQTV8cIXqs6612XHT2JpYQ657Dx0XQ/CeLKbzKdnz0F/KcGFBCU6rBED2ss26lzCsSh8/hx/rq6B7/hgXhNV1sDY6CiG9ejZhvUEjGEdVU/AGN5L3/jkOD48M7m3boRis8qwzVvf9yhEiIGlhTk0PI4EISo+ZlIMGQQJQvD3/fuYykzhBB1R71fdx32VAgCb6hC+wIQzCdt+K2IVKw/y4PU6Ls29r1RKdBcxACwtzCGFNhoex721h7i39hAvfIFiuYHR9Aie821lfCGxsGa4kGh4nRRPOJNYWphTKcqOd9Lt1ppwa021nguJjDXeyVJIaDQ9AmrbcGtN9eF6oYgTtEOAsQoA4NaN5YgCbq2J23fuornFcPaTRbi1Jni9Dmrb6j9jJsXdf11c/jjbIVGvRwo8PIDqsoO6KnTZWzeW8d2PPx3qWVfOXwhCdd1aE8UnT5Wbh83hWLTHBsJ3O34LG4X8HqGb169hs/QMwhcYMyncsgfGKihVK0ceL07mVDCfnYm4+JhJIxvbu/40ZlI0PA5ikAihRHe7eu1O4zFWwRefXx548Aq/M8tCr+JCYme3mYcMgvpurTU8jjqXkfHT02UbDR9msq3S9vMvvw40fG/dWMZ6oagsIzz9swZXJhmOGmIQOBZVAqSMNKSUeyl79+1ppIw0HIuixDiyUyZ+u31HG1ShK+cvBEW2hRkno2LhyAldO1RnPxiroMpqnS6TUmqP8m4wO50FQMFYBdyi+OHbb5SDvqqow7W//7WGcrWsDkeJDseiEL5AiYXDOAmg17eklNr+TYLZ6SxmnAxW3cdH6qxBcXVxMSgxDsYqsKxTe/cov4VytQzOWxFCanSsF4oDddcgXRiaacpIRwg9yrsAoOndkq0XigGOCZZ1Cjt+C8/5toqljDTK1bLyxJ5pX2U1VFntuDhhxsmgVK1oj/KuljLSYKwCIfxXX1mPg8x87lxwQBqDA+9Dx4nslNkT2x3Oh9fr7HQ2eFMku/fqq9DXXy6+MdX2F/gbT1k/dNtLX0Lh5el/g+PqshgxYsSIESNGjBgxYsSIESNGjBgxYsQ4bvwHD7hV5IsizMcAAAAASUVORK5CYII='}},
@@ -1316,17 +1359,39 @@ function castCv(k){
   var cv=mkcv(c.w,c.h),ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
   ctx.drawImage(im,0,0); PCACHE[key]=cv; return cv; }
 
-/* 누가 말을 거는지에 따라 얼굴을 고른다. 제도를 오래 겪은 쪽은 노인, 또래 이야기는 아이 쪽. */
-var NPC_BY_NAME={
- '부동산 사장':'gpa','세탁소 사장':'gpa','인사팀':'gpa',
- '주민센터 직원':'gma','공단 상담원':'gma','고용센터 상담원':'gma','은행 창구 직원':'gma','장학팀':'gma',
- '동기':'boy','복습 노트':'boy',
- '알바 선배':'girl','3년차 선배':'girl','자취 선배':'girl','선배':'girl'};
-/** 표에 없는 이름은 해시해서 늘 같은 얼굴이 나오게 한다 */
+/* 손그림이 있는 얼굴은 나이가 맞는 역에만 쓴다. 동네 가게 주인은 노인이 어울리지만
+   알바 선배가 초등학생으로 나오면 게임이 무너진다. 아이 둘은 지금 맡길 역이 없어 쉰다. */
+var NPC_BY_NAME={ '부동산 사장':'gpa','세탁소 사장':'gpa','주민센터 직원':'gma','장학팀':'gma' };
+
+/* 또래와 직장인은 아직 손그림이 없다. 레이어 아바타를 다시 칠해 세워 둔다.
+   보스를 만든 방식과 같다. 머리색·상의·하의를 다 다르게 줘서 서로 다른 사람으로 읽히게 했다. */
+var NPC_LOOK={
+ '동기':          {av:'stuM',hair:'#3A2E28',top:'#4F7FBF',bot:'#5A6270'},
+ '알바 선배':      {av:'stuF',hair:'#7A4B2A',top:'#D9694F',bot:'#3E4656'},
+ '3년차 선배':     {av:'imgF',hair:'#2B2320',top:'#6B5E8C',bot:'#333A47'},
+ '자취 선배':      {av:'stuF',hair:'#4A3A2E',top:'#3FA548',bot:'#6B5B45'},
+ '선배':          {av:'imgM',hair:'#2B2320',top:'#3E7D6B',bot:'#41485A'},
+ '인사팀':         {av:'imgM',hair:'#5A5560',top:'#2E3346',bot:'#2A2E3A'},
+ '공단 상담원':     {av:'imgF',hair:'#3A3038',top:'#2F6FA8',bot:'#333A47'},
+ '고용센터 상담원': {av:'imgM',hair:'#4A4048',top:'#4A6B8C',bot:'#333A47'},
+ '은행 창구 직원':  {av:'imgF',hair:'#241E1C',top:'#2B4A78',bot:'#2A2E3A'}};
+
+/** 표에 없는 이름은 해시해서 늘 같은 어른이 나오게 한다. 아이는 뽑히지 않는다. */
 function npcKeyFor(name){
   var hit=NPC_BY_NAME[name]; if(hit) return hit;
   var h=0,i; for(i=0;i<(name||'').length;i++) h=(h*31+name.charCodeAt(i))>>>0;
-  return ['gpa','gma','boy','girl'][h%4]; }
+  return ['gpa','gma'][h%2]; }
+
+/** 다시 칠한 아바타 한 장. 장비 효과 없이 옷 색만 바꾼다. */
+function npcAvatarCv(look){
+  var key='NL|'+look.av+look.hair+look.top+look.bot;
+  if(CVCACHE[key]) return CVCACHE[key];
+  var av=AVATARS[look.av]; if(!av) return null;
+  var src=avatarSheet(look.av,{hair:look.hair,top:look.top,bot:look.bot,ts:null,bs:null,ac:null});
+  if(!src) return null;
+  var cv=mkcv(av.w,av.h),ctx=cv.getContext('2d');
+  ctx.drawImage(src,0,0,av.w,av.h,0,0,av.w,av.h);
+  CVCACHE[key]=cv; return cv; }
 
 var PCACHE={};
 function petCv(k,f){
@@ -1733,7 +1798,7 @@ var KEY='nq.v8';
 function fresh(){ return {onboarded:false,status:null,age:null,years:null,company:null,living:null,prep:null,region:null,
  lv:1,xp:0,coin:150,tier:0,peak:0,done:[],bossCleared:false,
  stats:{ju:5,sik:5,ui:5,geum:5,jik:5},
- avatar:'imgM',
+ avatar:'stuM',
  look:{hair:0,haircol:-1,skin:0},
  demo:true,
  first:null,day:null,streak:0,best:0,todayQ:[],todayDone:[],claimed:null,bonus:false,
@@ -1819,18 +1884,34 @@ var OB={
   o:[['수도권','수도권','서울·경기·인천'],['광역시','광역시','부산·대구·대전 등'],['그 외','그 외 지역','시·군 지역']]}};
 /* 온보딩은 세 문항까지만 받는다. 나이·회사는 첫 퀘스트를 끝낸 뒤 홈에서 채우게 미룬다.
    재미를 먼저 보여주고 질문은 나중에 하는 편이 이탈이 적다. */
-function obSteps(){ return S.status==='대학생'?['status','living','region','photo']
-  :S.status==='취준생'?['status','prep','region','photo']
-  :S.status==='직장인'?['status','years','region','photo']:['status']; }
+function obSteps(){ return S.status==='대학생'?['status','living','region','avatar']
+  :S.status==='취준생'?['status','prep','region','avatar']
+  :S.status==='직장인'?['status','years','region','avatar']:['status']; }
+/* 신분에 맞는 기본 아바타. 대학생은 가방 멘 쪽, 나머지는 정장 쪽이다. */
+function avatarPair(){ return S.status==='대학생'?['stuM','stuF']:['imgM','imgF']; }
 var obStep=0;
 function obRender(){
   var steps=obSteps(),key=steps[Math.min(obStep,steps.length-1)];
   var body=document.getElementById('obbody');
-  if(key==='photo'){
-    body.innerHTML='<div class="ob-q">캐릭터를 만들어 볼까요?</div>'+
-      '<div class="micro">사진을 넣으면 머리색·피부톤·헤어를 맞춰 드립니다. 건너뛰고 직접 골라도 됩니다.</div>';
-    var ph=document.createElement('div'); body.appendChild(ph);
-    photoPanel(ph,function(){ paintHero(document.getElementById('obchar'),'idle',0); });
+  if(key==='avatar'){
+    body.innerHTML='<div class="ob-q">어떤 모습으로 시작할까요?</div>'+
+      '<div class="micro">나중에 캐릭터 화면에서 언제든 바꿀 수 있습니다.</div>';
+    var box0=document.createElement('div'); box0.className='opts';
+    box0.style.flexDirection='row';
+    avatarPair().forEach(function(id){
+      var b=document.createElement('button'); b.className='opt pix';
+      b.style.cssText='flex:1;flex-direction:column;align-items:center;gap:6px';
+      b.setAttribute('aria-pressed',S.avatar===id?'true':'false');
+      var cv=document.createElement('canvas'); cv.width=64; cv.height=64;
+      cv.style.cssText='width:96px;height:96px;image-rendering:pixelated';
+      b.appendChild(cv);
+      var nm=document.createElement('span'); nm.textContent=AVATARS[id].name; b.appendChild(nm);
+      b.onclick=function(){ S.avatar=id; sfx('pick'); obRender(); };
+      box0.appendChild(b);
+      var c2=imgAvatarCv(id,'idle',0);
+      if(c2) cv.getContext('2d').drawImage(c2,0,0);
+    });
+    body.appendChild(box0);
     var pips0=document.getElementById('obpips'); pips0.innerHTML='';
     steps.forEach(function(_,i){ var e=document.createElement('i'); if(i<=obStep) e.className='on'; pips0.appendChild(e); });
     var nb0=document.getElementById('obnext'); nb0.disabled=false; nb0.textContent='시작하기';
@@ -1843,7 +1924,9 @@ function obRender(){
   def.o.forEach(function(op){ var b=document.createElement('button'); b.className='opt pix';
     b.setAttribute('aria-pressed',S[key]===op[0]?'true':'false');
     b.innerHTML=op[1]+'<span class="oc">'+op[2]+'</span>';
-    b.onclick=function(){ S[key]=op[0]; if(key==='status') obStep=0; ev('onboard_pick',{k:key}); obRender(); };
+    b.onclick=function(){ S[key]=op[0];
+      if(key==='status'){ obStep=0; S.avatar=(op[0]==='대학생')?'stuM':'imgM'; }
+      ev('onboard_pick',{k:key}); obRender(); };
     box.appendChild(b); });
   body.appendChild(box);
   var pips=document.getElementById('obpips'); pips.innerHTML='';
@@ -2123,7 +2206,6 @@ function renderChar(){
     var keep=S.avatar; S.avatar=id; var src=heroCv('idle',0); S.avatar=keep;
     if(src) cv.getContext('2d').drawImage(src,-14,-2); });
   document.getElementById('sharebtn').onclick=shareCardOut; syncShareBtn();
-  photoPanel(document.getElementById('pphoto'),function(){ renderChar(); });
   var pc=document.getElementById('phaircol'); pc.innerHTML='';
   var ob=document.createElement('button'); ob.className='swatchpick pix';
   ob.style.cssText+='background:'+P.p2+';font-family:var(--f-micro);font-size:10px';
@@ -2247,13 +2329,62 @@ function stageBack(el){
   road.appendChild(document.createElement('i')); sb.appendChild(road);
   el.insertBefore(sb,el.firstChild); }
 
+
+/* ══════════ JRPG 연출 ══════════ */
+/** 가로 띠 아홉 개가 좌우에서 번갈아 닫혔다 열린다. 닫힌 사이에 화면을 갈아 끼운다. */
+function battleWipe(mid,done){
+  var w=document.getElementById('wipe');
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    if(mid) mid(); if(done) done(); return; }
+  w.className='on'; void w.offsetWidth; w.className='on close';
+  setTimeout(function(){
+    if(mid) mid();
+    setTimeout(function(){
+      w.className='on open';
+      setTimeout(function(){ w.className=''; if(done) done(); },440);
+    },150);
+  },440); }
+
+/* 대사는 한 글자씩 찍는다. 다 찍히기 전에 누르면 전체가 즉시 뜨고, 다 찍힌 뒤 누르면 다음으로. */
+var TW=null;
+function typeInto(el,text,onDone){
+  if(TW&&TW.t) clearInterval(TW.t);
+  el.textContent=''; var i=0;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){ el.textContent=text; TW={done:true,full:text,el:el,t:null};
+    if(onDone) onDone(); return; }
+  TW={done:false,full:text,el:el,onDone:onDone,t:setInterval(function(){
+    i+=1; el.textContent=text.slice(0,i);
+    if(i>=text.length){ clearInterval(TW.t); TW.t=null; TW.done=true; if(TW.onDone) TW.onDone(); }
+  },17)}; }
+/** 아직 찍는 중이면 즉시 다 띄우고 true를 준다 */
+function typeSkip(){
+  if(TW&&!TW.done){ if(TW.t) clearInterval(TW.t); TW.t=null;
+    TW.el.textContent=TW.full; TW.done=true; if(TW.onDone) TW.onDone(); return true; }
+  return false; }
+function caretOn(el){
+  if(el.querySelector('.caret')) return;
+  var c=document.createElement('span'); c.className='caret'; c.textContent='\u25BC'; el.appendChild(c); }
+
+/** 피해 숫자를 무대 위에 띄운다 */
+function damagePop(stageEl,value,tone){
+  if(!stageEl) return;
+  var d=document.createElement('div'); d.className='pop';
+  d.style.color=tone; d.textContent='-'+value;
+  stageEl.appendChild(d);
+  setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); },760); }
+function blinkEl(el){ if(!el) return;
+  el.classList.remove('blink'); void el.offsetWidth; el.classList.add('blink');
+  setTimeout(function(){ el.classList.remove('blink'); },460); }
+
 var RUN=null;
 /** 말 거는 사람에 맞는 손그림을 스테이지에 세운다. 캔버스는 원본 크기, 확대는 정수 배율로만. */
 function paintQuestNpc(name){
-  var cv=document.getElementById('qnpcspr'),k=npcKeyFor(name),c=CAST['npc_'+k],src=castCv('npc_'+k);
-  var S3=3;
-  cv.width=c.w; cv.height=c.h;
-  cv.style.width=(c.w*S3)+'px'; cv.style.height=(c.h*S3)+'px';
+  var cv=document.getElementById('qnpcspr'),S3=3,look=NPC_LOOK[name],src,w,h;
+  if(look){ var av=AVATARS[look.av]; src=npcAvatarCv(look); w=av.w; h=av.h; }
+  else { var k=npcKeyFor(name),c=CAST['npc_'+k]; src=castCv('npc_'+k); w=c.w; h=c.h; }
+  cv.width=w; cv.height=h;
+  cv.style.width=(w*S3)+'px'; cv.style.height=(h*S3)+'px';
   var ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
   ctx.clearRect(0,0,cv.width,cv.height);
   if(src) ctx.drawImage(src,0,0); }
@@ -2261,8 +2392,7 @@ function startQuest(q){
   RUN={q:q,i:0,hearts:3,correct:0,marks:[]};
   ev('quest_start',{id:q.id,theme:q.theme,n:q.qs.length});
   document.getElementById('qnpc').textContent=q.npc;
-  paintQuestNpc(q.npc);
-  go('quest'); stepQuest(true); }
+  battleWipe(function(){ paintQuestNpc(q.npc); go('quest'); stepQuest(true); }); }
 function stepQuest(intro){
   var q=RUN.q,item=q.qs[RUN.i];
   var pg=document.getElementById('qprog'); pg.innerHTML='';
@@ -2272,13 +2402,17 @@ function stepQuest(intro){
   for(var i=0;i<3;i++) hs.appendChild(heartCv(i<RUN.hearts));
   document.getElementById('qexplain').hidden=true;
   var next=document.getElementById('qnext'),box=document.getElementById('qchoices'); box.innerHTML='';
-  if(intro){ document.getElementById('qtext').textContent=q.intro;
-    box.hidden=true; next.hidden=false; next.textContent='들어보기';
-    next.onclick=function(){ box.hidden=false; stepQuest(false); }; return; }
-  document.getElementById('qtext').textContent=item.q;
-  box.hidden=false; next.hidden=true;
+  var qt=document.getElementById('qtext');
+  if(intro){
+    box.hidden=true; next.hidden=true;
+    typeInto(qt,q.intro,function(){
+      caretOn(qt); next.hidden=false; next.textContent='들어보기';
+      next.onclick=function(){ box.hidden=false; stepQuest(false); }; });
+    return; }
+  box.hidden=true; next.hidden=true;
+  typeInto(qt,item.q,function(){ box.hidden=false; });
   item.a.forEach(function(text,idx){ var b=document.createElement('button'); b.className='choice pix';
-    b.innerHTML='<span class="k">'+'ABC'[idx]+'</span><span>'+text+'</span>';
+    b.innerHTML='<span class="k">\u25B6</span><span>'+text+'</span>';
     b.onclick=function(){ answer(idx,b); }; box.appendChild(b); }); }
 function answer(idx,btn){
   var item=RUN.q.qs[RUN.i],right=(idx===item.ok);
@@ -2362,12 +2496,16 @@ function startBoss(){
   document.getElementById('bmename').textContent=S.status+' Lv.'+S.lv;
   paintNpc(document.getElementById('bossspr'),'imgM',BOSS_A);
   paintFight();
-  document.getElementById('btext').textContent=BOSS.intro;
   var box=document.getElementById('bchoices'); box.innerHTML=''; box.hidden=true;
   document.getElementById('bexplain').hidden=true; document.getElementById('bhit').innerHTML='';
-  var nx=document.getElementById('bnext'); nx.hidden=false; nx.textContent='맞선다';
-  nx.onclick=function(){ box.hidden=false; bossStep(); };
-  go('boss'); }
+  var nx=document.getElementById('bnext'); nx.hidden=true;
+  var bt=document.getElementById('btext');
+  battleWipe(function(){ bt.textContent=''; go('boss'); }, function(){
+    /* 등장 대사부터 한 글자씩. 다 찍혀야 "맞선다"가 열린다. */
+    typeInto(bt,BOSS.name+'이 나타났다! '+BOSS.intro,function(){
+      caretOn(bt); nx.hidden=false; nx.textContent='맞선다';
+      nx.onclick=function(){ box.hidden=false; bossStep(); }; });
+  }); }
 function paintFight(){
   document.getElementById('bmehp').textContent=Math.max(0,FIGHT.my)+' / '+FIGHT.myMax;
   document.getElementById('bmebar').style.width=Math.max(0,FIGHT.my/FIGHT.myMax*100)+'%';
@@ -2375,11 +2513,11 @@ function paintFight(){
   document.getElementById('bbossbar').style.width=Math.max(0,FIGHT.boss/BOSS.hp*100)+'%'; }
 function bossStep(){
   var item=BOSS.qs[FIGHT.i];
-  document.getElementById('btext').textContent=item.q;
   document.getElementById('bexplain').hidden=true; document.getElementById('bnext').hidden=true;
-  var box=document.getElementById('bchoices'); box.innerHTML=''; box.hidden=false;
+  var box=document.getElementById('bchoices'); box.innerHTML=''; box.hidden=true;
+  typeInto(document.getElementById('btext'),item.q,function(){ box.hidden=false; });
   item.a.forEach(function(text,idx){ var b=document.createElement('button'); b.className='choice pix';
-    b.innerHTML='<span class="k">'+'ABC'[idx]+'</span><span>'+text+'</span>';
+    b.innerHTML='<span class="k">\u25B6</span><span>'+text+'</span>';
     b.onclick=function(){ bossAnswer(idx,b); }; box.appendChild(b); }); }
 function bossAnswer(idx,btn){
   var item=BOSS.qs[FIGHT.i],right=(idx===item.ok);
@@ -2387,12 +2525,16 @@ function bossAnswer(idx,btn){
     if(i===item.ok) b.classList.add('ok'); else if(b===btn) b.classList.add('no'); });
   var log=document.getElementById('bhit'); log.innerHTML='';
   var row=document.createElement('div');
+  var stage=document.getElementById('bstage');
   if(right){ FIGHT.boss-=FIGHT.dmg; row.className='hit dmg';
-    row.innerHTML='<span>반박 성공 · 공격 '+totals().atk+' → 데미지</span><b>-'+FIGHT.dmg+'</b>'; }
+    row.innerHTML='<span>반박 성공 · 공격 '+totals().atk+' → 데미지</span><b>-'+FIGHT.dmg+'</b>';
+    blinkEl(document.getElementById('bossspr'));
+    damagePop(stage,FIGHT.dmg,P.y1); }
   else { FIGHT.my-=FIGHT.take; row.className='hit hurt';
     row.innerHTML='<span>당했다 · 보스 '+BOSS.atk+' − 경감 '+Math.floor(totals().def/4)+'</span><b>-'+FIGHT.take+'</b>';
-    document.getElementById('bstage').classList.add('shake');
-    setTimeout(function(){ document.getElementById('bstage').classList.remove('shake'); },700); }
+    damagePop(stage,FIGHT.take,P.r1);
+    stage.classList.add('shake');
+    setTimeout(function(){ stage.classList.remove('shake'); },700); }
   log.appendChild(row); paintFight();
   var ex=document.getElementById('bexplain');
   ex.className='explain pix '+(right?'good':'bad');
@@ -2525,6 +2667,10 @@ ev('app_open',{ver:CONTENT.ver,streak:S.streak,dayN:dayGap(S.first,dayKey())+1})
 loadPack(function(ok){ if(ok){ ev('pack_load',{ver:CONTENT.ver}); S.packVer=CONTENT.ver;
   if(document.getElementById('home').classList.contains('on')) renderHome(); } });
 save();
+/* 대사 상자를 누르면 타이핑을 건너뛴다. JRPG에서 제일 많이 누르는 자리다. */
+['quest','boss'].forEach(function(id){
+  var dl=document.querySelector('#'+id+' .dlg');
+  if(dl) dl.addEventListener('click',function(){ typeSkip(); },{passive:true}); });
 stageBack(document.getElementById('qstage'));
 stageBack(document.getElementById('bstage'));
 if(S.onboarded) render('home'); else { obRender(); go('onboard'); }

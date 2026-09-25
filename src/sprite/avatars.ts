@@ -30,7 +30,7 @@ export interface AvatarDef {
   layers: Record<LayerName, number>;
 }
 
-export type AvatarId = 'imgM' | 'imgF';
+export type AvatarId = 'imgM' | 'imgF' | 'stuM' | 'stuF';
 
 export const AVATARS: Record<AvatarId, AvatarDef> = {
   imgM: {
@@ -65,6 +65,42 @@ export const AVATARS: Record<AvatarId, AvatarDef> = {
       top: require('../../assets/sprites/imgF_top.png'),
       hand: require('../../assets/sprites/imgF_hand.png'),
       hair: require('../../assets/sprites/imgF_hair.png'),
+    },
+  },
+  /* 대학생 기본. 가방을 멘 그림이라 소품 레이어가 따로 없고, 가방은 body에 들어 있어
+     상의를 갈아입어도 색이 변하지 않는다. 옷이 아니니 변하면 안 된다. */
+  stuM: {
+    name: '대학생 · 남',
+    w: 30, h: 64,
+    hip: 47, split: 15,
+    eye: 19, fcx: 17,
+    hx: 25, hy: 44,
+    hairBase: [45, 52, 73],
+    topBase: [51, 64, 96],
+    botBase: [192, 158, 145],
+    layers: {
+      body: require('../../assets/sprites/stuM_body.png'),
+      bot: require('../../assets/sprites/stuM_bot.png'),
+      top: require('../../assets/sprites/stuM_top.png'),
+      hand: require('../../assets/sprites/stuM_hand.png'),
+      hair: require('../../assets/sprites/stuM_hair.png'),
+    },
+  },
+  stuF: {
+    name: '대학생 · 여',
+    w: 34, h: 64,
+    hip: 48, split: 19,
+    eye: 20, fcx: 21,
+    hx: 28, hy: 45,
+    hairBase: [41, 48, 68],
+    topBase: [51, 63, 93],
+    botBase: [212, 194, 184],
+    layers: {
+      body: require('../../assets/sprites/stuF_body.png'),
+      bot: require('../../assets/sprites/stuF_bot.png'),
+      top: require('../../assets/sprites/stuF_top.png'),
+      hand: require('../../assets/sprites/stuF_hand.png'),
+      hair: require('../../assets/sprites/stuF_hair.png'),
     },
   },
 };

@@ -60,7 +60,7 @@ export interface GameState {
   stats: Record<ThemeKey, number>;
 
   /* 겉모습 */
-  avatar: 'imgM' | 'imgF';
+  avatar: 'imgM' | 'imgF' | 'stuM' | 'stuF';
   haircol: number;
   owned: string[];
   equip: Equip;

@@ -6,8 +6,10 @@ import { TIERS } from '@/data/tiers';
 import { allItems } from '@/data/items';
 import { finishQuest, type FinishResult } from '@/core/progress';
 import type { ReviewQuest } from '@/core/review';
+import type { GameState } from '@/core/state';
 import { Avatar } from '@/sprite/Avatar';
 import { NpcSprite } from '@/sprite/Cast';
+import { npcLook } from '@/sprite/cast';
 import { useGame } from '@/store';
 import { P } from '@/theme/palette';
 import { COLORS, U } from '@/theme/tokens';
@@ -129,7 +131,7 @@ export function QuestRun({ quest, onExit }: { quest: Quest | ReviewQuest; onExit
 
       {/* NPC 무대 */}
       <Stage>
-        <NpcSprite name={quest.npc} scale={3} />
+        <QuestNpc name={quest.npc} state={s} />
         <Shadow width={72} />
       </Stage>
 
@@ -176,6 +178,25 @@ export function QuestRun({ quest, onExit }: { quest: Quest | ReviewQuest; onExit
         </ScrollView>
       ) : null}
     </View>
+  );
+}
+
+/* 손그림 얼굴이 있으면 그걸 쓰고, 없으면 레이어 아바타를 다시 칠해 세운다.
+   또래와 직장인 그림이 들어오면 이 갈래는 사라진다. */
+function QuestNpc({ name, state }: { name: string; state: GameState }) {
+  const look = npcLook(name);
+  if (!look) return <NpcSprite name={name} scale={3} />;
+  return (
+    <Avatar
+      state={{
+        ...state,
+        avatar: look.avatar,
+        haircol: look.haircol,
+        equip: { ...state.equip, top: look.top, bottom: look.bottom, head: 'hnone', weapon: 'pen' },
+      }}
+      pose="idle"
+      scale={3}
+    />
   );
 }
 

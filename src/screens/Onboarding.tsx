@@ -45,6 +45,9 @@ export function Onboarding() {
             onPress={() => {
               set((st) => {
                 (st as unknown as Record<string, unknown>)[key] = val;
+                /* 신분을 고르면 그에 맞는 기본 아바타로 갈아 끼운다.
+                   캐릭터 화면에서 언제든 바꿀 수 있으니 강제는 아니다. */
+                if (key === 'status') st.avatar = val === '대학생' ? 'stuM' : 'imgM';
               });
               ev('onboard_pick', { k: key });
               if (key === 'status') setStep(0);
