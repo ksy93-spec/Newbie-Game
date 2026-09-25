@@ -1,14 +1,16 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { HAIRC, HAIRC_NAME } from '@/data/hair';
-import { SLOTS, allItems, poolFor, type Slot } from '@/data/items';
+import { PETS, SLOTS, allItems, poolFor, type Slot } from '@/data/items';
 import { TIERS } from '@/data/tiers';
 import { totals } from '@/core/state';
 import { AVATARS, type AvatarId } from '@/sprite/avatars';
 import { Avatar } from '@/sprite/Avatar';
+import { PetSprite } from '@/sprite/Cast';
 import { useGame } from '@/store';
 import { P } from '@/theme/palette';
 import { COLORS, U } from '@/theme/tokens';
+import { STAGE_H, STAND, StageBack } from '@/ui/BattleFx';
 import { Card, Chip, PixelButton, SectionLabel, T } from '@/ui/Pixel';
 
 /** 캐릭터 · 상점 공용. mode='shop'이면 값을 치르고 산다. */
@@ -34,8 +36,33 @@ export function Character({ mode = 'char' }: { mode?: 'char' | 'shop' }) {
 
   return (
     <ScrollView contentContainerStyle={{ backgroundColor: COLORS.bg, paddingBottom: U[6] }}>
-      <View style={{ backgroundColor: COLORS.sky, alignItems: 'center', padding: U[3], gap: U[2] }}>
-        <Avatar state={s} pose="idle" scale={3} />
+      <View style={{ height: STAGE_H, backgroundColor: COLORS.sky, justifyContent: 'flex-end', overflow: 'hidden' }}>
+        <StageBack />
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+            gap: U[3],
+            marginBottom: STAND,
+          }}
+        >
+          <Avatar state={s} pose="idle" scale={3} />
+          <View style={{ marginLeft: -30 }}>
+            <PetSprite kind={PETS[s.equip.pet]?.kind} scale={2} />
+          </View>
+        </View>
+      </View>
+      <View
+        style={{
+          alignItems: 'center',
+          gap: U[2],
+          paddingVertical: U[2],
+          backgroundColor: COLORS.card,
+          borderBottomWidth: 3,
+          borderBottomColor: COLORS.line,
+        }}
+      >
         <View style={{ flexDirection: 'row', gap: U[2] }}>
           <Chip>공격 {t.atk}</Chip>
           <Chip>방어 {t.def}</Chip>

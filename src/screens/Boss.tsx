@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, View } from 'react-native';
+import { Animated, Dimensions, View } from 'react-native';
 import { TIERS } from '@/data/tiers';
 import { bossPlan } from '@/core/combat';
 import { 이가 } from '@/core/korean';
@@ -8,7 +8,7 @@ import { Avatar } from '@/sprite/Avatar';
 import { useGame } from '@/store';
 import { P } from '@/theme/palette';
 import { COLORS, U } from '@/theme/tokens';
-import { BattleWipe, DamagePop, HpPlate, Platform, useBlink, useShake } from '@/ui/BattleFx';
+import { BattleWipe, DamagePop, HpPlate, Platform, Shadow, StageBack, useBlink, useShake } from '@/ui/BattleFx';
 import { ChoiceBox, MessageBox } from '@/ui/MessageBox';
 import { PixelButton, T } from '@/ui/Pixel';
 import { cue } from '@/ui/feedback';
@@ -17,6 +17,12 @@ import { cue } from '@/ui/feedback';
    턴제 JRPG의 문법을 그대로 쓴다. 띠 전환으로 들어가고, 대사는 한 글자씩 찍히고,
    선택지는 기술 고르기처럼 생긴 상자에서 고르고, 맞으면 상대가 깜빡이고 체력이 흐른다.
    대사는 이 게임의 세계(전세 계약)에 맞춰 새로 썼다. */
+
+/* 대사 상자가 차지할 자리를 미리 비워 둔다. 선택지까지 떴을 때를 기준으로 잡아야
+   대사 → 선택지로 넘어갈 때 두 사람이 위아래로 튀지 않는다. */
+const SCREEN_H = Dimensions.get('window').height;
+const DLG_H = Math.min(320, Math.round(SCREEN_H * 0.38));
+const GROUND_H = Math.round(SCREEN_H * 0.42);
 
 type Mode = 'wipe' | 'talk' | 'menu' | 'over';
 /** 대사 한 줄. who가 없으면 나레이션이다. */
@@ -133,7 +139,7 @@ export function Boss({ onExit }: { onExit: () => void }) {
 
   return (
     <Animated.View
-      style={{ flex: 1, backgroundColor: COLORS.bg, justifyContent: 'flex-start', transform: [{ translateX: shake }] }}
+      style={{ flex: 1, backgroundColor: COLORS.sky, overflow: 'hidden', transform: [{ translateX: shake }] }}
     >
       {mode === 'wipe' ? (
         <BattleWipe
@@ -146,19 +152,11 @@ export function Boss({ onExit }: { onExit: () => void }) {
         />
       ) : null}
 
-      {/* 전장 */}
-      <View
-        style={{
-          flex: 1,
-          minHeight: 260,
-          backgroundColor: COLORS.sky,
-          padding: U[3],
-          justifyContent: 'space-around',
-          borderBottomWidth: 3,
-          borderBottomColor: COLORS.line,
-        }}
-      >
-        {/* 상대 */}
+      {/* 전장은 화면 전체를 덮고, 대사 상자는 그 위에 얹힌다.
+          그래야 대사만 뜰 때와 선택지까지 뜰 때 두 사람이 제자리에 있는다. */}
+      <StageBack ground={GROUND_H} />
+      <View style={{ flex: 1, paddingHorizontal: U[3], paddingTop: U[2], paddingBottom: DLG_H }}>
+        {/* 상대. 발판 위에 떠 있는 자리가 JRPG의 문법이다. */}
         <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <HpPlate name={boss.name} hp={bossHp} max={boss.hp} sub={`공격 ${boss.atk}`} />
           <View style={{ alignItems: 'center' }}>
@@ -181,15 +179,23 @@ export function Boss({ onExit }: { onExit: () => void }) {
           </View>
         </View>
 
-        {/* 나 */}
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <View style={{ flex: 1 }} />
+
+        {/* 나. 이쪽은 길바닥에 그냥 선다. */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+            justifyContent: 'space-between',
+          }}
+        >
           <View style={{ alignItems: 'center' }}>
             {showSprites ? (
               <Animated.View style={{ opacity: myBlink }}>
                 <Avatar state={s} pose="idle" scale={2} flip />
               </Animated.View>
             ) : null}
-            <Platform width={132} />
+            <Shadow width={58} />
             {pop?.side === 'me' ? <DamagePop value={pop.v} trigger={pop.at} tone={pop.tone} /> : null}
           </View>
           <HpPlate
@@ -203,32 +209,34 @@ export function Boss({ onExit }: { onExit: () => void }) {
       </View>
 
       {/* 대사 · 선택지 */}
-      {mode === 'talk' && queue.length ? (
-        <MessageBox text={queue[0].t} speaker={queue[0].who} onAdvance={advance} />
-      ) : null}
+      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
+        {mode === 'talk' && queue.length ? (
+          <MessageBox text={queue[0].t} speaker={queue[0].who} onAdvance={advance} />
+        ) : null}
 
-      {mode === 'menu' ? (
-        <>
-          <MessageBox text={item.q} speaker={boss.name} minHeight={88} />
-          <ChoiceBox
-            options={item.a}
-            onPick={pick}
-            revealed={revealed}
-            correct={item.ok}
-            picked={picked}
-            disabled={revealed}
-          />
-        </>
-      ) : null}
+        {mode === 'menu' ? (
+          <>
+            <MessageBox text={item.q} speaker={boss.name} minHeight={88} />
+            <ChoiceBox
+              options={item.a}
+              onPick={pick}
+              revealed={revealed}
+              correct={item.ok}
+              picked={picked}
+              disabled={revealed}
+            />
+          </>
+        ) : null}
 
-      {mode === 'over' ? (
-        <View style={{ padding: U[3], gap: U[2] }}>
-          <T size="display" style={{ textAlign: 'center' }} color={bossHp <= 0 ? P.y2 : P.r2}>
-            {won ? '보스 격파' : '보증금을 잃었다'}
-          </T>
-          <PixelButton label="돌아가기" onPress={onExit} />
-        </View>
-      ) : null}
+        {mode === 'over' ? (
+          <View style={{ padding: U[3], gap: U[2] }}>
+            <T size="display" style={{ textAlign: 'center' }} color={bossHp <= 0 ? P.y2 : P.r2}>
+              {won ? '보스 격파' : '보증금을 잃었다'}
+            </T>
+            <PixelButton label="돌아가기" onPress={onExit} />
+          </View>
+        ) : null}
+      </View>
     </Animated.View>
   );
 }

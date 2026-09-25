@@ -11,9 +11,12 @@ import { reviewQuest, type ReviewQuest } from '@/core/review';
 import { needXp, totals } from '@/core/state';
 import { afterClaim } from '@/notify';
 import { Avatar, AvatarHead } from '@/sprite/Avatar';
+import { PetSprite } from '@/sprite/Cast';
+import { PETS } from '@/data/items';
 import { useGame } from '@/store';
 import { P } from '@/theme/palette';
 import { COLORS, U } from '@/theme/tokens';
+import { STAGE_H, STAND, StageBack } from '@/ui/BattleFx';
 import { Bar, Card, Chip, PixelButton, SectionLabel, StreakPips, T } from '@/ui/Pixel';
 
 export function Home({ onStartQuest }: { onStartQuest: (q: Quest | ReviewQuest) => void }) {
@@ -61,12 +64,38 @@ export function Home({ onStartQuest }: { onStartQuest: (q: Quest | ReviewQuest) 
       </View>
 
       {/* 대기실 */}
-      <View style={{ backgroundColor: COLORS.sky, alignItems: 'center', paddingVertical: U[3] }}>
-        <Avatar state={s} pose="walk" frame={frame} scale={3} flip />
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: U[2], marginTop: U[2] }}>
-          <T size="body">{TIERS[s.tier].name}</T>
-          <Chip>방어 {t.def}</Chip>
+      <View style={{ height: STAGE_H, backgroundColor: COLORS.sky, justifyContent: 'flex-end', overflow: 'hidden' }}>
+        <StageBack />
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+            gap: U[2],
+            marginBottom: STAND,
+          }}
+        >
+          {/* 아바타 캔버스는 64칸 정사각이라 좌우로 빈 칸이 남는다. 펫을 그만큼 당겨 붙인다. */}
+          <View style={{ marginRight: -30 }}>
+            <PetSprite kind={PETS[s.equip.pet]?.kind} scale={2} />
+          </View>
+          <Avatar state={s} pose="walk" frame={frame} scale={3} flip />
         </View>
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: U[2],
+          paddingVertical: U[2],
+          backgroundColor: COLORS.card,
+          borderBottomWidth: 3,
+          borderBottomColor: COLORS.line,
+        }}
+      >
+        <T size="body">{TIERS[s.tier].name}</T>
+        <Chip>방어 {t.def}</Chip>
       </View>
 
       <View style={{ padding: U[4], gap: U[4] }}>

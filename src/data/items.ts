@@ -210,45 +210,10 @@ export const ITEMS: Record<string, Item> = {
 };
 
 export const PETS: Record<string, Item> = {
-  "pnone": {
-    "slot": "pet",
-    "name": "없음",
-    "cost": 0,
-    "desc": "혼자 다닙니다."
-  },
-  "slime": {
-    "slot": "pet",
-    "name": "커피 슬라임",
-    "atk": 5,
-    "kind": "slime",
-    "cost": 250,
-    "desc": "식으면 굳는다. 매일 데워줘야 한다."
-  },
-  "bird": {
-    "slot": "pet",
-    "name": "출근 참새",
-    "atk": 4,
-    "def": 4,
-    "kind": "bird",
-    "cost": 300,
-    "desc": "알람보다 먼저 깨운다."
-  },
-  "penguin": {
-    "slot": "pet",
-    "name": "텀블러 펭귄",
-    "def": 9,
-    "kind": "penguin",
-    "cost": 380,
-    "desc": "얼음을 오래 유지한다."
-  },
-  "turtle": {
-    "slot": "pet",
-    "name": "스테이플러 거북",
-    "def": 14,
-    "kind": "turtle",
-    "cost": 520,
-    "desc": "느리지만 서류를 절대 놓치지 않는다."
-  }
+  "pnone": { "slot": "pet", "name": "없음", "cost": 0, "desc": "혼자 다닙니다." },
+  "bird": { "slot": "pet", "name": "출근 참새", "atk": 4, "def": 4, "kind": "bird", "cost": 300, "desc": "알람보다 먼저 깨운다." },
+  "turtle": { "slot": "pet", "name": "스테이플러 거북", "def": 14, "kind": "turtle", "cost": 520, "desc": "느리지만 서류를 절대 놓치지 않는다." },
+  "dog": { "slot": "pet", "name": "퇴근길 강아지", "atk": 6, "def": 8, "kind": "dog", "cost": 420, "desc": "집에 갈 이유가 하나 생긴다." }
 };
 
 export const MOUNTS: Record<string, Item> = {

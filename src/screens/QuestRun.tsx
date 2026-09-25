@@ -7,9 +7,11 @@ import { allItems } from '@/data/items';
 import { finishQuest, type FinishResult } from '@/core/progress';
 import type { ReviewQuest } from '@/core/review';
 import { Avatar } from '@/sprite/Avatar';
+import { NpcSprite } from '@/sprite/Cast';
 import { useGame } from '@/store';
 import { P } from '@/theme/palette';
 import { COLORS, U } from '@/theme/tokens';
+import { Shadow, Stage } from '@/ui/BattleFx';
 import { ChoiceBox, MessageBox } from '@/ui/MessageBox';
 import { Card, PixelButton, T } from '@/ui/Pixel';
 import { cue } from '@/ui/feedback';
@@ -126,13 +128,10 @@ export function QuestRun({ quest, onExit }: { quest: Quest | ReviewQuest; onExit
       </View>
 
       {/* NPC 무대 */}
-      <View style={{ flex: 1, backgroundColor: COLORS.sky, alignItems: 'center', justifyContent: 'center' }}>
-        <Avatar
-          state={{ ...s, avatar: 'imgF', haircol: -1, equip: { ...s.equip, top: 'badge', bottom: 'slack' } }}
-          pose="idle"
-          scale={3}
-        />
-      </View>
+      <Stage>
+        <NpcSprite name={quest.npc} scale={3} />
+        <Shadow width={72} />
+      </Stage>
 
       {phase.kind === 'intro' ? (
         <>

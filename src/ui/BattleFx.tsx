@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Dimensions, Easing, View } from 'react-native';
 import { P } from '@/theme/palette';
 import { COLORS, U } from '@/theme/tokens';
@@ -144,6 +144,110 @@ export function HpPlate({
           {sub}
         </T>
       ) : null}
+    </View>
+  );
+}
+
+/* ══════════ 무대 ══════════
+   하늘만 깔면 인물 위가 텅 빈다. 먼 건물과 바닥을 한 층씩 넣어
+   "길가에서 말을 건다"는 장면으로 만든다. 전부 사각형이라 도트가 깨지지 않는다. */
+
+export const GROUND = 44;
+/** 인물을 바닥에 세울 때 쓰는 아래 여백 */
+export const STAND = GROUND - 16;
+/** 3배 스프라이트(64px)가 머리를 안 잘리고 서는 최소 높이 */
+export const STAGE_H = 244;
+/** 멀리 보이는 건물. 폭·높이는 고정 배열이라 매번 같은 스카이라인이 뜬다. */
+const SKYLINE: [number, number][] = [
+  [26, 34],
+  [18, 52],
+  [34, 26],
+  [22, 44],
+  [30, 60],
+  [16, 30],
+  [38, 40],
+  [20, 54],
+  [28, 24],
+  [24, 46],
+  [34, 32],
+  [18, 58],
+];
+
+/** 구름 한 덩이. 계단식 사각형 셋이면 도트 구름이 된다. */
+function Cloud({ w, top, left }: { w: number; top: string; left: string }) {
+  return (
+    <View style={{ position: 'absolute', top: top as never, left: left as never, alignItems: 'center' }}>
+      <View style={{ width: Math.round(w * 0.42), height: 5, backgroundColor: P.p0 }} />
+      <View style={{ width: Math.round(w * 0.76), height: 5, backgroundColor: P.p0 }} />
+      <View style={{ width: w, height: 6, backgroundColor: P.p0 }} />
+    </View>
+  );
+}
+
+/** 배경만. 어떤 배치를 얹든 뒤에 깔린다. ground를 키우면 지평선이 올라간다. */
+export function StageBack({ ground = GROUND }: { ground?: number }) {
+  return (
+    <View pointerEvents="none" style={{ ...StyleSheetAbsolute, zIndex: 0, justifyContent: 'flex-end', overflow: 'hidden' }}>
+      <Cloud w={56} top="5%" left="7%" />
+      <Cloud w={38} top="14%" left="63%" />
+      <Cloud w={70} top="26%" left="28%" />
+      <Cloud w={44} top="38%" left="76%" />
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginBottom: -2 }}>
+        {[...SKYLINE, ...SKYLINE].map(([w, h], i) => (
+          <View
+            key={i}
+            style={{ width: w, height: h, backgroundColor: i % 2 ? P.k2 : P.k3, borderTopWidth: 2, borderTopColor: P.k1 }}
+          />
+        ))}
+      </View>
+      <View style={{ height: ground, backgroundColor: P.b1, borderTopWidth: 3, borderTopColor: P.b3 }}>
+        {/* 지평선 쪽 인도, 그 아래로 아스팔트 이음매 */}
+        <View style={{ height: 9, backgroundColor: P.b2 }} />
+        <View style={{ height: 3, backgroundColor: P.b3, opacity: 0.5 }} />
+        {ground > 80
+          ? [0.46, 0.8].map((f, i) => (
+              <View
+                key={i}
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  top: Math.round(ground * f),
+                  height: 3 + i,
+                  backgroundColor: P.b2,
+                }}
+              />
+            ))
+          : null}
+      </View>
+    </View>
+  );
+}
+
+/* 무대가 길어지면 하늘만 늘어나 인물이 화면 밑에 처박힌다.
+   지평선을 높이의 3분의 1쯤으로 잡아 인물이 길 한가운데 서게 한다. */
+export function Stage({ children, minHeight = STAGE_H }: { children: React.ReactNode; minHeight?: number }) {
+  const [h, setH] = useState(minHeight);
+  const ground = Math.min(300, Math.max(GROUND, Math.round(h * 0.42)));
+  return (
+    <View
+      onLayout={(e) => setH(e.nativeEvent.layout.height)}
+      style={{ flex: 1, minHeight, backgroundColor: COLORS.sky, justifyContent: 'flex-end', overflow: 'hidden' }}
+    >
+      <StageBack ground={ground} />
+      <View pointerEvents="box-none" style={{ alignItems: 'center', marginBottom: Math.round(ground * 0.42) }}>
+        {children}
+      </View>
+    </View>
+  );
+}
+
+/** 발밑 그림자. 인물이 바닥에 붙어 보이게 하는 최소한의 장치. */
+export function Shadow({ width = 46 }: { width?: number }) {
+  return (
+    <View style={{ alignItems: 'center', marginTop: -3 }}>
+      <View style={{ width, height: 4, backgroundColor: 'rgba(43,38,60,0.18)' }} />
+      <View style={{ width: Math.max(8, width - 14), height: 3, backgroundColor: 'rgba(43,38,60,0.12)' }} />
     </View>
   );
 }
