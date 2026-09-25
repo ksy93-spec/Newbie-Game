@@ -1,0 +1,182 @@
+import React, { useState } from 'react';
+import { Linking, ScrollView, View } from 'react-native';
+import type { Quest } from '@/data/pack';
+import { THEMES } from '@/data/themes';
+import { TIERS } from '@/data/tiers';
+import { allItems } from '@/data/items';
+import { finishQuest, type FinishResult } from '@/core/progress';
+import type { ReviewQuest } from '@/core/review';
+import { Avatar } from '@/sprite/Avatar';
+import { useGame } from '@/store';
+import { P } from '@/theme/palette';
+import { COLORS, U } from '@/theme/tokens';
+import { Card, PixelButton, SectionLabel, T } from '@/ui/Pixel';
+import { cue } from '@/ui/feedback';
+
+type Phase = { kind: 'intro' } | { kind: 'ask'; i: number } | { kind: 'explain'; i: number; ok: boolean } | { kind: 'done'; r: FinishResult };
+
+export function QuestRun({ quest, onExit }: { quest: Quest | ReviewQuest; onExit: () => void }) {
+  const { s, set, ev, pack, quests } = useGame();
+  const [phase, setPhase] = useState<Phase>({ kind: 'intro' });
+  const [marks, setMarks] = useState<boolean[]>([]);
+  const [picked, setPicked] = useState<number | null>(null);
+
+  const total = quest.qs.length;
+  const idx = phase.kind === 'ask' || phase.kind === 'explain' ? phase.i : 0;
+  const item = quest.qs[idx];
+  const hearts = 3 - marks.filter((m) => m === false).length;
+
+  function answer(choice: number) {
+    const ok = choice === item.ok;
+    cue(ok ? 'good' : 'bad');
+    const next = [...marks];
+    next[idx] = ok;
+    setMarks(next);
+    setPicked(choice);
+    ev('quest_answer', { id: quest.id, i: idx, ok });
+    setPhase({ kind: 'explain', i: idx, ok });
+  }
+
+  function advance() {
+    if (idx + 1 < total) {
+      setPicked(null);
+      setPhase({ kind: 'ask', i: idx + 1 });
+      return;
+    }
+    let result!: FinishResult;
+    set((st) => {
+      result = finishQuest(st, quest, marks, quests());
+    });
+    cue(result.leveledUp ? 'level' : result.unlockedTier != null ? 'open' : 'win');
+    setPhase({ kind: 'done', r: result });
+  }
+
+  if (phase.kind === 'done') {
+    const r = phase.r;
+    return (
+      <ScrollView contentContainerStyle={{ padding: U[4], gap: U[3], backgroundColor: COLORS.bg }}>
+        <T size="display" style={{ textAlign: 'center' }} color={r.leveledUp ? P.y2 : COLORS.ink}>
+          {r.leveledUp ? 'LEVEL UP' : 'QUEST CLEAR'}
+        </T>
+        <View style={{ alignItems: 'center' }}>
+          <Avatar state={s} pose="cheer" scale={3} />
+        </View>
+        <T size="body" style={{ textAlign: 'center' }} color={P.y3}>
+          +{r.xp} XP · ￦{r.coin}
+        </T>
+        <Card>
+          <Row k="정답" v={`${r.correct} / ${r.total}`} />
+          {Object.keys(quest.stat).map((k) => (
+            <Row key={k} k={`${THEMES[k as keyof typeof THEMES].full} · ${THEMES[k as keyof typeof THEMES].role}`} v={String(s.stats[k as keyof typeof s.stats])} />
+          ))}
+          {r.queuedForReview ? <Row k="복습 예약" v={`${r.queuedForReview}문항 · 내일`} /> : null}
+          {r.gotItemId ? <Row k="획득" v={allItems(r.gotItemId)?.name ?? ''} /> : null}
+          {r.dailyBonus ? <Row k="오늘 완주 보너스" v={`￦${r.dailyBonus}`} /> : null}
+        </Card>
+        {r.unlockedTier != null ? (
+          <Card tone="surface">
+            <T size="uiBold">새 거처 해금</T>
+            <T size="body">
+              {TIERS[r.unlockedTier].name} · 방어 {TIERS[r.unlockedTier].def}
+            </T>
+          </Card>
+        ) : null}
+        <PixelButton label="돌아가기" onPress={onExit} />
+      </ScrollView>
+    );
+  }
+
+  return (
+    <View style={{ flex: 1, backgroundColor: COLORS.bg }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: U[3],
+          backgroundColor: COLORS.card,
+        }}
+      >
+        <PixelButton tone="plain" label="‹ 나가기" onPress={onExit} style={{ paddingHorizontal: U[2] }} />
+        <T size="micro" color={COLORS.inkSoft}>
+          {idx + 1} / {total}
+        </T>
+        <T size="ui" color={P.r1}>
+          {'♥'.repeat(Math.max(0, hearts))}
+        </T>
+      </View>
+
+      <ScrollView contentContainerStyle={{ padding: U[4], gap: U[3] }}>
+        <Card tone="surface">
+          <T size="uiBold" color={P.g3}>
+            {quest.npc}
+          </T>
+          <T size="body">{phase.kind === 'intro' ? quest.intro : item.q}</T>
+        </Card>
+
+        {phase.kind === 'intro' ? (
+          <PixelButton label="들어보기" onPress={() => setPhase({ kind: 'ask', i: 0 })} />
+        ) : (
+          item.a.map((text, i) => {
+            const revealed = phase.kind === 'explain';
+            const tone = revealed && i === item.ok ? 'primary' : revealed && i === picked ? 'danger' : 'plain';
+            return (
+              <PixelButton
+                key={i}
+                tone={tone}
+                sound={null}
+                disabled={revealed}
+                onPress={() => answer(i)}
+              >
+                <View style={{ flexDirection: 'row', width: '100%', gap: U[2] }}>
+                  <T size="uiBold">{'ABC'[i]}</T>
+                  <T size="body" style={{ flex: 1 }}>
+                    {text}
+                  </T>
+                </View>
+              </PixelButton>
+            );
+          })
+        )}
+
+        {phase.kind === 'explain' ? (
+          <>
+            <Card tone="surface" style={{ borderLeftWidth: 8, borderLeftColor: phase.ok ? P.g2 : P.r1 }}>
+              <T size="body">
+                <T size="uiBold">{phase.ok ? '정답' : '오답'}</T> · {item.why}
+              </T>
+              <T size="micro" color={COLORS.inkSoft}>
+                기준일 {pack.asOf} · 확인처{' '}
+                <T
+                  size="micro"
+                  color={P.k4}
+                  style={{ textDecorationLine: 'underline' }}
+                  onPress={() => quest.src[1] && Linking.openURL(quest.src[1])}
+                >
+                  {quest.src[0]}
+                </T>
+              </T>
+              <T size="micro" color={COLORS.inkSoft}>
+                제도는 바뀝니다. 실제 결정 전에 원문을 확인하세요.
+              </T>
+            </Card>
+            <PixelButton label={idx + 1 < total ? '다음 문제' : '결과 보기'} onPress={advance} />
+          </>
+        ) : null}
+      </ScrollView>
+    </View>
+  );
+}
+
+function Row({ k, v }: { k: string; v: string }) {
+  return (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <T size="ui" color={COLORS.inkSoft}>
+        {k}
+      </T>
+      <T size="uiBold">{v}</T>
+    </View>
+  );
+}
+
+export { SectionLabel };
