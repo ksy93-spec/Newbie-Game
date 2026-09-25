@@ -5,6 +5,7 @@ import { bossPlan } from '@/core/combat';
 import { 이가 } from '@/core/korean';
 import { finishBoss } from '@/core/progress';
 import { Avatar } from '@/sprite/Avatar';
+import { NpcSprite } from '@/sprite/Cast';
 import { useGame } from '@/store';
 import { P } from '@/theme/palette';
 import { COLORS, U } from '@/theme/tokens';
@@ -162,16 +163,8 @@ export function Boss({ onExit }: { onExit: () => void }) {
           <View style={{ alignItems: 'center' }}>
             {showSprites ? (
               <Animated.View style={{ opacity: bossBlink }}>
-                <Avatar
-                  state={{
-                    ...s,
-                    avatar: 'imgM',
-                    haircol: 4,
-                    equip: { ...s.equip, top: 'suitg', bottom: 'slack', head: 'glass', weapon: 'card' },
-                  }}
-                  pose="idle"
-                  scale={2}
-                />
+                {/* 집주인은 이제 손그림이다. 플레이어를 다시 칠해 쓰던 자리 */}
+                <NpcSprite name="집주인" scale={2} />
               </Animated.View>
             ) : null}
             <Platform width={116} />

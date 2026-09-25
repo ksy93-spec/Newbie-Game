@@ -9,55 +9,49 @@ export interface CastSprite {
   h: number;
 }
 
-export type NpcId = 'gpa' | 'gma' | 'boy' | 'girl';
+export type NpcId = 'gpa' | 'gma' | 'boy' | 'girl' | 'peerm' | 'peerf' | 'deskf' | 'officem' | 'boss';
 
 export const NPC: Record<NpcId, CastSprite> = {
   gpa: { src: require('../../assets/sprites/npc_gpa.png'), w: 30, h: 64 },
   gma: { src: require('../../assets/sprites/npc_gma.png'), w: 27, h: 64 },
   boy: { src: require('../../assets/sprites/npc_boy.png'), w: 33, h: 54 },
   girl: { src: require('../../assets/sprites/npc_girl.png'), w: 30, h: 54 },
+  peerm: { src: require('../../assets/sprites/npc_peerm.png'), w: 24, h: 64 },
+  peerf: { src: require('../../assets/sprites/npc_peerf.png'), w: 24, h: 64 },
+  deskf: { src: require('../../assets/sprites/npc_deskf.png'), w: 29, h: 64 },
+  officem: { src: require('../../assets/sprites/npc_officem.png'), w: 24, h: 64 },
+  boss: { src: require('../../assets/sprites/npc_boss.png'), w: 22, h: 64 },
 };
 
-/* 손그림이 있는 얼굴은 나이가 맞는 역에만 쓴다. 동네 가게 주인은 노인이 어울리지만
-   알바 선배가 초등학생으로 나오면 게임이 무너진다. 아이 둘은 지금 맡길 역이 없어 쉰다. */
+/* 이제 역마다 얼굴이 있다. 노인 둘은 동네 가게와 창구, 나머지는 또래와 직장인.
+   아이 둘(boy·girl)은 아직 맡길 역이 없어 쉰다. */
 const BY_NAME: Record<string, NpcId> = {
   '부동산 사장': 'gpa',
   '세탁소 사장': 'gpa',
   '주민센터 직원': 'gma',
   '장학팀': 'gma',
+  '동기': 'peerm',
+  '선배': 'peerm',
+  '자취 선배': 'peerm',
+  '복습 노트': 'peerm',
+  '알바 선배': 'peerf',
+  '3년차 선배': 'peerf',
+  '은행 창구 직원': 'deskf',
+  '공단 상담원': 'deskf',
+  '인사팀': 'officem',
+  '고용센터 상담원': 'officem',
+  '집주인': 'boss',
+  '전세 먹튀 집주인': 'boss',
 };
 
-/** 손그림 얼굴이 없는 이름은 해시해서 늘 같은 어른이 나오게 한다. 아이는 뽑히지 않는다. */
+/** 표에 없는 이름은 해시해서 늘 같은 어른이 나오게 한다 */
 export function npcFor(name: string): CastSprite {
   const hit = BY_NAME[name];
   if (hit) return NPC[hit];
   let h = 0;
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  const ids: NpcId[] = ['gpa', 'gma'];
+  const ids: NpcId[] = ['peerm', 'peerf', 'deskf', 'officem', 'gpa', 'gma'];
   return NPC[ids[h % ids.length]];
-}
-
-/* 또래와 직장인은 아직 손그림이 없다. 레이어 아바타를 다시 칠해 세운다. 보스와 같은 방식이다. */
-export interface NpcLook {
-  avatar: 'imgM' | 'imgF' | 'stuM' | 'stuF';
-  haircol: number;
-  top: string;
-  bottom: string;
-}
-export const NPC_LOOK: Record<string, NpcLook> = {
-  '동기': { avatar: 'stuM', haircol: 2, top: 'hoodie', bottom: 'jeans' },
-  '알바 선배': { avatar: 'stuF', haircol: 3, top: 'shirt', bottom: 'jeans' },
-  '3년차 선배': { avatar: 'imgF', haircol: 0, top: 'suitg', bottom: 'slack' },
-  '자취 선배': { avatar: 'stuF', haircol: 1, top: 'hoodie', bottom: 'beige' },
-  '선배': { avatar: 'imgM', haircol: 0, top: 'shirt', bottom: 'slack' },
-  '인사팀': { avatar: 'imgM', haircol: 4, top: 'suitg', bottom: 'slack' },
-  '공단 상담원': { avatar: 'imgF', haircol: 0, top: 'shirt', bottom: 'slack' },
-  '고용센터 상담원': { avatar: 'imgM', haircol: 4, top: 'shirt', bottom: 'beige' },
-  '은행 창구 직원': { avatar: 'imgF', haircol: 0, top: 'suitg', bottom: 'slack' },
-};
-/** 이 이름에 쓸 다시 칠한 아바타가 있으면 그것을, 없으면 null */
-export function npcLook(name: string): NpcLook | null {
-  return NPC_LOOK[name] ?? null;
 }
 
 export type PetKind = 'dog' | 'turtle' | 'bird';

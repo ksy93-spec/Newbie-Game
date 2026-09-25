@@ -168,3 +168,25 @@ test('레벨업과 경험치는 넘치는 만큼 이월된다', () => {
   assert.ok(s.lv >= 2);
   assert.ok(s.xp >= 0 && s.xp < stateM.needXp(s.lv));
 });
+
+test('목숨을 다 잃으면 보상이 없고 완료로 찍히지 않는다', () => {
+  const s = newGame();
+  const q = pack.quests[0];
+  const before = { coin: s.coin, xp: s.xp, ju: s.stats.ju };
+  const r = progressM.finishQuest(s, q, [false, false, false], pack.quests);
+  assert.equal(r.failed, true);
+  assert.equal(r.xp, 0);
+  assert.equal(r.coin, 0);
+  assert.equal(s.coin, before.coin);
+  assert.equal(s.done.indexOf(q.id), -1, '완료 목록에 들어가면 안 된다');
+  assert.equal(r.queuedForReview, 3, '틀린 셋은 복습으로');
+});
+
+test('하나만 틀리면 통과한다', () => {
+  const s = newGame();
+  const q = pack.quests[0];
+  const r = progressM.finishQuest(s, q, [true, false, true], pack.quests);
+  assert.equal(r.failed, false);
+  assert.ok(r.xp > 0);
+  assert.ok(s.done.indexOf(q.id) >= 0);
+});

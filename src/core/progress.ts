@@ -17,9 +17,20 @@ export interface FinishResult {
   gotItemId: string | null;
   queuedForReview: number;
   dailyBonus: number;
+  /** 목숨을 다 잃어 실패로 끝났는지 */
+  failed: boolean;
 }
 
 /** 퀘스트(또는 복습) 하나를 끝내고 상태를 갱신한다. */
+/* 목숨. 문항 셋에 둘이면 하나는 틀려도 되지만 둘을 틀리면 끝난다.
+   셋이던 시절에는 다 틀려도 통과라 퀘스트가 시험이 아니라 페이지 넘기기였다. */
+export const HEARTS = 2;
+
+/** 목숨을 다 잃었는지 */
+export function isFailed(marks: boolean[]): boolean {
+  return marks.filter((m) => m === false).length >= HEARTS;
+}
+
 export function finishQuest(
   s: GameState,
   quest: Quest | ReviewQuest,
@@ -29,9 +40,12 @@ export function finishQuest(
   const total = quest.qs.length;
   const correct = marks.filter(Boolean).length;
   const ratio = total ? correct / total : 0;
+  /* 실패하면 보상이 없다. 틀린 문항은 그대로 복습 큐로 넘어가고 완료로 찍히지 않는다.
+     다시 도전할 수 있어야 배우는 장치가 되지, 한 번 막히고 끝나면 그냥 벽이다. */
+  const failed = isFailed(marks);
 
-  const xp = Math.round(quest.xp * (0.5 + 0.5 * ratio));
-  const coin = Math.round(quest.coin * (0.5 + 0.5 * ratio));
+  const xp = failed ? 0 : Math.round(quest.xp * (0.5 + 0.5 * ratio));
+  const coin = failed ? 0 : Math.round(quest.coin * (0.5 + 0.5 * ratio));
   const beforeLv = s.lv;
   const beforePeak = s.peak;
 
@@ -42,10 +56,12 @@ export function finishQuest(
     s.lv++;
   }
 
-  (Object.keys(quest.stat) as (keyof typeof s.stats)[]).forEach((k) => {
-    const gain = quest.stat[k] ?? 0;
-    s.stats[k] = Math.min(100, s.stats[k] + Math.round(gain * ratio));
-  });
+  if (!failed) {
+    (Object.keys(quest.stat) as (keyof typeof s.stats)[]).forEach((k) => {
+      const gain = quest.stat[k] ?? 0;
+      s.stats[k] = Math.min(100, s.stats[k] + Math.round(gain * ratio));
+    });
+  }
 
   let gotItemId: string | null = null;
   let queuedForReview = 0;
@@ -62,17 +78,17 @@ export function finishQuest(
         queuedForReview++;
       }
     });
-    if (s.done.indexOf(quest.id) < 0) {
+    if (!failed && s.done.indexOf(quest.id) < 0) {
       s.done.push(quest.id);
       if (quest.reward && s.owned.indexOf(quest.reward) < 0 && allItems(quest.reward)) {
         s.owned.push(quest.reward);
         gotItemId = quest.reward;
       }
     }
-    if (s.todayQ.indexOf(quest.id) >= 0 && s.todayDone.indexOf(quest.id) < 0) {
+    if (!failed && s.todayQ.indexOf(quest.id) >= 0 && s.todayDone.indexOf(quest.id) < 0) {
       s.todayDone.push(quest.id);
     }
-    if (!s.bonus && s.todayQ.length && todayLeft(allQuests, s) === 0) {
+    if (!failed && !s.bonus && s.todayQ.length && todayLeft(allQuests, s) === 0) {
       s.bonus = true;
       dailyBonus = completeBonus(s);
       s.coin += dailyBonus;
@@ -80,13 +96,13 @@ export function finishQuest(
     }
   }
 
-  if (tierFor(s.stats.ju) > s.peak) {
+  if (!failed && tierFor(s.stats.ju) > s.peak) {
     const wasTop = s.tier === s.peak;
     s.peak = Math.min(s.peak + 1, TIERS.length - 1);
     if (wasTop) s.tier = s.peak;
   }
 
-  record(s, 'quest_finish', { id: quest.id, correct, n: total, xp, coin });
+  record(s, 'quest_finish', { id: quest.id, correct, n: total, xp, coin, failed });
 
   return {
     xp,
@@ -99,6 +115,7 @@ export function finishQuest(
     gotItemId,
     queuedForReview,
     dailyBonus,
+    failed,
   };
 }
 

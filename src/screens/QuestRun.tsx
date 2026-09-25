@@ -4,12 +4,10 @@ import type { Quest } from '@/data/pack';
 import { THEMES } from '@/data/themes';
 import { TIERS } from '@/data/tiers';
 import { allItems } from '@/data/items';
-import { finishQuest, type FinishResult } from '@/core/progress';
+import { HEARTS, finishQuest, isFailed, type FinishResult } from '@/core/progress';
 import type { ReviewQuest } from '@/core/review';
-import type { GameState } from '@/core/state';
 import { Avatar } from '@/sprite/Avatar';
 import { NpcSprite } from '@/sprite/Cast';
-import { npcLook } from '@/sprite/cast';
 import { useGame } from '@/store';
 import { P } from '@/theme/palette';
 import { COLORS, U } from '@/theme/tokens';
@@ -36,7 +34,7 @@ export function QuestRun({ quest, onExit }: { quest: Quest | ReviewQuest; onExit
   const total = quest.qs.length;
   const idx = phase.kind === 'ask' || phase.kind === 'explain' ? phase.i : 0;
   const item = quest.qs[idx];
-  const hearts = 3 - marks.filter((m) => m === false).length;
+  const hearts = HEARTS - marks.filter((m) => m === false).length;
 
   function answer(choice: number) {
     const ok = choice === item.ok;
@@ -50,7 +48,8 @@ export function QuestRun({ quest, onExit }: { quest: Quest | ReviewQuest; onExit
   }
 
   function advance() {
-    if (idx + 1 < total) {
+    /* 목숨을 다 잃으면 남은 문항은 묻지 않는다 */
+    if (idx + 1 < total && !isFailed(marks)) {
       setPicked(null);
       setPhase({ kind: 'ask', i: idx + 1 });
       return;
@@ -67,14 +66,18 @@ export function QuestRun({ quest, onExit }: { quest: Quest | ReviewQuest; onExit
     const r = phase.r;
     return (
       <ScrollView contentContainerStyle={{ padding: U[4], gap: U[3], backgroundColor: COLORS.bg }}>
-        <T size="display" style={{ textAlign: 'center' }} color={r.leveledUp ? P.y2 : COLORS.ink}>
-          {r.leveledUp ? 'LEVEL UP' : 'QUEST CLEAR'}
+        <T
+          size="display"
+          style={{ textAlign: 'center' }}
+          color={r.failed ? P.r2 : r.leveledUp ? P.y2 : COLORS.ink}
+        >
+          {r.failed ? 'QUEST FAILED' : r.leveledUp ? 'LEVEL UP' : 'QUEST CLEAR'}
         </T>
         <View style={{ alignItems: 'center' }}>
-          <Avatar state={s} pose="cheer" scale={3} />
+          <Avatar state={s} pose={r.failed ? 'idle' : 'cheer'} scale={3} />
         </View>
-        <T size="body" style={{ textAlign: 'center' }} color={P.y3}>
-          +{r.xp} XP · ￦{r.coin}
+        <T size="body" style={{ textAlign: 'center' }} color={r.failed ? COLORS.inkSoft : P.y3}>
+          {r.failed ? '보상 없음 · 틀린 문항은 복습에 담았습니다' : `+${r.xp} XP · ￦${r.coin}`}
         </T>
         <Card>
           <Row k="정답" v={`${r.correct} / ${r.total}`} />
@@ -124,14 +127,14 @@ export function QuestRun({ quest, onExit }: { quest: Quest | ReviewQuest; onExit
         <T size="ui" color={P.r1}>
           {'♥'.repeat(Math.max(0, hearts))}
           <T size="ui" color={P.s1}>
-            {'♥'.repeat(Math.max(0, 3 - hearts))}
+            {'♥'.repeat(Math.max(0, HEARTS - hearts))}
           </T>
         </T>
       </View>
 
       {/* NPC 무대 */}
       <Stage>
-        <QuestNpc name={quest.npc} state={s} />
+        <NpcSprite name={quest.npc} scale={3} />
         <Shadow width={72} />
       </Stage>
 
@@ -178,25 +181,6 @@ export function QuestRun({ quest, onExit }: { quest: Quest | ReviewQuest; onExit
         </ScrollView>
       ) : null}
     </View>
-  );
-}
-
-/* 손그림 얼굴이 있으면 그걸 쓰고, 없으면 레이어 아바타를 다시 칠해 세운다.
-   또래와 직장인 그림이 들어오면 이 갈래는 사라진다. */
-function QuestNpc({ name, state }: { name: string; state: GameState }) {
-  const look = npcLook(name);
-  if (!look) return <NpcSprite name={name} scale={3} />;
-  return (
-    <Avatar
-      state={{
-        ...state,
-        avatar: look.avatar,
-        haircol: look.haircol,
-        equip: { ...state.equip, top: look.top, bottom: look.bottom, head: 'hnone', weapon: 'pen' },
-      }}
-      pose="idle"
-      scale={3}
-    />
   );
 }
 
