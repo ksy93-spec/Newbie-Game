@@ -27,7 +27,7 @@ export type EventName =
   | 'buy'
   | 'tab_view'
   | 'share_card'
-  | 'photo_match'
+  | 'wiki_open'
   | 'notif_perm'
   | 'notif_fire'
   | 'notif_open'

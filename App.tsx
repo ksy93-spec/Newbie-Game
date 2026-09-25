@@ -12,6 +12,7 @@ import { ensureChannel, scheduleDaily } from '@/notify';
 import { useGame } from '@/store';
 import { Character } from '@/screens/Character';
 import { Codex } from '@/screens/Codex';
+import { Wiki } from '@/screens/Wiki';
 import { Home, QuestRow } from '@/screens/Home';
 import { Boss } from '@/screens/Boss';
 import { Onboarding } from '@/screens/Onboarding';
@@ -22,10 +23,11 @@ import { primeAudio, releaseAudio, setFeedbackPrefs } from '@/ui/feedback';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
-type Tab = 'home' | 'quests' | 'char' | 'shop' | 'codex';
+type Tab = 'home' | 'quests' | 'wiki' | 'char' | 'shop' | 'codex';
 const TABS: [Tab, string][] = [
   ['home', '홈'],
   ['quests', '퀘스트'],
+  ['wiki', '백과'],
   ['char', '캐릭터'],
   ['shop', '상점'],
   ['codex', '도감'],
@@ -117,6 +119,7 @@ export default function App() {
         <View style={{ flex: 1 }}>
           {tab === 'home' ? <Home onStartQuest={start} /> : null}
           {tab === 'quests' ? <AllQuests onStart={start} onFight={() => setFight(true)} /> : null}
+          {tab === 'wiki' ? <Wiki onStartQuest={start} /> : null}
           {tab === 'char' ? <Character mode="char" /> : null}
           {tab === 'shop' ? <Character mode="shop" /> : null}
           {tab === 'codex' ? <Codex /> : null}
@@ -127,7 +130,7 @@ export default function App() {
               key={id}
               tone={tab === id ? 'primary' : 'plain'}
               label={label}
-              style={{ flex: 1, borderWidth: 0, borderBottomWidth: 0, minHeight: 56 }}
+              style={{ flex: 1, borderWidth: 0, borderBottomWidth: 0, minHeight: 56, paddingHorizontal: 0 }}
               onPress={() => {
                 setTab(id);
                 ev('tab_view', { id });

@@ -114,7 +114,7 @@ export function freshState(demo = true): GameState {
     bossCleared: false,
     stats: { ju: 5, sik: 5, ui: 5, geum: 5, jik: 5 },
 
-    avatar: 'imgM',
+    avatar: 'stuM',
     haircol: -1,
     owned,
     equip: { weapon: 'pen', top: 'shirt', head: 'hnone', bottom: 'beige', pet: 'pnone', mount: 'mnone' },
@@ -155,6 +155,10 @@ export function migrate(raw: unknown): GameState {
     if (!allItems(out.equip[k])) out.equip[k] = fresh.equip[k];
   });
   out.owned = out.owned.filter((id) => !!allItems(id));
+  // 그림체가 달라 물러난 옛 아바타는 같은 성별로 옮긴다.
+  // (avatars.ts를 import하면 PNG require가 테스트 빌드로 끌려와 깨진다)
+  if (out.avatar === 'imgM') out.avatar = 'stuM';
+  if (out.avatar === 'imgF') out.avatar = 'stuF';
   out.tier = Math.max(0, Math.min(out.tier, TIERS.length - 1));
   out.peak = Math.max(0, Math.min(out.peak, TIERS.length - 1));
   if (out.tier > out.peak) out.tier = out.peak;

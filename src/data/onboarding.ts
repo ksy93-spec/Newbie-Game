@@ -182,3 +182,10 @@ export function deferredKey(s: { age: number | null; status: string | null; comp
   if (s.status === '직장인' && s.company == null) return 'company';
   return null;
 }
+
+/* 신분마다 처음 입고 시작하는 옷. 몸은 하나이고 옷이 신분을 말한다. */
+export const STARTER: Record<string, [string, string]> = {
+  '대학생': ['hoodie', 'jeans'],
+  '취준생': ['shirt', 'slack'],
+  '직장인': ['badge', 'slack'],
+};

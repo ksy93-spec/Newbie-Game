@@ -136,9 +136,13 @@ export function Avatar({ state, pose = 'idle', frame = 0, scale = 3, flip = fals
     </>
   );
 
+  /* 그림마다 보는 쪽이 다르다. 오른쪽을 보고 그려진 아바타는 반대로 뒤집어야 앞으로 걷는다.
+     이걸 놓쳐서 대학생 캐릭터가 뒷걸음질쳤다. */
+  const mirrored = av.faceRight ? !flip : flip;
+
   return (
     <Canvas style={{ width: size, height: size }}>
-      {flip ? (
+      {mirrored ? (
         <Group transform={[{ translateX: size }, { scaleX: -1 }]}>{content}</Group>
       ) : (
         content

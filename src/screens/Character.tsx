@@ -4,7 +4,7 @@ import { HAIRC, HAIRC_NAME } from '@/data/hair';
 import { PETS, SLOTS, allItems, poolFor, type Slot } from '@/data/items';
 import { TIERS } from '@/data/tiers';
 import { totals } from '@/core/state';
-import { AVATARS, type AvatarId } from '@/sprite/avatars';
+import { AVATARS, avatarList } from '@/sprite/avatars';
 import { Avatar } from '@/sprite/Avatar';
 import { PetSprite } from '@/sprite/Cast';
 import { useGame } from '@/store';
@@ -79,7 +79,7 @@ export function Character({ mode = 'char' }: { mode?: 'char' | 'shop' }) {
             <View style={{ gap: U[2] }}>
               <SectionLabel>아바타</SectionLabel>
               <View style={{ flexDirection: 'row', gap: U[2] }}>
-                {(Object.keys(AVATARS) as AvatarId[]).map((id) => (
+                {avatarList().map((id) => (
                   <PixelButton
                     key={id}
                     tone={s.avatar === id ? 'primary' : 'plain'}

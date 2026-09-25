@@ -72,6 +72,45 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .blink{animation:blink3 .42s steps(1) 1;}
 @keyframes blink3{0%,100%{opacity:1}12%,37%,62%{opacity:.15}25%,50%,75%{opacity:1}}
 [hidden]{display:none!important;}
+/* ══════════ 백과 ══════════
+   문항은 하나씩 흩어져 있어 "지금 나는 어디쯤인가"가 안 보인다. 절차가 있는 주제를
+   순서대로 세워 두면 다음에 뭘 해야 하는지가 한눈에 들어온다. */
+.wsearch{flex:0 0 auto;padding:var(--u3) var(--u4);background:var(--p2);
+  border-bottom:3px solid var(--s4);}
+.wsearch input{width:100%;box-sizing:border-box;font-family:var(--f-body);font-size:15px;
+  padding:10px var(--u3);background:var(--w);border:3px solid var(--s4);color:var(--s4);
+  box-shadow:inset 0 3px 0 rgba(46,39,64,.08);}
+.wsearch input:focus{outline:3px solid var(--k3);outline-offset:1px;}
+.wrow{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;width:100%;
+  min-height:52px;background:var(--w);border:3px solid var(--s4);padding:9px var(--u3);
+  box-shadow:0 3px 0 var(--s4);}
+.wrow:active{transform:translateY(3px);box-shadow:0 0 0 var(--s4);}
+.wt{font-family:var(--f-ui);font-weight:700;font-size:13px;line-height:18px;color:var(--s4);}
+.ws{font-family:var(--f-micro);font-size:10px;line-height:15px;color:var(--s2);}
+.wtopic{padding:0;}
+.whead{display:flex;align-items:center;gap:var(--u2);width:100%;text-align:left;
+  padding:var(--u3);background:transparent;border:0;}
+.whead .wh{display:flex;flex-direction:column;gap:2px;flex:1;}
+.wcar{font-family:var(--f-ui);font-size:11px;color:var(--s2);}
+/* 타임라인 — 왼쪽 세로줄에 점을 꿴다 */
+.tline{padding:0 var(--u3) var(--u2);}
+.tstep{display:flex;gap:var(--u3);position:relative;padding-bottom:var(--u3);}
+.tstep:not(:last-child)::before{content:'';position:absolute;left:6px;top:14px;bottom:0;
+  width:3px;background:var(--p3);}
+.tdot{flex:0 0 15px;height:15px;margin-top:3px;background:var(--w);
+  border:3px solid var(--s4);display:flex;align-items:center;justify-content:center;z-index:1;}
+.tdot i{width:5px;height:5px;background:var(--g2);display:block;}
+.tbody{flex:1;display:flex;flex-direction:column;gap:3px;}
+.trow{display:flex;align-items:baseline;gap:var(--u2);flex-wrap:wrap;}
+.trow b{font-family:var(--f-ui);font-weight:700;font-size:13px;color:var(--s4);}
+.twhen{font-family:var(--f-micro);font-size:10px;color:var(--k4);
+  background:var(--k1);border:2px solid var(--k3);padding:1px 5px;}
+.tdesc{font-size:14px;line-height:21px;color:var(--s4);}
+.tmiss{font-family:var(--f-micro);font-size:10px;line-height:15px;color:var(--r3);
+  background:var(--p2);border-left:4px solid var(--r1);padding:5px 7px;}
+.tquest{align-self:flex-start;margin-top:3px;font-family:var(--f-ui);font-weight:700;font-size:11px;
+  background:var(--g1);border:3px solid var(--s4);padding:5px 9px;box-shadow:0 3px 0 var(--s4);}
+.tquest:active{transform:translateY(3px);box-shadow:0 0 0 var(--s4);}
 .dither{background-image:repeating-conic-gradient(var(--d1) 0% 25%,var(--d2) 0% 50%);background-size:6px 6px;}
 
 .btn{font-family:var(--f-ui);font-weight:700;font-size:12px;line-height:18px;padding:11px var(--u4);
@@ -165,9 +204,10 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .bosscard .bt{font-family:var(--f-display);font-size:15px;line-height:22px;}
 .bosscard .bm{font-family:var(--f-micro);font-size:10px;line-height:15px;}
 
-.tabbar{display:grid;grid-template-columns:repeat(5,1fr);background:var(--p2);border-top:3px solid var(--s4);}
+.tabbar{display:grid;grid-template-columns:repeat(6,1fr);background:var(--p2);border-top:3px solid var(--s4);}
 .tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:var(--u2) 0;
-  font-family:var(--f-micro);font-size:10px;line-height:12px;color:var(--s2);min-height:48px;}
+  font-family:var(--f-micro);font-size:9px;line-height:11px;color:var(--s2);min-height:48px;}
+.tab canvas{width:20px!important;height:20px!important;}
 .tab.on{color:var(--s4);background:var(--y1);box-shadow:inset 0 3px 0 var(--s4);}
 
 .qhead{background:var(--p2);border-bottom:3px solid var(--s4);padding:var(--u3) var(--u4);
@@ -416,6 +456,15 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
     </div>
     <div class="scroll"><div id="shopbody" style="display:flex;flex-direction:column;gap:var(--u4)"></div></div>
     <nav class="tabbar" id="tab-shop"></nav>
+  </section>
+
+  <section class="screen" id="wiki">
+    <div class="wsearch">
+      <input id="wikiq" type="search" placeholder="전세, 주휴수당, 연차…" autocomplete="off"
+             aria-label="백과 검색">
+    </div>
+    <div class="scroll" id="wikibody"></div>
+    <nav class="tabbar" id="tab-wiki"></nav>
   </section>
 
   <section class="screen" id="codex">
@@ -827,7 +876,7 @@ var CCACHE={};
    서류가방은 지우고 두 손을 비웠다. 각 장이 자기 옷감만 담고 있으니 색을 바꾸면
    반드시 눈에 보이고, 실루엣 변형(후드·패딩 기장·옆선)은 장착 아이템이 얹는다. */
 var AVATARS={
-  stuM:{name:'대학생 · 남',w:30,h:64,hip:47,split:15,eye:19,fcx:17,hx:25,hy:44,
+  stuM:{name:'남',faceRight:1,w:30,h:64,hip:47,split:15,eye:19,fcx:17,hx:25,hy:44,
     hairBase:[45, 52, 73],topBase:[51, 64, 96],botBase:[192, 158, 145],
     L:{
       body:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABACAYAAAANtMclAAAEQ0lEQVR42u1YXWgTWRT+bjtJkylN/0hbInRxS1laH6psjbQlUELr87KydEFYltJ9WCj0QaQgiPgkQx6WBd8ii2/qy67uwwq67ArRyiZd3MWtrMS02+IWY5hoUkxqGr0+yB1mJnMnM5OkKnpgYGbuvfPd75xzzzlzgA/yQXZDIlKUXv/tFt0NrCb1w/6DwwCA3QBvemtVH5Gi9I1vop7fI8Vsmnq7eomTxTd++J4CwHgoiKT8Epl7y5rxydkFw+8Ws2lK7AKNh4K2NrcUi1dsoJhN06ZGgjJtMM1oVN1IULW4B8eII8a1ipq1t6uXCNUWiO39Grb+0BwAYKe4BQB4unyJu7ZjdEa5/+W7Y2jv20dzj1aIJVWXkrfrdow6RmdQyG0Qx5GrY3RGw4Yn/tCcZp7L22YeMnks9YBm4OLIEcUc/tAclmJxMDVXAJeStykD5YFf+emCci+vJbjArb5OhWWPvwdT85JmXDA68Dx5unwJL7o/BgAMHQhXVfXQgTBu/iihWV6FOHLEPDupPdiIdbO8Cpe3DQ/+TaBZXuWCZmLnNHPcLoHP2D04Rqx4cSZ2zpITqueVdsrmjJdicYyHghgPBU3Vbjty6RhXnOP2vn2UeSM7+LWGS/0ZNmSce7RCCrkNUshtEHktgcnZBWKFudmcpVhcA1o1gHi7eklEilIr4DytGKVFy9nJSabiAToG1mcaIzEDrAm4mE3TPy5ftAWEejAsZtOUXWysmE3bymKWstPk7ALRJ3L1+H/3/qFnoz/bIiM41YK3q5cUs2l66LMvd7d80au8Iao2Y/3O/TsJPJVOzUsYCR5W3uXl9dcLxAAtFzaJ3tY1M2YfUYMymZqX8OvZRcMP3fzrgTPGZrvOy+vwdX8EpO5XlDBOba0sEMQAHQkext/xa0ru5JU3f944T/Rx2z04RvTPtlR95tRpBZDZlRc2zcqkavG8SV8hXLx6S8M2L69XXACgjtVWshHXxupim4mnxYNUcgV7+ge4GYgxU4NWU7OhjY0cS7+Zu8tXSd3OsREogNfebLIRxjqREXF88RvSkMiVl9fhafEYjtkBtQ1sBBqRojSREat6MdfGn05+TauxZeBfffE5l2VEilIr7DXOtXfgkwqbGtk2efd3wrp/0+EJUpNzlQubZC0FOqRS5/bzbYWlp8WD7efbWEvdBwOspfVoultBDFAWXE6fOKn0O52ytOxc5cImKRc2ifovYDo8QdRd3oa2HMX2fmrnfcP7mMwU71Tp4wi4Ho10R8DT4QkiiAG69fAO3g9V8zxbEAOWO/qWAoHee90uQelxde89qDRWWBWj//uvmfHRo98qjTN9M63V1wmXtw2lnbKlY0asqnNP/wAeZx4DAJ7lnwAAth7eQd8wv9H2LP8E6uLfEXBpp4xWXyd6/D3K+/83Upr+VauvE+qOkZnarVeFYoC6XYKmKDRixOZVA34FXb0iGAQWH2cAAAAASUVORK5CYII=',
@@ -835,7 +884,7 @@ var AVATARS={
       top:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABACAYAAAANtMclAAACCElEQVR42u2XMUvDQBiG3yuxQxCDiFiqRkoqbS0liLaIk2YouPkPdPEPuDv5M1z0Vwgd1LkqEgRr0VBaUHAoYtEOtXAOErnGnKbXoCL3TE1y+d57v/vuuxSQSCQSiUQikUgk/xctlqW/Jq5qOv1V9/1OYGNrN5wJK2qcBhFXNZ2GliVV06kWy9LZ3OqngLO5VapqOlXUeGCxSBCX7u9kOo+RsZlPY5aXLLSfGsQ7XlhYi2WpWShCUePUDQwACyubPcEP9nYIACSMFMxCMdBOiHzlNJnOAwDMQhEAYJdLqFwc+YoDwF3DQef5Ae57A6WaXeNu+55k5i3umMy8hcqVjSApj/BEokOK7wt2uQReylkSRqp/x53Xrq8bNu2316e+Ad3n37kmIluLdWqXS+i274lbjMl0Hna5BLNQ7HkmvMY8WIcvrUe0mnUkjBQ6zw/IzJmDFxdLq1lHq1kHAFQujsA2lppTRc2pYnwqg+jwBPppKoFS7Q3ovc4trtGFlU3KK0DhVHvXznt9eXZIvLtgYPz6tZ9rRY1z+7ewY++hwO5993RKGCluVRNR0Und6GmVAMDeqzlVrigAKKKO2VPq5vKYvN+zPjIQbTjohtGrv+ts/W4bIWG2j5+f7BO3qtkK9ptc6Hi/rX7k49Ba3xYSGbhXT4+P/p0/AaH1Z16gUA8AiUQikfw53gCfrsLIZAcEdQAAAABJRU5ErkJggg==',
       hand:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABACAYAAAANtMclAAAAHElEQVR42u3BAQEAAACAkP6v7ggKAAAAAAAAAGoeQAABHZMTQwAAAABJRU5ErkJggg==',
       hair:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABACAYAAAANtMclAAACI0lEQVR42u2WP2/TQBjGn4vs0hjcCKEYFMIxmEiUtEJFsLAx8imY+CR8EUZGJAZWdsqAIlNQaiG9uFXUDMiKlDik0jFUrzkfjpMWuSz3W2I5r+55/zx3Z4E1cLyO2nAdAEDY6y+Ni4cRfi1OcTo9FqvWrAxo3eorAAjaATavbGJdKCEAQDqKxLmEHa+jAODq1nUAgOxKXJSDL59LOyDKqmShbJ7hiOJCeykhLGaTypaXMdh/X9BqmJXq1Z2MT/IEsnmGeBitnHOVT1a2evfxc2WahnGbfmXr293t/HmcHOTP2TzD9/hb3nahZ6TPwhTXk7gtw8IIHu09BQD8GP/8K14Xp4Rywzn8cvvBQwz2jwsZljk57PVBCcFt+ti4dhM7vRBv370pxCxmk0I8I7sSg1H0p9VeS6qyubEhyqqnhHDv/hMcfv2IxWwCt+nni/N2MkfCZp2mJITp5CpX9nafKb0LLMBV8gjcpo+gHeTmlF2JbJ5h68ZdAMCnD6/XF9a3EjNNqfIA8lpSmSPig8XhPymhSrfGw2ilkAnH6wnkZl5ngYuImglQ4qulBwglVDgo+N2/iJpO51/htaRiRy6j6rA/D3zppKPozFyO11F8IdQlqhtumpJo4JLhsTUAgC/5y6RRth/TUSQWswmCdlCbsKO7Tk/g7DlUtVa8jDvhXv09Lztdap8x8+LlK4X/gfl5YrFYLBaLxWKxWCwWi8VisViq+Q1JvweW9URpEQAAAABJRU5ErkJggg=='}},
-  stuF:{name:'대학생 · 여',w:34,h:64,hip:48,split:19,eye:20,fcx:21,hx:28,hy:45,
+  stuF:{name:'여',faceRight:1,w:34,h:64,hip:48,split:19,eye:20,fcx:21,hx:28,hy:45,
     hairBase:[41, 48, 68],topBase:[51, 63, 93],botBase:[212, 194, 184],
     L:{
       body:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAABACAYAAAB/e6WTAAAEP0lEQVR42u2YTWhTWRTH/y8+37w20gQ1qUadCYWWztRq0foBVoUu/ABXxUWF+rFwMTN+gOJKFFyICxGFSMCFOyt2EdwoGLKIGrKQiXZhUqa0WmrVapOZkoitIUauC73x5eXe95G8JF14ICS57777fvd/7jn3vAv8tDpZwO8jFQ0Qi0+QWHyCWAXDA7Jp3TicsAaA2v5jJwWeOjYtJb4QYJHw7WOVMhTGEIjygV++/6JAlfqb3qsegwmyqbNFoJ9FCv6Dh//iDmR2TahN1OuwYW1LAeVB+AmZ+/cf5gyVkgf8PsJzAa9dNCPr3t6tgh6E0Qf/tAWTQSvOrFal8UQkqBlBNqsgEpEg6d3Vw73uWemunVtmx4cJr513jVpZobWsuY1kPqQxdOUc1Cq41+0p+p98HixWprsPAJDNTAoVgyhnRweefnpX9z5Pdx+e3ruBrt2HkP+UNAcyOz5MlrZuELQgqPFg1P1YitiMzFz9TQdPT8VglyVdJVat9sIuS7DLEtJTMeRz8+ajZvpdEuFQtCQ0lbPv6NqO9FRMcxxv+xY4l3uY60bXNbPjwyQcigIAtEKztacf49EhTRB1H6W7DYEAQDgULQGZfpc0nSPoPZ6V7hIQTdfQzlpqqKGM9KEqlx2+Ab+P6EEZMU93n7moYdUWrNmwjNeP115WQitXmXAoioGzV63LrLLDSwBg8NJptHe26S7WcCiK/jMXIUqN3IRmSRnH297NlIkVg2QzKQIA9wfvoL2zDaPxsbLqVNP1SCISJIlIkPxwk0sAgH0DBzAaH0PwhVCAqyrI2h17BArEun757204fmEIVQdRwihVuT94B/sGDqDRvaY6VRdPZpYi2UyK0I/litA1oLbR+NjCeUXQUqXugFVzDS86AKC9s43pyofPXlo/ay0QK01XEaOLMuD3Efr+Ql2WiASL/lcEwpJfz3p39SDg9xEzb3cib3ft6NoOADh8/jY27jxI0v+9LurzcuSRoLXb7j92UjBTLpjKrG/fTOLtm0lIi0XmTksrfqoiLaSMbIJMRVjvHa2/dxd+5z7nNVO/ck0Y3YmZIOs37y5pS6Vm4Fy+pn5RwzKXq7msMxLLQFyuZsMQZoFErYemUjMlCtA2Xml49NR1cvPaCdMVGvvMs8FNfmv5o2SRKmGePb5l6bElO2o+JYVXEyDKqluWf6lqijc8K7HBTQBAlBpLXgUWnFHYmoUvF0ThSrNwtoWips0q+cUGN2FtDXVxTc1TPMs+vh9hrpG6KFJT16gPamue0NRnI/ncPESpEfncPD6+HylcX7KioxDKdlnC/zNjQtVcY5clHPnzPOyyBEeTs9Du/HUTHE1OOJqchYNg2eElRnKJUE74Kh8+l80BANJTMSxZ0VEEpjYtdcoCobKrbS6bg12WkPmQBgA4mpwFUNZxlaF6RGuxipKX0IeqIZSzzgCEl/rV9hWdfSE7Ilb8VgAAAABJRU5ErkJggg==',
@@ -843,10 +892,10 @@ var AVATARS={
       top:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAABACAYAAAB/e6WTAAAB+ElEQVR42u2WQUsCQRiG35WldrsYFNtBhQUjoz1kCHYSu/kr+nX9im6Fp4LADkpFxUYaJAUapCbCdIiZdsbZ3NwNor7n4uzsjPN+3/vNzAIEQRAEQRAEQRAE8bcx5plkpV0WfB71fe3/mLbDzIWlqf5M1sVN88iILWQWYQIAYDIefPwOuz8vRCcmLGuc1HfsMG2Hlar7wpZSdV96DlLY2hEZmCUishDTdhgAbJdrUo00G3U0G3XoxNxcX4LP4fMTyYhXrEy1J+OBaKtivGJFvOMBxM9ISOEBQO/pPlIgK2sbLJYQ03aYzmPTdthk2DWWV3NoNuqShTqxr6NxcjUyyzbVAi4QAPLrhXhC1P2u2uFfnMiiSjUGAOenh8hkXWnsVwEZUbcuj9q/OIG7uTsVsVesSKL6Lz2pxvj8s+MD/SkctnDYCchFqDtJXcBKu6K2JkMAqDC1P5I12+Wa5PlXu0O1R3eS8uzxABO59AAg7+0Jvzttf2phvquCGcpkXdzdtrR1l0JCqDeyubAk+qy0y/LrBXTavlZE7Ix02r641j8tfMDz45UxK2ORijUKy6s5sQhvA8DdbUt6z8ckdteEnSXBbISdO+qYRIVY1iIsa1GKNriFg+0oGZkbr1Rj/BRN5ENq3omj0VuigcWy5tcS5UuMIAiCIP49705T46qo2g+DAAAAAElFTkSuQmCC',
       hand:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAABACAYAAAB/e6WTAAAAHklEQVR42u3BAQEAAACCIP+vbkhAAQAAAAAAAADwbCJAAAETCqnUAAAAAElFTkSuQmCC',
       hair:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAABACAYAAAB/e6WTAAADSUlEQVR42u2XX0vbUBjGn5PErFWwAyEqLS5dq0EFcfQDuAvBT+EHFbzYF5CKYCWzXTvRuZUNrNAa06RnF917OEmT/pmdF+P8bpo2yTnPed4/55RhRoysxQ1zEfmCjUzmDQDArVWx6ewBADRdBwA06i4Cv4fgqc2mGZfNIiC3/BbW+oaYDAC+3zbFdfzeIAzRvr9B5/FhoiA2jQBn50NkcBl54kbdxVLGxFqhKJ6j+5dnJ8zIWjxNEJskgl7c3j/kSc9oui5cWSsUhUt0LS/g6vyUzexIXD0J0XQ94orsSJyk5y7PTqZ3ZJyFcWfiwmSazTqKxfKI4KQwabOIIGSL00QAQKnsQNN1IWIQhsKR4KnNjKzFEx2hG1SK8Unj7FaOeFLy0m/0Lj3n9wM0Lj+xpEWPCJFFjHMCAEq7HzkNvFs54pSov358ZvK9TM7m+YINAKL3DMIQmq7DrVWH7szSzOL5QcK29w85DZzkWqPuCgFpucWmcSMpIZOqh8rYWt8YebZRd1EqO4k5dXV+yjT8JXJHJau7no+u508s42azPlIgQsi79zupJRhfRfv+RrRzCoffDxD4PXidFqPf2/c34h2v02JurYpBGKJUdkZdp4t4DMdBq5bb+MPPb6IkPe9ZOKTpOq7dC1DJUphShYzrB3GHqAIAwPOeRaUAQG75LcyFYQ0Efi9x3FLZibglhMiNJT4pfcorMxcMYf3dbQtdz8fK6hYHgM7jg3hn09kbhuxPr8jkbO7WqnBr1UiYRdWkVQwJKZUdYedSxhSrfwkrq1vcWt/AtXsxDBnZOQ45prTieSBXj5YWFjnbA78nvk974po24Wm81D5y7V7A67TEBlUqO+L7vMgXbGRyNh8rJE7aOeIlmAsGyO1UIYa5iNeAiiSy6fn9YKbG9lLkTVKTE0duboHfw6REnifGMGstruk60A9EJ6TQGKbN5Qqa5+Ty0UGL76bURZOgDJ8n1GUNKs8OwOP7gec9AwDublsRMfN2JuJI8NRmXc9HvmCLTkqbl7zJzbOHpDY0r9NiX7/UEPi9kYPPvxBDm+jEP1iUtHKLl/tLvmBHTuWvhlzORtbilYNjXjk45lAoFAqFQqFQKBQKhUKhUPw//AbFAfEP5k3MngAAAABJRU5ErkJggg=='}},
-  imgM:{name:'정장 · 남',w:36,h:64,hip:49,split:17,eye:21,fcx:14,hx:28,hy:46,
+  imgM:{name:'정장 · 남',hide:1,w:36,h:64,hip:49,split:17,eye:21,fcx:14,hx:28,hy:46,
     hairBase:[84, 68, 65],topBase:[53, 57, 76],botBase:[201, 172, 153],
     L:{body:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAABACAYAAAByZdXUAAAEKElEQVR42u2YX0hbdxTHP1eDUROxtl6Sam8cdoldccq0VAYRGQ17EVYY7Wi3wYTCtjL6tKdtdF0HKwjuYYwq4jq2UufqMrYKlTFsh6sPujlHWmGrMkFdoyGKWZMY/yT89iCJRk1MNNo83C/ch9x78ruf3/md3zm/e0CVKlWqVKlKSlKihgP2ViHLRkqKDFH3RWCeiTkvpXUnpT0BGrC3imqLGSknN67doMNBzam3dgyVsZVBIjCpVMZW3kkUptpi3n2gZF4i5eQy1ntL7FlQh0b7Y75s3Onam6C+frUpAmEtN2/YYWG1/9wX9Xvy779o7uwGoMykoM3WotNqsPf8Im0baKz3ljApClJoKakZiswsACYmJ+mwd3Gn/wG//jmE4YDMI9fUzoD6hkf57Nr35GeG+KLpg5geGne6uNxyg+GRfwEotxzi2vvnI88b29r56vY9RsdGpG0Hdd/wKDd/+IlyyyFm/EEut9yIzH69RzrsXQAsLyzy2DPLzMwc5660MDHnRcrJ5eypl5j3e6N274C9VSQFZC038+Hbp5mZmQPgRG3NpssnhZaw1R2P2OVk6/n84gUunX894tGSIgO2F6xRGV+WjWwGFRPIVJCHLBsJ/PeY4gO6LWMnbKcU7cekKJgUJer5idoaAGTZSIe9C7d7mmOVlclnauVwCRlaLdZyc6R2icB8lM2xykoaGl4BoLCwACm0tMGbZYY8gvfvCrd7GlvdcWTZmFxQB+/fFRNz3oi30O9DCi0x6HDELCfhQrvWy+vtxp2uyP3N6p8mFtDagcOxEvbGdhT2ajiuBh0OXn7now12mngxtLYsrJ1hWG73NOuPJJv9TwTmaWxr507/g9XkOevZNC/F9VCsvBPrJBBrGb+5N0RzZ/fOEmPF0SrxY8ulLaHiadzposPexZUvb+L3+xKqdXGNzKUWcfHdN3ntRSsiMyuhMiIys8DnobGtnebObjw+b8IwCVd7c6lFNNTXohx5hldrq+IuTbiwJguS9PEDoNhwUAA8ck1J1VXPi/zMEPvzV5NmgEwAbvf0JD32toA2O5qUGfJ46PJiLTdjUhQ0pVWSudQiEimku6JPLpwTwbGhyJUW31ID9taUwWSkYhBZNvLH0O+kBdD1q03CpCj09P6WHp++9TZbSmNnRx5648xpAaRsuVKyZIWFBTx0edMH6Otvv0tpvslIJ5iUbfu0Alr7dfvEVXG0StTbbCJtPPRcxeEn19LbquKnonumSpUqVapUqdoFJV2hdTq92Kdf6ZLl6vKY93upsDzN2TMnee/jT8nVrXbQnC5n0h0QKRmQI2XPsrywSGDBBxBphnt8Xvbp86JgcrL1/DM+srtA6+8tLi6g1Wbj9/soNhzEWPwUywuLzM5O4fGtwO4aUDxpNBoBEAwG0WhW2pbBYHBbY/8P4aa2xc9tfv8AAAAASUVORK5CYII=',bot:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAABACAYAAAByZdXUAAABSUlEQVR42u3Wv07CUBQG8K9qUgzCYgyPQMIDqGExGlY342SU3RE3F9zZDKMLT+ADQCJhUeKmSQsJIDQMpBYVaBQV6gSJtJpc/rTL99t6c27z3XNPkwJERERERERERERERERErpFm2ZxJp6xwKAAAKLW6OD49k2YNtDKvk4VDAWTSKWv0rKkKzi+vpIV3aLIrmqogtrP5q2bvJAEAMM2e8PuXRIoPYrvjMCNlvYNSq2urnSaMcCCnawKAXOFubkMtFOj6puDYDa1S9yaQLPsc1zXj1ZtAptmTNFWxrdcaVWTzRfcDAUDu9sF2bX91zrWhnvzStiIRlPWON4Fkn/zvmtPQLzRQ/6PvPNiVOrL54rh7fv+aNU2gZdENn4Nh0nj/xpv+jK/VIGqNJtq6gXj8EPdKFcH1DSSO9rEdjeJRfUq2X4wL/jKQm34AlbVtdSKsNm4AAAAASUVORK5CYII=',top:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAABACAYAAAByZdXUAAACFElEQVR42u2Vv2vbQBTHvzIyJ1tS4yJDsAo2lqmHDIHEZOierV0D2fK3dQt0bbcM3ToUWjDFg0tlalqCG4uYWo5O2OQ6JHL1i1SqVOjwPovR+d67r77vnR5AEARBEARBEARBEARB/O882W2Jf5W7kjdAluUHxZydnggAUFVN/GlvGtLfOmMYLRzs9/Dy/JUU32MYLVQVhjX34TiX+D67lEp3SJZlUVd1zJwrmNYAbMcEADw/PhZhd0xrAI+7qDADbMeEaQ2Qx6nMgrptC5OpjW7b2q6NvnpoNh9vnz8OvwAAGrv9RGxWUZWs7gSHhA/b69QiJasqDABw6zu49Z3tvrjAwoK6bQuL2TjiTlozV5hxl/T+N56jNEE1RcNkaifWw+58Gn+L/Lfmfu4bmllQ0MCPGr/fPFyStDWPu5HncGwhQUfPXggAYEyJlOLnwol8d9bcT7gS7AnKyJhSTslGw7fodaKNebNa4uz0RMzn1wkngzLfrJaRmF6nD1XVRCFB79+9ltJKs3DvDvuxUiI3LMzCXaaWtrBDvs8TDdvQdMzn16mCA7camp4oYzxXovGzCNpsNhIAEbytx13UVR1vLi4kANjfOxRr7oPFTKqrOjzuoqo48VzFBAHAcPRBCl/f8HfF4y5qipYaN5na2Njj8mfZQ3y2x1JTlctIlW/ax6d6fIo/tfoifhPzTHqCIAiCIAgC+AU5QMVv678mUAAAAABJRU5ErkJggg==',hand:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAABACAYAAAByZdXUAAAA4ElEQVR42u3SIQvCUBQF4KPYZhAMIkMMgnVFrBZ/hcEipqHJIJhtNnHNYjDI8pJ2wxCeggqCZXmwIG7t2YZFnE4M43z5ncPlvgsQERERERERERERERElnKJk5b+6MlFKKuUqBnorLGrrg9QnQyxmkzA7mS2xP+7iDeQHNzjn09dbec76wQ2xN1TK5zDsdwEAthAAIEfTeaQtjXsd2WzUUdM0AMBme8Dl+vp9OsqfO64HWwhI/w7DXMNYWVALxbd3pRaK0lhZMMw1pH+HLQQc1/vNTSpKVsYpipsnIiKipHgAGVZH4kvxejYAAAAASUVORK5CYII=',hair:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAABACAYAAAByZdXUAAAErElEQVR42u1WQW8bRRh9a28y647TDdlNnGZVCiGxwCKBVmqbigZBw6XhQqWql16QuFXiF3DiwC/gzIEbEvyEokqoonAhKJHaZts6qi3bdeyxso6n2VHHXQ7OTrK2k8aVUnHYd1p9O7vz5n3f977R8BrQdT2QUoLSNC7mcipeZFvqeaOQBwBIKbVB/q0NSoQQAxdzOZx+7wx4vR55v4MkXgoBSnRwISF8gfVCEQBQZbUjkdOOSiSXnQdjFUw672CC6gAA4Qu1hhgElHTiXEgV3x9bdR9jq7UNzlvaaxGiNB1MZabw0bQDattYWX0Cm+ogBsEml3jhCwwZBABgJtvw2kmYyXaE3H6EqhXZFjYK+b6KaYeRuXrpPM5+MI2VB3lwIVFiHEMGgZlsAwBS5kmk0O7Z0GsnlYoJQiJrQjQ8jj9W/ukhpR2Uoq8+W4zIH57stDUKsqtKPxXCbzZ557sJqvekkhId1LZRfPK0h1SiH5mb16+pH5QYR4nxjiJGGinzpCLY8HikXvbXzQTV8cIXqs6612XHT2JpYQ657Dx0XQ/CeLKbzKdnz0F/KcGFBCU6rBED2ss26lzCsSh8/hx/rq6B7/hgXhNV1sDY6CiG9ejZhvUEjGEdVU/AGN5L3/jkOD48M7m3boRis8qwzVvf9yhEiIGlhTk0PI4EISo+ZlIMGQQJQvD3/fuYykzhBB1R71fdx32VAgCb6hC+wIQzCdt+K2IVKw/y4PU6Ls29r1RKdBcxACwtzCGFNhoex721h7i39hAvfIFiuYHR9Aie821lfCGxsGa4kGh4nRRPOJNYWphTKcqOd9Lt1ppwa021nguJjDXeyVJIaDQ9AmrbcGtN9eF6oYgTtEOAsQoA4NaN5YgCbq2J23fuornFcPaTRbi1Jni9Dmrb6j9jJsXdf11c/jjbIVGvRwo8PIDqsoO6KnTZWzeW8d2PPx3qWVfOXwhCdd1aE8UnT5Wbh83hWLTHBsJ3O34LG4X8HqGb169hs/QMwhcYMyncsgfGKihVK0ceL07mVDCfnYm4+JhJIxvbu/40ZlI0PA5ikAihRHe7eu1O4zFWwRefXx548Aq/M8tCr+JCYme3mYcMgvpurTU8jjqXkfHT02UbDR9msq3S9vMvvw40fG/dWMZ6oagsIzz9swZXJhmOGmIQOBZVAqSMNKSUeyl79+1ppIw0HIuixDiyUyZ+u31HG1ShK+cvBEW2hRkno2LhyAldO1RnPxiroMpqnS6TUmqP8m4wO50FQMFYBdyi+OHbb5SDvqqow7W//7WGcrWsDkeJDseiEL5AiYXDOAmg17eklNr+TYLZ6SxmnAxW3cdH6qxBcXVxMSgxDsYqsKxTe/cov4VytQzOWxFCanSsF4oDddcgXRiaacpIRwg9yrsAoOndkq0XigGOCZZ1Cjt+C8/5toqljDTK1bLyxJ5pX2U1VFntuDhhxsmgVK1oj/KuljLSYKwCIfxXX1mPg8x87lxwQBqDA+9Dx4nslNkT2x3Oh9fr7HQ2eFMku/fqq9DXXy6+MdX2F/gbT1k/dNtLX0Lh5el/g+PqshgxYsSIESNGjBgxYsSIESNGjBgxYsQ4bvwHD7hV5IsizMcAAAAASUVORK5CYII='}},
-  imgF:{name:'정장 · 여',w:37,h:64,hip:49,split:17,eye:21,fcx:14,hx:28,hy:45,
+  imgF:{name:'정장 · 여',hide:1,w:37,h:64,hip:49,split:17,eye:21,fcx:14,hx:28,hy:45,
     hairBase:[77, 61, 60],topBase:[49, 51, 67],botBase:[235, 203, 184],
     L:{body:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACUAAABACAYAAACdp77qAAAD9klEQVR42u2YT2ibZRzHP+/aLLXVNzatm2snoUaSWZEZsWlpvPSSsYMeBgUFcSJInQ6x6NFSSi9eZEVS5i6FQbE3EQ/in4kXU00ChuCfkdowo62lK6TLazeXJvPxUJ7XN2mTvm3edDu830uSN8n7ft7fv+/zvGDLli1btmw1TIrZH64lvhAAbpeqHxMC1jWNhXSG0EtvKlZBNZsFaldVlIrLKsoWpM/vtTRSh8wCVZMQ0K6qRGenxYFARWendSBjlIQofwUsjVZNqGoXkoBGULfLumjVhFpIZ2j2DyqxRBIhyiNjVCyRpMk3qFhV7HvqPmPnSeXyW90H0HAoI4QQbOu8nQpeplSIrei9PvYhAA5nE+0PtPFNIqHUBVVKz4vJqUvEf83S0ebgwsQ7VEZKwubyGi+/+75+/L3XhunvCxBLJLn48adciadwtrSSXfpdqaumYokkn8WXAPj+t1UiM3M7FrwE6mhzsPTHCqur1zl/4RMmpy4xEAxweWqCkeHTqA5nWVfvu9Ajo2foaHPQWioQDgV3HAVul0qw16On6bmhPiKjZzj/6ot6c4RDQRzOJr0sfH4vpfS82DPUQDAAwMraDR7p6tw15CtrNzh69AgAJ4dO4Xb97wD9fQGKhTtEZ6fFQjrDQjrDuqZVjdih3Qr32EMP4na16jMrl9f07+Vvxt4e4dlnetm8dZNwKMh9N69vS/NHk2+Vzb2dOtlU98n30vdkV/n8XionvTRnoyrtSZq3z+/F7VJp8g0q+/K+yjseCAbKLmYcBbW0rmm0q6peFtWATK8SKpcqxonf3xfY9UZyeY3R8Q+Y/fxrUyOhJlStvMsCrvS/ypvI5TUiM3NciaessZlSel4o+zAOmdJ1TeOFN8b4LpXC193DT9fS9Q1PgGb/oPJDPFnViKsBxRJJXhkd53joeX65lsXX3dMYQ5aT2JgyaTOy1iIzc/z4c4bE1QVuFW7j6TxW9n+zkdpzcp4+0avHrffRbryeLjLZvwDwerqYuHi57JxP9vhFw6EAHu48IkaGTxMOBcuOnxw6xf3dj207pwQzC1WXxs+dFdHZabGxvCg2lhdFLaM1RqzujUM1GDnxjdZRa5F3IFGSViSjNH7urOBuSqZJAm0sL1oKVFdIjTA7FXjDNqNmlPr2y4PdIZvRV9H4vfN0pBH1ZFmkrFbzvVRLlkA1qpbqSl84FNzmf3cdyuqHZZZAyZ2JlQ/MbNmyZcuWLVu2LNj3OQ8fFsc9JwAo/bP1iHE9nwOg1dmCs6WVJzzdFDY3WVxZA+DP5Sz/CqE0FMrpbNE/Fwq39ffFYpGn/I9TLNxBKxZ02I2NvxsLVXOlqCjbFnn7gZH6D0buwa85JsJnAAAAAElFTkSuQmCC',bot:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACUAAABACAYAAACdp77qAAABrklEQVR42u3WPUgCYRgH8P9J2JS0CBWBwpUOgeBwp3BbweHSkEOTc0tTa1stjS2KuAiF5BBItHi4luQXBAZCqaGh9iEpaXNvU6aI5Xnm0vODdzje9+DP8zzvcQAhhBBCCCGEEEIIIYQQQgghZAiclpfjIR+zWHkAgDcYRjpb6OwJtiXs+Y+4iYeqpxXW/Xx3W+zZlzzbfxvKtGhm5UqJGxSoG7+6CQBotVsjhdINe7D51kA85GP1tMJ+CvRVLeOcuTfoso2NPdT7exuxeOrXc7F4qi8QABTzWW7sodRSE0LToOs4jq2YLXC7nIPDlGu4yj9rCqWqUh+McW6XE7IkdtZlJoeIkkCxXIMsieBNC6g/lVTNkOb2BU6jsFh5OEU7HIId88ZZuF1O5O6rcAh2yJKoufWqQ7281r9739WgQrUytnlUHeqDMc4bDIMxgHU1aMezgWT6eiyDPtLtK5ZrfZUCAP/JGRyCHQBgmDFMbqam9XrGmxYAAPuHAZxfJPvONDIKov4DTOv1IwWbUvtJWBMEyJKI9a1dVB4eey7ATfQYzVYL3mAYESVBvzv/0yffKJV9d6LXNQAAAABJRU5ErkJggg==',top:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACUAAABACAYAAACdp77qAAABhklEQVR42u2V0UoCURCGZ0TWSvbYCosGgomUQRiI9ATSTc/Q4/UM3USPEIHShYlYF1EiGW5o7RZOF7Fiy1k9Z11var6rZc+cnX/mnz0HgGEYhmEYhmEYhmEYhvknYNwfLBZ2yf2YgG1aAADQ6rVx7VUIU9Ci9Vq9QcIUJExBKcOgaqlCujkSuhusTBaqpQqlDEOazHEGYGWyUN4/hkLxAO4ee6ArTEtUee+IsrkytHptdD0PZdYJYUNyU/x0Vdjgeh7qWog6gvxEh7kE3PancHN9hUHrZHuDcbF1Sgh79nx+cYmyWZq3cBWURNXqDfITDftdaUf8dccZ/CpgUQdjmalgsqgxK4vyZ+nr3QEAmA2xTMy8bU8PrfWJ8it/HQ1DZ+Xs9ISWdckvLjb75sWo2pO28pH2KYlS+fDL+FP6vttp4lrs63aaOHi+h63URuh5403GsV5lava9OZi28qHrO/Z2rH9hUkk5IkU9nXXjla+ZBCJNiZbGBk/1qDPFMAzDMAzD/EG+AUh7iy4f/uXdAAAAAElFTkSuQmCC',hand:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACUAAABACAYAAACdp77qAAAA70lEQVR42u3TMWvCQBjG8SdSLlMO/TJdMrSTYDeRbq7d7e4S6FeQDp0ENz+AcFMFzyGjThkyuLgKVwwahNdBKBSK0ZBsz29+/3DHvQcQERERERERERERERGRDrTcM+8rJWX6Rp2XaOlmqe7hnuH3fhft8FEA4ONritn827s2nx0P6Dw9y/DtFQBgbIzoc1zdoXylJN1sYRADAPJsf1OXZ3sYe2nSzRa+UnLMc6+q1xA7GckpWcopWYqdjAr34yUM/2uksp3SgYaxMXbOYecceoOosFms1ugNot/G2Bg60IWdV/b3uR/n1d0RERER/XUGAwdjh21/8ukAAAAASUVORK5CYII=',hair:'data:image/png;base64,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'}}
 };
@@ -1847,6 +1896,9 @@ function load(){ var o=null;
   if(!o) return fresh();
   var f=fresh();                                  /* 새 필드가 생겨도 예전 저장이 깨지지 않게 메운다 */
   Object.keys(f).forEach(function(k){ if(o[k]===undefined) o[k]=f[k]; });
+  /* 그림체가 다른 옛 정장 한 쌍은 목록에서 뺐다. 그걸 쓰던 저장은 같은 성별로 옮긴다. */
+  if(o.avatar==='imgM') o.avatar='stuM';
+  if(o.avatar==='imgF') o.avatar='stuF';
   return o; }
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
 
@@ -1923,7 +1975,15 @@ function obSteps(){ return S.status==='대학생'?['status','living','region','a
   :S.status==='취준생'?['status','prep','region','avatar']
   :S.status==='직장인'?['status','years','region','avatar']:['status']; }
 /* 신분에 맞는 기본 아바타. 대학생은 가방 멘 쪽, 나머지는 정장 쪽이다. */
-function avatarPair(){ return S.status==='대학생'?['stuM','stuF']:['imgM','imgF']; }
+function avatarList(){ return Object.keys(AVATARS).filter(function(id){ return !AVATARS[id].hide; }); }
+function avatarPair(){ return avatarList(); }
+
+/* 신분마다 처음 입고 시작하는 옷. 몸은 하나이고 옷이 신분을 말한다. */
+var STARTER={ '대학생':['hoodie','jeans'], '취준생':['shirt','slack'], '직장인':['badge','slack'] };
+function applyStarter(){
+  var o=STARTER[S.status]; if(!o) return;
+  o.forEach(function(id){ if(S.owned.indexOf(id)<0) S.owned.push(id); });
+  S.equip.top=o[0]; S.equip.bottom=o[1]; }
 var obStep=0;
 function obRender(){
   var steps=obSteps(),key=steps[Math.min(obStep,steps.length-1)];
@@ -1960,7 +2020,7 @@ function obRender(){
     b.setAttribute('aria-pressed',S[key]===op[0]?'true':'false');
     b.innerHTML=op[1]+'<span class="oc">'+op[2]+'</span>';
     b.onclick=function(){ S[key]=op[0];
-      if(key==='status'){ obStep=0; S.avatar=(op[0]==='대학생')?'stuM':'imgM'; }
+      if(key==='status'){ obStep=0; applyStarter(); }
       ev('onboard_pick',{k:key}); obRender(); };
     box.appendChild(b); });
   body.appendChild(box);
@@ -2153,7 +2213,9 @@ function drawScene(){
     ctx.drawImage(hcv,SW-hcv.width-4,g-hcv.height+3);
   }
   var mt=MOUNTS[S.equip.mount],feet=SH-GD-58;
-  var fl=(walk.dir>0);              /* 원본이 왼쪽을 보므로 오른쪽으로 갈 때 뒤집는다 */
+  /* 그림마다 보는 쪽이 다르다. 오른쪽을 보고 그려진 아바타는 반대로 뒤집어야 앞으로 걷는다.
+     이걸 놓쳐서 대학생 캐릭터가 뒷걸음질쳤다. */
+  var av0=AVATARS[S.avatar]||{},fl=av0.faceRight?(walk.dir<0):(walk.dir>0);
   var wx=Math.round(walk.x),L,R;    /* 펫이 겹치지 않도록 몸의 좌우 끝을 재 둔다 */
   if(mt&&mt.kind){ var rc2=rideCv(mt.kind,walk.frame);
     if(rc2){ drawFlip(ctx,rc2,wx-8,SH-GD-rc2.height+5,fl); L=wx-6; R=wx-8+rc2.width; } }
@@ -2175,12 +2237,13 @@ function startWalk(){
     walk.frame=(walk.frame+1)%4; drawScene(); },190); }
 function stopWalk(){ if(walk.timer){ clearInterval(walk.timer); walk.timer=null; } }
 
-var TABS=[['home','홈','home'],['quests','퀘스트','quest'],['char','캐릭터','user'],['shop','상점','bag'],['codex','도감','book']];
+var TABS=[['home','홈','home'],['quests','퀘스트','quest'],['wiki','백과','find'],['char','캐릭터','user'],['shop','상점','bag'],['codex','도감','book']];
 var TABICON={
  home:["...##...","..####..",".##..##.","##....##",".######.",".##..##.",".##..##.",".######."],
  quest:[".######.",".#....#.",".#.##.#.",".#....#.",".#.##.#.",".#....#.",".#.##.#.",".######."],
  book:[".##..##.","########","#.#..#.#","#.#..#.#","#.#..#.#","#.#..#.#","########",".##..##."],
  user:["..####..",".##..##.",".##..##.","..####..",".######.","##.##.##","##....##","##....##"],
+ find:["..####..",".##..##.","##....##","##....##",".##..##.","..####.#",".....###","......##"],
  bag:["..#..#..",".######.","########","#.####.#","#.####.#","#.####.#","########",".######."]};
 function buildTabs(el,active){ el.innerHTML='';
   TABS.forEach(function(t){ var b=document.createElement('button');
@@ -2364,7 +2427,7 @@ function renderChar(){
   document.getElementById('ccoin').textContent=S.coin;
   document.getElementById('cnote').textContent='거처 '+TIERS[S.tier].def+' + 장비 '+tt.gear+' = 방어 '+tt.def;
   var pa=document.getElementById('pavatar'); pa.innerHTML='';
-  Object.keys(AVATARS).forEach(function(id){
+  avatarList().forEach(function(id){
     var b=document.createElement('button'); b.className='pick pix';
     b.style.cssText+='width:78px;height:92px;flex-direction:column;gap:1px;justify-content:flex-start;padding-top:2px';
     b.setAttribute('aria-pressed',S.avatar===id?'true':'false');
@@ -2459,6 +2522,217 @@ function renderCodex(){
   if(!sw.childElementCount) Object.keys(P).forEach(function(k){
     var i=document.createElement('i'); i.style.background=P[k]; sw.appendChild(i); });
   buildTabs(document.getElementById('tab-codex'),'codex'); }
+/* ══════════ 백과 ══════════
+   퀴즈는 한 문항씩 흩어져 있어서 "지금 나는 어디쯤인가"가 안 보인다. 절차가 있는 주제는
+   순서대로 펼쳐 놓아야 쓸모가 생긴다. 집 보는 날부터 보증금 돌려받는 날까지가 한 줄에 있으면
+   다음에 뭘 해야 하는지가 보인다.
+   each step: t 제목 · when 시점 · d 무엇을 하나 · miss 놓치면 생기는 일 · q 연결 퀘스트 */
+var WIKI=[
+{id:'lease',k:'주',title:'전세·월세 계약',
+ one:'집 보는 날부터 보증금 돌려받는 날까지',
+ src:['찾기쉬운 생활법령정보','https://easylaw.go.kr'],
+ steps:[
+  {t:'집 보기',when:'계약 2~4주 전',
+   d:'실거래가로 시세를 먼저 잡는다. 전세가가 매매가에 근접하면 그 자체가 신호다.',
+   miss:'시세를 모르면 비싼 줄도 모르고 계약한다.'},
+  {t:'등기부등본 확인',when:'집을 정한 날',
+   d:'갑구에서 소유자와 압류를, 을구에서 근저당을 본다. 근저당 채권최고액과 전세가의 합을 시세와 비교한다.',
+   miss:'선순위 채권이 크면 경매에서 보증금 순위가 밀린다.',q:'ju1'},
+  {t:'가계약금',when:'집을 잡을 때',
+   d:'금액·계약일·특약을 문자로 남기고 보낸다. 계좌는 반드시 등기부상 소유자 명의로.',
+   miss:'조건을 안 남기면 돌려받기 어려워진다.'},
+  {t:'계약서 작성',when:'계약일',
+   d:'임대인 신분증과 등기부상 소유자를 대조한다. 대리인이면 위임장과 인감증명서. 특약에 "잔금일까지 근저당을 설정하지 않는다"를 넣는다.',
+   miss:'계약금만 낸 사이에 대출이 잡히면 순위가 밀린다.',q:'ju3'},
+  {t:'전세대출 신청',when:'계약 직후',
+   d:'은행 심사와 보증기관 요건을 함께 본다. 대출이 안 나오면 계약금을 잃을 수 있어 특약으로 조건부 해제를 넣어 두기도 한다.',
+   miss:'심사 기간을 못 잡으면 잔금일을 못 맞춘다.'},
+  {t:'잔금 · 이사',when:'잔금일',
+   d:'잔금 치르기 직전에 등기부등본을 한 번 더 뗀다. 계약일과 달라진 게 없는지 확인한다.',
+   miss:'계약 후 잔금 전에 설정된 근저당을 모르고 넘어간다.'},
+  {t:'전입신고',when:'이사 당일',
+   d:'주민센터나 정부24에서 신고한다. 대항력은 신고한 다음 날 0시에 생긴다.',
+   miss:'하루가 비면 그 사이 설정된 권리가 내 앞에 선다.',q:'ju2'},
+  {t:'확정일자',when:'전입신고와 같은 날',
+   d:'계약서에 확정일자를 받으면 우선변제권이 생긴다. 대항력과 짝이다.',
+   miss:'하나만 있으면 보증금을 지키지 못한다.',q:'ju2'},
+  {t:'전월세 신고',when:'계약일로부터 30일 안',
+   d:'보증금 6천만원 초과 또는 월세 30만원 초과면 대상. 신고하면 확정일자가 함께 부여된다.',
+   miss:'기한을 넘기면 과태료 대상이 된다.',q:'ju4'},
+  {t:'보증금 반환',when:'계약 만료',
+   d:'만료 전에 갱신·퇴거 의사를 미리 알린다. 안 돌려주면 임차권등기명령을 받고 등기를 확인한 뒤 이사한다.',
+   miss:'먼저 이사를 나가면 점유와 주민등록이 빠져 순위를 잃는다.'}
+ ]},
+
+{id:'firstjob',k:'직',title:'첫 직장 첫 달',
+ one:'계약서 받는 날부터 퇴사 뒤 실업급여까지',
+ src:['고용노동부','https://www.moel.go.kr'],
+ steps:[
+  {t:'근로계약서',when:'입사일',
+   d:'임금·소정근로시간 등이 적힌 서면을 받는다. 사용자의 교부 의무다.',
+   miss:'안 주는 것 자체가 위반이다. 조건을 나중에 다투기 어려워진다.',q:'jik1'},
+  {t:'연봉에 퇴직금이 있는지',when:'계약서 볼 때',
+   d:'퇴직금을 월급에 얹어 주는 분할약정은 원칙적으로 무효로 본다. 총액에 섞여 있는지 확인한다.',
+   miss:'연봉이 높아 보이지만 실제로는 내 퇴직금을 미리 받은 것이다.',q:'jik1'},
+  {t:'4대보험 가입',when:'입사 후 며칠 안',
+   d:'건강보험·국민연금·고용보험·산재보험. 건강보험료는 회사와 절반씩 낸다.',
+   miss:'가입이 누락되면 나중에 실업급여 기간이 모자란다.',q:'job1'},
+  {t:'급여명세서 읽기',when:'첫 급여일',
+   d:'공제 항목에 4대보험과 소득세가 있다. 실수령액과 계약 연봉의 차이가 여기서 난다.',
+   miss:'명세서를 안 보면 잘못된 공제를 그냥 넘긴다.'},
+  {t:'주휴수당',when:'매주',
+   d:'주 15시간 이상 소정근로 + 그 주 개근이면 유급 주휴일이 생긴다. 알바도 같다.',
+   miss:'시급제라면 매주 하루치가 빠진다.',q:'stu1'},
+  {t:'연차',when:'1개월 뒤부터',
+   d:'1년 미만은 1개월 개근마다 1일. 1년간 80% 이상 출근하면 15일.',
+   miss:'안 쓰고 모르고 넘기면 사라지거나 정산에서 빠진다.',q:'jik2'},
+  {t:'퇴사와 실업급여',when:'퇴사할 때',
+   d:'원칙적으로 비자발적 이직이고, 이직 전 18개월 중 피보험단위기간 180일 이상이어야 한다.',
+   miss:'자발적 퇴사로 처리되면 대상에서 빠진다. 퇴사 전에 기간을 조회해 둔다.',q:'jik3'}
+ ]},
+
+{id:'grad',k:'금',title:'졸업하면 생기는 일',
+ one:'학생 자격이 끝나는 순간 고지서가 붙기 시작한다',
+ src:['국민건강보험공단','https://www.nhis.or.kr'],
+ steps:[
+  {t:'건강보험 피부양자 탈락',when:'졸업 · 소득 발생',
+   d:'소득·재산 요건을 벗어나면 지역가입자로 바뀐다. 취업 전이라도 고지서가 나온다.',
+   miss:'모르고 있다가 몇 달치가 한꺼번에 온다.',q:'job1'},
+  {t:'지역가입자 보험료 조정',when:'고지서를 받은 뒤',
+   d:'지역가입자 보험료는 소득과 재산을 함께 본다. 소득이 없으면 조정 신청으로 줄일 수 있는 경우가 있다.',
+   miss:'소득이 없는데도 그대로 낸다.',q:'job1'},
+  {t:'국민연금 납부예외',when:'소득이 끊긴 달',
+   d:'신청해야 적용된다. 방치하면 체납으로 남는다.',
+   miss:'연체금이 붙고 가입 이력이 지저분해진다.',q:'job2'},
+  {t:'학자금 대출 상환 방식 확인',when:'졸업 직후',
+   d:'취업 후 상환은 소득이 기준을 넘은 다음 해부터, 일반 상환은 거치 뒤 정해진 일정대로.',
+   miss:'유예 중에도 이자는 쌓인다는 걸 놓친다.',q:'stu2'},
+  {t:'청약통장 만들기',when:'빠를수록 좋다',
+   d:'가입기간이 가점 항목이라 시간이 곧 점수다. 나이·주택 소유와 관계없이 가입할 수 있다.',
+   miss:'늦게 만든 기간은 되돌릴 수 없다.',q:'geum1'},
+  {t:'신용점수 쌓기',when:'첫 카드부터',
+   d:'통신요금·건강보험료 성실납부 실적을 직접 제출하면 가점이 된다. 카드 사용률은 낮게 유지한다.',
+   miss:'금융 이력이 없으면 첫 대출에서 불리해진다.',q:'geum3'},
+  {t:'추후납부',when:'여유가 생겼을 때',
+   d:'납부예외 기간은 가입기간에서 빠지므로 나중에 추납으로 메울 수 있다.',
+   miss:'안 메우면 연금액이 그만큼 줄어든다.',q:'job2'}
+ ]},
+
+{id:'solo',k:'식',title:'자취 시작할 때 드는 돈',
+ one:'월세만 보고 계산하면 매달 20~30%가 더 나간다',
+ src:['찾기쉬운 생활법령정보','https://easylaw.go.kr'],
+ steps:[
+  {t:'초기 목돈',when:'계약할 때',
+   d:'보증금 + 중개보수 + 이사비. 중개보수는 거래금액 구간별 상한요율 안에서 협의한다.',
+   miss:'중개보수를 계약 후에 말하면 협상력이 없다.',q:'ju5'},
+  {t:'보증금의 기회비용',when:'계약 기간 내내',
+   d:'돌려받지만 그동안 묶인다. 기숙사와 비교할 때 예금 이자만큼은 비용으로 넣는다.',
+   miss:'월세만 비교하면 자취가 더 싸 보인다.',q:'stu3'},
+  {t:'매달 고정비 잡기',when:'첫 달',
+   d:'월세 + 관리비 + 공과금 + 인터넷. 관리비에 무엇이 포함되는지 계약서에서 확인한다.',
+   miss:'관리비와 공과금이 예산 밖에 있으면 매달 적자가 난다.',q:'stu3'},
+  {t:'식비 한도 정하기',when:'매주',
+   d:'주 단위 한도를 먼저 정하고 식비 전용 계좌나 카드를 따로 둔다. 잔액 자체가 신호가 된다.',
+   miss:'변동비를 변동비로 두면 사후에만 알 수 있다.',q:'sik2'},
+  {t:'배달비 계산',when:'시킬 때마다',
+   d:'메뉴값 + 배달비 + 최소주문 맞추려 담은 금액이 실제 지출이다.',
+   miss:'주 3회를 1회로 줄이면 한 달 14만원이 남는다.',q:'sik1'},
+  {t:'옷·세탁 회당 비용',when:'살 때와 맡길 때',
+   d:'가격을 착용 횟수로 나눠 본다. 세탁은 라벨을 먼저 보고 시즌당 횟수를 정한다.',
+   miss:'싸게 사서 몇 번 못 입는 옷이 회당 비용은 더 높다.',q:'ui1'}
+ ]}
+];
+
+/* 검색은 제목·단계·문항을 한 통에 넣고 훑는다. 항목이 수백 개가 아니니 색인은 과하다. */
+function wikiSearch(qs){
+  var s=qs.trim().toLowerCase(); if(!s) return null;
+  var out=[];
+  WIKI.forEach(function(w){
+    if((w.title+w.one).toLowerCase().indexOf(s)>=0)
+      out.push({kind:'topic',w:w,label:w.title,sub:w.one});
+    w.steps.forEach(function(st,i){
+      if((st.t+st.d+(st.miss||'')).toLowerCase().indexOf(s)>=0)
+        out.push({kind:'step',w:w,i:i,label:st.t,sub:w.title+' · '+st.when});
+    });
+  });
+  QUESTS.forEach(function(q){
+    if(q.title.toLowerCase().indexOf(s)>=0)
+      out.push({kind:'quest',q:q,label:q.title,sub:'퀘스트 · '+q.npc});
+    q.qs.forEach(function(x,i){
+      if((x.q+x.why).toLowerCase().indexOf(s)>=0)
+        out.push({kind:'qa',q:q,i:i,label:x.q,sub:'문항 · '+q.title});
+    });
+  });
+  return out;
+}
+
+var wikiOpen=null;                                /* 펼쳐 둔 주제 id */
+function renderWiki(){
+  buildTabs(document.getElementById('tab-wiki'),'wiki');
+  var box=document.getElementById('wikibody'); box.innerHTML='';
+  var qs=document.getElementById('wikiq').value;
+  var hits=wikiSearch(qs);
+
+  if(hits){
+    var lab=document.createElement('div'); lab.className='sectlab';
+    lab.textContent=hits.length?('검색 결과 '+hits.length+'건'):'찾는 말이 없습니다';
+    box.appendChild(lab);
+    hits.slice(0,40).forEach(function(h){
+      var b=document.createElement('button'); b.className='wrow pix';
+      b.innerHTML='<span class="wt">'+esc(h.label)+'</span><span class="ws">'+esc(h.sub)+'</span>';
+      b.onclick=function(){
+        if(h.kind==='quest'||h.kind==='qa'){ startQuest(h.q); return; }
+        document.getElementById('wikiq').value='';
+        wikiOpen=h.w.id; renderWiki();
+        var el=document.getElementById('wstep'+(h.i||0));
+        if(el) el.scrollIntoView({block:'center'});
+      };
+      box.appendChild(b);
+    });
+    return;
+  }
+
+  WIKI.forEach(function(w){
+    var card=document.createElement('div'); card.className='card pix wtopic';
+    var head=document.createElement('button'); head.className='whead';
+    head.innerHTML='<span class="tag" style="background:'+THEMES[themeOf(w.k)].color+'">'+w.k+'</span>'+
+      '<span class="wh"><span class="wt">'+esc(w.title)+'</span>'+
+      '<span class="ws">'+esc(w.one)+' · '+w.steps.length+'단계</span></span>'+
+      '<span class="wcar">'+(wikiOpen===w.id?'▲':'▼')+'</span>';
+    head.onclick=function(){ wikiOpen=(wikiOpen===w.id)?null:w.id; ev('wiki_open',{id:w.id}); renderWiki(); };
+    card.appendChild(head);
+    if(wikiOpen===w.id){
+      var tl=document.createElement('div'); tl.className='tline';
+      w.steps.forEach(function(st,i){
+        var row=document.createElement('div'); row.className='tstep'; row.id='wstep'+i;
+        var dot='<span class="tdot"><i></i></span>';
+        var body='<div class="tbody"><div class="trow"><b>'+esc(st.t)+'</b><span class="twhen">'+esc(st.when)+'</span></div>'+
+          '<div class="tdesc">'+esc(st.d)+'</div>'+
+          (st.miss?'<div class="tmiss">놓치면 · '+esc(st.miss)+'</div>':'')+'</div>';
+        row.innerHTML=dot+body;
+        if(st.q){
+          var qq=QUESTS.filter(function(x){ return x.id===st.q; })[0];
+          if(qq){ var qb=document.createElement('button'); qb.className='tquest';
+            qb.textContent='관련 퀘스트 · '+qq.title;
+            qb.onclick=function(){ startQuest(qq); };
+            row.querySelector('.tbody').appendChild(qb); }
+        }
+        tl.appendChild(row);
+      });
+      card.appendChild(tl);
+      var sr=document.createElement('div'); sr.className='micro';
+      sr.style.marginTop='var(--u2)';
+      sr.innerHTML='기준일 '+CONTENT.asOf+' · 확인처 <a href="'+w.src[1]+'" target="_blank" rel="noopener">'+esc(w.src[0])+'</a>'+
+        '<br>제도는 바뀝니다. 실제 결정 전에 원문을 확인하세요.';
+      card.appendChild(sr);
+    }
+    box.appendChild(card);
+  });
+}
+function themeOf(k){ var m={'주':'ju','식':'sik','의':'ui','금':'geum','직':'jik'}; return m[k]||'ju'; }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
 function render(id){
   if(rollDay()&&id!=='home') id='home';      /* 자정을 넘겼으면 홈에서 새 하루를 먼저 보여준다 */
   ev('tab_view',{id:id});
@@ -2466,6 +2740,7 @@ function render(id){
   if(id==='quests') renderQuests();
   if(id==='char') renderChar();
   if(id==='shop') renderShop();
+  if(id==='wiki') renderWiki();
   if(id==='codex') renderCodex();
   go(id); }
 
@@ -2859,6 +3134,7 @@ save();
 ['quest','boss'].forEach(function(id){
   var dl=document.querySelector('#'+id+' .dlg');
   if(dl) dl.addEventListener('click',function(){ typeSkip(); },{passive:true}); });
+document.getElementById('wikiq').addEventListener('input',function(){ renderWiki(); });
 stageBack(document.getElementById('qstage'));
 stageBack(document.getElementById('bstage'));
 if(S.onboarded) render('home'); else { obRender(); go('onboard'); }

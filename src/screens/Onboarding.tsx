@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { OB, obSteps, type ObKey } from '@/data/onboarding';
+import { OB, obSteps, type ObKey , STARTER } from '@/data/onboarding';
 import { pickDaily } from '@/core/daily';
 import { Avatar } from '@/sprite/Avatar';
 import { useGame } from '@/store';
@@ -45,9 +45,18 @@ export function Onboarding() {
             onPress={() => {
               set((st) => {
                 (st as unknown as Record<string, unknown>)[key] = val;
-                /* 신분을 고르면 그에 맞는 기본 아바타로 갈아 끼운다.
+                /* 신분을 고르면 그에 맞는 옷을 입혀 준다. 몸은 하나이고 옷이 신분을 말한다.
                    캐릭터 화면에서 언제든 바꿀 수 있으니 강제는 아니다. */
-                if (key === 'status') st.avatar = val === '대학생' ? 'stuM' : 'imgM';
+                if (key === 'status') {
+                  const outfit = STARTER[String(val)];
+                  if (outfit) {
+                    outfit.forEach((id) => {
+                      if (st.owned.indexOf(id) < 0) st.owned.push(id);
+                    });
+                    st.equip.top = outfit[0];
+                    st.equip.bottom = outfit[1];
+                  }
+                }
               });
               ev('onboard_pick', { k: key });
               if (key === 'status') setStep(0);

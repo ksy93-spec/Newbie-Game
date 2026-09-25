@@ -24,6 +24,10 @@ export interface AvatarDef {
   /** 무기를 쥐는 손 */
   hx: number;
   hy: number;
+  /** 원본이 오른쪽을 보고 그려졌는지. 뒤집는 방향이 반대가 된다 */
+  faceRight?: boolean;
+  /** 목록에서 감출지. 그림체가 달라 물러난 아바타 */
+  hide?: boolean;
   hairBase: RGB;
   topBase: RGB;
   botBase: RGB;
@@ -35,6 +39,7 @@ export type AvatarId = 'imgM' | 'imgF' | 'stuM' | 'stuF';
 export const AVATARS: Record<AvatarId, AvatarDef> = {
   imgM: {
     name: '정장 · 남',
+    hide: true,
     w: 36, h: 64,
     hip: 49, split: 17,
     eye: 21, fcx: 14,
@@ -52,6 +57,7 @@ export const AVATARS: Record<AvatarId, AvatarDef> = {
   },
   imgF: {
     name: '정장 · 여',
+    hide: true,
     w: 37, h: 64,
     hip: 49, split: 17,
     eye: 21, fcx: 14,
@@ -70,7 +76,8 @@ export const AVATARS: Record<AvatarId, AvatarDef> = {
   /* 대학생 기본. 가방을 멘 그림이라 소품 레이어가 따로 없고, 가방은 body에 들어 있어
      상의를 갈아입어도 색이 변하지 않는다. 옷이 아니니 변하면 안 된다. */
   stuM: {
-    name: '대학생 · 남',
+    name: '남',
+    faceRight: true,
     w: 30, h: 64,
     hip: 47, split: 15,
     eye: 19, fcx: 17,
@@ -87,7 +94,8 @@ export const AVATARS: Record<AvatarId, AvatarDef> = {
     },
   },
   stuF: {
-    name: '대학생 · 여',
+    name: '여',
+    faceRight: true,
     w: 34, h: 64,
     hip: 48, split: 19,
     eye: 20, fcx: 21,
@@ -110,4 +118,16 @@ export const FRAME = 64;
 
 export function offsetX(id: AvatarId): number {
   return Math.round((FRAME - AVATARS[id].w) / 2);
+}
+
+/** 고를 수 있는 아바타. 그림체가 달라 물러난 것은 빼고 준다. */
+export function avatarList(): AvatarId[] {
+  return (Object.keys(AVATARS) as AvatarId[]).filter((id) => !AVATARS[id].hide);
+}
+
+/** 옛 저장에 남은 아바타를 지금 쓰는 것으로 옮긴다 */
+export function migrateAvatar(id: string): AvatarId {
+  if (id === 'imgM') return 'stuM';
+  if (id === 'imgF') return 'stuF';
+  return (AVATARS as Record<string, AvatarDef>)[id] ? (id as AvatarId) : 'stuM';
 }
