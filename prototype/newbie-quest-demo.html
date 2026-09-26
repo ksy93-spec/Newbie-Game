@@ -268,6 +268,15 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .travel button i{font-style:normal;color:var(--s2);font-size:10px;line-height:17px;}
 .travel button i.sub{margin-left:auto;}
 .travel button b{color:var(--r3);font-weight:400;}
+.placebar{position:absolute;left:0;right:0;bottom:0;z-index:7;background:rgba(46,39,64,.94);
+  display:flex;align-items:center;gap:6px;padding:6px 8px;}
+.placebar .pl{flex:1;font-family:var(--f-ui);font-size:10px;line-height:15px;color:var(--s0);}
+.placebar .pl b{color:var(--y1);font-weight:400;}
+.placebar button{background:var(--g1);border:2px solid var(--s4);color:var(--s4);
+  font-family:var(--f-ui);font-size:11px;line-height:16px;padding:4px 9px;cursor:pointer;}
+.placebar button.no{background:var(--p2);}
+.placebar button[disabled]{background:var(--p3);color:var(--s2);}
+.item .sz{font-family:var(--f-micro);font-size:9px;color:var(--s2);font-weight:400;}
 .nearbar{position:absolute;left:0;right:0;top:0;background:rgba(46,39,64,.9);color:var(--p0);
   font-family:var(--f-ui);font-size:11px;line-height:15px;padding:4px 9px;pointer-events:none;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -422,6 +431,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
         <button class="minimap pix" id="hmini" aria-label="지도 열기"><canvas id="hminicv"></canvas></button>
         <div class="travel" id="htravel" hidden></div>
         <div class="nearbar pix" id="hnear" hidden></div>
+        <div class="placebar pix" id="hplace" hidden></div>
       </div>
       <div class="sceneinfo"><span class="tiername" id="htier">노숙</span><span class="def pix">방어 <b id="hdef">0</b></span></div>
       <div class="tierpips" id="htierpips"></div>
@@ -2291,6 +2301,8 @@ function load(){ var o=null;
   Object.keys(f).forEach(function(k){ if(o[k]===undefined) o[k]=f[k]; });
   /* 그림체가 다른 옛 정장 한 쌍은 목록에서 뺐다. 그걸 쓰던 저장은 같은 성별로 옮긴다. */
   if(!o.bossDone) o.bossDone=o.bossCleared?['jeonse']:[];   /* 보스가 하나이던 시절의 저장 */
+  if(Array.isArray(o.furni)) o.furni=o.furni.map(function(f){
+    return (typeof f==='string')?{id:f,x:null,y:null}:f; });   /* 세간이 자리를 갖기 전 저장 */
   if(o.avatar==='imgM') o.avatar='stuM';
   if(o.avatar==='imgF') o.avatar='stuF';
   return o; }
@@ -2853,24 +2865,100 @@ function npcTop(key,dir,f){
 /* ══════════ 세간 ══════════
    방이 생겼으니 채울 것도 필요하다. 라면 다섯 봉지에서 시작해서, 냉장고와 세탁기를 지나,
    나중에는 굴러가는 TV와 옷 관리기까지. need는 그 물건을 놓을 수 있는 최소 거처다.
-   고시원 골방에 소파를 넣을 수는 없다. */
+   고시원 골방에 소파를 넣을 수는 없다.
+   w·h는 차지하는 칸이다. 침대와 소파를 한 칸에 우겨넣으면 방이 넓어진 보람이 없다. */
 var FURNI={
- ramen: {name:'라면 5봉지',   cost:60,  need:0, use:5,          desc:'퀘스트에서 목숨 하나를 되살린다. 다섯 번 쓴다.'},
- mat:   {name:'접이식 매트',  cost:90,  need:1, def:4,  tile:'M',desc:'바닥에서 자도 등이 덜 아프다.'},
- fan:   {name:'선풍기',       cost:140, need:3, def:4,  tile:'N',desc:'여름에 잠은 자야 한다.'},
- desk2: {name:'접이식 책상',  cost:200, need:4, atk:6,  tile:'K',desc:'밥상에서 공부하지 않아도 된다.'},
- fridge:{name:'소형 냉장고',  cost:300, need:5, def:8,  tile:'F',desc:'식비가 눈에 띄게 준다.'},
- wash:  {name:'세탁기',       cost:420, need:6, def:10, tile:'A',desc:'코인 세탁소에 안 가도 된다.'},
- tv:    {name:'바퀴 달린 TV', cost:560, need:7, atk:9,  tile:'V',desc:'누워서 보는 화면. 사치의 시작.'},
- styler:{name:'옷 관리기',    cost:760, need:8, def:14, tile:'L',desc:'정장을 매번 맡기지 않아도 된다.'},
- sofa:  {name:'2인용 소파',   cost:980, need:8, def:18, tile:'S',desc:'앉을 자리가 생기면 사람이 온다.'}
+ ramen: {name:'라면 5봉지',   cost:60,  need:0, use:5,                desc:'퀘스트에서 목숨 하나를 되살린다. 다섯 번 쓴다.'},
+ mat:   {name:'접이식 매트',  cost:90,  need:1, def:4,  w:2,h:2,      desc:'바닥에서 자도 등이 덜 아프다.'},
+ fan:   {name:'선풍기',       cost:140, need:3, def:4,  w:1,h:1,      desc:'여름에 잠은 자야 한다.'},
+ desk2: {name:'접이식 책상',  cost:200, need:4, atk:6,  w:2,h:1,      desc:'밥상에서 공부하지 않아도 된다.'},
+ fridge:{name:'소형 냉장고',  cost:300, need:5, def:8,  w:1,h:2,      desc:'식비가 눈에 띄게 준다.'},
+ bed:   {name:'접이식 침대',  cost:340, need:5, def:12, w:2,h:2,      desc:'바닥에서 안 자도 되는 날이 왔다.'},
+ wash:  {name:'세탁기',       cost:420, need:6, def:10, w:1,h:1,      desc:'코인 세탁소에 안 가도 된다.'},
+ tv:    {name:'바퀴 달린 TV', cost:560, need:7, atk:9,  w:2,h:1,      desc:'누워서 보는 화면. 사치의 시작.'},
+ styler:{name:'옷 관리기',    cost:760, need:8, def:14, w:1,h:2,      desc:'정장을 매번 맡기지 않아도 된다.'},
+ sofa:  {name:'2인용 소파',   cost:980, need:8, def:18, w:3,h:1,      desc:'앉을 자리가 생기면 사람이 온다.'}
 };
-var FURNI_ORDER=['ramen','mat','fan','desk2','fridge','wash','tv','styler','sofa'];
-function hasFurni(id){ return (S.furni||[]).indexOf(id)>=0; }
+var FURNI_ORDER=['ramen','mat','fan','desk2','fridge','bed','wash','tv','styler','sofa'];
+function furniList(){ if(!S.furni) S.furni=[]; return S.furni; }
+function furniOf(id){ var r=null; furniList().forEach(function(o){ if(o&&o.id===id) r=o; }); return r; }
+function hasFurni(id){ return !!furniOf(id); }
 function furniBonus(){
   var a=0,d=0;
-  (S.furni||[]).forEach(function(id){ var it=FURNI[id]; if(!it) return; a+=it.atk||0; d+=it.def||0; });
+  furniList().forEach(function(o){ var it=FURNI[o&&o.id]; if(!it) return; a+=it.atk||0; d+=it.def||0; });
   return {atk:a,def:d};
+}
+/* ── 놓을 수 있는 자리인가 ────────────────────────────────────────────
+   벽·문·이미 놓인 물건 위에는 못 놓는다. 내가 서 있는 칸도 안 된다. */
+/* 붙박이 책상(복습 노트)이 차지하는 칸. 여기 위에 소파를 올려놓으면 노트가 사라진다. */
+var BUILTIN={id:'deskbuilt',x:1,y:1,w:2,h:1};
+function fitsAt(m,it,x,y,skipId){
+  var i,j;
+  if(!m) return false;
+  for(j=0;j<(it.h||1);j++) for(i=0;i<(it.w||1);i++){
+    var tx=x+i,ty=y+j,c=tileAt(m,tx,ty);
+    if(c!=='.'&&c!==',') return false;
+    if(tx>=BUILTIN.x&&tx<BUILTIN.x+BUILTIN.w&&ty>=BUILTIN.y&&ty<BUILTIN.y+BUILTIN.h) return false;
+    if(ME.map==='room'&&tx===ME.tx&&ty===ME.ty) return false;
+    var hit=false;
+    furniList().forEach(function(o){ var f=FURNI[o&&o.id];
+      if(!f||o.id===skipId||o.x==null) return;
+      if(tx>=o.x&&tx<o.x+(f.w||1)&&ty>=o.y&&ty<o.y+(f.h||1)) hit=true; });
+    if(hit) return false;
+    (m.spots||[]).forEach(function(s){ if(s.x===tx&&s.y===ty) hit=true; });
+    if(hit) return false;
+  }
+  return true;
+}
+function autoSpot(m,it,skipId){
+  var x,y;
+  for(y=1;y<m.h-1;y++) for(x=1;x<m.w-1;x++) if(fitsAt(m,it,x,y,skipId)) return {x:x,y:y};
+  return null;
+}
+/* ── 배치 ─────────────────────────────────────────────────────────────
+   상점에서 사면 바로 방으로 데려가서 자리를 고르게 한다. 벽을 따라 저절로 놓이면
+   내 방이라는 느낌이 안 난다. */
+var PLACE=null;
+function startPlace(id){
+  var it=FURNI[id]; if(!it||!it.w) return;
+  if(!ROOMSPEC[S.tier]){ toast('아직 놓을 방이 없습니다.'); return; }
+  if(ME.map!=='room'){ var rm=roomMap(); enterMap('room',rm.spawn.x,rm.spawn.y); }
+  var m=roomMap(),cur=furniOf(id);
+  var at=(cur&&cur.x!=null&&fitsAt(m,it,cur.x,cur.y,id))?{x:cur.x,y:cur.y}:autoSpot(m,it,id);
+  if(!at){ toast('방에 빈 자리가 없습니다.'); return; }
+  PLACE={id:id,x:at.x,y:at.y,w:it.w,h:it.h};
+  render('home');
+  showPlaceBar();
+}
+function showPlaceBar(){
+  var el=document.getElementById('hplace'); if(!el) return;
+  if(!PLACE){ el.hidden=true; return; }
+  var it=FURNI[PLACE.id],ok=fitsAt(roomMap(),it,PLACE.x,PLACE.y,PLACE.id);
+  el.hidden=false;
+  el.innerHTML='<span class="pl"><b>'+it.name+'</b> '+it.w+'×'+it.h+' · 눌러서 자리를 고르세요</span>';
+  var a=document.createElement('button'); a.textContent=ok?'여기 놓기':'놓을 수 없음';
+  a.disabled=!ok; a.onclick=commitPlace;
+  var c=document.createElement('button'); c.className='no'; c.textContent='취소';
+  c.onclick=function(){ PLACE=null; showPlaceBar(); drawScene(); };
+  el.appendChild(a); el.appendChild(c);
+}
+function commitPlace(){
+  var it=FURNI[PLACE.id];
+  if(!fitsAt(roomMap(),it,PLACE.x,PLACE.y,PLACE.id)) return;
+  var cur=furniOf(PLACE.id);
+  if(cur){ cur.x=PLACE.x; cur.y=PLACE.y; }
+  else furniList().push({id:PLACE.id,x:PLACE.x,y:PLACE.y});
+  var nm=it.name;
+  PLACE=null; ROOMC={}; save(); sfx('good');
+  showPlaceBar(); drawScene();
+  toast(nm+'을 놓았습니다.');
+}
+function movePlace(dx,dy){
+  if(!PLACE) return;
+  var m=roomMap();
+  PLACE.x=Math.max(1,Math.min(m.w-1-PLACE.w,PLACE.x+dx));
+  PLACE.y=Math.max(1,Math.min(m.h-1-PLACE.h,PLACE.y+dy));
+  showPlaceBar(); drawScene();
 }
 function buyFurni(id){
   var it=FURNI[id]; if(!it) return;
@@ -2880,31 +2968,35 @@ function buyFurni(id){
     if(!S.demo) S.coin-=it.cost;
     S.ramen=(S.ramen||0)+it.use; sfx('good'); ev('buy',{id:'ramen'});
     save(); renderShop(); toast('라면 '+it.use+'봉지를 넣어 뒀습니다.'); return; }
-  if(hasFurni(id)){ toast('이미 방에 있습니다.'); return; }
+  if(hasFurni(id)) return startPlace(id);              /* 이미 있으면 옮기기 */
+  if(!ROOMSPEC[S.tier]){ toast('아직 놓을 방이 없습니다.'); return; }
   if(!S.demo&&S.coin<it.cost){ toast('코인이 모자랍니다.'); return; }
   if(!S.demo) S.coin-=it.cost;
-  if(!S.furni) S.furni=[];
-  S.furni.push(id); sfx('good'); ev('buy',{id:id});
-  save(); renderShop(); toast(it.name+'을 방에 들였습니다.');
+  sfx('pick'); ev('buy',{id:id}); save();
+  startPlace(id);
 }
 function furniRow(id){
   var it=FURNI[id],owned=(id==='ramen')?((S.ramen||0)>0):hasFurni(id);
   var locked=S.tier<it.need;
   var b=document.createElement('button');
   b.className='item pix'+(owned?' on':'')+(locked?' off':'');
-  var cv=document.createElement('canvas'); cv.width=26; cv.height=26;
-  cv.style.width='52px'; cv.style.height='52px';
+  var cv=document.createElement('canvas'); cv.width=30; cv.height=30;
+  cv.style.width='60px'; cv.style.height='60px';
   var x=cv.getContext('2d'); x.imageSmoothingEnabled=false;
-  drawTile(x,null,it.tile||'r',5,5,0,0);
-  if(id==='ramen'){ x.clearRect(0,0,26,26); drawRamen(x,5,6); }
+  if(id==='ramen') drawRamen(x,7,8);
+  else { var s=Math.min(28/((it.w||1)*TS),28/((it.h||1)*TS));
+    x.save(); x.translate(15-((it.w||1)*TS*s)/2,15-((it.h||1)*TS*s)/2); x.scale(s,s);
+    drawObj(x,{id:id},0,0); x.restore(); }
   var right=(id==='ramen')
     ? '<span class="a">'+(S.ramen||0)+'봉지</span>'
     : (it.atk?'<span class="a">공 +'+it.atk+'</span><br>':'')+(it.def?'<span class="d">방 +'+it.def+'</span>':'');
   var wrap=document.createElement('span'); wrap.className='iw';
-  wrap.innerHTML='<span class="inm">'+it.name+'</span>'+
-    '<span class="ids">'+it.desc+(locked?'<br>'+TIERS[it.need].name+'부터':'')+'</span>';
+  wrap.innerHTML='<span class="inm">'+it.name+(it.w?' <span class="sz">'+it.w+'×'+it.h+'</span>':'')+'</span>'+
+    '<span class="ids">'+it.desc+
+    (locked?'<br>'+TIERS[it.need].name+'부터 놓을 수 있습니다':'')+
+    (owned&&id!=='ramen'?'<br>눌러서 자리를 옮깁니다':'')+'</span>';
   var price=document.createElement('span'); price.className='ip';
-  price.innerHTML=right+'<br><b>￦'+it.cost+'</b>';
+  price.innerHTML=right+'<br><b>'+(owned&&id!=='ramen'?'옮기기':'￦'+it.cost)+'</b>';
   b.appendChild(cv); b.appendChild(wrap); b.appendChild(price);
   b.onclick=function(){ buyFurni(id); };
   return b;
@@ -2924,10 +3016,58 @@ function refreshRamen(){
 function eatRamen(){
   if(!RUN||RUN.hearts>=HEARTS||!(S.ramen>0)) return;
   S.ramen--; RUN.hearts++; save(); sfx('good');
-  ev('quest_answer',{id:'ramen',i:-1,ok:true});
   var hs=document.getElementById('qhearts'); hs.innerHTML='';
   for(var i=0;i<HEARTS;i++) hs.appendChild(heartCv(i<RUN.hearts));
   refreshRamen();
+}
+/* ── 물건 그리기. 칸 수만큼 넓게 ─────────────────────────────────────── */
+function drawObj(ctx,o,px,py){
+  var it=FURNI[o.id]||(o.id==='deskbuilt'?BUILTIN:{}),W=(it.w||1)*TS,H=(it.h||1)*TS,i;
+  switch(o.id){
+    case 'deskbuilt':
+      rcx(ctx,'#A5825A',px,py+3,W,9); rcx(ctx,'#8A6A44',px,py+12,W,3);
+      rcx(ctx,'#6E5334',px+1,py+15,3,TS-15); rcx(ctx,'#6E5334',px+W-4,py+15,3,TS-15);
+      rcx(ctx,P.p0,px+4,py+5,11,6); rcx(ctx,P.s3,px+6,py+7,7,1);
+      rcx(ctx,P.k3,px+W-11,py+4,7,8); break;
+    case 'mat':
+      rcx(ctx,'#6EC8F0',px+1,py+2,W-2,H-4); rcx(ctx,'#3A9BC9',px+1,py+2,W-2,2);
+      rcx(ctx,P.p0,px+3,py+5,W-16,H-11); rcx(ctx,'#9BDCF7',px+3,py+5,W-16,2); break;
+    case 'bed':
+      rcx(ctx,'#8A6A44',px+1,py+2,W-2,H-3); rcx(ctx,'#6E5334',px+1,py+H-4,W-2,3);
+      rcx(ctx,P.p0,px+3,py+4,W-6,10); rcx(ctx,'#C9C3D6',px+3,py+13,W-6,H-18);
+      rcx(ctx,'#9B93A8',px+3,py+13,W-6,2); break;
+    case 'fan':
+      rcx(ctx,P.s1,px+6,py+10,4,6); rcx(ctx,P.s2,px+4,py+15,8,2);
+      rcx(ctx,P.p0,px+2,py+1,12,10); rcx(ctx,P.s2,px+4,py+3,8,6);
+      rcx(ctx,P.p1,px+7,py+5,2,2); break;
+    case 'desk2':
+      rcx(ctx,'#A5825A',px,py+3,W,7); rcx(ctx,'#8A6A44',px,py+10,W,3);
+      rcx(ctx,'#6E5334',px+1,py+13,3,3); rcx(ctx,'#6E5334',px+W-4,py+13,3,3);
+      rcx(ctx,P.p0,px+3,py+5,10,4); rcx(ctx,P.y1,px+W-9,py+1,3,8); break;
+    case 'fridge':
+      rcx(ctx,P.p0,px+2,py+1,TS-4,H-2); rcx(ctx,'#C9C3D6',px+2,py+1,TS-4,2);
+      rcx(ctx,'#C9C3D6',px+2,py+11,TS-4,1);
+      rcx(ctx,P.s2,px+TS-6,py+5,2,4); rcx(ctx,P.s2,px+TS-6,py+14,2,4);
+      rcx(ctx,P.y1,px+4,py+4,4,3); break;
+    case 'wash':
+      rcx(ctx,P.p0,px+1,py+1,TS-2,TS-2); rcx(ctx,P.s2,px+1,py+1,TS-2,3);
+      rcx(ctx,P.s3,px+3,py+5,10,9); rcx(ctx,'#9BDCF7',px+4,py+6,8,7);
+      rcx(ctx,P.k4,px+6,py+8,4,3); break;
+    case 'tv':
+      rcx(ctx,P.s4,px+1,py+1,W-2,11); rcx(ctx,'#3A9BC9',px+2,py+2,W-4,9);
+      rcx(ctx,'#9BDCF7',px+3,py+3,7,3);
+      rcx(ctx,P.s2,px+(W>>1)-1,py+12,3,2); rcx(ctx,P.s3,px+(W>>1)-5,py+14,11,2); break;
+    case 'styler':
+      rcx(ctx,'#C9C3D6',px+2,py+1,TS-4,H-2); rcx(ctx,P.s2,px+2,py+1,TS-4,3);
+      rcx(ctx,'#9BDCF7',px+4,py+5,TS-8,H-10); rcx(ctx,P.p0,px+7,py+5,2,H-10);
+      rcx(ctx,P.y1,px+TS-6,py+H-9,2,3); break;
+    case 'sofa':
+      rcx(ctx,'#8E7BB0',px+1,py+3,W-2,TS-5); rcx(ctx,'#6F5D91',px+1,py+3,W-2,3);
+      for(i=0;i<(it.w||1);i++) rcx(ctx,'#A891C9',px+3+i*TS,py+7,TS-6,6);
+      rcx(ctx,'#6F5D91',px+1,py+TS-3,W-2,2); break;
+    default:
+      rcx(ctx,'#8A7A64',px+1,py+1,W-2,H-2);
+  }
 }
 /* ══════════ 내 방 ══════════
    거처가 곧 방이다. 노숙이면 들어갈 방이 없고, 찜질방이면 그 안의 골방 하나고,
@@ -2957,7 +3097,7 @@ function roomSlots(w,h,dx){
 var ROOMC={};
 function roomMap(){
   var sp=ROOMSPEC[S.tier]; if(!sp) return null;
-  var key=S.tier+'|'+(S.furni||[]).join(',');
+  var key=S.tier+'|'+furniList().map(function(o){ return o.id+':'+o.x+','+o.y; }).join('|');
   if(ROOMC.k===key) return ROOMC.m;
   var w=sp.w,h=sp.h,grid=[],y,x;
   for(y=0;y<h;y++){ var r=[];
@@ -2971,21 +3111,36 @@ function roomMap(){
     grid[h-3][wx]='.';
   }
   if(sp.kind==='jjim'||sp.kind==='tent') for(y=2;y<h-1;y++) for(x=2;x<w-2;x++) grid[y][x]=',';
-  grid[1][1]='T';                             /* 책상 — 복습 노트가 여기 */
-  var slots=roomSlots(w,h,dx),si=0;
-  (S.furni||[]).forEach(function(id){
-    var it=FURNI[id]; if(!it||!it.tile) return;
-    while(si<slots.length&&grid[slots[si].y][slots[si].x]!=='.'&&grid[slots[si].y][slots[si].x]!==',') si++;
-    if(si>=slots.length) return;
-    grid[slots[si].y][slots[si].x]=it.tile; si++;
-  });
   var rows=grid.map(function(r){ return r.join(''); });
   var m={name:TIERS[S.tier].name,sub:'지금 사는 곳',w:w,h:h,rows:rows,
     spawn:{x:dx,y:h-2},
     warps:[{x:dx,y:h-1,to:'town',tx:2,ty:3}],
     spots:[{x:1,y:1,kind:'review'}]};
+  /* 자리가 정해지지 않은 물건은 빈 자리에 알아서 놓는다 */
   ROOMC={k:key,m:m};
+  var moved=false;
+  furniList().forEach(function(o){
+    var it=FURNI[o.id]; if(!it||!it.w) return;
+    if(o.x!=null&&fitsAt(m,it,o.x,o.y,o.id)) return;
+    var at=autoSpot(m,it,o.id);
+    if(at){ o.x=at.x; o.y=at.y; moved=true; } else { o.x=null; o.y=null; }
+  });
+  if(moved){ ROOMC.k=S.tier+'|'+furniList().map(function(o){ return o.id+':'+o.x+','+o.y; }).join('|'); }
   return m;
+}
+/* 방에 놓인 물건을 그린다. 붙박이 책상(복습 노트)은 늘 왼쪽 위에 있다. */
+function roomObjs(){
+  var out=[BUILTIN];
+  furniList().forEach(function(o){ if(o&&o.x!=null&&FURNI[o.id]) out.push(o); });
+  return out;
+}
+function objBlocks(x,y){
+  if(ME.map!=='room') return false;
+  var hit=false;
+  roomObjs().forEach(function(o){
+    var it=FURNI[o.id]||o;
+    if(x>=o.x&&x<o.x+(it.w||1)&&y>=o.y&&y<o.y+(it.h||1)) hit=true; });
+  return hit;
 }
 /* ══════════ 맵 ══════════
    왼쪽에서 오른쪽으로 갈수록 나중에 겪을 일이 나온다. 집에서 나와 동네를 지나
@@ -2997,9 +3152,7 @@ var TILES={
  '_':{walk:1,kind:'pave'},  'g':{walk:1,kind:'grass'},'r':{kind:'road'},
  '-':{kind:'cross'},        'H':{kind:'wall'},        'W':{kind:'window'},  'R':{kind:'roof'},
  'D':{kind:'door'},         't':{kind:'tree'},        'f':{kind:'fence'},
- 'p':{kind:'pole'},         'b':{kind:'bench'},
- 'M':{kind:'mat'},'N':{kind:'fan'},'K':{kind:'desk2'},'F':{kind:'fridge'},
- 'A':{kind:'wash'},'V':{kind:'tv'},'L':{kind:'styler'},'S':{kind:'sofa'}
+ 'p':{kind:'pole'},         'b':{kind:'bench'}
 };
 var MAPS={
  town:{spawn:{x:4,y:4},name:'동네',sub:'1 · 지금 사는 곳',w:22,h:11,rows:[
@@ -3104,6 +3257,7 @@ function warpAt(m,x,y){
 function walkable(m,x,y){
   var c=tileAt(m,x,y); if(c===null) return false;
   if(spotAt(m,x,y)) return false;
+  if(objBlocks(x,y)) return false;
   if(warpAt(m,x,y)) return true;          /* 문은 막혀 보여도 밟을 수 있어야 문이다 */
   var t=TILES[c]; return !!(t&&t.walk);
 }
@@ -3168,29 +3322,6 @@ function drawTile(ctx,m,c,px,py,tx,ty){
     case 'b': rcx(ctx,'#CFCADA',px,py,TS,TS); rcx(ctx,'#A5825A',px+1,py+5,TS-2,4);
       rcx(ctx,'#8A6A44',px+1,py+9,TS-2,2); rcx(ctx,'#6B6380',px+2,py+11,2,4);
       rcx(ctx,'#6B6380',px+TS-4,py+11,2,4); break;
-    case 'M': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,'#6EC8F0',px+1,py+4,TS-2,TS-6);
-      rcx(ctx,'#3A9BC9',px+1,py+4,TS-2,2); rcx(ctx,P.p0,px+3,py+7,6,3); break;
-    case 'N': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,P.s1,px+6,py+9,4,6);
-      rcx(ctx,P.p0,px+2,py+1,12,9); rcx(ctx,P.s2,px+4,py+3,8,5);
-      rcx(ctx,P.p1,px+7,py+5,2,2); break;
-    case 'K': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,'#A5825A',px,py+3,TS,5);
-      rcx(ctx,'#8A6A44',px,py+8,TS,2); rcx(ctx,P.p0,px+3,py+4,9,3);
-      rcx(ctx,'#6E5334',px+1,py+10,2,5); rcx(ctx,'#6E5334',px+TS-3,py+10,2,5); break;
-    case 'F': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,P.p0,px+2,py,12,TS);
-      rcx(ctx,'#C9C3D6',px+2,py+6,12,1); rcx(ctx,P.s2,px+11,py+3,2,3);
-      rcx(ctx,P.s2,px+11,py+9,2,3); break;
-    case 'A': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,P.p0,px+1,py+1,14,14);
-      rcx(ctx,P.s2,px+1,py+1,14,3); rcx(ctx,'#9BDCF7',px+4,py+6,8,7);
-      rcx(ctx,P.s3,px+3,py+5,10,9); rcx(ctx,'#9BDCF7',px+4,py+6,8,7); break;
-    case 'V': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,P.s4,px+1,py+1,14,10);
-      rcx(ctx,'#3A9BC9',px+2,py+2,12,8); rcx(ctx,'#9BDCF7',px+3,py+3,5,3);
-      rcx(ctx,P.s2,px+7,py+11,2,3); rcx(ctx,P.s3,px+4,py+14,8,2); break;
-    case 'L': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,'#C9C3D6',px+2,py,12,TS);
-      rcx(ctx,P.s2,px+2,py,12,2); rcx(ctx,'#9BDCF7',px+4,py+3,8,9);
-      rcx(ctx,P.p0,px+7,py+3,2,9); break;
-    case 'S': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,'#8E7BB0',px,py+4,TS,10);
-      rcx(ctx,'#6F5D91',px,py+4,TS,2); rcx(ctx,'#A891C9',px+2,py+7,5,5);
-      rcx(ctx,'#A891C9',px+9,py+7,5,5); break;
     default: rcx(ctx,'#2E2740',px,py,TS,TS);
   }
 }
@@ -3343,6 +3474,7 @@ function checkWarp(){
   return false;
 }
 function enterMap(id,tx,ty){
+  if(PLACE&&id!=='room'){ PLACE=null; showPlaceBar(); }
   var m=(id==='room')?roomMap():MAPS[id];
   if(!m){ toast('아직 들어갈 방이 없습니다. 주 스탯을 올려 거처를 해금하세요.'); return; }
   MOVE=null;
@@ -3367,6 +3499,8 @@ function drawScene(){
   var y0=Math.max(0,Math.floor(cam.y/TS)),y1=Math.min(m.h-1,Math.ceil((cam.y+SH)/TS));
   for(y=y0;y<=y1;y++) for(x=x0;x<=x1;x++) drawTile(ctx,m,tileAt(m,x,y),x*TS,y*TS,x,y);
 
+  if(ME.map==='room') roomObjs().forEach(function(o){ drawObj(ctx,o,o.x*TS,o.y*TS); });
+
   /* 서 있는 것들과 나를 세로 순서로 섞어 그린다. 뒤에 있으면 가려져야 한다. */
   var p=mePx(),cast=[];
   (m.spots||[]).forEach(function(s){ cast.push({y:s.y*TS,draw:function(){ drawSpot(ctx,s,s.x*TS,s.y*TS); }}); });
@@ -3389,6 +3523,15 @@ function drawScene(){
   var zn=document.getElementById('hzone');
   if(zn) zn.innerHTML='<b>'+(m.sub?m.sub.split(' · ')[0]:'')+'</b> '+m.name+
     (m.sub&&m.sub.indexOf(' · ')>=0?' <span>· '+m.sub.split(' · ')[1]+'</span>':'');
+  if(PLACE){                                      /* 놓을 자리 미리보기 */
+    var pit=FURNI[PLACE.id],okp=fitsAt(m,pit,PLACE.x,PLACE.y,PLACE.id);
+    ctx.save(); ctx.translate(-cam.x,-cam.y);
+    ctx.globalAlpha=0.75; drawObj(ctx,{id:PLACE.id},PLACE.x*TS,PLACE.y*TS); ctx.globalAlpha=1;
+    var gw=PLACE.w*TS,gh=PLACE.h*TS,col=okp?P.g1:P.r1;
+    rcx(ctx,col,PLACE.x*TS,PLACE.y*TS,gw,2); rcx(ctx,col,PLACE.x*TS,PLACE.y*TS+gh-2,gw,2);
+    rcx(ctx,col,PLACE.x*TS,PLACE.y*TS,2,gh); rcx(ctx,col,PLACE.x*TS+gw-2,PLACE.y*TS,2,gh);
+    ctx.restore();
+  }
   drawMini();
   var nb=document.getElementById('hnear'),ns=facingSpot();
   if(nb){ if(ns){ nb.hidden=false; nb.innerHTML='<b>'+spotLabel(ns)+'</b> <span>'+spotHint(ns)+'</span>'; }
@@ -3409,6 +3552,8 @@ function drawMini(){
     var mk=spotMark(sp);
     x.fillStyle=mk==='!'?'#FFC53C':mk?'#FFFDF6':'#6B6380';
     x.fillRect(sp.x*s,sp.y*s,s,s); });
+  if(ME.map==='room') roomObjs().forEach(function(o){ var it=FURNI[o.id]||o;
+    x.fillStyle='#B99B6E'; x.fillRect(o.x*s,o.y*s,(it.w||1)*s,(it.h||1)*s); });
   (m.warps||[]).forEach(function(w){ x.fillStyle='#62C85C'; x.fillRect(w.x*s,w.y*s,s,s); });
   x.fillStyle='#F4705A'; x.fillRect(ME.tx*s-1,ME.ty*s-1,s+2,s+2);
   x.fillStyle='#FFFDF6'; x.fillRect(ME.tx*s,ME.ty*s,s,s);
@@ -3481,6 +3626,7 @@ function sceneTile(ev){
 var HOLD={dir:null};
 /* 한 칸씩 누르는 것만으로는 스물두 칸짜리 맵을 못 걷는다. 누르고 있으면 계속 간다. */
 function stepDir(d){
+  if(PLACE){ return movePlace(d===2?1:d===1?-1:0,d===0?1:d===3?-1:0); }
   if(MOVE) return;
   var m=curMap(),dx=(d===2?1:d===1?-1:0),dy=(d===0?1:d===3?-1:0);
   ME.dir=d;
@@ -3516,6 +3662,10 @@ function bindScene(){
   var cv=document.getElementById('scene'); if(!cv||cv.__bound) return; cv.__bound=1;
   cv.addEventListener('pointerdown',function(ev){ ev.preventDefault(); });
   cv.addEventListener('pointerup',function(ev){
+    if(PLACE){ var tp=sceneTile(ev),mm=roomMap();
+      PLACE.x=Math.max(1,Math.min(mm.w-1-PLACE.w,tp.x));
+      PLACE.y=Math.max(1,Math.min(mm.h-1-PLACE.h,tp.y));
+      sfx('pick'); showPlaceBar(); drawScene(); return; }
     if(MOVE) return;
     var m=curMap(),t=sceneTile(ev),s=spotAt(m,t.x,t.y);
     if(s){
