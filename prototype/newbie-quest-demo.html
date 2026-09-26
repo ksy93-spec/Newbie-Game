@@ -253,10 +253,21 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .dpad button:active{background:var(--y2);color:var(--s4);}
 .dpad button[data-d="3"]{grid-area:1/2;} .dpad button[data-d="1"]{grid-area:2/1;}
 .dpad button[data-d="2"]{grid-area:2/3;} .dpad button[data-d="0"]{grid-area:3/2;}
-.abtn{position:absolute;right:10px;bottom:18px;width:48px;height:48px;border-radius:50%;
-  background:rgba(244,112,90,.88);color:var(--p0);border:3px solid rgba(255,253,246,.5);
-  font-family:var(--f-ui);font-size:16px;opacity:.9;cursor:pointer;touch-action:none;}
-.abtn:active{background:var(--y2);color:var(--s4);}
+.minimap{position:absolute;right:8px;bottom:8px;padding:4px;background:rgba(46,39,64,.86);
+  border:2px solid rgba(255,253,246,.45);line-height:0;cursor:pointer;touch-action:none;}
+.minimap:active{background:rgba(237,165,35,.9);}
+.minimap canvas{image-rendering:pixelated;display:block;}
+.travel{position:absolute;inset:0;z-index:6;background:rgba(27,24,38,.95);padding:10px;
+  display:flex;flex-direction:column;gap:4px;overflow:auto;}
+.travel .tl{font-family:var(--f-ui);font-size:11px;line-height:16px;color:var(--s0);margin-bottom:2px;}
+.travel button{display:flex;align-items:center;gap:6px;width:100%;text-align:left;
+  background:var(--p1);border:2px solid var(--s4);padding:6px 8px;font-family:var(--f-ui);
+  font-size:11px;line-height:17px;color:var(--s4);cursor:pointer;min-height:0;}
+.travel button.here{background:var(--y1);}
+.travel button[disabled]{opacity:.45;}
+.travel button i{font-style:normal;color:var(--s2);font-size:10px;line-height:17px;}
+.travel button i.sub{margin-left:auto;}
+.travel button b{color:var(--r3);font-weight:400;}
 .nearbar{position:absolute;left:0;right:0;top:0;background:rgba(46,39,64,.9);color:var(--p0);
   font-family:var(--f-ui);font-size:11px;line-height:15px;padding:4px 9px;pointer-events:none;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -407,7 +418,8 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
           <button data-d="2" aria-label="오른쪽">▶</button>
           <button data-d="0" aria-label="아래">▼</button>
         </div>
-        <button class="abtn pix" id="habtn" aria-label="말 걸기">A</button>
+        <button class="minimap pix" id="hmini" aria-label="지도 열기"><canvas id="hminicv"></canvas></button>
+        <div class="travel" id="htravel" hidden></div>
         <div class="nearbar pix" id="hnear" hidden></div>
       </div>
       <div class="sceneinfo"><span class="tiername" id="htier">노숙</span><span class="def pix">방어 <b id="hdef">0</b></span></div>
@@ -2575,57 +2587,127 @@ var PROP={
    스프라이트를 따로 쓰는 그 구조다. */
 var TS=16;
 var TOPC={};
-/* dir 0 아래 · 1 왼 · 2 오 · 3 위 */
+/* ── 소품과 장비 ──────────────────────────────────────────────────────
+   위에서 본 몸은 18×26칸밖에 안 된다. 그 안에서도 무엇을 들었는지, 무엇을 썼는지는
+   보여야 한다. 안 그러면 다들 같은 사람이고, 옷을 사는 이유도 없어진다. */
+function topWeapon(g,gear,dir){
+  var hx=(dir===1)?3:14,hy=17;                       /* 손 위치 */
+  switch(gear){
+    case 'pen':    rc(g,hx,hy-4,hx,hy,P.s5); rc(g,hx,hy-5,hx,hy-5,P.k4); break;
+    case 'mouse':  rr(g,hx-1,hy-1,hx+1,hy+2,P.p0,1); rc(g,hx,hy-1,hx,hy,P.s2); break;
+    case 'tumbler':rr(g,hx-1,hy-5,hx+1,hy+1,P.k3,1); rc(g,hx-1,hy-5,hx+1,hy-4,P.s3); break;
+    case 'keyb':   rc(g,hx-2,hy-2,hx+2,hy,P.s3); rc(g,hx-1,hy-1,hx+1,hy-1,P.p0); break;
+    case 'board':  rc(g,hx-2,hy-5,hx+1,hy+1,P.b2); rc(g,hx-1,hy-4,hx,hy-1,P.p0);
+                   rc(g,hx-2,hy-6,hx+1,hy-5,P.s2); break;
+    case 'laptop': rc(g,hx-2,hy-3,hx+2,hy,P.s1); rc(g,hx-1,hy-2,hx+1,hy-1,P.k2); break;
+    case 'card':   rr(g,hx-2,hy-2,hx+1,hy,P.y1,1); rc(g,hx-1,hy-1,hx,hy-1,P.s4); break;
+  }
+}
+function topProp(g,prop,dir){
+  switch(prop){
+    case 'cane':  rc(g,2,15,2,24,'#8A6A44'); rc(g,1,14,3,15,'#6E5334'); break;
+    case 'bag':   rr(g,13,16,16,21,'#6E5334',1); rc(g,13,16,16,16,'#8A6A44'); break;
+    case 'clip':  rc(g,5,16,12,21,P.b2); rc(g,6,17,11,20,P.p0); rc(g,7,16,10,16,P.s2); break;
+    case 'cup':   rr(g,13,15,15,18,P.p0,1); rc(g,13,15,15,15,P.r1); break;
+    case 'files': rc(g,2,16,5,21,P.k1); rc(g,2,16,5,17,P.k4); rc(g,3,19,4,19,P.s2); break;
+  }
+}
+/* ── 위에서 본 사람 ───────────────────────────────────────────────────
+   dir 0 아래 · 1 왼 · 2 오 · 3 위 */
 function personTopG(p,dir,f){
-  var g=Gr(18,26);
+  var g=Gr(18,26),i;
   var sk=p.skin||SKIN[1],hair=p.hair||HAIRC[0];
   var top=p.top||'#2C3A5E',bot=p.bot||'#3A3746';
-  var la=f?1:0,lb=f?0:1;
-  rc(g,5,19+la,7,23,bot); rc(g,10,19+lb,12,23,bot);        /* 다리 */
-  rc(g,5,23,7,24,P.s4);  rc(g,10,23,12,24,P.s4);           /* 신발 */
-  rr(g,4,12,13,20,top,1);                                  /* 몸 */
-  rc(g,3,13,4,18,top); rc(g,13,13,14,18,top);              /* 팔 */
-  rc(g,3,17,4,18,sk.b); rc(g,13,17,14,18,sk.b);            /* 손 */
-  if(p.acc) rc(g,7,13,10,16,p.acc);                        /* 가방끈·명찰 */
-  rr(g,4,3,13,12,sk.b,2);                                  /* 머리 */
-  rc(g,4,11,13,12,sk.s);
-  if(dir===3) rr(g,3,2,14,11,hair.b,2);                    /* 뒤통수 */
-  else { rr(g,3,2,14,8,hair.b,2); rc(g,3,6,4,10,hair.b); rc(g,13,6,14,10,hair.b); }
-  rc(g,5,2,12,3,hair.h);
-  if(p.hat){ rr(g,2,1,15,6,p.hat,2); rc(g,2,6,15,7,P.s4); }
-  if(dir===0){ rc(g,6,8,6,9,P.s5); rc(g,11,8,11,9,P.s5); }
-  if(dir===1){ rc(g,5,8,6,9,P.s5); }
-  if(dir===2){ rc(g,11,8,12,9,P.s5); }
+  var la=f?1:0,lb=f?0:1,W=p.puff?1:0;
+
+  if(p.prop==='cane'||p.prop==='files') topProp(g,p.prop,dir);   /* 몸 뒤로 가는 소품 */
+
+  rc(g,5,19+la,7,23,bot); rc(g,10,19+lb,12,23,bot);              /* 다리 */
+  if(p.stripe){ rc(g,5,19+la,5,23,p.acc||P.p0); rc(g,12,19+lb,12,23,p.acc||P.p0); }
+  rc(g,5,23,7,24,P.s4); rc(g,10,23,12,24,P.s4);                  /* 신발 */
+
+  rr(g,4-W,12,13+W,20,top,1);                                    /* 몸통 */
+  if(p.puff){ rc(g,3,15,14,15,P.s2); rc(g,3,18,14,18,P.s2); }    /* 누빔 자국 */
+  rc(g,3-W,13,4-W,18,top); rc(g,13+W,13,14+W,18,top);            /* 팔 */
+  rc(g,3-W,17,4-W,18,sk.b); rc(g,13+W,17,14+W,18,sk.b);          /* 손 */
+  if(p.apron) rr(g,5,14,12,20,p.apron,1);
+  if(p.hood) (dir===3)?rr(g,4,9,13,14,p.acc||top,2):rr(g,5,10,12,13,p.acc||top,1);
+  if(p.badge){ rc(g,8,12,9,15,P.p0); rr(g,7,15,10,18,p.acc||P.k3,1); }
+  if(p.sharp){ rc(g,6,12,7,15,p.acc||P.y1); rc(g,10,12,11,15,p.acc||P.y1); }
+  if(p.tie&&dir!==3) rc(g,8,12,9,17,p.tie);
+  if(p.shirt&&dir!==3) rc(g,7,12,10,14,P.p0);
+
+  rr(g,4,3,13,12,sk.b,2); rc(g,4,11,13,12,sk.s);                 /* 머리 */
+
+  /* 머리카락이 눈까지 덮으면 다들 같은 사람이 된다. 이마를 남겨 둔다. */
+  var hs=p.hs||'short';
+  if(dir===3){ rr(g,3,2,14,11,hair.b,2); if(hs==='long'||hs==='wave') rc(g,3,10,14,17,hair.b); }
+  else {
+    rr(g,3,2,14,6,hair.b,2);
+    if(hs!=='bald'){ rc(g,3,5,4,9,hair.b); rc(g,13,5,14,9,hair.b); }
+    if(hs==='long'){ rc(g,2,6,4,17,hair.b); rc(g,13,6,15,17,hair.b); }
+    if(hs==='wave'){ rc(g,2,6,4,16,hair.b); rc(g,13,6,15,16,hair.b);
+      rc(g,1,9,2,12,hair.h); rc(g,15,9,16,12,hair.h); }
+    if(hs==='bald'){ rc(g,4,2,13,4,sk.b); rc(g,3,4,4,7,hair.b); rc(g,13,4,14,7,hair.b); }
+  }
+  if(hs==='bun'){ rr(g,7,0,10,3,hair.b,1); rc(g,8,0,9,0,hair.h); }
+  if(hs!=='bald') rc(g,5,2,12,3,hair.h);
+
+  if(dir===0){ rc(g,6,9,6,10,P.s5); rc(g,11,9,11,10,P.s5); }
+  if(dir===1){ rc(g,5,9,6,10,P.s5); }
+  if(dir===2){ rc(g,11,9,12,10,P.s5); }
+  if(p.glasses&&dir!==3){                                        /* 안경 */
+    rc(g,4,8,7,11,P.s4); rc(g,10,8,13,11,P.s4);
+    rc(g,5,9,6,10,P.k1); rc(g,11,9,12,10,P.k1);
+    rc(g,8,9,9,9,P.s4);
+    if(dir!==1) rc(g,11,10,11,10,P.s5);
+    if(dir!==2) rc(g,6,10,6,10,P.s5); }
+  if(p.shades&&dir!==3){ rc(g,4,8,13,11,P.s5); rc(g,5,9,7,10,'#453D5C'); }
+  if(p.hat){ rr(g,2,0,15,5,p.hat,2); rc(g,1,5,16,6,P.s4);
+    if(p.hatband) rc(g,2,4,15,5,p.hatband); }
+  if(p.band){ rc(g,3,3,14,4,p.band); rc(g,13,1,15,4,p.band); rc(g,12,2,13,3,p.band); }
+
+  if(p.prop&&p.prop!=='cane'&&p.prop!=='files') topProp(g,p.prop,dir);
+  if(p.weapon) topWeapon(g,p.weapon,dir);
   shade(g); outline(g,P.s5); return g;
 }
+/* 내 캐릭터는 상점에서 산 것이 그대로 보여야 한다. 안 보이면 살 이유가 없다. */
 function heroTop(dir,f){
-  var o=equipOpts(),L=S.look||{};
+  var o=equipOpts(),L=S.look||{},E=S.equip;
   var hi=(L.haircol>=0)?L.haircol:0,hc=HAIRC[hi]||HAIRC[0],sk=SKIN[L.skin||0]||SKIN[0];
-  var key='HT'+dir+f+'|'+hi+(L.skin||0)+o.top+o.bot+o.ac;
+  var wp=ITEMS[E.weapon],hd=ITEMS[E.head],av=AVATARS[S.avatar]||{};
+  var key='HT'+dir+f+'|'+hi+(L.skin||0)+E.top+E.bottom+E.weapon+E.head+S.avatar;
   if(TOPC[key]) return TOPC[key];
-  return (TOPC[key]=toCanvas(personTopG({
-    hair:hc,skin:sk,top:o.top||'#2C3A5E',bot:o.bot||'#3A3746',acc:o.ac},dir,f)));
+  var p={hair:hc,skin:sk,top:o.top||'#2C3A5E',bot:o.bot||'#3A3746',acc:o.ac,
+    hs:(av.name==='여')?'long':'short',
+    weapon:wp&&wp.gear,
+    hood:o.ts==='hood',badge:o.ts==='badge',sharp:o.ts==='sharp',puff:o.ts==='puff',
+    stripe:o.bs==='stripe'};
+  var hg=hd&&hd.gear;
+  if(hg==='glass') p.glasses=1;
+  if(hg==='beanie'){ p.hat='#3A5F8C'; p.hatband='#2C4668'; }
+  if(hg==='band') p.band=P.r1;
+  return (TOPC[key]=toCanvas(personTopG(p,dir,f)));
 }
-/* 조연은 손그림 색을 옮겨 왔다. 지도에서도 같은 사람으로 보여야 한다. */
+/* 조연도 역할이 보여야 한다. 흰머리에 지팡이면 동네 어른, 명찰에 흰 셔츠면 창구 직원. */
 var NPC_TOP={
- gpa:    {hair:{b:'#9A9AA8',h:'#C2C2CC'},top:'#6E6A52',bot:'#5A5648'},
- gma:    {hair:{b:'#C9C3D6',h:'#E8E4F0'},top:'#8E7BB0',bot:'#5F5A73'},
- peerm:  {hair:{b:'#2B2733',h:'#453F54'},top:'#2C3A5E',bot:'#3A3746'},
- peerf:  {hair:{b:'#4A3628',h:'#6B5340'},top:'#C2A079',bot:'#5C5866'},
- deskf:  {hair:{b:'#2B2733',h:'#453F54'},top:'#FFF8EC',bot:'#3A3746',acc:'#9BDCF7'},
- officem:{hair:{b:'#2B2733',h:'#453F54'},top:'#5C5866',bot:'#3A3746',acc:'#F4705A'},
- boss:   {hair:{b:'#191620',h:'#3A3550'},top:'#3B3550',bot:'#26232E'},
- mlmf:   {hair:{b:'#7A5A3C',h:'#9E7C58'},top:'#D9B44A',bot:'#5C5866'},
- fp:     {hair:{b:'#2B2733',h:'#453F54'},top:'#26406B',bot:'#1E2C44',acc:'#FFC53C'},
- boy:    {hair:{b:'#2B2733',h:'#453F54'},top:'#62C85C',bot:'#3F5F87',hat:'#F4705A'},
- girl:   {hair:{b:'#4A3628',h:'#6B5340'},top:'#F4705A',bot:'#3F5F87'}
+ gpa:    {hair:{b:'#9A9AA8',h:'#C2C2CC'},hs:'bald',top:'#6E6A52',bot:'#5A5648',prop:'cane',glasses:1},
+ gma:    {hair:{b:'#D6D2E0',h:'#EFEDF5'},hs:'bun', top:'#8E7BB0',bot:'#5F5A73',glasses:1},
+ peerm:  {hair:{b:'#2B2733',h:'#453F54'},hs:'short',top:'#2C3A5E',bot:'#3A3746',prop:'bag'},
+ peerf:  {hair:{b:'#4A3628',h:'#6B5340'},hs:'long', top:'#C2A079',bot:'#5C5866',apron:'#9BAE8C'},
+ deskf:  {hair:{b:'#2B2733',h:'#453F54'},hs:'long', top:'#FFF8EC',bot:'#3A3746',badge:1,acc:'#9BDCF7'},
+ officem:{hair:{b:'#2B2733',h:'#453F54'},hs:'short',top:'#5C5866',bot:'#3A3746',tie:'#F4705A',prop:'clip'},
+ boss:   {hair:{b:'#191620',h:'#3A3550'},hs:'short',top:'#4A4560',bot:'#2E2A3C',shades:1,shirt:1,tie:'#B93A2D'},
+ mlmf:   {hair:{b:'#C99A5B',h:'#E6BE86'},hs:'wave', top:'#D9B44A',bot:'#5C5866',prop:'bag'},
+ fp:     {hair:{b:'#2B2733',h:'#453F54'},hs:'short',top:'#26406B',bot:'#1E2C44',glasses:1,tie:'#FFC53C',prop:'files'},
+ boy:    {hair:{b:'#2B2733',h:'#453F54'},hs:'short',top:'#62C85C',bot:'#3F5F87',hat:'#F4705A'},
+ girl:   {hair:{b:'#4A3628',h:'#6B5340'},hs:'long', top:'#F4705A',bot:'#3F5F87'}
 };
 function npcTop(key,dir,f){
   var k='NT'+key+dir+f; if(TOPC[k]) return TOPC[k];
   var p=NPC_TOP[key]||NPC_TOP.peerm;
   return (TOPC[k]=toCanvas(personTopG(p,dir,f)));
 }
-
 /* ══════════ 맵 ══════════
    왼쪽에서 오른쪽으로 갈수록 나중에 겪을 일이 나온다. 집에서 나와 동네를 지나
    학교 앞 → 고용센터 → 회사 → 은행 골목. 걸어가는 것이 곧 시간이 흐르는 것이다.
@@ -2639,7 +2721,7 @@ var TILES={
  'p':{kind:'pole'},         'b':{kind:'bench'}
 };
 var MAPS={
- room:{name:'내 방',sub:'지금 사는 곳',w:11,h:9,rows:[
+ room:{spawn:{x:5,y:6},name:'내 방',sub:'지금 사는 곳',w:11,h:9,rows:[
   '###########',
   '#T.......B#',
   '#.........#',
@@ -2652,7 +2734,7 @@ var MAPS={
   warps:[{x:5,y:7,to:'town',tx:2,ty:3}],
   spots:[{x:1,y:1,kind:'review'}]},
 
- town:{name:'동네',sub:'1 · 지금 사는 곳',w:22,h:11,rows:[
+ town:{spawn:{x:4,y:4},name:'동네',sub:'1 · 지금 사는 곳',w:22,h:11,rows:[
   'RRRRRRRRRRRRRRRRRRRRRR',
   'HWWHHHHWWHHHHWWHHHHWWH',
   'HHDHHHHHDHHHHHDHHHHHHH',
@@ -2670,7 +2752,7 @@ var MAPS={
          {x:14,y:3,kind:'npc',who:'주민센터 직원'},
          {x:11,y:6,kind:'ep',id:'jeonse-day'}]},
 
- campus:{name:'학교 앞',sub:'2 · 알바와 학자금',w:22,h:11,rows:[
+ campus:{spawn:{x:3,y:5},name:'학교 앞',sub:'2 · 알바와 학자금',w:22,h:11,rows:[
   'gggggggggggggggggggggg',
   'gRRRRRRRggggggRRRRRRRg',
   'gHWWHWWHggttggHWWHWWHg',
@@ -2690,7 +2772,7 @@ var MAPS={
          {x:18,y:5,kind:'npc',who:'장학팀'},
          {x:9,y:8,kind:'ep',id:'first-job'}]},
 
- center:{name:'고용센터 앞',sub:'3 · 취업 준비',w:22,h:11,rows:[
+ center:{spawn:{x:3,y:4},name:'고용센터 앞',sub:'3 · 취업 준비',w:22,h:11,rows:[
   'RRRRRRRRRRRRRRRRRRRRRR',
   'HWWWWHHHHHHHHHHWWWWWWH',
   'HHHHHHHHDDHHHHHHHHHHHH',
@@ -2707,7 +2789,7 @@ var MAPS={
          {x:14,y:4,kind:'npc',who:'공단 상담원'},
          {x:11,y:6,kind:'ep',id:'job-hunt'}]},
 
- office:{name:'회사 앞',sub:'4 · 첫 출근 이후',w:22,h:11,rows:[
+ office:{spawn:{x:3,y:4},name:'회사 앞',sub:'4 · 첫 출근 이후',w:22,h:11,rows:[
   'RRRRRRRRRRRRRRRRRRRRRR',
   'HWWWWHHHHWWWWWHHHWWWWH',
   'HWWWWHHDDWWWWWHHHHHHHH',
@@ -2724,7 +2806,7 @@ var MAPS={
          {x:15,y:4,kind:'npc',who:'3년차 선배'},
          {x:11,y:7,kind:'ep',id:'first-pay'}]},
 
- bank:{name:'은행 골목',sub:'5 · 계약과 돈',w:22,h:11,rows:[
+ bank:{spawn:{x:3,y:4},name:'은행 골목',sub:'5 · 계약과 돈',w:22,h:11,rows:[
   'RRRRRRRRRRRRRRRRRRRRRR',
   'HWWHHWWHHHHWWHHHHWWHHH',
   'HHHHDHHHHHHHHDHHHHHHHH',
@@ -2855,11 +2937,27 @@ function questAt(name){
     if(!pick||(t&&!isToday)){ pick=q; isToday=t; } });
   return pick?{q:pick,today:isToday}:null;
 }
-function drawMark(ctx,x,y,today){
-  var col=today?P.y1:P.p0;
-  rcx(ctx,P.s4,x-5,y-13,11,13); rcx(ctx,col,x-4,y-12,9,11);
-  rcx(ctx,P.s4,x-1,y-10,2,5); rcx(ctx,P.s4,x-1,y-4,2,2);
-  rcx(ctx,P.s4,x-2,y,5,2); rcx(ctx,P.s4,x-1,y+2,3,2);
+var TICK=0;
+/* A 버튼을 잘 안 쓴다기에 걷어냈다. 대신 말 걸 수 있는 사람 위에 누르라는 표시를 띄운다.
+   위아래로 조금 흔들려야 눈에 들어온다. */
+function drawMark(ctx,x,y,tone){
+  var bob=[0,1,2,1][Math.floor(TICK/4)%4],yy=y-bob;
+  rcx(ctx,P.s4,x-5,yy-8,10,8);
+  rcx(ctx,tone,x-4,yy-7,8,6);
+  rcx(ctx,P.s4,x-3,yy,6,2); rcx(ctx,P.s4,x-2,yy+2,4,2); rcx(ctx,P.s4,x-1,yy+4,2,2);
+  rcx(ctx,tone,x-2,yy-1,4,2); rcx(ctx,tone,x-1,yy+1,2,2);
+  rcx(ctx,P.s5,x-2,yy-5,1,3); rcx(ctx,P.s5,x,yy-6,2,4);   /* 손가락 모양 */
+}
+/* 끝낸 사람은 조용히 서 있되, 끝났다는 것은 보여야 한다 */
+function drawDone(ctx,x,y){
+  rcx(ctx,P.s4,x+1,y-7,9,9); rcx(ctx,'#9B93A8',x+2,y-6,7,7);
+  rcx(ctx,P.p0,x+3,y-3,2,2); rcx(ctx,P.p0,x+4,y-2,2,2);
+  rcx(ctx,P.p0,x+5,y-4,2,2); rcx(ctx,P.p0,x+6,y-5,2,2);
+}
+function drawRing(ctx,cx,cy,tone){
+  rcx(ctx,tone,cx-5,cy,10,1); rcx(ctx,tone,cx-6,cy-1,2,1); rcx(ctx,tone,cx+4,cy-1,2,1);
+  rcx(ctx,tone,cx-6,cy+1,2,1); rcx(ctx,tone,cx+4,cy+1,2,1);
+  rcx(ctx,tone,cx-4,cy+2,8,1);
 }
 function drawSpot(ctx,s,px,py){
   if(s.kind==='ep'||s.kind==='review'){
@@ -2979,21 +3077,66 @@ function drawScene(){
     /* 조연들과 실루엣이 비슷해서, 발밑에 표시가 없으면 내가 누군지 못 찾는다 */
     var cx2=Math.round(p.x+TS/2),cy2=Math.round(p.y+TS+1);
     rcx(ctx,'rgba(46,39,64,.35)',cx2-6,cy2-2,12,3);
-    rcx(ctx,P.y1,cx2-5,cy2-1,10,2); rcx(ctx,P.y2,cx2-3,cy2+1,6,1);
+    rcx(ctx,P.p0,cx2-5,cy2-1,10,2); rcx(ctx,'#9BDCF7',cx2-3,cy2+1,6,1);
     var im=heroTop(ME.dir,ME.step);
     ctx.drawImage(im,Math.round(p.x+(TS-im.width)/2),Math.round(p.y+TS-im.height+2)); }});
   cast.sort(function(a,b){ return a.y-b.y; });
   cast.forEach(function(c){ c.draw(); });
   (m.spots||[]).forEach(function(s){
-    var mk=spotMark(s); if(mk) drawMark(ctx,s.x*TS+TS/2,s.y*TS-(s.kind==='ep'||s.kind==='review'?8:12)); });
+    var mk=spotMark(s),cx2=s.x*TS+TS/2,top=s.y*TS-(s.kind==='ep'||s.kind==='review'?6:10);
+    if(mk){ var tone=(mk==='!')?P.y1:P.p0;
+      drawRing(ctx,cx2,s.y*TS+TS-1,tone); drawMark(ctx,cx2,top,tone); }
+    else if(s.kind==='npc'||s.kind==='boss') drawDone(ctx,s.x*TS+7,s.y*TS-2); });
   ctx.restore();
 
   var zn=document.getElementById('hzone');
   if(zn) zn.innerHTML='<b>'+(m.sub?m.sub.split(' · ')[0]:'')+'</b> '+m.name+
     (m.sub&&m.sub.indexOf(' · ')>=0?' <span>· '+m.sub.split(' · ')[1]+'</span>':'');
+  drawMini();
   var nb=document.getElementById('hnear'),ns=facingSpot();
   if(nb){ if(ns){ nb.hidden=false; nb.innerHTML='<b>'+spotLabel(ns)+'</b> <span>'+spotHint(ns)+'</span>'; }
     else nb.hidden=true; }
+}
+/* 미니맵. 지금 맵에서 내가 어디 있고 누가 남았는지 한 눈에 */
+function drawMini(){
+  var cv=document.getElementById('hminicv'); if(!cv) return;
+  var m=curMap(),s=2,W=m.w*s,H=m.h*s;
+  if(cv.width!==W){ cv.width=W; cv.height=H; cv.style.width=(W*1.5)+'px'; cv.style.height=(H*1.5)+'px'; }
+  var x=cv.getContext('2d'); x.imageSmoothingEnabled=false;
+  x.fillStyle='#2E2740'; x.fillRect(0,0,W,H);
+  for(var ty=0;ty<m.h;ty++) for(var tx=0;tx<m.w;tx++){
+    var c=tileAt(m,tx,ty),T=TILES[c];
+    x.fillStyle=(T&&T.walk)?'#9B93A8':(c==='H'||c==='#'||c==='R'||c==='W')?'#5C5866':'#453D5C';
+    x.fillRect(tx*s,ty*s,s,s); }
+  (m.spots||[]).forEach(function(sp){
+    var mk=spotMark(sp);
+    x.fillStyle=mk==='!'?'#FFC53C':mk?'#FFFDF6':'#6B6380';
+    x.fillRect(sp.x*s,sp.y*s,s,s); });
+  (m.warps||[]).forEach(function(w){ x.fillStyle='#62C85C'; x.fillRect(w.x*s,w.y*s,s,s); });
+  x.fillStyle='#F4705A'; x.fillRect(ME.tx*s-1,ME.ty*s-1,s+2,s+2);
+  x.fillStyle='#FFFDF6'; x.fillRect(ME.tx*s,ME.ty*s,s,s);
+}
+/* 옆으로만 걸어서 다섯 맵을 오가는 건 길다. 지도를 열어 바로 건너뛴다. */
+var MAP_ORDER=['room','town','campus','center','office','bank'];
+function openTravel(){
+  var el=document.getElementById('htravel'); if(!el) return;
+  el.innerHTML='<div class="tl">어디로 갈까요 · 눌러서 바로 이동</div>';
+  MAP_ORDER.forEach(function(id){
+    var m=MAPS[id],left=0;
+    (m.spots||[]).forEach(function(s){ if(spotMark(s)) left++; });
+    var b=document.createElement('button');
+    if(id===ME.map) b.className='here';
+    b.innerHTML='<span>'+m.name+'</span>'+
+      '<i class="sub">'+(m.sub||'')+'</i>'+
+      (left?'<b>'+left+'</b>':'<i>·</i>');
+    b.onclick=function(){ el.hidden=true;
+      if(id!==ME.map){ var sp=m.spawn||{x:1,y:1}; enterMap(id,sp.x,sp.y); } };
+    el.appendChild(b); });
+  var c=document.createElement('button');
+  c.innerHTML='<span>닫기</span>';
+  c.onclick=function(){ el.hidden=true; };
+  el.appendChild(c);
+  el.hidden=false;
 }
 /* 바로 앞이나 옆에 있는 것 */
 function facingSpot(){
@@ -3020,7 +3163,9 @@ function startWalk(){
   if(!walkable(curMap(),ME.tx,ME.ty)) enterMap(ME.map,ME.tx,ME.ty);
   drawScene();
   MAPT=setInterval(function(){
-    if(!MOVE){ if(HOLD.dir!==null) stepDir(HOLD.dir); return; }
+    TICK++;
+    if(!MOVE){ if(HOLD.dir!==null) return stepDir(HOLD.dir);
+      if(TICK%4===0) drawScene(); return; }
     MOVE.t++;
     if(MOVE.t>=MOVE.dur){ ME.step=(ME.step+1)%2; nextStep(); }
     else drawScene();
@@ -3057,9 +3202,8 @@ function bindPad(){
     b.addEventListener('pointerleave',function(){ if(HOLD.dir===d) HOLD.dir=null; });
     b.addEventListener('pointercancel',function(){ HOLD.dir=null; });
   });
-  var a=document.getElementById('habtn');
-  a.addEventListener('pointerdown',function(ev){ ev.preventDefault();
-    var s=facingSpot(); if(s){ sfx('pick'); triggerSpot(s); } else sfx('pick'); });
+  var mini=document.getElementById('hmini');
+  if(mini) mini.addEventListener('click',function(ev){ ev.preventDefault(); sfx('pick'); openTravel(); });
   if(!window.__keyed){ window.__keyed=1;
     var K={ArrowUp:3,ArrowDown:0,ArrowLeft:1,ArrowRight:2,w:3,s:0,a:1,d:2};
     window.addEventListener('keydown',function(ev){
