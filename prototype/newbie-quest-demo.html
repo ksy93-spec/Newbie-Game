@@ -351,7 +351,8 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .item.locked{background:var(--p3);opacity:.65;}
 .item .thumb{width:52px;height:52px;background:var(--w);border:2px solid var(--s4);overflow:hidden;
   display:flex;align-items:center;justify-content:center;}
-.item .inm{font-family:var(--f-ui);font-weight:700;font-size:12px;line-height:17px;}
+.item .inm{display:block;font-family:var(--f-ui);font-weight:700;font-size:12px;line-height:17px;}
+.item .ids{display:block;}
 .item .idesc{font-family:var(--f-micro);font-size:10px;line-height:14px;color:var(--s2);}
 .item .ist{font-family:var(--f-ui);font-weight:700;font-size:12px;line-height:16px;text-align:right;
   white-space:nowrap;font-variant-numeric:tabular-nums;}
@@ -457,6 +458,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
       <div class="dlg pix"><span class="nm" id="qnpc">3년차 선배</span><span id="qtext">—</span></div>
       <div style="display:flex;flex-direction:column;gap:var(--u2)" id="qchoices"></div>
       <div id="qexplain" hidden></div>
+      <button class="btn btn--wide pix" id="qramen" hidden>라면 먹기</button>
       <button class="btn btn--wide pix" id="qnext" hidden>계속</button>
     </div>
   </section>
@@ -2271,6 +2273,7 @@ var KEY='nq.v8';
 function fresh(){ return {onboarded:false,status:null,age:null,years:null,company:null,living:null,prep:null,region:null,
  lv:1,xp:0,coin:150,tier:0,peak:0,done:[],bossCleared:false,bossDone:[],epBest:{},
  pos:{map:'town',tx:2,ty:4,dir:0},
+ furni:[],ramen:0,
  stats:{ju:5,sik:5,ui:5,geum:5,jik:5},
  avatar:'stuM',
  look:{hair:0,haircol:-1,skin:0},
@@ -2343,6 +2346,7 @@ function reviewQuest(){
 function need(lv){ return 100+(lv-1)*60; }
 function totals(){ var atk=0,gear=0;
   SLOTS.forEach(function(sl){ var it=allItems(S.equip[sl[0]]); if(it){ atk+=it.atk||0; gear+=it.def||0; } });
+  var fb=furniBonus(); atk+=fb.atk; gear+=fb.def;   /* 방에 들인 세간도 힘이 된다 */
   return {atk:atk,gear:gear,def:TIERS[S.tier].def+gear}; }
 
 var OB={
@@ -2587,15 +2591,20 @@ var PROP={
    스프라이트를 따로 쓰는 그 구조다. */
 var TS=16;
 var TOPC={};
-/* ── 소품과 장비 ──────────────────────────────────────────────────────
-   위에서 본 몸은 18×26칸밖에 안 된다. 그 안에서도 무엇을 들었는지, 무엇을 썼는지는
-   보여야 한다. 안 그러면 다들 같은 사람이고, 옷을 사는 이유도 없어진다. */
-function topWeapon(g,gear,dir){
-  var hx=(dir===1)?3:14,hy=17;                       /* 손 위치 */
+function mirrorCv(cv){
+  var o=mkcv(cv.width,cv.height),x=o.getContext('2d');
+  x.imageSmoothingEnabled=false;
+  x.translate(cv.width,0); x.scale(-1,1); x.drawImage(cv,0,0); return o;
+}
+/* ── 손에 든 것 ───────────────────────────────────────────────────────
+   18×26칸 안에서도 무엇을 들었는지는 보여야 한다. 안 그러면 옷과 무기를 사는 이유가 없다. */
+function topWeapon(g,gear,side){
+  var hx=side?12:14,hy=side?18:17;
   switch(gear){
     case 'pen':    rc(g,hx,hy-4,hx,hy,P.s5); rc(g,hx,hy-5,hx,hy-5,P.k4); break;
     case 'mouse':  rr(g,hx-1,hy-1,hx+1,hy+2,P.p0,1); rc(g,hx,hy-1,hx,hy,P.s2); break;
-    case 'tumbler':rr(g,hx-1,hy-5,hx+1,hy+1,P.k3,1); rc(g,hx-1,hy-5,hx+1,hy-4,P.s3); break;
+    case 'tumbler':rr(g,hx-1,hy-5,hx+1,hy+1,P.k3,1); rc(g,hx-1,hy-5,hx+1,hy-4,P.s3);
+                   rc(g,hx-1,hy-2,hx+1,hy-2,P.p1); break;
     case 'keyb':   rc(g,hx-2,hy-2,hx+2,hy,P.s3); rc(g,hx-1,hy-1,hx+1,hy-1,P.p0); break;
     case 'board':  rc(g,hx-2,hy-5,hx+1,hy+1,P.b2); rc(g,hx-1,hy-4,hx,hy-1,P.p0);
                    rc(g,hx-2,hy-6,hx+1,hy-5,P.s2); break;
@@ -2603,91 +2612,225 @@ function topWeapon(g,gear,dir){
     case 'card':   rr(g,hx-2,hy-2,hx+1,hy,P.y1,1); rc(g,hx-1,hy-1,hx,hy-1,P.s4); break;
   }
 }
-function topProp(g,prop,dir){
+function topProp(g,prop,side){
   switch(prop){
     case 'cane':  rc(g,2,15,2,24,'#8A6A44'); rc(g,1,14,3,15,'#6E5334'); break;
-    case 'bag':   rr(g,13,16,16,21,'#6E5334',1); rc(g,13,16,16,16,'#8A6A44'); break;
-    case 'clip':  rc(g,5,16,12,21,P.b2); rc(g,6,17,11,20,P.p0); rc(g,7,16,10,16,P.s2); break;
+    case 'bag':   rr(g,13,16,16,21,'#6E5334',1); rc(g,13,16,16,16,'#8A6A44');
+                  rc(g,12,13,13,17,'#6E5334'); break;
+    case 'clip':  rc(g,side?7:5,16,side?13:12,21,P.b2); rc(g,side?8:6,17,side?12:11,20,P.p0);
+                  rc(g,side?9:7,16,side?11:10,16,P.s2); break;
     case 'cup':   rr(g,13,15,15,18,P.p0,1); rc(g,13,15,15,15,P.r1); break;
     case 'files': rc(g,2,16,5,21,P.k1); rc(g,2,16,5,17,P.k4); rc(g,3,19,4,19,P.s2); break;
   }
 }
-/* ── 위에서 본 사람 ───────────────────────────────────────────────────
-   dir 0 아래 · 1 왼 · 2 오 · 3 위 */
-function personTopG(p,dir,f){
-  var g=Gr(18,26),i;
+/* ── 앞·뒤에서 본 몸 ─────────────────────────────────────────────────── */
+function bodyFrontG(p,dir,f){
+  var g=Gr(18,26);
   var sk=p.skin||SKIN[1],hair=p.hair||HAIRC[0];
-  var top=p.top||'#2C3A5E',bot=p.bot||'#3A3746';
-  var la=f?1:0,lb=f?0:1,W=p.puff?1:0;
+  var top=p.top||'#2C3A5E',bot=p.bot||'#3A3746',W=p.puff?1:0;
+  var la=f?1:0,lb=f?0:1;
+  if(p.prop==='cane'||p.prop==='files') topProp(g,p.prop,0);
 
-  if(p.prop==='cane'||p.prop==='files') topProp(g,p.prop,dir);   /* 몸 뒤로 가는 소품 */
-
-  rc(g,5,19+la,7,23,bot); rc(g,10,19+lb,12,23,bot);              /* 다리 */
+  rc(g,5,19+la,7,23,bot); rc(g,10,19+lb,12,23,bot);
   if(p.stripe){ rc(g,5,19+la,5,23,p.acc||P.p0); rc(g,12,19+lb,12,23,p.acc||P.p0); }
-  rc(g,5,23,7,24,P.s4); rc(g,10,23,12,24,P.s4);                  /* 신발 */
+  rc(g,5,23,7,24,P.s4); rc(g,10,23,12,24,P.s4);
 
-  rr(g,4-W,12,13+W,20,top,1);                                    /* 몸통 */
-  if(p.puff){ rc(g,3,15,14,15,P.s2); rc(g,3,18,14,18,P.s2); }    /* 누빔 자국 */
-  rc(g,3-W,13,4-W,18,top); rc(g,13+W,13,14+W,18,top);            /* 팔 */
-  rc(g,3-W,17,4-W,18,sk.b); rc(g,13+W,17,14+W,18,sk.b);          /* 손 */
+  rr(g,4-W,12,13+W,20,top,1);
+  rc(g,4-W,12,13+W,12,P.s4);                                  /* 어깨선 */
+  if(p.puff){ rc(g,4,15,13,15,P.s2); rc(g,4,18,13,18,P.s2); }
+  rc(g,3-W,13,4-W,18,top); rc(g,13+W,13,14+W,18,top);
+  rc(g,3-W,17,4-W,18,sk.b); rc(g,13+W,17,14+W,18,sk.b);
   if(p.apron) rr(g,5,14,12,20,p.apron,1);
   if(p.hood) (dir===3)?rr(g,4,9,13,14,p.acc||top,2):rr(g,5,10,12,13,p.acc||top,1);
   if(p.badge){ rc(g,8,12,9,15,P.p0); rr(g,7,15,10,18,p.acc||P.k3,1); }
-  if(p.sharp){ rc(g,6,12,7,15,p.acc||P.y1); rc(g,10,12,11,15,p.acc||P.y1); }
-  if(p.tie&&dir!==3) rc(g,8,12,9,17,p.tie);
-  if(p.shirt&&dir!==3) rc(g,7,12,10,14,P.p0);
+  if(p.sharp){ rc(g,6,13,7,16,p.acc||P.y1); rc(g,10,13,11,16,p.acc||P.y1); }
+  if(p.shirt&&dir!==3) rc(g,7,13,10,15,P.p0);
+  if(p.tie&&dir!==3) rc(g,8,13,9,18,p.tie);
 
-  rr(g,4,3,13,12,sk.b,2); rc(g,4,11,13,12,sk.s);                 /* 머리 */
+  rr(g,4,3,13,12,sk.b,2); rc(g,4,11,13,12,sk.s);
+  hairOn(g,p,hair,sk,dir);
+  if(dir===0){ rc(g,6,9,6,10,P.s5); rc(g,11,9,11,10,P.s5);
+    rc(g,7,10,7,10,sk.s); rc(g,10,10,10,10,sk.s); }
+  faceGear(g,p,dir,0);
+  if(p.prop&&p.prop!=='cane'&&p.prop!=='files') topProp(g,p.prop,0);
+  if(p.weapon) topWeapon(g,p.weapon,0);
+  return g;
+}
+/* ── 옆에서 본 몸 (오른쪽 보기) ───────────────────────────────────────
+   앞모습에서 눈 하나만 지우면 옆모습이 되지 않는다. 몸을 좁히고, 팔은 하나만 보이고,
+   얼굴은 앞쪽으로 나오고, 뒤통수에 머리가 남는다. */
+function bodySideG(p,f){
+  var g=Gr(18,26);
+  var sk=p.skin||SKIN[1],hair=p.hair||HAIRC[0];
+  var top=p.top||'#2C3A5E',bot=p.bot||'#3A3746',W=p.puff?1:0;
+  var fw=f?1:0;                                               /* 앞으로 나간 다리 */
+  if(p.prop==='cane') rc(g,4,15,4,24,'#8A6A44');
+  if(p.prop==='files') rc(g,4,16,7,21,P.k1);
 
-  /* 머리카락이 눈까지 덮으면 다들 같은 사람이 된다. 이마를 남겨 둔다. */
+  /* 다리 — 하나는 앞, 하나는 뒤 */
+  rc(g,6+fw*2,19,8+fw*2,23,bot); rc(g,8-fw*2,20,10-fw*2,23,dimHex(bot));
+  rc(g,6+fw*2,23,9+fw*2,24,P.s4); rc(g,8-fw*2,23,11-fw*2,24,P.s5);
+  if(p.stripe) rc(g,6+fw*2,19,6+fw*2,23,p.acc||P.p0);
+
+  rr(g,6-W,12,12+W,20,top,1);                                 /* 좁아진 몸통 */
+  rc(g,6-W,12,12+W,12,P.s4);
+  if(p.puff){ rc(g,6,15,12,15,P.s2); rc(g,6,18,12,18,P.s2); }
+  if(p.apron) rc(g,9,14,12,20,p.apron);
+  rc(g,10+W,13,12+W,18,top);                                  /* 앞으로 나온 팔 하나 */
+  rc(g,10+W,17,12+W,18,sk.b);
+  if(p.hood) rr(g,6,10,10,13,p.acc||top,1);
+  if(p.badge){ rc(g,10,13,11,16,P.p0); rr(g,9,16,12,18,p.acc||P.k3,1); }
+  if(p.tie) rc(g,10,13,11,17,p.tie);
+
+  rr(g,5,3,13,12,sk.b,2); rc(g,5,11,13,12,sk.s);              /* 머리 */
+  rc(g,13,7,13,9,sk.b); rc(g,13,8,13,8,sk.s);                 /* 코 */
+  rc(g,8,8,9,9,sk.s);                                         /* 귀 */
+  hairOn(g,p,hair,sk,2);
+  rc(g,11,9,12,10,P.s5); rc(g,12,10,12,10,sk.s);              /* 앞쪽 눈 하나 */
+  faceGear(g,p,2,1);
+  if(p.prop==='bag'){ rr(g,3,14,6,20,'#6E5334',1); rc(g,6,13,7,16,'#6E5334'); }
+  if(p.prop==='clip'||p.prop==='cup') topProp(g,p.prop,1);
+  if(p.weapon) topWeapon(g,p.weapon,1);
+  return g;
+}
+/* 같은 색을 한 단 어둡게. 기존 shadeHex(hex,f)와 이름이 겹쳐 아바타가 통째로
+   깨진 적이 있다. 이름은 비켜 둔다. */
+function dimHex(c){
+  if(!c||c.charAt(0)!=='#'||c.length<7) return c;
+  var n=[1,3,5].map(function(i){ return Math.max(0,parseInt(c.substr(i,2),16)-34); });
+  return '#'+n.map(function(v){ return ('0'+v.toString(16)).slice(-2); }).join('');
+}
+function hairOn(g,p,hair,sk,dir){
   var hs=p.hs||'short';
-  if(dir===3){ rr(g,3,2,14,11,hair.b,2); if(hs==='long'||hs==='wave') rc(g,3,10,14,17,hair.b); }
-  else {
-    rr(g,3,2,14,6,hair.b,2);
-    if(hs!=='bald'){ rc(g,3,5,4,9,hair.b); rc(g,13,5,14,9,hair.b); }
-    if(hs==='long'){ rc(g,2,6,4,17,hair.b); rc(g,13,6,15,17,hair.b); }
-    if(hs==='wave'){ rc(g,2,6,4,16,hair.b); rc(g,13,6,15,16,hair.b);
-      rc(g,1,9,2,12,hair.h); rc(g,15,9,16,12,hair.h); }
-    if(hs==='bald'){ rc(g,4,2,13,4,sk.b); rc(g,3,4,4,7,hair.b); rc(g,13,4,14,7,hair.b); }
+  if(dir===3){ rr(g,3,2,14,11,hair.b,2); if(hs==='long'||hs==='wave') rc(g,3,10,14,18,hair.b); return; }
+  if(dir===2){                                                /* 옆모습 — 뒤통수가 남는다 */
+    rr(g,4,2,12,6,hair.b,2); rc(g,4,5,6,13,hair.b);
+    if(hs==='long') rc(g,3,6,6,19,hair.b);
+    if(hs==='wave'){ rc(g,3,6,6,18,hair.b); rc(g,2,10,3,14,hair.h); }
+    if(hs==='bun'){ rr(g,3,1,6,5,hair.b,1); }
+    if(hs==='bald'){ for(var y=2;y<=7;y++) for(var x=4;x<=13;x++) g.d[y][x]=null;
+      rr(g,5,3,13,10,sk.b,2); rc(g,4,5,6,9,hair.b); }
+    rc(g,6,2,12,3,hair.h); return;
   }
+  rr(g,3,2,14,6,hair.b,2);
+  if(hs!=='bald'){ rc(g,3,5,4,9,hair.b); rc(g,13,5,14,9,hair.b); }
+  if(hs==='long'){ rc(g,2,6,4,17,hair.b); rc(g,13,6,15,17,hair.b); }
+  if(hs==='wave'){ rc(g,2,6,4,16,hair.b); rc(g,13,6,15,16,hair.b);
+    rc(g,1,9,2,12,hair.h); rc(g,15,9,16,12,hair.h); }
+  if(hs==='bald'){ rc(g,4,2,13,4,sk.b); rc(g,3,4,4,7,hair.b); rc(g,13,4,14,7,hair.b); }
   if(hs==='bun'){ rr(g,7,0,10,3,hair.b,1); rc(g,8,0,9,0,hair.h); }
   if(hs!=='bald') rc(g,5,2,12,3,hair.h);
-
-  if(dir===0){ rc(g,6,9,6,10,P.s5); rc(g,11,9,11,10,P.s5); }
-  if(dir===1){ rc(g,5,9,6,10,P.s5); }
-  if(dir===2){ rc(g,11,9,12,10,P.s5); }
-  if(p.glasses&&dir!==3){                                        /* 안경 */
-    rc(g,4,8,7,11,P.s4); rc(g,10,8,13,11,P.s4);
-    rc(g,5,9,6,10,P.k1); rc(g,11,9,12,10,P.k1);
-    rc(g,8,9,9,9,P.s4);
-    if(dir!==1) rc(g,11,10,11,10,P.s5);
-    if(dir!==2) rc(g,6,10,6,10,P.s5); }
-  if(p.shades&&dir!==3){ rc(g,4,8,13,11,P.s5); rc(g,5,9,7,10,'#453D5C'); }
+}
+function faceGear(g,p,dir,side){
+  if(p.glasses&&dir!==3){
+    if(side){ rc(g,10,8,13,11,P.s4); rc(g,11,9,12,10,P.k1); rc(g,8,9,9,9,P.s4); }
+    else { rc(g,4,8,7,11,P.s4); rc(g,10,8,13,11,P.s4);
+      rc(g,5,9,6,10,P.k1); rc(g,11,9,12,10,P.k1); rc(g,8,9,9,9,P.s4);
+      rc(g,6,10,6,10,P.s5); rc(g,11,10,11,10,P.s5); } }
+  if(p.shades&&dir!==3){
+    if(side){ rc(g,9,8,13,11,P.s5); rc(g,11,9,12,10,'#453D5C'); }
+    else { rc(g,4,8,13,11,P.s5); rc(g,5,9,7,10,'#453D5C'); } }
   if(p.hat){ rr(g,2,0,15,5,p.hat,2); rc(g,1,5,16,6,P.s4);
     if(p.hatband) rc(g,2,4,15,5,p.hatband); }
   if(p.band){ rc(g,3,3,14,4,p.band); rc(g,13,1,15,4,p.band); rc(g,12,2,13,3,p.band); }
-
-  if(p.prop&&p.prop!=='cane'&&p.prop!=='files') topProp(g,p.prop,dir);
-  if(p.weapon) topWeapon(g,p.weapon,dir);
-  shade(g); outline(g,P.s5); return g;
+}
+function personTopCv(p,dir,f){
+  if(dir===1) return mirrorCv(personTopCv(p,2,f));
+  var g=(dir===2)?bodySideG(p,f):bodyFrontG(p,dir,f);
+  shade(g); outline(g,P.s5); return toCanvas(g);
+}
+/* ── 위에서 본 탈것 ───────────────────────────────────────────────────
+   26×30 칸, 바닥은 y=29. 세로로 갈 때와 가로로 갈 때 생김새가 다르다.
+   경차는 지붕을 덮으면 사람이 사라져서, 위가 열린 차로 그리고 상체만 앉힌다. */
+/* 탈것은 두 겹이다. 몸 뒤에 깔리는 것(바퀴·프레임)과 몸 앞에 오는 것(핸들·계기판).
+   한 겹으로 그리면 아래를 볼 때 사람이 탈것을 통째로 가려서 뭘 탔는지 안 보인다. */
+function mountTopG(kind,vert,front){
+  var g=Gr(26,30);
+  if(kind==='kick'){
+    if(vert){
+      if(front){ rc(g,4,15,21,17,P.s0); rc(g,4,15,6,18,P.s4); rc(g,19,15,21,18,P.s4);
+        rc(g,12,18,13,22,P.s1); }
+      else { rc(g,8,22,17,27,P.s1); rc(g,8,22,17,23,P.s0);
+        el(g,12,28,3,2,P.s4); el(g,12,21,3,2,P.s4); }
+    } else if(!front){
+      rc(g,6,24,19,26,P.s2); rc(g,6,24,19,24,P.s1);
+      rc(g,18,15,19,24,P.s3); rc(g,15,13,22,14,P.s3);
+      el(g,8,27,3,2,P.s4); el(g,19,27,3,2,P.s4);
+      el(g,8,27,1,1,P.s0); el(g,19,27,1,1,P.s0);
+    }
+    return g;
+  }
+  if(kind==='bike'){
+    if(vert){
+      if(front){ rc(g,4,17,21,19,P.s0); rc(g,4,17,6,20,P.s4); rc(g,19,17,21,20,P.s4);
+        rc(g,11,20,14,25,P.g1); el(g,12,27,3,3,P.s4); el(g,12,27,2,2,P.p2); }
+      else { el(g,12,26,4,3,P.s4); el(g,12,26,2,2,P.p2);
+        rc(g,11,18,14,26,P.g1); rr(g,8,18,17,21,P.s1,1); rc(g,9,19,16,20,P.s0); }
+    } else if(!front){
+      el(g,7,26,4,4,P.s4); el(g,19,26,4,4,P.s4);
+      el(g,7,26,2,2,P.p2); el(g,19,26,2,2,P.p2);
+      rc(g,8,25,19,26,P.g2); rc(g,12,18,13,25,P.g2); rc(g,17,16,18,25,P.g2);
+      rc(g,15,14,21,15,P.s3); rr(g,8,19,13,21,P.s3,1);
+    }
+    return g;
+  }
+  /* 경차 — 위가 열려 있다. 지붕을 덮으면 사람이 사라진다 */
+  if(vert){
+    if(front){ rc(g,3,20,6,28,P.r2); rc(g,19,20,22,28,P.r2);
+      rc(g,3,26,22,28,P.r2); rc(g,3,28,22,29,P.r3);
+      rc(g,5,28,9,29,P.y1); rc(g,16,28,20,29,P.y1); }
+    else { rc(g,1,17,3,24,P.s4); rc(g,22,17,24,24,P.s4);
+      rr(g,3,10,22,29,P.r1,2); rc(g,4,11,21,16,P.r2); rc(g,3,17,22,17,P.r3); }
+  } else {
+    if(front){ rc(g,2,23,24,25,P.r2); rc(g,2,25,24,26,P.r3);
+      el(g,7,28,3,2,P.s4); el(g,19,28,3,2,P.s4); }
+    else { rr(g,2,12,24,28,P.r1,2); rc(g,3,13,11,27,P.r2);
+      rc(g,23,16,24,19,P.y1); rc(g,2,16,3,19,P.r3); }
+  }
+  return g;
+}
+/* [가로 보정, 세로 보정, 보일 높이] */
+var RIDE_TOP={
+  kick:{v:[0,-2,26],h:[-3,-1,26]},
+  bike:{v:[0,0,26],h:[-3,1,26]},
+  car: {v:[0,4,21],h:[1,4,22]}
+};
+function mountLayerCv(kind,vert,front){
+  var g=mountTopG(kind,vert,front); shade(g); outline(g,P.s5); return toCanvas(g);
+}
+function ridingCv(p,kind,dir,f){
+  var vert=(dir===0||dir===3),r=(RIDE_TOP[kind]||RIDE_TOP.bike)[vert?'v':'h'];
+  var cv=mkcv(26,30),x=cv.getContext('2d'); x.imageSmoothingEnabled=false;
+  var rider=personTopCv(p,dir,(kind==='car')?0:f);
+  var rx=Math.round((26-rider.width)/2)+r[0],ry=r[1];
+  x.drawImage(mountLayerCv(kind,vert,0),0,0);
+  x.drawImage(rider,0,0,rider.width,r[2],rx,ry,rider.width,r[2]);
+  x.drawImage(mountLayerCv(kind,vert,1),0,0);
+  return cv;
 }
 /* 내 캐릭터는 상점에서 산 것이 그대로 보여야 한다. 안 보이면 살 이유가 없다. */
-function heroTop(dir,f){
+function heroDesc(){
   var o=equipOpts(),L=S.look||{},E=S.equip;
   var hi=(L.haircol>=0)?L.haircol:0,hc=HAIRC[hi]||HAIRC[0],sk=SKIN[L.skin||0]||SKIN[0];
   var wp=ITEMS[E.weapon],hd=ITEMS[E.head],av=AVATARS[S.avatar]||{};
-  var key='HT'+dir+f+'|'+hi+(L.skin||0)+E.top+E.bottom+E.weapon+E.head+S.avatar;
-  if(TOPC[key]) return TOPC[key];
   var p={hair:hc,skin:sk,top:o.top||'#2C3A5E',bot:o.bot||'#3A3746',acc:o.ac,
-    hs:(av.name==='여')?'long':'short',
-    weapon:wp&&wp.gear,
+    hs:(av.name==='여')?'long':'short',weapon:wp&&wp.gear,
     hood:o.ts==='hood',badge:o.ts==='badge',sharp:o.ts==='sharp',puff:o.ts==='puff',
     stripe:o.bs==='stripe'};
   var hg=hd&&hd.gear;
   if(hg==='glass') p.glasses=1;
   if(hg==='beanie'){ p.hat='#3A5F8C'; p.hatband='#2C4668'; }
   if(hg==='band') p.band=P.r1;
-  return (TOPC[key]=toCanvas(personTopG(p,dir,f)));
+  return p;
+}
+function heroTop(dir,f){
+  var E=S.equip,L=S.look||{},mt=MOUNTS[E.mount];
+  if(ME&&ME.map==='room') mt=null;                  /* 방 안에서까지 자전거를 타지는 않는다 */
+  var key='HT'+dir+f+'|'+(L.haircol)+(L.skin||0)+E.top+E.bottom+E.weapon+E.head+(mt?E.mount:'-')+S.avatar;
+  if(TOPC[key]) return TOPC[key];
+  var p=heroDesc();
+  var cv=(mt&&mt.kind)?ridingCv(p,mt.kind,dir,f):personTopCv(p,dir,f);
+  return (TOPC[key]=cv);
 }
 /* 조연도 역할이 보여야 한다. 흰머리에 지팡이면 동네 어른, 명찰에 흰 셔츠면 창구 직원. */
 var NPC_TOP={
@@ -2696,17 +2839,153 @@ var NPC_TOP={
  peerm:  {hair:{b:'#2B2733',h:'#453F54'},hs:'short',top:'#2C3A5E',bot:'#3A3746',prop:'bag'},
  peerf:  {hair:{b:'#4A3628',h:'#6B5340'},hs:'long', top:'#C2A079',bot:'#5C5866',apron:'#9BAE8C'},
  deskf:  {hair:{b:'#2B2733',h:'#453F54'},hs:'long', top:'#FFF8EC',bot:'#3A3746',badge:1,acc:'#9BDCF7'},
- officem:{hair:{b:'#2B2733',h:'#453F54'},hs:'short',top:'#5C5866',bot:'#3A3746',tie:'#F4705A',prop:'clip'},
+ officem:{hair:{b:'#2B2733',h:'#453F54'},hs:'short',top:'#5C5866',bot:'#3A3746',shirt:1,tie:'#F4705A',prop:'clip'},
  boss:   {hair:{b:'#191620',h:'#3A3550'},hs:'short',top:'#4A4560',bot:'#2E2A3C',shades:1,shirt:1,tie:'#B93A2D'},
  mlmf:   {hair:{b:'#C99A5B',h:'#E6BE86'},hs:'wave', top:'#D9B44A',bot:'#5C5866',prop:'bag'},
- fp:     {hair:{b:'#2B2733',h:'#453F54'},hs:'short',top:'#26406B',bot:'#1E2C44',glasses:1,tie:'#FFC53C',prop:'files'},
+ fp:     {hair:{b:'#2B2733',h:'#453F54'},hs:'short',top:'#26406B',bot:'#1E2C44',glasses:1,shirt:1,tie:'#FFC53C',prop:'files'},
  boy:    {hair:{b:'#2B2733',h:'#453F54'},hs:'short',top:'#62C85C',bot:'#3F5F87',hat:'#F4705A'},
  girl:   {hair:{b:'#4A3628',h:'#6B5340'},hs:'long', top:'#F4705A',bot:'#3F5F87'}
 };
 function npcTop(key,dir,f){
   var k='NT'+key+dir+f; if(TOPC[k]) return TOPC[k];
-  var p=NPC_TOP[key]||NPC_TOP.peerm;
-  return (TOPC[k]=toCanvas(personTopG(p,dir,f)));
+  return (TOPC[k]=personTopCv(NPC_TOP[key]||NPC_TOP.peerm,dir,f));
+}
+/* ══════════ 세간 ══════════
+   방이 생겼으니 채울 것도 필요하다. 라면 다섯 봉지에서 시작해서, 냉장고와 세탁기를 지나,
+   나중에는 굴러가는 TV와 옷 관리기까지. need는 그 물건을 놓을 수 있는 최소 거처다.
+   고시원 골방에 소파를 넣을 수는 없다. */
+var FURNI={
+ ramen: {name:'라면 5봉지',   cost:60,  need:0, use:5,          desc:'퀘스트에서 목숨 하나를 되살린다. 다섯 번 쓴다.'},
+ mat:   {name:'접이식 매트',  cost:90,  need:1, def:4,  tile:'M',desc:'바닥에서 자도 등이 덜 아프다.'},
+ fan:   {name:'선풍기',       cost:140, need:3, def:4,  tile:'N',desc:'여름에 잠은 자야 한다.'},
+ desk2: {name:'접이식 책상',  cost:200, need:4, atk:6,  tile:'K',desc:'밥상에서 공부하지 않아도 된다.'},
+ fridge:{name:'소형 냉장고',  cost:300, need:5, def:8,  tile:'F',desc:'식비가 눈에 띄게 준다.'},
+ wash:  {name:'세탁기',       cost:420, need:6, def:10, tile:'A',desc:'코인 세탁소에 안 가도 된다.'},
+ tv:    {name:'바퀴 달린 TV', cost:560, need:7, atk:9,  tile:'V',desc:'누워서 보는 화면. 사치의 시작.'},
+ styler:{name:'옷 관리기',    cost:760, need:8, def:14, tile:'L',desc:'정장을 매번 맡기지 않아도 된다.'},
+ sofa:  {name:'2인용 소파',   cost:980, need:8, def:18, tile:'S',desc:'앉을 자리가 생기면 사람이 온다.'}
+};
+var FURNI_ORDER=['ramen','mat','fan','desk2','fridge','wash','tv','styler','sofa'];
+function hasFurni(id){ return (S.furni||[]).indexOf(id)>=0; }
+function furniBonus(){
+  var a=0,d=0;
+  (S.furni||[]).forEach(function(id){ var it=FURNI[id]; if(!it) return; a+=it.atk||0; d+=it.def||0; });
+  return {atk:a,def:d};
+}
+function buyFurni(id){
+  var it=FURNI[id]; if(!it) return;
+  if(S.tier<it.need){ toast(TIERS[it.need].name+'부터 놓을 수 있습니다.'); return; }
+  if(id==='ramen'){
+    if(!S.demo&&S.coin<it.cost){ toast('코인이 모자랍니다.'); return; }
+    if(!S.demo) S.coin-=it.cost;
+    S.ramen=(S.ramen||0)+it.use; sfx('good'); ev('buy',{id:'ramen'});
+    save(); renderShop(); toast('라면 '+it.use+'봉지를 넣어 뒀습니다.'); return; }
+  if(hasFurni(id)){ toast('이미 방에 있습니다.'); return; }
+  if(!S.demo&&S.coin<it.cost){ toast('코인이 모자랍니다.'); return; }
+  if(!S.demo) S.coin-=it.cost;
+  if(!S.furni) S.furni=[];
+  S.furni.push(id); sfx('good'); ev('buy',{id:id});
+  save(); renderShop(); toast(it.name+'을 방에 들였습니다.');
+}
+function furniRow(id){
+  var it=FURNI[id],owned=(id==='ramen')?((S.ramen||0)>0):hasFurni(id);
+  var locked=S.tier<it.need;
+  var b=document.createElement('button');
+  b.className='item pix'+(owned?' on':'')+(locked?' off':'');
+  var cv=document.createElement('canvas'); cv.width=26; cv.height=26;
+  cv.style.width='52px'; cv.style.height='52px';
+  var x=cv.getContext('2d'); x.imageSmoothingEnabled=false;
+  drawTile(x,null,it.tile||'r',5,5,0,0);
+  if(id==='ramen'){ x.clearRect(0,0,26,26); drawRamen(x,5,6); }
+  var right=(id==='ramen')
+    ? '<span class="a">'+(S.ramen||0)+'봉지</span>'
+    : (it.atk?'<span class="a">공 +'+it.atk+'</span><br>':'')+(it.def?'<span class="d">방 +'+it.def+'</span>':'');
+  var wrap=document.createElement('span'); wrap.className='iw';
+  wrap.innerHTML='<span class="inm">'+it.name+'</span>'+
+    '<span class="ids">'+it.desc+(locked?'<br>'+TIERS[it.need].name+'부터':'')+'</span>';
+  var price=document.createElement('span'); price.className='ip';
+  price.innerHTML=right+'<br><b>￦'+it.cost+'</b>';
+  b.appendChild(cv); b.appendChild(wrap); b.appendChild(price);
+  b.onclick=function(){ buyFurni(id); };
+  return b;
+}
+function drawRamen(x,px,py){
+  rcx(x,'#E3B23C',px,py,16,13); rcx(x,'#C4922A',px,py+10,16,3);
+  rcx(x,'#D9503E',px+2,py+2,12,5); rcx(x,'#FFF8EC',px+4,py+3,8,2);
+  rcx(x,'#8A6A44',px,py,16,1);
+}
+/* 라면은 퀘스트에서 목숨 하나를 되살린다. 쓰는 자리를 만들어 두지 않으면 산 의미가 없다. */
+function refreshRamen(){
+  var el=document.getElementById('qramen'); if(!el) return;
+  var can=(typeof RUN!=='undefined'&&RUN&&RUN.hearts<HEARTS&&(S.ramen||0)>0);
+  el.hidden=!can;
+  if(can) el.textContent='라면 먹기 · 목숨 하나 회복 ('+S.ramen+'봉지)';
+}
+function eatRamen(){
+  if(!RUN||RUN.hearts>=HEARTS||!(S.ramen>0)) return;
+  S.ramen--; RUN.hearts++; save(); sfx('good');
+  ev('quest_answer',{id:'ramen',i:-1,ok:true});
+  var hs=document.getElementById('qhearts'); hs.innerHTML='';
+  for(var i=0;i<HEARTS;i++) hs.appendChild(heartCv(i<RUN.hearts));
+  refreshRamen();
+}
+/* ══════════ 내 방 ══════════
+   거처가 곧 방이다. 노숙이면 들어갈 방이 없고, 찜질방이면 그 안의 골방 하나고,
+   올라갈수록 넓어지다가 투룸부터는 벽이 하나 더 생긴다. 사는 곳이 올라갔다는 느낌은
+   이름이 아니라 걸어 다닐 수 있는 칸수가 만든다. */
+var ROOMSPEC=[
+ null,                                      /* 0 노숙 — 들어갈 방이 없다 */
+ {w:7, h:6, kind:'tent'},                   /* 1 움막 */
+ {w:8, h:6, kind:'tent'},                   /* 2 텐트 */
+ {w:8, h:6, kind:'jjim'},                   /* 3 찜질방 골방 */
+ {w:6, h:7, kind:'gosi'},                   /* 4 고시원 */
+ {w:10,h:7, kind:'flat'},                   /* 5 반지하 */
+ {w:11,h:8, kind:'flat'},                   /* 6 원룸 월세 */
+ {w:12,h:8, kind:'flat'},                   /* 7 원룸 전세 */
+ {w:14,h:9, kind:'two'},                    /* 8 투룸 전세 */
+ {w:16,h:10,kind:'home'}                    /* 9 내 집 */
+];
+/* 세간을 놓을 자리. 벽을 따라 시계 방향으로 채운다. */
+function roomSlots(w,h,dx){
+  var s=[],x,y;
+  for(x=2;x<w-1;x++) if(x!==1) s.push({x:x,y:1});
+  for(y=2;y<h-2;y++) s.push({x:w-2,y:y});
+  for(x=w-3;x>=2;x--) if(x!==dx) s.push({x:x,y:h-2});
+  for(y=h-3;y>=2;y--) s.push({x:1,y:y});
+  return s;
+}
+var ROOMC={};
+function roomMap(){
+  var sp=ROOMSPEC[S.tier]; if(!sp) return null;
+  var key=S.tier+'|'+(S.furni||[]).join(',');
+  if(ROOMC.k===key) return ROOMC.m;
+  var w=sp.w,h=sp.h,grid=[],y,x;
+  for(y=0;y<h;y++){ var r=[];
+    for(x=0;x<w;x++) r.push((y===0||y===h-1||x===0||x===w-1)?'#':'.');
+    grid.push(r); }
+  var dx=Math.floor(w/2);
+  grid[h-1][dx]='D';
+  if(sp.kind==='two'||sp.kind==='home'){     /* 방이 둘이 되면 가운데 벽이 선다 */
+    var wx=Math.floor(w*0.58);
+    for(y=1;y<h-1;y++) grid[y][wx]='#';
+    grid[h-3][wx]='.';
+  }
+  if(sp.kind==='jjim'||sp.kind==='tent') for(y=2;y<h-1;y++) for(x=2;x<w-2;x++) grid[y][x]=',';
+  grid[1][1]='T';                             /* 책상 — 복습 노트가 여기 */
+  var slots=roomSlots(w,h,dx),si=0;
+  (S.furni||[]).forEach(function(id){
+    var it=FURNI[id]; if(!it||!it.tile) return;
+    while(si<slots.length&&grid[slots[si].y][slots[si].x]!=='.'&&grid[slots[si].y][slots[si].x]!==',') si++;
+    if(si>=slots.length) return;
+    grid[slots[si].y][slots[si].x]=it.tile; si++;
+  });
+  var rows=grid.map(function(r){ return r.join(''); });
+  var m={name:TIERS[S.tier].name,sub:'지금 사는 곳',w:w,h:h,rows:rows,
+    spawn:{x:dx,y:h-2},
+    warps:[{x:dx,y:h-1,to:'town',tx:2,ty:3}],
+    spots:[{x:1,y:1,kind:'review'}]};
+  ROOMC={k:key,m:m};
+  return m;
 }
 /* ══════════ 맵 ══════════
    왼쪽에서 오른쪽으로 갈수록 나중에 겪을 일이 나온다. 집에서 나와 동네를 지나
@@ -2718,22 +2997,11 @@ var TILES={
  '_':{walk:1,kind:'pave'},  'g':{walk:1,kind:'grass'},'r':{kind:'road'},
  '-':{kind:'cross'},        'H':{kind:'wall'},        'W':{kind:'window'},  'R':{kind:'roof'},
  'D':{kind:'door'},         't':{kind:'tree'},        'f':{kind:'fence'},
- 'p':{kind:'pole'},         'b':{kind:'bench'}
+ 'p':{kind:'pole'},         'b':{kind:'bench'},
+ 'M':{kind:'mat'},'N':{kind:'fan'},'K':{kind:'desk2'},'F':{kind:'fridge'},
+ 'A':{kind:'wash'},'V':{kind:'tv'},'L':{kind:'styler'},'S':{kind:'sofa'}
 };
 var MAPS={
- room:{spawn:{x:5,y:6},name:'내 방',sub:'지금 사는 곳',w:11,h:9,rows:[
-  '###########',
-  '#T.......B#',
-  '#.........#',
-  '#...,,,...#',
-  '#...,,,...#',
-  '#.........#',
-  '#.........#',
-  '#####D#####',
-  '###########'],
-  warps:[{x:5,y:7,to:'town',tx:2,ty:3}],
-  spots:[{x:1,y:1,kind:'review'}]},
-
  town:{spawn:{x:4,y:4},name:'동네',sub:'1 · 지금 사는 곳',w:22,h:11,rows:[
   'RRRRRRRRRRRRRRRRRRRRRR',
   'HWWHHHHWWHHHHWWHHHHWWH',
@@ -2859,8 +3127,9 @@ function drawTile(ctx,m,c,px,py,tx,ty){
     case '.': rcx(ctx,T.fl,px,py,TS,TS);
       rcx(ctx,T.fl2,px,py,TS,1);
       for(i=0;i<TS;i+=5) rcx(ctx,T.fl2,px+i,py,1,TS); break;
-    case ',': rcx(ctx,'#B85C6A',px,py,TS,TS); rcx(ctx,'#9C4453',px,py+1,TS,1);
-      rcx(ctx,'#D77C88',px+2,py+3,TS-4,TS-6); break;
+    case ',': rcx(ctx,'#D9BE94',px,py,TS,TS);            /* 돗자리 */
+      for(i=0;i<TS;i+=3) rcx(ctx,'#C2A87E',px,py+i,TS,1);
+      for(i=0;i<TS;i+=6) rcx(ctx,'#B99B6E',px+i,py,1,TS); break;
     case '#': rcx(ctx,T.wl,px,py,TS,TS); rcx(ctx,T.wl2,px,py+TS-3,TS,3);
       rcx(ctx,T.wl2,px,py,TS,1); break;
     case 'T': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,'#8A6A44',px,py+2,TS,TS-4);
@@ -2899,6 +3168,29 @@ function drawTile(ctx,m,c,px,py,tx,ty){
     case 'b': rcx(ctx,'#CFCADA',px,py,TS,TS); rcx(ctx,'#A5825A',px+1,py+5,TS-2,4);
       rcx(ctx,'#8A6A44',px+1,py+9,TS-2,2); rcx(ctx,'#6B6380',px+2,py+11,2,4);
       rcx(ctx,'#6B6380',px+TS-4,py+11,2,4); break;
+    case 'M': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,'#6EC8F0',px+1,py+4,TS-2,TS-6);
+      rcx(ctx,'#3A9BC9',px+1,py+4,TS-2,2); rcx(ctx,P.p0,px+3,py+7,6,3); break;
+    case 'N': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,P.s1,px+6,py+9,4,6);
+      rcx(ctx,P.p0,px+2,py+1,12,9); rcx(ctx,P.s2,px+4,py+3,8,5);
+      rcx(ctx,P.p1,px+7,py+5,2,2); break;
+    case 'K': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,'#A5825A',px,py+3,TS,5);
+      rcx(ctx,'#8A6A44',px,py+8,TS,2); rcx(ctx,P.p0,px+3,py+4,9,3);
+      rcx(ctx,'#6E5334',px+1,py+10,2,5); rcx(ctx,'#6E5334',px+TS-3,py+10,2,5); break;
+    case 'F': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,P.p0,px+2,py,12,TS);
+      rcx(ctx,'#C9C3D6',px+2,py+6,12,1); rcx(ctx,P.s2,px+11,py+3,2,3);
+      rcx(ctx,P.s2,px+11,py+9,2,3); break;
+    case 'A': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,P.p0,px+1,py+1,14,14);
+      rcx(ctx,P.s2,px+1,py+1,14,3); rcx(ctx,'#9BDCF7',px+4,py+6,8,7);
+      rcx(ctx,P.s3,px+3,py+5,10,9); rcx(ctx,'#9BDCF7',px+4,py+6,8,7); break;
+    case 'V': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,P.s4,px+1,py+1,14,10);
+      rcx(ctx,'#3A9BC9',px+2,py+2,12,8); rcx(ctx,'#9BDCF7',px+3,py+3,5,3);
+      rcx(ctx,P.s2,px+7,py+11,2,3); rcx(ctx,P.s3,px+4,py+14,8,2); break;
+    case 'L': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,'#C9C3D6',px+2,py,12,TS);
+      rcx(ctx,P.s2,px+2,py,12,2); rcx(ctx,'#9BDCF7',px+4,py+3,8,9);
+      rcx(ctx,P.p0,px+7,py+3,2,9); break;
+    case 'S': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,'#8E7BB0',px,py+4,TS,10);
+      rcx(ctx,'#6F5D91',px,py+4,TS,2); rcx(ctx,'#A891C9',px+2,py+7,5,5);
+      rcx(ctx,'#A891C9',px+9,py+7,5,5); break;
     default: rcx(ctx,'#2E2740',px,py,TS,TS);
   }
 }
@@ -2976,7 +3268,7 @@ function drawSpot(ctx,s,px,py){
 var ME={map:'town',tx:2,ty:4,dir:0,step:0};
 var MOVE=null;                       /* {fx,fy,tx,ty,t,dur,path,pi,then} */
 var MAPT=null;                       /* 애니메이션 타이머 */
-function curMap(){ return MAPS[ME.map]||MAPS.town; }
+function curMap(){ return (ME.map==='room'?roomMap():MAPS[ME.map])||MAPS.town; }
 function mePx(){
   var x=ME.tx*TS,y=ME.ty*TS;
   if(MOVE){ var k=MOVE.t/MOVE.dur;
@@ -3039,15 +3331,20 @@ function savePos(){ S.pos={map:ME.map,tx:ME.tx,ty:ME.ty,dir:ME.dir}; save(); }
 function checkWarp(){
   var m=curMap(),i,w;
   for(i=0;i<(m.warps||[]).length;i++){ w=m.warps[i];
-    if(w.x===ME.tx&&w.y===ME.ty){ enterMap(w.to,w.tx,w.ty); return true; } }
+    if(w.x===ME.tx&&w.y===ME.ty){
+      if(w.to==='room'&&!ROOMSPEC[S.tier]){
+        toast('아직 들어갈 방이 없습니다. 주 스탯을 올려 거처를 해금하세요.');
+        ME.ty=Math.min(m.h-2,ME.ty+1); ME.dir=0; savePos(); drawScene(); return true; }
+      enterMap(w.to,w.tx,w.ty); return true; } }
   if(m.edges){
-    if(m.edges.west&&ME.tx<=0){ var wm=MAPS[m.edges.west]; enterMap(m.edges.west,wm.w-2,ME.ty); return true; }
-    if(m.edges.east&&ME.tx>=m.w-1){ enterMap(m.edges.east,1,ME.ty); return true; }
+    if(m.edges.west&&ME.tx<=0){ var wm=MAPS[m.edges.west]; enterMap(m.edges.west,wm.w-2,Math.min(wm.h-2,ME.ty)); return true; }
+    if(m.edges.east&&ME.tx>=m.w-1){ var em=MAPS[m.edges.east]; enterMap(m.edges.east,1,Math.min(em.h-2,ME.ty)); return true; }
   }
   return false;
 }
 function enterMap(id,tx,ty){
-  var m=MAPS[id]; if(!m) return;
+  var m=(id==='room')?roomMap():MAPS[id];
+  if(!m){ toast('아직 들어갈 방이 없습니다. 주 스탯을 올려 거처를 해금하세요.'); return; }
   MOVE=null;
   ME.map=id; ME.tx=Math.max(0,Math.min(m.w-1,tx)); ME.ty=Math.max(0,Math.min(m.h-1,ty));
   if(!walkable(m,ME.tx,ME.ty)){                      /* 착지 칸이 막혀 있으면 옆으로 민다 */
@@ -3063,7 +3360,7 @@ function drawScene(){
   var ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
   var m=curMap(),cam=camOf(m),x,y;
   ctx.clearRect(0,0,SW,SH);
-  ctx.fillStyle=(m.rows===MAPS.room.rows)?'#1B1826':'#8FD4F0';
+  ctx.fillStyle=(ME.map==='room')?'#1B1826':'#8FD4F0';
   ctx.fillRect(0,0,SW,SH);
   ctx.save(); ctx.translate(-cam.x,-cam.y);
   var x0=Math.max(0,Math.floor(cam.x/TS)),x1=Math.min(m.w-1,Math.ceil((cam.x+SW)/TS));
@@ -3118,11 +3415,13 @@ function drawMini(){
 }
 /* 옆으로만 걸어서 다섯 맵을 오가는 건 길다. 지도를 열어 바로 건너뛴다. */
 var MAP_ORDER=['room','town','campus','center','office','bank'];
+function mapById(id){ return id==='room'?roomMap():MAPS[id]; }
 function openTravel(){
   var el=document.getElementById('htravel'); if(!el) return;
   el.innerHTML='<div class="tl">어디로 갈까요 · 눌러서 바로 이동</div>';
   MAP_ORDER.forEach(function(id){
-    var m=MAPS[id],left=0;
+    var m=mapById(id); if(!m) return;
+    var left=0;
     (m.spots||[]).forEach(function(s){ if(spotMark(s)) left++; });
     var b=document.createElement('button');
     if(id===ME.map) b.className='here';
@@ -3820,6 +4119,13 @@ function renderShop(){
       '전 품목이 해금되어 있습니다. 눌러서 바로 장착해 보세요.<br>'+
       '실제 앱에서는 퀘스트로 모은 코인으로 구매합니다.</span>';
     wrap.appendChild(nt); }
+  var fbox=document.createElement('div'); fbox.style.cssText='display:flex;flex-direction:column;gap:8px';
+  var flab=document.createElement('div'); flab.className='sectlab';
+  flab.innerHTML='세간 · 방에 들이면 능력치가 오릅니다'+
+    (ROOMSPEC[S.tier]?'':' <span class="micro">— 지금은 들어갈 방이 없습니다</span>');
+  fbox.appendChild(flab);
+  FURNI_ORDER.forEach(function(id){ fbox.appendChild(furniRow(id)); });
+  wrap.appendChild(fbox);
   SLOTS.forEach(function(sl){
     var pool=poolFor(sl[0]);
     var ids=Object.keys(pool).filter(function(id){ return pool[id].slot===sl[0]&&pool[id].cost>0; });
@@ -4201,6 +4507,7 @@ function stepQuest(intro){
     e.className=i<RUN.i?'on':(i===RUN.i&&!intro?'cur':''); pg.appendChild(e); });
   var hs=document.getElementById('qhearts'); hs.innerHTML='';
   for(var i=0;i<HEARTS;i++) hs.appendChild(heartCv(i<RUN.hearts));
+  refreshRamen();
   document.getElementById('qexplain').hidden=true;
   var next=document.getElementById('qnext'),box=document.getElementById('qchoices'); box.innerHTML='';
   var qt=document.getElementById('qtext');
@@ -4220,6 +4527,7 @@ function answer(idx,btn){
   document.querySelectorAll('#qchoices .choice').forEach(function(b,i){ b.disabled=true;
     if(i===item.ok) b.classList.add('ok'); else if(b===btn) b.classList.add('no'); });
   if(right) RUN.correct++; else RUN.hearts--;
+  refreshRamen();
   RUN.marks[RUN.i]=right; sfx(right?'good':'bad');
   ev('quest_answer',{id:RUN.q.id,i:RUN.i,ok:right});
   var ex=document.getElementById('qexplain');
@@ -4406,6 +4714,7 @@ function bossEnd(win){
 document.getElementById('qback').onclick=function(){ render('home'); };
 document.getElementById('rback').onclick=function(){ render('home'); };
 document.getElementById('beback').onclick=function(){ render('home'); };
+document.getElementById('qramen').onclick=eatRamen;
 document.getElementById('epback').onclick=function(){ render('quests'); };
 document.getElementById('eeback').onclick=function(){ render('quests'); };
 document.getElementById('reset').onclick=function(){ S=fresh(); save(); obStep=0; stopWalk(); obRender(); go('onboard'); };
