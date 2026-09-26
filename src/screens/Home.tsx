@@ -11,7 +11,7 @@ import { reviewQuest, type ReviewQuest } from '@/core/review';
 import { needXp, totals } from '@/core/state';
 import { afterClaim } from '@/notify';
 import { Avatar, AvatarHead } from '@/sprite/Avatar';
-import { PET_FACES_RIGHT, PetSprite } from '@/sprite/Cast';
+import { HouseSprite, PET_FACES_RIGHT, PetSprite } from '@/sprite/Cast';
 import { PETS } from '@/data/items';
 import { useGame } from '@/store';
 import { P } from '@/theme/palette';
@@ -66,11 +66,16 @@ export function Home({ onStartQuest }: { onStartQuest: (q: Quest | ReviewQuest) 
       {/* 대기실 */}
       <View style={{ height: STAGE_H, backgroundColor: COLORS.sky, justifyContent: 'flex-end', overflow: 'hidden' }}>
         <StageBack />
+        {/* 사는 곳을 무대 오른쪽에 세운다. 이름만 바뀌면 올라간 느낌이 안 난다. */}
+        <View style={{ position: 'absolute', right: 0, bottom: STAND - 4 }}>
+          <HouseSprite tier={s.tier} scale={2} />
+        </View>
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'flex-end',
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
+            paddingLeft: U[4],
             gap: U[2],
             marginBottom: STAND,
           }}

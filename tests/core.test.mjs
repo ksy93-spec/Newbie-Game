@@ -266,3 +266,41 @@ test('사건 결말 등급은 위험 누적으로 갈린다', async () => {
   assert.equal(epTier(4), 1);
   assert.equal(epTier(5), 2);
 });
+
+test('취준생에게도 볼 것이 충분히 있다', () => {
+  const visible = (st) => pack.quests.filter((q) => !q.fit?.status || q.fit.status.indexOf(st) >= 0);
+  ['대학생', '취준생', '직장인'].forEach((st) => {
+    assert.ok(visible(st).length >= 18, `${st}에게 보이는 퀘스트가 너무 적다`);
+  });
+  const jik = visible('취준생').filter((q) => q.theme === 'jik');
+  assert.ok(jik.length >= 5, '취준생의 직 테마가 얇다');
+});
+
+test('새로 넣은 퀘스트도 형식을 지킨다', () => {
+  pack.quests.forEach((q) => {
+    assert.equal(q.qs.length, 3, `${q.title} 문항 3개`);
+    assert.ok(q.src && q.src.length === 2, `${q.title} 출처`);
+    assert.ok(q.intro && q.npc, `${q.title} 도입부와 NPC`);
+    q.qs.forEach((x) => {
+      assert.ok(x.a.length >= 3, `${q.title} 선택지 3개`);
+      assert.ok(x.ok >= 0 && x.ok < x.a.length, `${q.title} 정답 범위`);
+      assert.ok(x.why.length > 20, `${q.title} 해설`);
+    });
+  });
+});
+
+/* cast.ts는 PNG를 require로 물고 있어 테스트 빌드에서 불러올 수 없다.
+   표를 글자로 읽고 파일이 실제로 있는지만 확인한다. */
+test('거처는 열 단계가 모두 다른 그림이다', async () => {
+  const fs = await import('node:fs');
+  const { TIERS } = await import('../src/data/tiers.ts');
+  const src = fs.readFileSync(new URL('../src/sprite/cast.ts', import.meta.url), 'utf8');
+  const table = src.slice(src.indexOf('export const HOUSE'), src.indexOf('export function houseSprite'));
+  const rows = [...table.matchAll(/house_(\d+)\.png'\), w: (\d+), h: (\d+)/g)];
+  assert.equal(rows.length, TIERS.length, '거처 수와 그림 수가 같아야 한다');
+  rows.forEach(([, i]) => {
+    assert.ok(fs.existsSync(new URL(`../assets/sprites/house_${i}.png`, import.meta.url)), `house_${i}.png 없음`);
+  });
+  const shapes = new Set(rows.map(([, , w, h]) => `${w}x${h}`));
+  assert.ok(shapes.size >= 7, '실루엣이 겹치는 거처가 너무 많다');
+});

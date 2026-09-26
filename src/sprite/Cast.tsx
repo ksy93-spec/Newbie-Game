@@ -1,6 +1,6 @@
 import React from 'react';
 import { Canvas, FilterMode, Image, MipmapMode, useImage } from '@shopify/react-native-skia';
-import { npcFor, petSprite, type CastSprite } from './cast';
+import { houseSprite, npcFor, petSprite, type CastSprite } from './cast';
 
 /* 한 장짜리 그림을 정수 배율로만 키운다. 도트는 보간하는 순간 죽는다. */
 
@@ -29,4 +29,9 @@ export function PetSprite({ kind, scale = 2, flip }: { kind?: string; scale?: nu
   const s = petSprite(kind);
   if (!s) return null;
   return <Sheet sprite={s} scale={scale} flip={flip} />;
+}
+
+/** 지금 사는 곳. 무대 오른쪽에 세운다. */
+export function HouseSprite({ tier, scale = 2 }: { tier: number; scale?: number }) {
+  return <Sheet sprite={houseSprite(tier)} scale={scale} />;
 }

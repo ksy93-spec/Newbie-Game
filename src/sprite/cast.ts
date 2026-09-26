@@ -70,3 +70,25 @@ export function petSprite(kind?: string): CastSprite | null {
   if (!kind) return null;
   return PET_SPRITE[kind as PetKind] ?? null;
 }
+
+/* ══════════ 거처 ══════════
+   열 단계를 색만 바꿔 쓰면 올라가는 느낌이 안 난다. 상자 → 움막 → 텐트 → 찜질방 →
+   좁고 높은 고시원 → 땅 밑으로 꺼진 반지하 → 계단이 밖에 붙은 다세대 → 벽돌 다세대 →
+   발코니가 생긴 투룸 → 지붕과 마당이 있는 집. 실루엣만 봐도 어디 사는지 알아야 한다.
+   프로토타입의 houseG가 그린 그림을 그대로 구워 왔다(tools/export-houses.md). */
+export const HOUSE: CastSprite[] = [
+  { src: require('../../assets/sprites/house_0.png'), w: 46, h: 34 }, // 노숙
+  { src: require('../../assets/sprites/house_1.png'), w: 50, h: 44 }, // 움막
+  { src: require('../../assets/sprites/house_2.png'), w: 56, h: 44 }, // 텐트
+  { src: require('../../assets/sprites/house_3.png'), w: 64, h: 54 }, // 찜질방
+  { src: require('../../assets/sprites/house_4.png'), w: 44, h: 78 }, // 고시원
+  { src: require('../../assets/sprites/house_5.png'), w: 60, h: 52 }, // 반지하
+  { src: require('../../assets/sprites/house_6.png'), w: 62, h: 76 }, // 원룸 월세
+  { src: require('../../assets/sprites/house_7.png'), w: 62, h: 76 }, // 원룸 전세
+  { src: require('../../assets/sprites/house_8.png'), w: 70, h: 84 }, // 투룸 전세
+  { src: require('../../assets/sprites/house_9.png'), w: 72, h: 94 }, // 내 집
+];
+
+export function houseSprite(tier: number): CastSprite {
+  return HOUSE[Math.max(0, Math.min(HOUSE.length - 1, tier))];
+}
