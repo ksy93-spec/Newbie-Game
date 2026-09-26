@@ -245,7 +245,19 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
   font-family:var(--f-ui);cursor:pointer;}
 .stagebox .edge.left{left:0;} .stagebox .edge.right{right:0;}
 .stagebox .edge:active{background:rgba(46,39,64,.75);}
-.nearbar{position:absolute;left:0;right:0;bottom:0;background:rgba(46,39,64,.9);color:var(--p0);
+.dpad{position:absolute;left:6px;bottom:6px;display:grid;width:90px;height:90px;
+  grid-template-columns:repeat(3,30px);grid-template-rows:repeat(3,30px);
+  opacity:.82;touch-action:none;}
+.dpad button{background:rgba(46,39,64,.72);color:var(--p0);border:2px solid rgba(255,253,246,.35);
+  font-size:13px;line-height:1;padding:0;cursor:pointer;}
+.dpad button:active{background:var(--y2);color:var(--s4);}
+.dpad button[data-d="3"]{grid-area:1/2;} .dpad button[data-d="1"]{grid-area:2/1;}
+.dpad button[data-d="2"]{grid-area:2/3;} .dpad button[data-d="0"]{grid-area:3/2;}
+.abtn{position:absolute;right:10px;bottom:18px;width:48px;height:48px;border-radius:50%;
+  background:rgba(244,112,90,.88);color:var(--p0);border:3px solid rgba(255,253,246,.5);
+  font-family:var(--f-ui);font-size:16px;opacity:.9;cursor:pointer;touch-action:none;}
+.abtn:active{background:var(--y2);color:var(--s4);}
+.nearbar{position:absolute;left:0;right:0;top:0;background:rgba(46,39,64,.9);color:var(--p0);
   font-family:var(--f-ui);font-size:11px;line-height:15px;padding:4px 9px;pointer-events:none;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .nearbar b{color:var(--y1);font-weight:400;}
@@ -388,9 +400,14 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
       <div class="stagebox">
         <canvas id="scene"></canvas>
         <div class="zonetag pix" id="hzone"><b>1</b> 집 앞</div>
-        <button class="edge left" id="harrowL" hidden>‹</button>
-        <button class="edge right" id="harrowR">›</button>
         <div class="toast pix" id="htoast" hidden></div>
+        <div class="dpad" id="hdpad">
+          <button data-d="3" aria-label="위">▲</button>
+          <button data-d="1" aria-label="왼쪽">◀</button>
+          <button data-d="2" aria-label="오른쪽">▶</button>
+          <button data-d="0" aria-label="아래">▼</button>
+        </div>
+        <button class="abtn pix" id="habtn" aria-label="말 걸기">A</button>
         <div class="nearbar pix" id="hnear" hidden></div>
       </div>
       <div class="sceneinfo"><span class="tiername" id="htier">노숙</span><span class="def pix">방어 <b id="hdef">0</b></span></div>
@@ -2241,6 +2258,7 @@ function ev(n,p){
 var KEY='nq.v8';
 function fresh(){ return {onboarded:false,status:null,age:null,years:null,company:null,living:null,prep:null,region:null,
  lv:1,xp:0,coin:150,tier:0,peak:0,done:[],bossCleared:false,bossDone:[],epBest:{},
+ pos:{map:'town',tx:2,ty:4,dir:0},
  stats:{ju:5,sik:5,ui:5,geum:5,jik:5},
  avatar:'stuM',
  look:{hair:0,haircol:-1,skin:0},
@@ -2419,8 +2437,8 @@ function whyLine(){ var mid=S.status==='대학생'?S.living
   return [S.status,mid,S.region].filter(Boolean).join(' · '); }
 
 /* ══════════ 대기실 ══════════ */
-/* 목록을 걷어낸 자리만큼 무대를 키웠다. 홈에서 제일 오래 보는 것이 거리가 됐으니 */
-var SW=176,SH=134,GD=16;
+/* 11×9 타일. 위에서 내려다보는 지도의 창이다. */
+var SW=176,SH=144,GD=16;
 var walk={x:30,dir:1,frame:0,timer:null};
 function fitScene(){ var cv=document.getElementById('scene');
   var avail=document.getElementById('app').clientWidth-12;
@@ -2546,51 +2564,289 @@ var PROP={
     rcx(ctx,P.s3,22,g-8,3,8); rcx(ctx,P.s3,45,g-8,3,8); }
 };
 
-/* ══════════ 거리 ══════════
-   사건을 만들면서 알게 된 게 있다. 이 게임에서 제일 재미있는 축은 점수가 아니라 시간이다.
-   그래서 홈을 대시보드에서 거리로 바꿨다. 왼쪽 끝이 지금 사는 집이고, 오른쪽으로 갈수록
-   나중에 겪을 일이 나온다. 집 앞 → 학교 앞 → 고용센터 앞 → 회사 앞 → 은행 골목.
-   걸어가는 것이 곧 시간이 흐르는 것이고, 퀘스트는 목록에서 고르는 게 아니라
-   거기 서 있는 사람에게 말을 거는 것이다. */
-var ZONE_W=SW;
-var ZONES=[
- {name:'집 앞',       sub:'지금 사는 곳'},
- {name:'학교 앞',     sub:'알바와 학자금', kind:'school',
-  sky:['#BFE4F7','#E9F6FF'], far:'#B9C6DE', gr:'#C9BFA4', gd:'#A0947A'},
- {name:'고용센터 앞', sub:'취업 준비',     kind:'center',
-  sky:['#C5E6F5','#EAF7FF'], far:'#AEBBD2', gr:'#B6B2C2', gd:'#8C8798'},
- {name:'회사 앞',     sub:'첫 출근 이후',  kind:'office',
-  sky:['#CDEEFF','#EDF8FF'], far:'#9FB0CC', gr:'#AAA6B6', gd:'#807C8E'},
- {name:'은행 골목',   sub:'계약과 돈',     kind:'bank',
-  sky:['#D6EFFF','#F2FAFF'], far:'#A8B6CE', gr:'#B4AEBE', gd:'#847E92'}
-];
-var WORLD=ZONE_W*ZONES.length;
-var CAM={x:0};
-/* 구역 폭은 거기 서 있는 사람 수가 정한다. 한 화면에 둘까지. 넷을 욱여넣으면
-   서로 겹쳐서 누가 누군지 안 보인다. */
-function layoutZones(counts){
-  var x=0;
-  ZONES.forEach(function(z,i){
-    z.slabs=Math.max(1,Math.ceil((counts[i]||0)/2));
-    z.x0=x; z.w=z.slabs*ZONE_W; x+=z.w; });
-  WORLD=x;
+/* ══════════ 위에서 본 세상 ══════════
+   옆에서 보는 거리는 사람을 한 줄로 세우는 구조라, 다섯 명만 돼도 서로 겹쳤다. 게다가
+   구역 폭을 사람 수로 정하다 보니 세계 좌표가 상황에 따라 움직여서, 걷다가 제자리로
+   튀는 일까지 생겼다. 위에서 보는 타일 맵은 두 문제를 한 번에 없앤다. 좌표가 고정된
+   격자고, 사람은 가로세로로 흩어 세울 수 있고, 문으로 맵을 나눌 수 있다.
+
+   옆모습 종이인형은 위에서 못 쓴다. 그래서 지도 위에 서는 몸은 장비 색만 물려받아
+   절차로 만든다. 손그림은 대화와 전투에 그대로 남는다. 필드 스프라이트와 전투
+   스프라이트를 따로 쓰는 그 구조다. */
+var TS=16;
+var TOPC={};
+/* dir 0 아래 · 1 왼 · 2 오 · 3 위 */
+function personTopG(p,dir,f){
+  var g=Gr(18,26);
+  var sk=p.skin||SKIN[1],hair=p.hair||HAIRC[0];
+  var top=p.top||'#2C3A5E',bot=p.bot||'#3A3746';
+  var la=f?1:0,lb=f?0:1;
+  rc(g,5,19+la,7,23,bot); rc(g,10,19+lb,12,23,bot);        /* 다리 */
+  rc(g,5,23,7,24,P.s4);  rc(g,10,23,12,24,P.s4);           /* 신발 */
+  rr(g,4,12,13,20,top,1);                                  /* 몸 */
+  rc(g,3,13,4,18,top); rc(g,13,13,14,18,top);              /* 팔 */
+  rc(g,3,17,4,18,sk.b); rc(g,13,17,14,18,sk.b);            /* 손 */
+  if(p.acc) rc(g,7,13,10,16,p.acc);                        /* 가방끈·명찰 */
+  rr(g,4,3,13,12,sk.b,2);                                  /* 머리 */
+  rc(g,4,11,13,12,sk.s);
+  if(dir===3) rr(g,3,2,14,11,hair.b,2);                    /* 뒤통수 */
+  else { rr(g,3,2,14,8,hair.b,2); rc(g,3,6,4,10,hair.b); rc(g,13,6,14,10,hair.b); }
+  rc(g,5,2,12,3,hair.h);
+  if(p.hat){ rr(g,2,1,15,6,p.hat,2); rc(g,2,6,15,7,P.s4); }
+  if(dir===0){ rc(g,6,8,6,9,P.s5); rc(g,11,8,11,9,P.s5); }
+  if(dir===1){ rc(g,5,8,6,9,P.s5); }
+  if(dir===2){ rc(g,11,8,12,9,P.s5); }
+  shade(g); outline(g,P.s5); return g;
 }
-function zoneAt(x){
-  for(var i=ZONES.length-1;i>=0;i--) if(x>=ZONES[i].x0) return i;
-  return 0;
+function heroTop(dir,f){
+  var o=equipOpts(),L=S.look||{};
+  var hi=(L.haircol>=0)?L.haircol:0,hc=HAIRC[hi]||HAIRC[0],sk=SKIN[L.skin||0]||SKIN[0];
+  var key='HT'+dir+f+'|'+hi+(L.skin||0)+o.top+o.bot+o.ac;
+  if(TOPC[key]) return TOPC[key];
+  return (TOPC[key]=toCanvas(personTopG({
+    hair:hc,skin:sk,top:o.top||'#2C3A5E',bot:o.bot||'#3A3746',acc:o.ac},dir,f)));
+}
+/* 조연은 손그림 색을 옮겨 왔다. 지도에서도 같은 사람으로 보여야 한다. */
+var NPC_TOP={
+ gpa:    {hair:{b:'#9A9AA8',h:'#C2C2CC'},top:'#6E6A52',bot:'#5A5648'},
+ gma:    {hair:{b:'#C9C3D6',h:'#E8E4F0'},top:'#8E7BB0',bot:'#5F5A73'},
+ peerm:  {hair:{b:'#2B2733',h:'#453F54'},top:'#2C3A5E',bot:'#3A3746'},
+ peerf:  {hair:{b:'#4A3628',h:'#6B5340'},top:'#C2A079',bot:'#5C5866'},
+ deskf:  {hair:{b:'#2B2733',h:'#453F54'},top:'#FFF8EC',bot:'#3A3746',acc:'#9BDCF7'},
+ officem:{hair:{b:'#2B2733',h:'#453F54'},top:'#5C5866',bot:'#3A3746',acc:'#F4705A'},
+ boss:   {hair:{b:'#191620',h:'#3A3550'},top:'#3B3550',bot:'#26232E'},
+ mlmf:   {hair:{b:'#7A5A3C',h:'#9E7C58'},top:'#D9B44A',bot:'#5C5866'},
+ fp:     {hair:{b:'#2B2733',h:'#453F54'},top:'#26406B',bot:'#1E2C44',acc:'#FFC53C'},
+ boy:    {hair:{b:'#2B2733',h:'#453F54'},top:'#62C85C',bot:'#3F5F87',hat:'#F4705A'},
+ girl:   {hair:{b:'#4A3628',h:'#6B5340'},top:'#F4705A',bot:'#3F5F87'}
+};
+function npcTop(key,dir,f){
+  var k='NT'+key+dir+f; if(TOPC[k]) return TOPC[k];
+  var p=NPC_TOP[key]||NPC_TOP.peerm;
+  return (TOPC[k]=toCanvas(personTopG(p,dir,f)));
 }
 
-/* 누가 어느 구역에 서 있는지. 인생 순서대로 놓았다. */
-var NPC_ZONE={
- '부동산 사장':0,'주민센터 직원':0,
- '동기':1,'선배':1,'자취 선배':1,'알바 선배':1,'장학팀':1,
- '고용센터 상담원':2,'공단 상담원':2,
- '인사팀':3,'3년차 선배':3,
- '은행 창구 직원':4,'세탁소 사장':4
+/* ══════════ 맵 ══════════
+   왼쪽에서 오른쪽으로 갈수록 나중에 겪을 일이 나온다. 집에서 나와 동네를 지나
+   학교 앞 → 고용센터 → 회사 → 은행 골목. 걸어가는 것이 곧 시간이 흐르는 것이다.
+   타일 한 글자의 뜻은 TILES를 보면 된다. */
+var TILES={
+ '.':{walk:1,kind:'floor'}, ',':{walk:1,kind:'rug'},  '#':{kind:'inwall'},
+ 'T':{kind:'desk'},         'B':{kind:'bed'},         'C':{kind:'counter'},
+ '_':{walk:1,kind:'pave'},  'g':{walk:1,kind:'grass'},'r':{kind:'road'},
+ '-':{kind:'cross'},        'H':{kind:'wall'},        'W':{kind:'window'},  'R':{kind:'roof'},
+ 'D':{kind:'door'},         't':{kind:'tree'},        'f':{kind:'fence'},
+ 'p':{kind:'pole'},         'b':{kind:'bench'}
 };
-var EP_ZONE={'jeonse-day':0,'first-job':1,'job-hunt':2,'first-pay':3};
-var STOPS=[];
-/* 이 사람에게 아직 남은 퀘스트. 오늘 몫이면 today를 세워 준다. */
+var MAPS={
+ room:{name:'내 방',sub:'지금 사는 곳',w:11,h:9,rows:[
+  '###########',
+  '#T.......B#',
+  '#.........#',
+  '#...,,,...#',
+  '#...,,,...#',
+  '#.........#',
+  '#.........#',
+  '#####D#####',
+  '###########'],
+  warps:[{x:5,y:7,to:'town',tx:2,ty:3}],
+  spots:[{x:1,y:1,kind:'review'}]},
+
+ town:{name:'동네',sub:'1 · 지금 사는 곳',w:22,h:11,rows:[
+  'RRRRRRRRRRRRRRRRRRRRRR',
+  'HWWHHHHWWHHHHWWHHHHWWH',
+  'HHDHHHHHDHHHHHDHHHHHHH',
+  '______________________',
+  '______________________',
+  '_t_________________t__',
+  '______________________',
+  '__________________b___',
+  '______________________',
+  '----------------------',
+  'rrrrrrrrrrrrrrrrrrrrrr'],
+  edges:{east:'campus'},
+  warps:[{x:2,y:2,to:'room',tx:5,ty:6}],
+  spots:[{x:8,y:3,kind:'npc',who:'부동산 사장'},
+         {x:14,y:3,kind:'npc',who:'주민센터 직원'},
+         {x:11,y:6,kind:'ep',id:'jeonse-day'}]},
+
+ campus:{name:'학교 앞',sub:'2 · 알바와 학자금',w:22,h:11,rows:[
+  'gggggggggggggggggggggg',
+  'gRRRRRRRggggggRRRRRRRg',
+  'gHWWHWWHggttggHWWHWWHg',
+  'gHHHDHHHggttggHHHDHHHg',
+  '______________________',
+  '______________________',
+  '_t_______p_________t__',
+  '______________________',
+  '______________________',
+  'gggggggggggggggggggggg',
+  'ggfgggggggggggggggfggg'],
+  edges:{west:'town',east:'center'},
+  spots:[{x:3,y:5,kind:'npc',who:'동기'},
+         {x:6,y:7,kind:'npc',who:'선배'},
+         {x:11,y:4,kind:'npc',who:'자취 선배'},
+         {x:15,y:7,kind:'npc',who:'알바 선배'},
+         {x:18,y:5,kind:'npc',who:'장학팀'},
+         {x:9,y:8,kind:'ep',id:'first-job'}]},
+
+ center:{name:'고용센터 앞',sub:'3 · 취업 준비',w:22,h:11,rows:[
+  'RRRRRRRRRRRRRRRRRRRRRR',
+  'HWWWWHHHHHHHHHHWWWWWWH',
+  'HHHHHHHHDDHHHHHHHHHHHH',
+  '______________________',
+  '______________________',
+  '_t_________________t__',
+  '______________________',
+  '_____b_________b______',
+  '______________________',
+  'gggggggggggggggggggggg',
+  'gggggggggggggggggggggg'],
+  edges:{west:'campus',east:'office'},
+  spots:[{x:7,y:4,kind:'npc',who:'고용센터 상담원'},
+         {x:14,y:4,kind:'npc',who:'공단 상담원'},
+         {x:11,y:6,kind:'ep',id:'job-hunt'}]},
+
+ office:{name:'회사 앞',sub:'4 · 첫 출근 이후',w:22,h:11,rows:[
+  'RRRRRRRRRRRRRRRRRRRRRR',
+  'HWWWWHHHHWWWWWHHHWWWWH',
+  'HWWWWHHDDWWWWWHHHHHHHH',
+  '______________________',
+  '______________________',
+  '_t_______p_________t__',
+  '______________________',
+  '______________________',
+  '______________________',
+  '----------------------',
+  'rrrrrrrrrrrrrrrrrrrrrr'],
+  edges:{west:'center',east:'bank'},
+  spots:[{x:8,y:4,kind:'npc',who:'인사팀'},
+         {x:15,y:4,kind:'npc',who:'3년차 선배'},
+         {x:11,y:7,kind:'ep',id:'first-pay'}]},
+
+ bank:{name:'은행 골목',sub:'5 · 계약과 돈',w:22,h:11,rows:[
+  'RRRRRRRRRRRRRRRRRRRRRR',
+  'HWWHHWWHHHHWWHHHHWWHHH',
+  'HHHHDHHHHHHHHDHHHHHHHH',
+  '______________________',
+  '______________________',
+  '_t____________________',
+  '______________________',
+  '_________b____________',
+  '______________________',
+  'ffffffffffffffffffffff',
+  'gggggggggggggggggggggg'],
+  edges:{west:'office'},
+  spots:[{x:5,y:3,kind:'npc',who:'은행 창구 직원'},
+         {x:11,y:3,kind:'npc',who:'세탁소 사장'},
+         {x:16,y:5,kind:'boss',id:'jeonse'},
+         {x:18,y:7,kind:'boss',id:'mlm'},
+         {x:20,y:4,kind:'boss',id:'fp'}]}
+};
+/* ── 타일 그리기 ──────────────────────────────────────────────────────── */
+function tileAt(m,x,y){
+  if(x<0||y<0||x>=m.w||y>=m.h) return null;
+  return m.rows[y].charAt(x);
+}
+function warpAt(m,x,y){
+  var r=null; (m.warps||[]).forEach(function(w){ if(w.x===x&&w.y===y) r=w; }); return r;
+}
+function walkable(m,x,y){
+  var c=tileAt(m,x,y); if(c===null) return false;
+  if(spotAt(m,x,y)) return false;
+  if(warpAt(m,x,y)) return true;          /* 문은 막혀 보여도 밟을 수 있어야 문이다 */
+  var t=TILES[c]; return !!(t&&t.walk);
+}
+function spotAt(m,x,y){
+  var r=null;
+  (m.spots||[]).forEach(function(s){ if(s.x===x&&s.y===y) r=s; });
+  return r;
+}
+/* 거처가 올라가면 방의 결이 바뀐다. 이름만 바뀌는 것보다 이게 낫다. */
+function roomTint(){
+  var t=S.tier;
+  if(t<=1) return {fl:'#6B6380',fl2:'#554F66',wl:'#453D5C',wl2:'#2E2740'};
+  if(t<=3) return {fl:'#D9BE94',fl2:'#B99B6E',wl:'#F2DDB4',wl2:'#E3C08A'};
+  if(t<=5) return {fl:'#9B93A8',fl2:'#837C94',wl:'#DDD8CC',wl2:'#C9C3B4'};
+  if(t<=7) return {fl:'#C9A97A',fl2:'#A98A5E',wl:'#F7EBD6',wl2:'#E3D2B4'};
+  return {fl:'#D8B98A',fl2:'#B8996A',wl:'#FFF8EC',wl2:'#F2E3C8'};
+}
+function drawTile(ctx,m,c,px,py,tx,ty){
+  var T=roomTint(),i,odd=((tx+ty)%2);
+  switch(c){
+    case '.': rcx(ctx,T.fl,px,py,TS,TS);
+      rcx(ctx,T.fl2,px,py,TS,1);
+      for(i=0;i<TS;i+=5) rcx(ctx,T.fl2,px+i,py,1,TS); break;
+    case ',': rcx(ctx,'#B85C6A',px,py,TS,TS); rcx(ctx,'#9C4453',px,py+1,TS,1);
+      rcx(ctx,'#D77C88',px+2,py+3,TS-4,TS-6); break;
+    case '#': rcx(ctx,T.wl,px,py,TS,TS); rcx(ctx,T.wl2,px,py+TS-3,TS,3);
+      rcx(ctx,T.wl2,px,py,TS,1); break;
+    case 'T': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,'#8A6A44',px,py+2,TS,TS-4);
+      rcx(ctx,'#A5825A',px,py+2,TS,2); rcx(ctx,P.p0,px+3,py+5,9,6);
+      rcx(ctx,P.s3,px+4,py+7,7,1); break;
+    case 'B': rcx(ctx,T.fl,px,py,TS,TS); rcx(ctx,'#6EC8F0',px,py+3,TS,TS-3);
+      rcx(ctx,P.p0,px+1,py+3,TS-2,5); rcx(ctx,'#3A9BC9',px,py+TS-2,TS,2); break;
+    case 'C': rcx(ctx,'#B9A88C',px,py,TS,TS); rcx(ctx,'#8A7A64',px,py+TS-3,TS,3);
+      rcx(ctx,'#D6C6A8',px,py,TS,3); break;
+    case '_': rcx(ctx,'#CFCADA',px,py,TS,TS);
+      rcx(ctx,'#BAB4C6',px,py,TS,1); rcx(ctx,'#BAB4C6',px,py,1,TS);
+      if(odd) rcx(ctx,'#C6C0D2',px+3,py+3,TS-6,TS-6); break;
+    case 'g': rcx(ctx,'#62C85C',px,py,TS,TS); rcx(ctx,'#3FA548',px,py+TS-2,TS,2);
+      rcx(ctx,'#7ADB74',px+ (odd?3:9),py+5,2,3); break;
+    case 'r': rcx(ctx,'#5C5866',px,py,TS,TS);
+      if(ty%2===0&&tx%2===0) rcx(ctx,'#E3D2B4',px+2,py+7,10,2); break;
+    case '-': rcx(ctx,'#5C5866',px,py,TS,TS); rcx(ctx,P.p0,px+2,py,5,TS);
+      rcx(ctx,P.p0,px+9,py,5,TS); break;
+    case 'R': rcx(ctx,'#8E5A4A',px,py,TS,TS);
+      for(i=0;i<TS;i+=4) rcx(ctx,'#7A4A3C',px,py+i,TS,1);
+      rcx(ctx,'#B4786A',px,py,TS,3); rcx(ctx,'#5E382E',px,py+TS-3,TS,3); break;
+    case 'H': rcx(ctx,'#C3B9A8',px,py,TS,TS);
+      for(i=0;i<TS;i+=5) rcx(ctx,'#AFA494',px,py+i,TS,1);
+      rcx(ctx,'#9A8F80',px+(ty%2?0:8),py,1,TS); break;
+    case 'W': rcx(ctx,'#C3B9A8',px,py,TS,TS); rcx(ctx,P.s3,px+2,py+2,TS-4,TS-4);
+      rcx(ctx,'#9BDCF7',px+3,py+3,TS-6,TS-6); rcx(ctx,P.p0,px+3,py+3,4,4); break;
+    case 'D': rcx(ctx,'#C3B9A8',px,py,TS,TS); rcx(ctx,'#8A6A44',px+2,py+1,TS-4,TS-1);
+      rcx(ctx,'#6E5334',px+2,py+1,TS-4,2); rcx(ctx,P.y1,px+TS-5,py+8,2,2); break;
+    case 't': rcx(ctx,'#62C85C',px,py,TS,TS); rcx(ctx,'#6E5334',px+6,py+9,4,7);
+      rcx(ctx,'#2F8C39',px+1,py+1,TS-2,9); rcx(ctx,'#3FA548',px+2,py,TS-4,6);
+      rcx(ctx,'#4FA34A',px+4,py+2,6,3); break;
+    case 'f': rcx(ctx,'#62C85C',px,py,TS,TS); rcx(ctx,'#E3D2B4',px,py+4,TS,3);
+      rcx(ctx,'#E3D2B4',px,py+9,TS,3); rcx(ctx,'#C6B496',px+3,py+2,3,TS-2); break;
+    case 'p': rcx(ctx,'#CFCADA',px,py,TS,TS); rcx(ctx,'#5C5866',px+7,py,3,TS);
+      rcx(ctx,'#453D5C',px+3,py,11,4); rcx(ctx,P.y0,px+4,py+4,9,2); break;
+    case 'b': rcx(ctx,'#CFCADA',px,py,TS,TS); rcx(ctx,'#A5825A',px+1,py+5,TS-2,4);
+      rcx(ctx,'#8A6A44',px+1,py+9,TS-2,2); rcx(ctx,'#6B6380',px+2,py+11,2,4);
+      rcx(ctx,'#6B6380',px+TS-4,py+11,2,4); break;
+    default: rcx(ctx,'#2E2740',px,py,TS,TS);
+  }
+}
+/* ── 서 있는 것들 ─────────────────────────────────────────────────────── */
+function spotFace(s){
+  if(s.kind==='npc') return npcKeyFor(s.who);
+  if(s.kind==='boss') return bossById(s.id).face;
+  return null;
+}
+function spotLabel(s){
+  if(s.kind==='npc') return s.who;
+  if(s.kind==='boss') return bossById(s.id).name;
+  if(s.kind==='review') return '복습 노트';
+  return epById(s.id).title;
+}
+function epById(id){ var r=EPISODES[0]; EPISODES.forEach(function(e){ if(e.id===id) r=e; }); return r; }
+function spotMark(s){
+  if(s.kind==='npc'){ var a=questAt(s.who); return a?(a.today?'!':'?'):null; }
+  if(s.kind==='review') return reviewQuest()?'!':null;
+  if(s.kind==='ep') return epBestOf(s.id)===0?null:'?';
+  if(s.kind==='boss') return bossCleared(s.id)?null:'!';
+  return null;
+}
+function spotHint(s){
+  if(s.kind==='ep') return epBestOf(s.id)===null?'눌러서 걸어 보기':'다시 걸어 보기';
+  if(s.kind==='review') return reviewQuest()?'눌러서 복습하기':'복습할 문항이 없다';
+  if(s.kind==='boss') return bossCleared(s.id)?'다시 맞서기':'눌러서 맞서기';
+  var a=questAt(s.who);
+  return a?('눌러서 말 걸기 · '+a.q.title):'지금은 할 말이 없다';
+}
 function questAt(name){
   var today=todayList(),pick=null,isToday=false;
   QUESTS.forEach(function(q){
@@ -2599,333 +2855,249 @@ function questAt(name){
     if(!pick||(t&&!isToday)){ pick=q; isToday=t; } });
   return pick?{q:pick,today:isToday}:null;
 }
-function buildStops(){
-  var byZone={},names=[];
-  STOPS=[];
-  QUESTS.forEach(function(q){ if(q.keys) return;
-    if(names.indexOf(q.npc)<0&&fits(q)) names.push(q.npc); });
-  names.forEach(function(n){ var z=NPC_ZONE[n]; if(z==null) z=4;
-    (byZone[z]=byZone[z]||[]).push({kind:'npc',who:n,z:z}); });
-  EPISODES.forEach(function(e){ var z=EP_ZONE[e.id]; if(z==null) z=0;
-    (byZone[z]=byZone[z]||[]).push({kind:'ep',ep:e,z:z}); });
-  if(reviewQuest()) (byZone[0]=byZone[0]||[]).push({kind:'review',z:0});
-  BOSSES.forEach(function(b){ (byZone[4]=byZone[4]||[]).push({kind:'boss',boss:b,z:4}); });
-  layoutZones(ZONES.map(function(_,i){ return (byZone[i]||[]).length; }));
-  Object.keys(byZone).forEach(function(k){
-    var z=+k,arr=byZone[k],zz=ZONES[z];
-    var lo=zz.x0+(z===0?66:26),hi=zz.x0+zz.w-26;
-    var step=arr.length>1?Math.floor((hi-lo)/(arr.length-1)):0;
-    arr.forEach(function(s,i){ s.x=lo+i*step; s.dy=(i%2)?-3:0; STOPS.push(s); }); });
-  STOPS.sort(function(a,b){ return a.x-b.x; });
-}
-function stopSprite(s){
-  if(s.kind==='npc') return castCv('npc_'+npcKeyFor(s.who));
-  if(s.kind==='boss') return castCv('npc_'+s.boss.face);
-  return null;                                   /* 게시판은 직접 그린다 */
-}
-function stopLabel(s){
-  if(s.kind==='npc') return s.who;
-  if(s.kind==='boss') return s.boss.name;
-  if(s.kind==='review') return '복습 노트';
-  return s.ep.title;
-}
-/* 머리 위에 뜨는 표시. 오늘 몫은 노랑 느낌표, 그냥 남은 것은 흰 물음표. */
-function stopMark(s){
-  if(s.kind==='npc'){ var a=questAt(s.who); return a?(a.today?'!':'?'):null; }
-  if(s.kind==='review') return reviewQuest()?'!':null;
-  if(s.kind==='ep')  return epBestOf(s.ep.id)===0?null:'!';
-  if(s.kind==='boss')return bossCleared(s.boss.id)?null:'!';
-  return null;
-}
-function camFollow(){
-  var want=walk.x+16-Math.round(SW/2);
-  CAM.x=Math.max(0,Math.min(WORLD-SW,want));
-}
-/* ── 구역 배경 ────────────────────────────────────────────────────────── */
-function paintZoneBack(ctx,z,x0,seed,g){
-  var i,x;
-  ctx.fillStyle=z.sky[0]; ctx.fillRect(x0,0,ZONE_W,g);
-  ctx.fillStyle=z.sky[1]; ctx.fillRect(x0,Math.round(g*0.52),ZONE_W,g-Math.round(g*0.52));
-  ctx.fillStyle=P.p1;                                     /* 구름 */
-  [[30,14,11,4],[104,22,13,5]].forEach(function(c){
-    ctx.fillRect(x0+c[0]-c[2],c[1],c[2]*2,c[3]);
-    ctx.fillRect(x0+c[0]-c[2]+4,c[1]-3,c[2]*2-8,c[3]+3); });
-  /* 멀리 선 건물. 높낮이를 벌리고 사이를 띄워야 벽이 아니라 스카이라인으로 읽힌다. */
-  for(i=0;i<8;i++){
-    var k=i+seed*8,bw=12+((k*29)%13),bh=20+((k*47)%44),bx=x0+i*23-8;
-    ctx.fillStyle=z.far; ctx.fillRect(bx,g-bh,bw,bh);
-    ctx.fillStyle='rgba(255,255,255,.30)';
-    for(var rr=0;rr<Math.floor((bh-8)/11);rr++)
-      for(x=0;x<Math.floor((bw-3)/7);x++) ctx.fillRect(bx+3+x*7,g-bh+5+rr*11,3,4);
-    ctx.fillStyle='rgba(46,39,64,.14)'; ctx.fillRect(bx,g-bh,bw,2);
-  }
-  if(ZPROP[z.kind]&&seed===0) ZPROP[z.kind](ctx,x0,g);
-  else zoneFill(ctx,x0,g,seed);
-}
-/* 두 번째 화면부터 세우는 자잘한 것들. 없으면 걸어가는 동안 아무 일도 안 일어난다. */
-function zoneFill(ctx,x0,g,seed){
-  rcx(ctx,'#6B6380',x0+22,g-44,3,44); rcx(ctx,'#453D5C',x0+14,g-48,19,5);   /* 가로등 */
-  rcx(ctx,P.y0,x0+16,g-44,15,3);
-  rcx(ctx,'#3F7A3C',x0+96,g-26,4,26);                                        /* 가로수 */
-  rcx(ctx,'#4FA34A',x0+86,g-44,24,20); rcx(ctx,'#62C85C',x0+90,g-47,16,8);
-  if(seed%2){ rcx(ctx,P.r2,x0+130,g-30,20,30); rcx(ctx,P.p1,x0+133,g-26,14,9);  /* 자판기 */
-    rcx(ctx,P.s3,x0+133,g-14,14,5); }
-  else { rcx(ctx,'#8C8798',x0+128,g-20,26,20); rcx(ctx,P.s3,x0+128,g-22,26,3);  /* 벤치 */
-    rcx(ctx,'#6B6380',x0+131,g-14,3,14); rcx(ctx,'#6B6380',x0+148,g-14,3,14); }
-}
-/* 구역마다 하나씩, 여기가 어디인지 알려 주는 것 */
-var ZPROP={
-  school:function(ctx,x0,g){
-    rcx(ctx,'#8A7A64',x0+18,g-54,5,54); rcx(ctx,'#8A7A64',x0+92,g-54,5,54);
-    rcx(ctx,'#6E5F49',x0+14,g-58,87,5);
-    rcx(ctx,P.p1,x0+34,g-53,47,11); rcx(ctx,P.s3,x0+38,g-50,39,5);
-    rcx(ctx,'#3F7A3C',x0+124,g-40,4,40);                 /* 나무 */
-    rcx(ctx,'#4FA34A',x0+112,g-62,28,24); rcx(ctx,'#62C85C',x0+116,g-66,20,10);
-  },
-  center:function(ctx,x0,g){
-    rcx(ctx,'#DDE3EE',x0+16,g-66,86,66);                 /* 낮은 관공서 */
-    rcx(ctx,'#3A9BC9',x0+16,g-66,86,9);
-    rcx(ctx,P.p1,x0+30,g-64,58,5);
-    for(var i=0;i<4;i++) rcx(ctx,'#9BDCF7',x0+24+i*20,g-50,13,16);
-    rcx(ctx,'#6B6380',x0+48,g-26,22,26); rcx(ctx,'#CDEEFF',x0+51,g-23,16,20);
-    rcx(ctx,P.y1,x0+120,g-30,26,4); rcx(ctx,'#6B6380',x0+121,g-26,2,26);
-    rcx(ctx,'#6B6380',x0+143,g-26,2,26);                 /* 버스 정류장 */
-  },
-  office:function(ctx,x0,g){
-    rcx(ctx,'#C3CCDD',x0+12,g-78,68,78);                 /* 유리 빌딩 */
-    for(var r=0;r<6;r++) for(var c=0;c<4;c++)
-      rcx(ctx,(r+c)%3?'#9BDCF7':'#6EC8F0',x0+18+c*16,g-72+r*12,12,8);
-    rcx(ctx,'#2E2740',x0+30,g-22,32,22); rcx(ctx,'#CDEEFF',x0+34,g-19,24,19);
-    rcx(ctx,'#8C8798',x0+100,g-44,40,44);                /* 옆 건물 */
-    rcx(ctx,P.r1,x0+104,g-40,32,7);
-    for(var i=0;i<3;i++) rcx(ctx,P.y1,x0+106+i*12,g-28,8,10);
-  },
-  bank:function(ctx,x0,g){
-    rcx(ctx,'#E8DFC8',x0+10,g-70,74,70);                 /* 은행 */
-    rcx(ctx,'#2F8C39',x0+10,g-70,74,10);
-    rcx(ctx,P.p0,x0+24,g-68,46,6);
-    for(var i=0;i<3;i++){ rcx(ctx,P.s3,x0+18+i*22,g-52,16,22); rcx(ctx,'#CDEEFF',x0+20+i*22,g-50,12,18); }
-    rcx(ctx,'#6B6380',x0+36,g-24,22,24); rcx(ctx,'#9BDCF7',x0+39,g-21,16,18);
-    rcx(ctx,'#453D5C',x0+104,g-34,18,34); rcx(ctx,'#62C85C',x0+107,g-30,12,9);  /* ATM 부스 */
-    rcx(ctx,P.s2,x0+108,g-18,10,3);
-    rcx(ctx,'#6B6380',x0+138,g-46,3,46); rcx(ctx,'#453D5C',x0+130,g-50,19,5);   /* 가로등 */
-    rcx(ctx,P.y0,x0+132,g-46,15,3);
-  }
-};
-/* 지금 그려질 몸이 wx를 기준으로 어디부터 어디까지 차지하는지. 그림의 잉크를 직접 재서
-   아바타가 바뀌든 탈것을 타든 벽 계산이 따라오게 한다. */
-function bodyBox(){
-  var mt=MOUNTS[S.equip.mount];
-  if(mt&&mt.kind){ var rc=rideCv(mt.kind,0);
-    if(rc){ var ib=inkBox(rc,'R'+mt.kind+(S.avatar||'')+heroKey());
-      return {x0:-8+ib.x0,x1:-8+ib.x1}; } }
-  var hc=heroCv('walk',0); if(!hc) return {x0:13,x1:51};
-  return inkBox(hc,'H'+(S.avatar||'')+heroKey());
-}
-/* 지금 내가 서 있는 자리. walk.x는 64칸 캔버스의 왼쪽 끝이라 그대로 쓰면 어긋난다. */
-function heroX(){ var b=bodyBox(); return walk.x+(b.x0+b.x1)/2; }
 function drawMark(ctx,x,y,today){
   var col=today?P.y1:P.p0;
-  rcx(ctx,P.s4,x-5,y-13,11,13);
-  rcx(ctx,col,x-4,y-12,9,11);
-  rcx(ctx,P.s4,x-1,y-10,2,5);
-  rcx(ctx,P.s4,x-1,y-4,2,2);
-  rcx(ctx,P.s4,x-2,y,5,2); rcx(ctx,P.s4,x-1,y+2,3,2);   /* 꼬리 */
+  rcx(ctx,P.s4,x-5,y-13,11,13); rcx(ctx,col,x-4,y-12,9,11);
+  rcx(ctx,P.s4,x-1,y-10,2,5); rcx(ctx,P.s4,x-1,y-4,2,2);
+  rcx(ctx,P.s4,x-2,y,5,2); rcx(ctx,P.s4,x-1,y+2,3,2);
 }
-/* 이름표는 제일 가까운 하나만 띄운다. 넷이 한꺼번에 뜨면 아무것도 안 읽힌다. */
-function nearestStop(){
-  var hx=heroX(),best=null,bd=27;
-  STOPS.forEach(function(s){ var d=Math.abs(s.x-hx); if(d<bd){ bd=d; best=s; } });
-  return best;
-}
-function stopHint(s){
-  if(s.kind==='ep') return epBestOf(s.ep.id)===null?'눌러서 걸어 보기':'다시 걸어 보기';
-  if(s.kind==='review') return '눌러서 복습하기';
-  if(s.kind==='boss') return bossCleared(s.boss.id)?'다시 맞서기':'눌러서 맞서기';
-  var a=questAt(s.who);
-  return a?('눌러서 말 걸기 · '+a.q.title):'지금은 할 말이 없다';
-}
-function drawStop(ctx,s,g,cam){
-  if(s.x<cam-46||s.x>cam+SW+46) return;
-  var mark=stopMark(s),near=(nearestStop()===s);
+function drawSpot(ctx,s,px,py){
   if(s.kind==='ep'||s.kind==='review'){
-    rcx(ctx,P.b3,s.x-8,g-15,3,15); rcx(ctx,P.b3,s.x+6,g-15,3,15);
-    rcx(ctx,P.s4,s.x-16,g-44,33,30);
-    rcx(ctx,s.kind==='ep'?P.b1:P.k1,s.x-14,g-42,29,26);
-    rcx(ctx,P.s3,s.x-11,g-38,23,3); rcx(ctx,P.s2,s.x-11,g-33,15,2);
-    rcx(ctx,P.s2,s.x-11,g-29,19,2); rcx(ctx,P.s2,s.x-11,g-25,12,2);
-    if(mark) drawMark(ctx,s.x,g-49,s.kind==='review');
-  } else {
-    var im=stopSprite(s); if(!im) return;
-    var sx=Math.round(s.x-im.width/2);
-    /* 다들 나를 본다. 손그림은 왼쪽을 보고 그려져 있다. */
-    drawFlip(ctx,im,sx,g-im.height+2+(s.dy||0),s.x<heroX());
-    if(mark) drawMark(ctx,s.x,g-im.height-4+(s.dy||0),mark==='!');
+    rcx(ctx,P.b3,px+3,py+10,3,6); rcx(ctx,P.b3,px+10,py+10,3,6);
+    rcx(ctx,P.s4,px,py-6,TS,17);
+    rcx(ctx,s.kind==='ep'?P.b1:P.k1,px+2,py-4,TS-4,13);
+    rcx(ctx,P.s3,px+4,py-2,8,2); rcx(ctx,P.s2,px+4,py+2,10,2);
+    rcx(ctx,P.s2,px+4,py+6,6,2);
+    return;
   }
-  if(near) rcx(ctx,P.y1,Math.round(s.x-7),g+GD-4,14,3);   /* 발밑에 표시 */
+  var key=spotFace(s); if(!key) return;
+  var im=npcTop(key,s.dir==null?0:s.dir,0);
+  ctx.drawImage(im,px+Math.round((TS-im.width)/2),py+TS-im.height+2);
 }
-function drawParty(ctx,g){
-  var mt=MOUNTS[S.equip.mount],pet=PETS[S.equip.pet],feet=SH-GD-58;
-  var av0=AVATARS[S.avatar]||{},wx=Math.round(walk.x);
-  var bb=bodyBox(),L=wx+bb.x0,R=wx+bb.x1;
-  if(pet&&pet.kind){
-    var pc=petCv(pet.kind,walk.frame%2);
-    var tgt=(walk.dir>0)?(L-pc.width+3):(R-3);
-    if(walk.petX==null) walk.petX=tgt;
-    walk.petX+=Math.max(-5,Math.min(5,(tgt-walk.petX)*0.3));
-    drawFlip(ctx,pc,Math.round(walk.petX),g-pc.height+4,flipFor(FACE_PET,walk.dir));
-  }
-  if(mt&&mt.kind){ var rc2=rideCv(mt.kind,walk.frame);
-    if(rc2) drawFlip(ctx,rc2,wx-8,g-rc2.height+5,flipFor(FACE_MOUNT,walk.dir)); }
-  else drawFlip(ctx,heroCv(walk.goal?'walk':'walk',walk.frame),wx,feet,flipFor(av0.faceRight,walk.dir));
+/* ── 나 ──────────────────────────────────────────────────────────────── */
+var ME={map:'town',tx:2,ty:4,dir:0,step:0};
+var MOVE=null;                       /* {fx,fy,tx,ty,t,dur,path,pi,then} */
+var MAPT=null;                       /* 애니메이션 타이머 */
+function curMap(){ return MAPS[ME.map]||MAPS.town; }
+function mePx(){
+  var x=ME.tx*TS,y=ME.ty*TS;
+  if(MOVE){ var k=MOVE.t/MOVE.dur;
+    x=(MOVE.fx+(MOVE.tx-MOVE.fx)*k)*TS; y=(MOVE.fy+(MOVE.ty-MOVE.fy)*k)*TS; }
+  return {x:x,y:y};
 }
-function paintHomeZone(ctx,sc,g,slab){
-  var x,y;
-  if(sc.indoor){
-    ctx.fillStyle=sc.wall; ctx.fillRect(0,0,ZONE_W,g);
-    ctx.fillStyle=sc.wall2;
-    for(y=0;y<g;y+=10) ctx.fillRect(0,y,ZONE_W,1);
-  } else {
-    ctx.fillStyle=sc.sky[1]; ctx.fillRect(0,0,ZONE_W,g);
-    ctx.fillStyle=sc.sky[0]; ctx.fillRect(0,0,ZONE_W,Math.round(g*0.55));
-    if(sc.night){ ctx.fillStyle=P.p1;
-      [[18,10],[44,20],[70,8],[104,24],[150,14],[168,30]].forEach(function(s){ ctx.fillRect(s[0],s[1],1,1); });
-    } else { ctx.fillStyle=P.p1;
-      [[26,16,13,5],[62,9,9,4],[136,21,15,6]].forEach(function(c){
-        ctx.fillRect(c[0]-c[2],c[1],c[2]*2,c[3]); ctx.fillRect(c[0]-c[2]+4,c[1]-3,c[2]*2-8,c[3]+3); }); }
-  }
-  (sc.props||[]).forEach(function(k){ if(PROP[k]) PROP[k](ctx,sc); });
-  ctx.fillStyle=sc.gr; ctx.fillRect(0,g,ZONE_W,GD);
-  ctx.fillStyle=sc.gd; for(x=0;x<ZONE_W;x+=4) ctx.fillRect(x,g,2,2);
-  if(sc.grass){ ctx.fillStyle=P.g2; for(x=3;x<ZONE_W;x+=11) ctx.fillRect(x,g+7,1,3); }
-  else { ctx.fillStyle=sc.gd; for(x=0;x<ZONE_W;x+=18) ctx.fillRect(x,g+9,14,1); }
-  if(!slab){ var hcv=houseCv(S.tier); ctx.drawImage(hcv,6,g-hcv.height+3); }
+function camOf(m){
+  var p=mePx();
+  var cx=Math.round(p.x+TS/2-SW/2),cy=Math.round(p.y+TS/2-SH/2);
+  var mw=m.w*TS,mh=m.h*TS;
+  cx=(mw<=SW)?Math.round((mw-SW)/2):Math.max(0,Math.min(mw-SW,cx));
+  cy=(mh<=SH)?Math.round((mh-SH)/2):Math.max(0,Math.min(mh-SH,cy));
+  return {x:cx,y:cy};
 }
-function drawScene(){
-  var cv=document.getElementById('scene'),ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
-  var sc=SCENE[S.tier]||SCENE[0],g=SH-GD,i,x;
-  camFollow();
-  var cam=Math.round(CAM.x);
-  ctx.clearRect(0,0,SW,SH);
-  ctx.save(); ctx.translate(-cam,0);
-
-  for(i=0;i<ZONES[0].slabs;i++){
-    ctx.save(); ctx.beginPath(); ctx.rect(i*ZONE_W,0,ZONE_W,SH); ctx.clip();
-    ctx.translate(i*ZONE_W,0); paintHomeZone(ctx,sc,g,i); ctx.restore(); }
-
-  for(i=1;i<ZONES.length;i++){
-    var z=ZONES[i];
-    if(z.x0+z.w<cam-4||z.x0>cam+SW+4) continue;
-    for(var sl=0;sl<z.slabs;sl++){
-      var sx0=z.x0+sl*ZONE_W;
-      if(sx0+ZONE_W<cam-4||sx0>cam+SW+4) continue;
-      ctx.save(); ctx.beginPath(); ctx.rect(sx0,0,ZONE_W,SH); ctx.clip();
-      paintZoneBack(ctx,z,sx0,sl,g);
-      ctx.fillStyle=z.gr; ctx.fillRect(sx0,g,ZONE_W,GD);
-      ctx.fillStyle=z.gd;
-      for(x=0;x<ZONE_W;x+=4) ctx.fillRect(sx0+x,g,2,2);
-      for(x=0;x<ZONE_W;x+=18) ctx.fillRect(sx0+x,g+9,14,1);
-      ctx.restore();
+/* ── 길 찾기. 맵이 작으니 너비 우선이면 충분하다 ────────────────────── */
+function pathTo(m,gx,gy){
+  var key=function(x,y){ return x+','+y; };
+  var q=[{x:ME.tx,y:ME.ty}],seen={},from={};
+  seen[key(ME.tx,ME.ty)]=1;
+  var D=[[0,1],[0,-1],[-1,0],[1,0]],i,n=0;
+  while(q.length&&n<3000){
+    var c=q.shift(); n++;
+    if(c.x===gx&&c.y===gy){
+      var path=[],k=key(gx,gy);
+      while(k!==key(ME.tx,ME.ty)){ var p=from[k]; path.unshift({x:p.x,y:p.y}); k=key(p.px,p.py); }
+      return path;
+    }
+    for(i=0;i<4;i++){
+      var nx=c.x+D[i][0],ny=c.y+D[i][1],kk=key(nx,ny);
+      if(seen[kk]||!walkable(m,nx,ny)) continue;
+      /* 문은 목적지일 때만 지난다. 지나가다 딸려 들어가면 안 된다 */
+      if(warpAt(m,nx,ny)&&!(nx===gx&&ny===gy)) continue;
+      seen[kk]=1; from[kk]={x:nx,y:ny,px:c.x,py:c.y}; q.push({x:nx,y:ny});
     }
   }
-  /* 집에서 거리로 나가는 문틀. 배경이 바뀌는 자리를 숨기지 않고 드러낸다. */
-  rcx(ctx,P.s4,ZONES[1].x0-3,0,4,g+GD);
-  rcx(ctx,P.s3,ZONES[1].x0-2,2,2,g+GD-2);
-  for(i=2;i<ZONES.length;i++) rcx(ctx,'rgba(46,39,64,.12)',ZONES[i].x0-1,0,2,g);
+  return null;
+}
+function goTo(gx,gy,then){
+  var m=curMap(),path=pathTo(m,gx,gy);
+  if(!path||!path.length){ if(then) then(); return false; }
+  MOVE={path:path,pi:-1,then:then||null};
+  nextStep();
+  return true;
+}
+function nextStep(){
+  var m=curMap();
+  MOVE.pi++;
+  if(MOVE.pi>=MOVE.path.length){
+    var then=MOVE.then; MOVE=null; ME.step=0;
+    savePos(); drawScene();
+    if(!checkWarp()&&then) then();
+    return;
+  }
+  var n=MOVE.path[MOVE.pi];
+  MOVE.fx=ME.tx; MOVE.fy=ME.ty; MOVE.tx=n.x; MOVE.ty=n.y; MOVE.t=0; MOVE.dur=4;
+  ME.dir=(n.x>ME.tx)?2:(n.x<ME.tx)?1:(n.y<ME.ty)?3:0;
+  ME.tx=n.x; ME.ty=n.y;
+}
+function savePos(){ S.pos={map:ME.map,tx:ME.tx,ty:ME.ty,dir:ME.dir}; save(); }
+function checkWarp(){
+  var m=curMap(),i,w;
+  for(i=0;i<(m.warps||[]).length;i++){ w=m.warps[i];
+    if(w.x===ME.tx&&w.y===ME.ty){ enterMap(w.to,w.tx,w.ty); return true; } }
+  if(m.edges){
+    if(m.edges.west&&ME.tx<=0){ var wm=MAPS[m.edges.west]; enterMap(m.edges.west,wm.w-2,ME.ty); return true; }
+    if(m.edges.east&&ME.tx>=m.w-1){ enterMap(m.edges.east,1,ME.ty); return true; }
+  }
+  return false;
+}
+function enterMap(id,tx,ty){
+  var m=MAPS[id]; if(!m) return;
+  MOVE=null;
+  ME.map=id; ME.tx=Math.max(0,Math.min(m.w-1,tx)); ME.ty=Math.max(0,Math.min(m.h-1,ty));
+  if(!walkable(m,ME.tx,ME.ty)){                      /* 착지 칸이 막혀 있으면 옆으로 민다 */
+    var D=[[0,1],[1,0],[0,-1],[-1,0],[1,1],[-1,1]],i;
+    for(i=0;i<D.length;i++){ if(walkable(m,ME.tx+D[i][0],ME.ty+D[i][1])){
+      ME.tx+=D[i][0]; ME.ty+=D[i][1]; break; } }
+  }
+  sfx('pick'); savePos(); drawScene();
+}
+/* ── 그리기 ──────────────────────────────────────────────────────────── */
+function drawScene(){
+  var cv=document.getElementById('scene'); if(!cv) return;
+  var ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
+  var m=curMap(),cam=camOf(m),x,y;
+  ctx.clearRect(0,0,SW,SH);
+  ctx.fillStyle=(m.rows===MAPS.room.rows)?'#1B1826':'#8FD4F0';
+  ctx.fillRect(0,0,SW,SH);
+  ctx.save(); ctx.translate(-cam.x,-cam.y);
+  var x0=Math.max(0,Math.floor(cam.x/TS)),x1=Math.min(m.w-1,Math.ceil((cam.x+SW)/TS));
+  var y0=Math.max(0,Math.floor(cam.y/TS)),y1=Math.min(m.h-1,Math.ceil((cam.y+SH)/TS));
+  for(y=y0;y<=y1;y++) for(x=x0;x<=x1;x++) drawTile(ctx,m,tileAt(m,x,y),x*TS,y*TS,x,y);
 
-  STOPS.forEach(function(s){ drawStop(ctx,s,g,cam); });
-  drawParty(ctx,g);
+  /* 서 있는 것들과 나를 세로 순서로 섞어 그린다. 뒤에 있으면 가려져야 한다. */
+  var p=mePx(),cast=[];
+  (m.spots||[]).forEach(function(s){ cast.push({y:s.y*TS,draw:function(){ drawSpot(ctx,s,s.x*TS,s.y*TS); }}); });
+  cast.push({y:p.y+1,draw:function(){
+    /* 조연들과 실루엣이 비슷해서, 발밑에 표시가 없으면 내가 누군지 못 찾는다 */
+    var cx2=Math.round(p.x+TS/2),cy2=Math.round(p.y+TS+1);
+    rcx(ctx,'rgba(46,39,64,.35)',cx2-6,cy2-2,12,3);
+    rcx(ctx,P.y1,cx2-5,cy2-1,10,2); rcx(ctx,P.y2,cx2-3,cy2+1,6,1);
+    var im=heroTop(ME.dir,ME.step);
+    ctx.drawImage(im,Math.round(p.x+(TS-im.width)/2),Math.round(p.y+TS-im.height+2)); }});
+  cast.sort(function(a,b){ return a.y-b.y; });
+  cast.forEach(function(c){ c.draw(); });
+  (m.spots||[]).forEach(function(s){
+    var mk=spotMark(s); if(mk) drawMark(ctx,s.x*TS+TS/2,s.y*TS-(s.kind==='ep'||s.kind==='review'?8:12)); });
   ctx.restore();
 
   var zn=document.getElementById('hzone');
-  if(zn){ var zi=zoneAt(heroX());
-    zn.innerHTML='<b>'+(zi+1)+'</b> '+ZONES[zi].name+
-      (ZONES[zi].sub?' <span>· '+(zi===0?TIERS[S.tier].name:ZONES[zi].sub)+'</span>':''); }
-  var nb=document.getElementById('hnear'),ns=nearestStop();
-  if(nb){
-    if(ns){ nb.hidden=false;
-      nb.innerHTML='<b>'+stopLabel(ns)+'</b> <span>'+stopHint(ns)+'</span>'; }
-    else nb.hidden=true;
-  }
-  var la=document.getElementById('harrowL'),ra=document.getElementById('harrowR');
-  if(la) la.hidden=(cam<=0);
-  if(ra) ra.hidden=(cam>=WORLD-SW);
+  if(zn) zn.innerHTML='<b>'+(m.sub?m.sub.split(' · ')[0]:'')+'</b> '+m.name+
+    (m.sub&&m.sub.indexOf(' · ')>=0?' <span>· '+m.sub.split(' · ')[1]+'</span>':'');
+  var nb=document.getElementById('hnear'),ns=facingSpot();
+  if(nb){ if(ns){ nb.hidden=false; nb.innerHTML='<b>'+spotLabel(ns)+'</b> <span>'+spotHint(ns)+'</span>'; }
+    else nb.hidden=true; }
 }
-/* ── 걷기 ────────────────────────────────────────────────────────────── */
-function walkTo(x,stop){
-  var lim=worldLimits();
-  walk.goal={x:Math.max(lim.lo,Math.min(lim.hi,x)),stop:stop||null};
-  walk.dir=(walk.goal.x>walk.x)?1:-1;
+/* 바로 앞이나 옆에 있는 것 */
+function facingSpot(){
+  var m=curMap(),best=null,bd=99;
+  (m.spots||[]).forEach(function(s){
+    var d=Math.abs(s.x-ME.tx)+Math.abs(s.y-ME.ty);
+    if(d<bd){ bd=d; best=s; } });
+  return bd<=1?best:null;
 }
-function worldLimits(){ var b=bodyBox(); return {lo:2-b.x0,hi:WORLD-2-b.x1}; }
-function stopAtTarget(s){
-  var off=(s.x>heroX())?-19:19;
-  walkTo(s.x+off-(heroX()-walk.x),s);
-}
-function triggerStop(s){
-  if(s.kind==='ep') return epStart(s.ep);
+function triggerSpot(s){
+  if(s.kind==='ep') return epStart(epById(s.id));
   if(s.kind==='review'){ var rq=reviewQuest(); return rq?startQuest(rq):toast('복습할 문항이 없습니다.'); }
-  if(s.kind==='boss'){
-    if(bossReady(s.boss)) return startBoss(s.boss);
-    return toast(THEMES[s.boss.stat].k+' 스탯 '+s.boss.need+'부터 붙을 수 있습니다.'); }
+  if(s.kind==='boss'){ var b=bossById(s.id);
+    if(bossReady(b)) return startBoss(b);
+    return toast(THEMES[b.stat].k+' 스탯 '+b.need+'부터 붙을 수 있습니다.'); }
   var a=questAt(s.who);
   if(a) return startQuest(a.q);
   toast(s.who+' · 오늘은 더 알려 줄 게 없네요.');
 }
+/* ── 루프와 손가락 ───────────────────────────────────────────────────── */
 function startWalk(){
-  stopWalk(); fitScene(); buildStops();
-  var lim=worldLimits();
-  if(walk.x<lim.lo||walk.x>lim.hi){ walk.x=lim.lo; walk.petX=null; }
-  walk.goal=null; drawScene();
-  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var tick=0;
-  walk.timer=setInterval(function(){
-    tick++;
-    var lim2=worldLimits();
-    if(walk.goal){
-      var d=walk.goal.x-walk.x;
-      walk.dir=d>0?1:-1;
-      walk.x+=walk.dir*Math.min(Math.abs(d),4);
-      walk.frame=(walk.frame+1)%4;
-      if(Math.abs(walk.goal.x-walk.x)<1){
-        var st=walk.goal.stop; walk.goal=null; drawScene();
-        if(st) triggerStop(st);
-        return; }
-    } else if(tick%2===0){
-      /* 하릴없이 서성인다. 지금 구역 밖으로는 저절로 나가지 않는다. */
-      var zi=zoneAt(heroX()),c=heroX()-walk.x;
-      var lo=Math.max(lim2.lo,zi*ZONE_W+10-c),hi=Math.min(lim2.hi,(zi+1)*ZONE_W-10-c);
-      if(hi<lo) hi=lo;
-      walk.x+=walk.dir;
-      if(walk.x>hi){ walk.x=hi; walk.dir=-1; }
-      if(walk.x<lo){ walk.x=lo; walk.dir=1; }
-      walk.frame=(walk.frame+1)%4;
-    } else return;
-    drawScene(); },110); }
-function stopWalk(){ if(walk.timer){ clearInterval(walk.timer); walk.timer=null; } if(walk) walk.goal=null; }
-/* ── 손가락 ──────────────────────────────────────────────────────────── */
-var TAP={on:false,x:0,cam:0,moved:false};
-function sceneX(ev){
+  stopWalk(); fitScene();
+  if(S.pos&&MAPS[S.pos.map]){ ME.map=S.pos.map; ME.tx=S.pos.tx; ME.ty=S.pos.ty; ME.dir=S.pos.dir||0; }
+  if(!walkable(curMap(),ME.tx,ME.ty)) enterMap(ME.map,ME.tx,ME.ty);
+  drawScene();
+  MAPT=setInterval(function(){
+    if(!MOVE){ if(HOLD.dir!==null) stepDir(HOLD.dir); return; }
+    MOVE.t++;
+    if(MOVE.t>=MOVE.dur){ ME.step=(ME.step+1)%2; nextStep(); }
+    else drawScene();
+  },55);
+}
+function stopWalk(){ if(MAPT){ clearInterval(MAPT); MAPT=null; } MOVE=null; }
+function sceneTile(ev){
   var cv=document.getElementById('scene'),r=cv.getBoundingClientRect();
-  return (ev.clientX-r.left)*(cv.width/r.width);
+  var m=curMap(),cam=camOf(m);
+  var sx=(ev.clientX-r.left)*(cv.width/r.width)+cam.x;
+  var sy=(ev.clientY-r.top)*(cv.height/r.height)+cam.y;
+  return {x:Math.floor(sx/TS),y:Math.floor(sy/TS)};
+}
+var HOLD={dir:null};
+/* 한 칸씩 누르는 것만으로는 스물두 칸짜리 맵을 못 걷는다. 누르고 있으면 계속 간다. */
+function stepDir(d){
+  if(MOVE) return;
+  var m=curMap(),dx=(d===2?1:d===1?-1:0),dy=(d===0?1:d===3?-1:0);
+  ME.dir=d;
+  var nx=ME.tx+dx,ny=ME.ty+dy;
+  if(!walkable(m,nx,ny)){
+    /* 가장자리를 향해 한 발 더 디디면 다음 맵이다 */
+    if(m.edges&&((m.edges.west&&nx<0)||(m.edges.east&&nx>=m.w))){ ME.tx=nx; checkWarp(); return; }
+    savePos(); drawScene(); return; }
+  MOVE={path:[{x:nx,y:ny}],pi:-1,then:null};
+  nextStep();
+}
+function bindPad(){
+  var pad=document.getElementById('hdpad'); if(!pad||pad.__bound) return; pad.__bound=1;
+  [].forEach.call(pad.querySelectorAll('button'),function(b){
+    var d=+b.getAttribute('data-d');
+    b.addEventListener('pointerdown',function(ev){ ev.preventDefault(); HOLD.dir=d; stepDir(d); });
+    b.addEventListener('pointerup',function(){ HOLD.dir=null; });
+    b.addEventListener('pointerleave',function(){ if(HOLD.dir===d) HOLD.dir=null; });
+    b.addEventListener('pointercancel',function(){ HOLD.dir=null; });
+  });
+  var a=document.getElementById('habtn');
+  a.addEventListener('pointerdown',function(ev){ ev.preventDefault();
+    var s=facingSpot(); if(s){ sfx('pick'); triggerSpot(s); } else sfx('pick'); });
+  if(!window.__keyed){ window.__keyed=1;
+    var K={ArrowUp:3,ArrowDown:0,ArrowLeft:1,ArrowRight:2,w:3,s:0,a:1,d:2};
+    window.addEventListener('keydown',function(ev){
+      if(document.getElementById('home').className.indexOf('on')<0) return;
+      if(ev.key===' '||ev.key==='Enter'){ var sp=facingSpot(); if(sp) triggerSpot(sp); return; }
+      var d=K[ev.key]; if(d===undefined) return; ev.preventDefault(); HOLD.dir=d; stepDir(d); });
+    window.addEventListener('keyup',function(){ HOLD.dir=null; });
+  }
 }
 function bindScene(){
   var cv=document.getElementById('scene'); if(!cv||cv.__bound) return; cv.__bound=1;
-  cv.addEventListener('pointerdown',function(ev){
-    TAP={on:true,x:sceneX(ev),cam:CAM.x,moved:false}; cv.setPointerCapture(ev.pointerId); });
-  cv.addEventListener('pointermove',function(ev){
-    if(!TAP.on) return;
-    var dx=sceneX(ev)-TAP.x;
-    if(Math.abs(dx)>5){ TAP.moved=true; walk.goal=null;
-      CAM.x=Math.max(0,Math.min(WORLD-SW,TAP.cam-dx)); drawScene(); } });
+  cv.addEventListener('pointerdown',function(ev){ ev.preventDefault(); });
   cv.addEventListener('pointerup',function(ev){
-    if(!TAP.on) return; TAP.on=false;
-    if(TAP.moved) return;
-    var wx=CAM.x+sceneX(ev),best=null,bd=1e9;
-    STOPS.forEach(function(s){ var d=Math.abs(s.x-wx); if(d<bd){ bd=d; best=s; } });
-    sfx('pick');
-    if(best&&bd<=17) return stopAtTarget(best);
-    walkTo(wx-16,null); });
+    if(MOVE) return;
+    var m=curMap(),t=sceneTile(ev),s=spotAt(m,t.x,t.y);
+    if(s){
+      if(Math.abs(s.x-ME.tx)+Math.abs(s.y-ME.ty)<=1){ faceSpot(s); sfx('pick'); return triggerSpot(s); }
+      var near=adjacentTo(m,s);
+      if(!near) return toast('가까이 갈 수 없습니다.');
+      sfx('pick');
+      return goTo(near.x,near.y,function(){ faceSpot(s); drawScene(); triggerSpot(s); });
+    }
+    if(!walkable(m,t.x,t.y)) return;
+    sfx('pick'); goTo(t.x,t.y,null);
+  });
+}
+function faceSpot(s){
+  ME.dir=(s.x>ME.tx)?2:(s.x<ME.tx)?1:(s.y<ME.ty)?3:0;
+  savePos();
+}
+function adjacentTo(m,s){
+  var D=[[0,1],[0,-1],[-1,0],[1,0]],best=null,bd=1e9,i;
+  for(i=0;i<4;i++){ var x=s.x+D[i][0],y=s.y+D[i][1];
+    if(!walkable(m,x,y)) continue;
+    if(!pathTo(m,x,y)&&!(x===ME.tx&&y===ME.ty)) continue;
+    var d=Math.abs(x-ME.tx)+Math.abs(y-ME.ty);
+    if(d<bd){ bd=d; best={x:x,y:y}; } }
+  return best;
 }
 function toast(msg){
   var el=document.getElementById('htoast'); if(!el) return;
@@ -2996,11 +3168,11 @@ function renderHome(){
      여기에는 오늘 몇 개 남았는지만 한 줄로 적는다. */
   var tl=todayList(),rq=reviewQuest(),left=todayLeft();
   document.getElementById('htodaylab').innerHTML='오늘 몫 <b>'+(tl.length-left)+' / '+tl.length+'</b> · '+
-    (left?'거리에서 <b style="color:var(--y2)">!</b> 표시가 뜬 사람에게 말을 거세요'
-         :'오늘 몫은 끝. 거리를 더 걸어가면 나중에 겪을 일이 나옵니다')+
-    (rq?' · 복습 노트가 집 앞에 나와 있습니다':'');
+    (left?'지도에서 <b style="color:var(--y2)">!</b> 가 뜬 사람을 눌러 말을 거세요'
+         :'오늘 몫은 끝. 오른쪽으로 더 걸어가면 나중에 겪을 일이 나옵니다')+
+    (rq?' · 복습 노트는 내 방 책상 위에':'');
   buildTabs(document.getElementById('tab-home'),'home');
-  startWalk(); bindScene(); }
+  startWalk(); bindScene(); bindPad(); }
 
 /* 출석과 연속 보너스. 끊기면 1일로 돌아가는 구조가 매일 켜는 이유를 만든다. */
 function renderDaily(){
@@ -4090,8 +4262,6 @@ function bossEnd(win){
 document.getElementById('qback').onclick=function(){ render('home'); };
 document.getElementById('rback').onclick=function(){ render('home'); };
 document.getElementById('beback').onclick=function(){ render('home'); };
-document.getElementById('harrowL').onclick=function(){ walkTo(walk.x-ZONE_W,null); };
-document.getElementById('harrowR').onclick=function(){ walkTo(walk.x+ZONE_W,null); };
 document.getElementById('epback').onclick=function(){ render('quests'); };
 document.getElementById('eeback').onclick=function(){ render('quests'); };
 document.getElementById('reset').onclick=function(){ S=fresh(); save(); obStep=0; stopWalk(); obRender(); go('onboard'); };
