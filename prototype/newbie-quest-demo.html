@@ -165,7 +165,8 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
   line-height:14px;color:var(--s2);font-variant-numeric:tabular-nums;}
 
 .scenewrap{border-bottom:3px solid var(--s4);background:var(--k1);
-  display:flex;flex-direction:column;align-items:center;padding-bottom:var(--u2);}
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:var(--u2);}
+#home .scenewrap{flex:1;min-height:0;}
 .sceneinfo{display:flex;align-items:center;justify-content:center;gap:var(--u2);flex-wrap:wrap;padding:var(--u2) var(--u3) 0;}
 .tiername{font-family:var(--f-display);font-size:15px;line-height:22px;}
 .def{display:flex;align-items:baseline;gap:5px;background:var(--w);border:3px solid var(--s4);
@@ -440,9 +441,9 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
       </div>
       <div class="sceneinfo"><span class="tiername" id="htier">노숙</span><span class="def pix">방어 <b id="hdef">0</b></span></div>
     </div>
-    <div class="homefoot">
-      <div id="hdaily"></div>
-      <div class="sectlab" id="htodaylab">오늘 몫</div>
+    <div class="homefoot" id="hfoot" hidden>
+      <div id="hdaily" hidden></div>
+      <div class="sectlab" id="htodaylab"></div>
     </div>
     <nav class="tabbar" id="tab-home"></nav>
   </section>
@@ -2468,8 +2469,8 @@ function whyLine(){ var mid=S.status==='대학생'?S.living
 
 /* ══════════ 대기실 ══════════ */
 /* 11×15 타일. 홈에서 제일 오래 보는 것이 지도라서, 화면의 대부분을 준다.
-   SH는 화면 높이에 따라 줄어든다. 작은 폰에서 지도 아래가 잘려 나가면 안 된다. */
-var SW=176,SH_MAX=240,SH=240,GD=16;
+   SH는 화면 높이에 맞춰 늘고 준다. 홈에 지도 말고는 남은 게 없으니 남는 높이를 전부 준다. */
+var SW=176,SH_MAX=320,SH=240,GD=16;
 var walk={x:30,dir:1,frame:0,timer:null};
 function fitScene(){
   var cv=document.getElementById('scene'),app=document.getElementById('app');
@@ -3186,7 +3187,7 @@ var TILES={
  'p':{kind:'pole'},         'b':{kind:'bench'}
 };
 var MAPS={
- town:{spawn:{x:4,y:4},name:'동네',sub:'1 · 지금 사는 곳',w:22,h:15,rows:[
+ town:{spawn:{x:4,y:4},name:'동네',sub:'1 · 지금 사는 곳',w:22,h:20,rows:[
   'RRRRRRRRRRRRRRRRRRRRRR',
   'HWWHHHHWWHHHHWWHHHHWWH',
   'HHDHHHHHDHHHHHDHHHHHHH',
@@ -3201,14 +3202,19 @@ var MAPS={
   'gggg____gggggg____gggg',
   'gttg____gggggg____gttg',
   'rrrrrrrr------rrrrrrrr',
-  'rrrrrrrrrrrrrrrrrrrrrr'],
+  'rrrrrrrrrrrrrrrrrrrrrr',
+  'gggggggggggggggggggggg',
+  'ggtggggggtggggggtggggg',
+  'gggggggggggggggggggggg',
+  'gggtgggggggggggggtgggg',
+  'ffffffffffffffffffffff'],
   edges:{east:'campus'},
   warps:[{x:2,y:2,to:'room',tx:2,ty:3}],
   spots:[{x:8,y:3,kind:'npc',who:'부동산 사장'},
          {x:14,y:3,kind:'npc',who:'주민센터 직원'},
          {x:11,y:6,kind:'ep',id:'jeonse-day'}]},
 
- campus:{spawn:{x:3,y:5},name:'학교 앞',sub:'2 · 알바와 학자금',w:22,h:15,rows:[
+ campus:{spawn:{x:3,y:5},name:'학교 앞',sub:'2 · 알바와 학자금',w:22,h:20,rows:[
   'gggggggggggggggggggggg',
   'gRRRRRRRggggggRRRRRRRg',
   'gHWWHWWHggttggHWWHWWHg',
@@ -3223,7 +3229,12 @@ var MAPS={
   'gggggggggggggggggggggg',
   'gtggggttgggggttggggtgg',
   'gggggggggggggggggggggg',
-  'ggfgggggggggggggggfggg'],
+  'ggfgggggggggggggggfggg',
+  'gggggggggggggggggggggg',
+  'ggtggggggtggggggtggggg',
+  'gggggggggggggggggggggg',
+  'gggtgggggggggggggtgggg',
+  'ffffffffffffffffffffff'],
   edges:{west:'town',east:'center'},
   warps:[],
   spots:[{x:3,y:5,kind:'npc',who:'동기'},
@@ -3233,7 +3244,7 @@ var MAPS={
          {x:18,y:5,kind:'npc',who:'장학팀'},
          {x:9,y:8,kind:'ep',id:'first-job'}]},
 
- center:{spawn:{x:3,y:4},name:'고용센터 앞',sub:'3 · 취업 준비',w:22,h:15,rows:[
+ center:{spawn:{x:3,y:4},name:'고용센터 앞',sub:'3 · 취업 준비',w:22,h:20,rows:[
   'RRRRRRRRRRRRRRRRRRRRRR',
   'HWWWWHHHHHHHHHHWWWWWWH',
   'HHHHHHHHDDHHHHHHHHHHHH',
@@ -3248,14 +3259,19 @@ var MAPS={
   'gggggggggggggggggggggg',
   'ggtgggggggttgggggggtgg',
   'gggggggggggggggggggggg',
-  'gggggggggggggggggggggg'],
+  'gggggggggggggggggggggg',
+  'gggggggggggggggggggggg',
+  'ggtggggggtggggggtggggg',
+  'gggggggggggggggggggggg',
+  'gggtgggggggggggggtgggg',
+  'ffffffffffffffffffffff'],
   edges:{west:'campus',east:'office'},
   warps:[],
   spots:[{x:7,y:4,kind:'npc',who:'고용센터 상담원'},
          {x:14,y:4,kind:'npc',who:'공단 상담원'},
          {x:11,y:6,kind:'ep',id:'job-hunt'}]},
 
- office:{spawn:{x:3,y:4},name:'회사 앞',sub:'4 · 첫 출근 이후',w:22,h:15,rows:[
+ office:{spawn:{x:3,y:4},name:'회사 앞',sub:'4 · 첫 출근 이후',w:22,h:20,rows:[
   'RRRRRRRRRRRRRRRRRRRRRR',
   'HWWWWHHHHWWWWWHHHWWWWH',
   'HWWWWHHDDWWWWWHHHHHHHH',
@@ -3270,14 +3286,19 @@ var MAPS={
   'gggg______gggg______gg',
   'gttg______gttg______gg',
   'rrrrrrrr------rrrrrrrr',
-  'rrrrrrrrrrrrrrrrrrrrrr'],
+  'rrrrrrrrrrrrrrrrrrrrrr',
+  'gggggggggggggggggggggg',
+  'ggtggggggtggggggtggggg',
+  'gggggggggggggggggggggg',
+  'gggtgggggggggggggtgggg',
+  'ffffffffffffffffffffff'],
   edges:{west:'center',east:'bank'},
   warps:[],
   spots:[{x:8,y:4,kind:'npc',who:'인사팀'},
          {x:15,y:4,kind:'npc',who:'3년차 선배'},
          {x:11,y:7,kind:'ep',id:'first-pay'}]},
 
- bank:{spawn:{x:3,y:4},name:'은행 골목',sub:'5 · 계약과 돈',w:22,h:15,rows:[
+ bank:{spawn:{x:3,y:4},name:'은행 골목',sub:'5 · 계약과 돈',w:22,h:20,rows:[
   'RRRRRRRRRRRRRRRRRRRRRR',
   'HWWHHWWHHHHWWHHHHWWHHH',
   'HHHHDHHHHHHHHDHHHHHHHH',
@@ -3292,7 +3313,12 @@ var MAPS={
   'ffffffffffffffffffffff',
   'gggggggggggggggggggggg',
   'ggtggggggttggggggtgggg',
-  'gggggggggggggggggggggg'],
+  'gggggggggggggggggggggg',
+  'gggggggggggggggggggggg',
+  'ggtggggggtggggggtggggg',
+  'gggggggggggggggggggggg',
+  'gggtgggggggggggggtgggg',
+  'ffffffffffffffffffffff'],
   edges:{west:'office'},
   warps:[],
   spots:[{x:5,y:3,kind:'npc',who:'은행 창구 직원'},
@@ -3787,6 +3813,7 @@ function questRow(q,onClick){
   if(!isDone) b.onclick=onClick; else b.disabled=true;
   return b; }
 function renderHome(){
+  autoClaim();
   var n=need(S.lv),tt=totals();
   document.getElementById('hnm').textContent=S.status+' Lv.'+S.lv;
   document.getElementById('hsub').textContent=whyLine();
@@ -3809,31 +3836,37 @@ function renderHome(){
     if(furniList().length) S.redecorate=1;
     save();
   }
-  renderDaily();
+  autoClaim();
   /* 목록을 세우던 자리. 이제 퀘스트는 거리에 서 있는 사람에게 말을 걸어 시작한다.
      여기에는 오늘 몇 개 남았는지만 한 줄로 적는다. */
   var tl=todayList(),rq=reviewQuest(),left=todayLeft();
-  var lab=document.getElementById('htodaylab');
+  var lab=document.getElementById('htodaylab'),foot=document.getElementById('hfoot');
+  lab.innerHTML=''; foot.hidden=true;
   if(redecorateNeeded()){
+    foot.hidden=false;
     lab.innerHTML='<b style="color:var(--y2)">이사했습니다</b> · 방 모양이 바뀌어 세간을 다시 놓아야 합니다 ';
     var rb=document.createElement('button'); rb.className='btn pix';
     rb.style.cssText='min-height:34px;padding:4px 10px;margin-left:6px';
     rb.textContent='세간 정리하기';
     rb.onclick=function(){ sfx('pick'); startRedecorate(); };
     lab.appendChild(rb);
-    buildTabs(document.getElementById('tab-home'),'home');
-    startWalk(); bindScene(); bindPad(); return;
   }
-  lab.innerHTML='오늘 몫 <b>'+(tl.length-left)+' / '+tl.length+'</b> · '+
-    (left?'지도에서 <b style="color:var(--y2)">!</b> 가 뜬 사람을 눌러 말을 거세요'
-         :'오늘 몫은 끝. 오른쪽으로 더 걸어가면 나중에 겪을 일이 나옵니다')+
-    (rq?' · 복습 노트는 내 방 책상 위에':'');
   buildTabs(document.getElementById('tab-home'),'home');
   startWalk(); bindScene(); bindPad(); }
 
 /* 출석과 연속 보너스. 끊기면 1일로 돌아가는 구조가 매일 켜는 이유를 만든다. */
+/* 출석 버튼을 걷어냈다. 지도만 남기라는 주문이고, 누를 이유가 없는 버튼이기도 했다.
+   그날 처음 홈에 들어오면 알아서 받고 한 줄로 알린다. 연속 보너스 규칙은 그대로다. */
+function autoClaim(){
+  if(S.claimed===dayKey()) return;
+  var c=dailyCoin(); S.coin+=c; S.claimed=dayKey();
+  ev('daily_claim',{streak:S.streak,coin:c,auto:1}); save();
+  setTimeout(function(){ sfx('coin');
+    toast('출석 · 연속 '+S.streak+'일'+(dailyMult()>1?' · 보너스 '+dailyMult()+'배':'')+' · ￦'+c); },500);
+}
 function renderDaily(){
-  var host=document.getElementById('hdaily'); host.innerHTML='';
+  var host=document.getElementById('hdaily'); if(!host||host.hidden) return;
+  host.innerHTML='';
   var m=dailyMult(),lab=document.createElement('div'); lab.className='sectlab';
   lab.innerHTML='연속 <b>'+S.streak+'일</b>'+(S.best>S.streak?' · 최고 '+S.best+'일':'')+
     (m>1?' · 보너스 '+m+'배':' · 3일이면 2배');
