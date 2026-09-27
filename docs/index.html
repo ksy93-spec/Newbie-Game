@@ -1,4 +1,21 @@
 <meta charset="utf-8">
+<meta name="theme-color" content="#2E2740">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="뉴비 퀘스트">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+/* 설치해서 열면 화면 끝까지 쓴다. 아래 홈 막대 자리만 비운다. */
+body{overscroll-behavior:none;touch-action:manipulation;}
+@media (display-mode: fullscreen), (display-mode: standalone){
+  body{padding-block:0!important;align-items:stretch!important;}
+  #app{height:100%!important;max-width:none;border:0!important;box-shadow:none!important;
+    padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);}
+}
+</style>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>뉴비 퀘스트</title>
 <style>
@@ -5253,3 +5270,5 @@ stageBack(document.getElementById('qstage'));
 stageBack(document.getElementById('bstage'));
 if(S.onboarded) render('home'); else { obRender(); go('onboard'); }
 </script>
+
+<script>if('serviceWorker' in navigator) addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });</script>

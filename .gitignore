@@ -16,3 +16,6 @@ android/
 .test-build/
 .expo-export/
 .web/
+
+# 번들 파일은 전달용이라 저장소에 넣지 않는다
+*.bundle

@@ -11,6 +11,13 @@ Expo(React Native) · TypeScript · Skia.
 ## 지금 상태
 
 프로토타입(`prototype/newbie-quest-demo.html`)에서 검증한 것을 네이티브로 옮기는 중이다.
+
+## 폰에서 앱처럼 열기
+
+`docs/`는 프로토타입을 GitHub Pages로 여는 폴더다. 저장소 Settings → Pages에서
+Branch를 `main`, 폴더를 `/docs`로 두면 `https://ksy93-spec.github.io/Newbie-Game/`에 뜬다.
+폰 브라우저로 열고 "홈 화면에 추가"를 하면 주소창 없이 전체 화면으로 열린다.
+프로토타입을 고친 뒤에는 `node tools/pages/build.mjs`로 `docs/`를 다시 만든다.
 게임 로직은 전부 넘어왔고 테스트가 붙어 있다. 화면은 핵심 루프가 돈다.
 
 | 영역 | 상태 |
