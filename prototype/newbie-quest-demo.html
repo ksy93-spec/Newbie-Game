@@ -3738,7 +3738,7 @@ function triggerSpot(s){
     return toast(up.length?'다음 복습은 내일 · '+up.length+'문항 대기 중':'아직 복습할 문항이 없습니다.'); }
   if(s.kind==='boss'){ var b=bossById(s.id);
     if(bossReady(b)) return startBoss(b);
-    return toast(THEMES[b.stat].k+' 스탯 '+b.need+'부터 붙을 수 있습니다.'); }
+    return toast(THEMES[b.stat].k+' 스탯 '+b.need+'부터 붙을 수 있습니다 · 지금 '+S.stats[b.stat]); }
   var a=questAt(s.who);
   if(a) return startQuest(a.q);
   toast(s.who+' · 오늘은 더 알려 줄 게 없네요.');
@@ -3941,7 +3941,7 @@ var TUT_LINES=[
  '머리 위에 손가락이 떠 있는 사람은 너한테 해 줄 얘기가 있다는 뜻이야. 노란 건 오늘 꼭 들어 볼 얘기고.',
  '만나고 싶은 사람을 톡 누르면 알아서 걸어가서 말을 걸어. 왼쪽 아래 버튼으로 걸어도 되고.',
  '오른쪽 아래 작은 지도를 누르면 다른 동네로 바로 가. 레벨이 오르면 갈 수 있는 곳이 늘어나.',
- '자, 나부터 눌러 봐.'
+ '첫 얘기는 내가 해 줄게. 나를 톡 눌러 봐.'
 ];
 function startTutor(){
   if(S.tut||TUT) return;
@@ -4326,8 +4326,8 @@ function epEnd(){
   var good=EP.picks.filter(function(o){ return !o.risk; }),bad=EP.picks.filter(function(o){ return o.risk; });
   bad.sort(function(a,b){ return (b.risk||0)-(a.risk||0); });
   var recap='';
-  if(good.length) recap+='<span class="rc ok">'+good.slice(0,2).map(function(o){ return '✓ '+o.a; }).join('<br>')+'</span>';
-  if(bad.length) recap+='<span class="rc no">'+bad.slice(0,2).map(function(o){ return '✗ '+o.a; }).join('<br>')+'</span>';
+  if(good.length) recap+='<span class="rc ok">'+good.map(function(o){ return '✓ '+o.a; }).join('<br>')+'</span>';
+  if(bad.length) recap+='<span class="rc no">'+bad.map(function(o){ return '✗ '+o.a; }).join('<br>')+'</span>';
   card.innerHTML='<span>'+end.t+'</span>'+recap+
     '<span class="micro" style="display:block;margin-top:8px">'+
       '위험 '+EP.risk+(EP.day?(' \u00B7 걸린 날 '+EP.day+'일'):'')+(EP.spent?(' \u00B7 쓴 돈 '+EP.spent+'만원'):'')+'</span>';
