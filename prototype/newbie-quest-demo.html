@@ -217,6 +217,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .prog{flex:1;display:flex;gap:3px;}
 .prog i{flex:1;height:8px;background:var(--w);border:2px solid var(--s4);}
 .prog i.on{background:var(--g1);}
+.prog i.on.no{background:var(--r1);}
 .prog i.cur{background:var(--y1);}
 .hearts{display:flex;gap:2px;}
 .stage{position:relative;overflow:hidden;flex:0 0 auto;height:230px;display:flex;flex-direction:column;
@@ -273,7 +274,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .travel button i{font-style:normal;color:var(--s2);font-size:10px;line-height:17px;}
 .travel button i.sub{margin-left:auto;}
 .travel button b{color:var(--r3);font-weight:400;}
-.placebar{position:absolute;left:0;right:0;bottom:0;z-index:7;background:rgba(46,39,64,.94);
+.placebar{position:absolute;left:0;right:0;top:0;z-index:7;background:rgba(46,39,64,.94);
   display:flex;align-items:center;gap:6px;padding:6px 8px;}
 .placebar .pl{flex:1;font-family:var(--f-ui);font-size:10px;line-height:15px;color:var(--s0);}
 .placebar .pl b{color:var(--y1);font-weight:400;}
@@ -287,7 +288,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .nearbar b{color:var(--y1);font-weight:400;}
 .nearbar span{color:var(--s0);}
-.toast{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);max-width:88%;
+.toast{position:absolute;z-index:40;left:50%;bottom:92px;transform:translateX(-50%);max-width:88%;
   background:rgba(46,39,64,.92);color:var(--p0);font-family:var(--f-ui);font-size:11px;
   line-height:16px;padding:6px 9px;pointer-events:none;text-align:center;
   overflow-wrap:anywhere;}
@@ -408,6 +409,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
     </div>
   </section>
 
+  <div class="toast pix" id="htoast" hidden></div>
   <div id="wipe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <section class="screen" id="home">
     <div class="hud">
@@ -427,7 +429,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
       <div class="stagebox">
         <canvas id="scene"></canvas>
         <div class="zonetag pix" id="hzone"><b>1</b> 집 앞</div>
-        <div class="toast pix" id="htoast" hidden></div>
+
         <div class="dpad" id="hdpad">
           <button data-d="3" aria-label="위">▲</button>
           <button data-d="1" aria-label="왼쪽">◀</button>
@@ -492,7 +494,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
       <div class="hpwrap"><div class="hprow"><span id="bmename">나</span><span id="bmehp">0/0</span></div>
         <div class="hpbar hp-me"><i id="bmebar"></i></div></div>
     </div>
-    <div class="stage" id="bstage" style="height:200px">
+    <div class="stage" id="bstage" style="height:216px">
       <canvas id="bossspr" width="64" height="64" style="width:128px;height:128px"></canvas>
     </div>
     <div style="padding:var(--u3) var(--u4) 0;display:flex;flex-direction:column;gap:2px">
@@ -2113,7 +2115,7 @@ var BOSSES=[
 {id:'jeonse',name:'전세 먹튀 집주인',face:'boss',stat:'ju',need:30,hp:100,atk:24,
  src:['찾기쉬운 생활법령정보','https://easylaw.go.kr'],
  intro:'보증금? 다음 세입자 들어오면 준다니까. 왜 그렇게 못 믿어?',
- win:'등기부등본, 선순위 보증금, 대항력 승계를 전부 짚었습니다.',
+ win:'등기부등본과 선순위 보증금을 들이밀자, 말을 돌리던 쪽이 먼저 입을 닫았다.',
  lose:'다음에 오겠다는 말을 믿고 돌아섰습니다.',
  qs:BOSS_JEONSE_QS},
 
@@ -2164,6 +2166,8 @@ var BOSSES=[
 ]}
 ];
 /** 받침을 보고 조사를 고른다. "선배가 나타났다"와 "집주인이 나타났다"를 갈라 쓴다. */
+function 을를(w){ var c=(w||'').charCodeAt((w||'').length-1)-0xAC00;
+  return w+((c>=0&&c<=11171&&c%28!==0)?'을':'를'); }
 function 이가(w){
   var c=(w||'').charCodeAt((w||'').length-1)-0xAC00;
   var hasFinal=(c>=0&&c<=11171)&&(c%28!==0);
@@ -2226,7 +2230,9 @@ var VIB={tap:[6],pick:[10],good:[14],bad:[28,50,28],coin:[8,30,8],
 function sfx(n){
   if(!S) return;
   if(S.snd!==false&&SFX[n]) SFX[n].forEach(function(p){ tone(p[0],p[1],p[2],p[3],n==='hit'?.09:.085); });
-  if(S.vib!==false&&VIB[n]&&navigator.vibrate){ try{ navigator.vibrate(VIB[n]); }catch(e){} } }
+  /* 한 번도 누르지 않은 화면에서 진동을 부르면 브라우저가 막고 경고를 남긴다(자동 출석 때) */
+  var ua=navigator.userActivation;
+  if(S.vib!==false&&VIB[n]&&navigator.vibrate&&(!ua||ua.hasBeenActive)){ try{ navigator.vibrate(VIB[n]); }catch(e){} } }
 /* 첫 사용자 입력에서 오디오를 깨운다 */
 document.addEventListener('pointerdown',function once(){
   var a=actx(); if(a&&a.state==='suspended') a.resume();
@@ -2896,7 +2902,7 @@ function furniOf(id){ var r=null; furniList().forEach(function(o){ if(o&&o.id===
 function hasFurni(id){ return !!furniOf(id); }
 function furniBonus(){
   var a=0,d=0;
-  furniList().forEach(function(o){ var it=FURNI[o&&o.id]; if(!it) return; a+=it.atk||0; d+=it.def||0; });
+  furniList().forEach(function(o){ var it=FURNI[o&&o.id]; if(!it||o.x==null) return; a+=it.atk||0; d+=it.def||0; });
   return {atk:a,def:d};
 }
 /* ── 놓을 수 있는 자리인가 ────────────────────────────────────────────
@@ -2919,7 +2925,27 @@ function fitsAt(m,it,x,y,skipId){
     (m.spots||[]).forEach(function(s){ if(s.x===tx&&s.y===ty) hit=true; });
     if(hit) return false;
   }
+  if(m.spawn&&!stillReachable(m,it,x,y,skipId)) return false;
   return true;
+}
+/* 놓은 뒤에도 문과 복습 노트까지 걸어갈 수 있어야 한다. 선풍기 하나로 방에 갇히던 것 */
+function stillReachable(m,it,x,y,skipId){
+  var W=m.w,H=m.h,block={},k;
+  furniList().forEach(function(o){ var f=FURNI[o.id]; if(!f||o.id===skipId||o.x==null) return;
+    for(var j=0;j<(f.h||1);j++) for(var i=0;i<(f.w||1);i++) block[(o.x+i)+','+(o.y+j)]=1; });
+  for(var j2=0;j2<(it.h||1);j2++) for(var i2=0;i2<(it.w||1);i2++) block[(x+i2)+','+(y+j2)]=1;
+  block[BUILTIN.x+','+BUILTIN.y]=1; block[(BUILTIN.x+1)+','+BUILTIN.y]=1;
+  var sx=m.spawn.x,sy=m.spawn.y;
+  if(block[sx+','+sy]) return false;
+  var q=[[sx,sy]],seen={},D=[[1,0],[-1,0],[0,1],[0,-1]];
+  seen[sx+','+sy]=1;
+  while(q.length){ var c=q.shift();
+    for(var d=0;d<4;d++){ var nx=c[0]+D[d][0],ny=c[1]+D[d][1];k=nx+','+ny;
+      if(seen[k]||block[k]) continue;
+      var ch=tileAt(m,nx,ny); if(ch!=='.'&&ch!==',') continue;
+      seen[k]=1; q.push([nx,ny]); } }
+  /* 복습 노트는 책상 아래 두 칸이나 오른쪽 한 칸 중 하나로 닿으면 된다 */
+  return !!(seen['1,2']||seen['2,2']||seen['3,1']);
 }
 function autoSpot(m,it,skipId){
   var x,y;
@@ -2945,14 +2971,17 @@ function startRedecorate(){
   ROOMC={};
   startPlace(q[0],q.slice(1));
 }
-function startPlace(id,queue){
+function startPlace(id,queue,cost){
   var it=FURNI[id]; if(!it||!it.w) return;
   if(!ROOMSPEC[S.tier]){ toast('아직 놓을 방이 없습니다.'); return; }
+  if(S.tier<it.need){                                   /* 이사 정리·옮기기로 우회하던 것 */
+    toast(TIERS[it.need].name+'부터 놓을 수 있습니다. 창고에 둡니다.');
+    if(queue) placeNext(queue); return; }
   if(ME.map!=='room'){ var rm=roomMap(); enterMap('room',rm.spawn.x,rm.spawn.y); }
   var m=roomMap(),cur=furniOf(id);
   var at=(cur&&cur.x!=null&&fitsAt(m,it,cur.x,cur.y,id))?{x:cur.x,y:cur.y}:autoSpot(m,it,id);
   if(!at){ toast('방에 빈 자리가 없습니다.'); return; }
-  PLACE={id:id,x:at.x,y:at.y,w:it.w,h:it.h,queue:queue||null};
+  PLACE={id:id,x:at.x,y:at.y,w:it.w,h:it.h,queue:queue||null,cost:cost||0};
   render('home');
   showPlaceBar();
 }
@@ -2979,6 +3008,8 @@ function showPlaceBar(){
 function commitPlace(){
   var it=FURNI[PLACE.id];
   if(!fitsAt(roomMap(),it,PLACE.x,PLACE.y,PLACE.id)) return;
+  if(PLACE.cost){ if(S.coin<PLACE.cost){ toast('코인이 모자랍니다.'); return; }
+    S.coin-=PLACE.cost; ev('buy',{id:PLACE.id}); }
   var cur=furniOf(PLACE.id);
   if(cur){ cur.x=PLACE.x; cur.y=PLACE.y; }
   else furniList().push({id:PLACE.id,x:PLACE.x,y:PLACE.y});
@@ -2987,7 +3018,7 @@ function commitPlace(){
   showPlaceBar(); drawScene();
   if(q&&q.length) return placeNext(q);
   placeNext(null);
-  toast(nm+'을 놓았습니다.');
+  toast(을를(nm)+' 놓았습니다.');
 }
 function movePlace(dx,dy){
   if(!PLACE) return;
@@ -3007,9 +3038,9 @@ function buyFurni(id){
   if(hasFurni(id)) return startPlace(id);              /* 이미 있으면 옮기기 */
   if(!ROOMSPEC[S.tier]){ toast('아직 놓을 방이 없습니다.'); return; }
   if(!S.demo&&S.coin<it.cost){ toast('코인이 모자랍니다.'); return; }
-  if(!S.demo) S.coin-=it.cost;
-  sfx('pick'); ev('buy',{id:id}); save();
-  startPlace(id);
+  /* 값은 '여기 놓기'를 눌렀을 때 치른다. 사고 취소하면 코인만 사라지던 것 */
+  sfx('pick'); ev('buy_start',{id:id});
+  startPlace(id,null,S.demo?0:it.cost);
 }
 function furniRow(id){
   var it=FURNI[id],owned=(id==='ramen')?((S.ramen||0)>0):hasFurni(id);
@@ -3047,14 +3078,15 @@ function refreshRamen(){
   var el=document.getElementById('qramen'); if(!el) return;
   var can=(typeof RUN!=='undefined'&&RUN&&RUN.hearts<HEARTS&&(S.ramen||0)>0);
   el.hidden=!can;
-  if(can) el.textContent='라면 먹기 · 목숨 하나 회복 ('+S.ramen+'봉지)';
+  if(can) el.textContent=(RUN.hearts<=0?'라면 먹고 버티기':'라면 먹기')+' · 목숨 하나 회복 ('+S.ramen+'봉지)';
 }
 function eatRamen(){
   if(!RUN||RUN.hearts>=HEARTS||!(S.ramen>0)) return;
+  var wasOut=RUN.hearts<=0;
   S.ramen--; RUN.hearts++; save(); sfx('good');
-  var hs=document.getElementById('qhearts'); hs.innerHTML='';
-  for(var i=0;i<HEARTS;i++) hs.appendChild(heartCv(i<RUN.hearts));
-  refreshRamen();
+  drawHearts(); refreshRamen();
+  if(wasOut&&!document.getElementById('qnext').hidden) wireNext();   /* 실패로 끝나려던 판이 이어진다 */
+  toast('라면 한 봉지 · 목숨 하나 회복');
 }
 /* ── 물건 그리기. 칸 수만큼 넓게 ─────────────────────────────────────── */
 function drawObj(ctx,o,px,py){
@@ -3187,7 +3219,7 @@ var TILES={
  'p':{kind:'pole'},         'b':{kind:'bench'}
 };
 var MAPS={
- town:{spawn:{x:4,y:4},name:'동네',sub:'1 · 지금 사는 곳',w:22,h:20,rows:[
+ town:{spawn:{x:4,y:4},name:'동네',sub:'1 · 집 앞',w:22,h:20,rows:[
   'RRRRRRRRRRRRRRRRRRRRRR',
   'HWWHHHHWWHHHHWWHHHHWWH',
   'HHDHHHHHDHHHHHDHHHHHHH',
@@ -3214,7 +3246,7 @@ var MAPS={
          {x:14,y:3,kind:'npc',who:'주민센터 직원'},
          {x:11,y:6,kind:'ep',id:'jeonse-day'}]},
 
- campus:{spawn:{x:3,y:5},name:'학교 앞',sub:'2 · 알바와 학자금',w:22,h:20,rows:[
+ campus:{spawn:{x:2,y:6},name:'학교 앞',sub:'2 · 알바와 학자금',w:22,h:20,rows:[
   'gggggggggggggggggggggg',
   'gRRRRRRRggggggRRRRRRRg',
   'gHWWHWWHggttggHWWHWWHg',
@@ -3489,6 +3521,7 @@ function mePx(){
 }
 function camOf(m){
   var p=mePx();
+  if(PLACE&&ME.map==='room') p={x:(PLACE.x+(PLACE.w-1)/2)*TS,y:(PLACE.y+(PLACE.h-1)/2)*TS};
   var cx=Math.round(p.x+TS/2-SW/2),cy=Math.round(p.y+TS/2-SH/2);
   var mw=m.w*TS,mh=m.h*TS;
   cx=(mw<=SW)?Math.round((mw-SW)/2):Math.max(0,Math.min(mw-SW,cx));
@@ -3547,6 +3580,7 @@ function checkWarp(){
       if(w.to==='room'&&!ROOMSPEC[S.tier]){
         toast('아직 들어갈 방이 없습니다. 주 스탯을 올려 거처를 해금하세요.');
         ME.ty=Math.min(m.h-2,ME.ty+1); ME.dir=0; savePos(); drawScene(); return true; }
+      if(w.to==='room'){ var rs=roomMap().spawn; enterMap('room',rs.x,rs.y); return true; }
       enterMap(w.to,w.tx,w.ty); return true; } }
   if(m.edges){
     if(m.edges.west&&ME.tx<=0){ var wm=MAPS[m.edges.west]; enterMap(m.edges.west,wm.w-2,Math.min(wm.h-2,ME.ty)); return true; }
@@ -3580,8 +3614,10 @@ function drawScene(){
   var y0=Math.max(0,Math.floor(cam.y/TS)),y1=Math.min(m.h-1,Math.ceil((cam.y+SH)/TS));
   for(y=y0;y<=y1;y++) for(x=x0;x<=x1;x++) drawTile(ctx,m,tileAt(m,x,y),x*TS,y*TS,x,y);
 
-  if(ME.map==='room') roomObjs().forEach(function(o){ drawObj(ctx,o,o.x*TS,o.y*TS); });
+  if(ME.map==='room') roomObjs().forEach(function(o){ if(PLACE&&o.id===PLACE.id) return; drawObj(ctx,o,o.x*TS,o.y*TS); });
 
+  (m.spots||[]).forEach(function(s){ var mk0=spotMark(s);
+    if(mk0) drawRing(ctx,s.x*TS+TS/2,s.y*TS+TS-1,mk0==='!'?P.y1:P.p0); });
   /* 서 있는 것들과 나를 세로 순서로 섞어 그린다. 뒤에 있으면 가려져야 한다. */
   var p=mePx(),cast=[];
   (m.spots||[]).forEach(function(s){ cast.push({y:s.y*TS,draw:function(){ drawSpot(ctx,s,s.x*TS,s.y*TS); }}); });
@@ -3596,8 +3632,7 @@ function drawScene(){
   cast.forEach(function(c){ c.draw(); });
   (m.spots||[]).forEach(function(s){
     var mk=spotMark(s),cx2=s.x*TS+TS/2,top=s.y*TS-(s.kind==='ep'||s.kind==='review'?6:10);
-    if(mk){ var tone=(mk==='!')?P.y1:P.p0;
-      drawRing(ctx,cx2,s.y*TS+TS-1,tone); drawMark(ctx,cx2,top,tone); }
+    if(mk){ drawMark(ctx,cx2,top,(mk==='!')?P.y1:P.p0); }
     else if(s.kind==='npc'||s.kind==='boss') drawDone(ctx,s.x*TS+7,s.y*TS-2); });
   ctx.restore();
 
@@ -3614,9 +3649,11 @@ function drawScene(){
     ctx.restore();
   }
   drawMini();
-  var nb=document.getElementById('hnear'),ns=facingSpot();
+  var nb=document.getElementById('hnear'),ns=PLACE?null:facingSpot(),zt=document.getElementById('hzone');
   if(nb){ if(ns){ nb.hidden=false; nb.innerHTML='<b>'+spotLabel(ns)+'</b> <span>'+spotHint(ns)+'</span>'; }
     else nb.hidden=true; }
+  if(zt) zt.hidden=!!ns||!!PLACE;                      /* 한 자리에 둘이 겹치지 않게 */
+  var ft=document.getElementById('hfoot'); if(ft&&PLACE) ft.hidden=true;
 }
 /* 미니맵. 지금 맵에서 내가 어디 있고 누가 남았는지 한 눈에 */
 function drawMini(){
@@ -3651,9 +3688,10 @@ function openTravel(){
     (m.spots||[]).forEach(function(s){ if(spotMark(s)) left++; });
     var b=document.createElement('button');
     if(id===ME.map) b.className='here';
-    b.innerHTML='<span>'+m.name+'</span>'+
-      '<i class="sub">'+(m.sub||'')+'</i>'+
-      (left?'<b>'+left+'</b>':'<i>·</i>');
+    var sub=(id==='room')?'내 방':(m.sub||'');
+    b.innerHTML='<span>'+(id==='room'?TIERS[S.tier].name:m.name)+'</span>'+
+      '<i class="sub">'+sub+'</i>'+
+      (left?'<b>할 일 '+left+'</b>':'<i>·</i>');
     b.onclick=function(){ el.hidden=true;
       if(id!==ME.map){ var sp=m.spawn||{x:1,y:1}; enterMap(id,sp.x,sp.y); } };
     el.appendChild(b); });
@@ -3673,7 +3711,9 @@ function facingSpot(){
 }
 function triggerSpot(s){
   if(s.kind==='ep') return epStart(epById(s.id));
-  if(s.kind==='review'){ var rq=reviewQuest(); return rq?startQuest(rq):toast('복습할 문항이 없습니다.'); }
+  if(s.kind==='review'){ var rq=reviewQuest(); if(rq) return startQuest(rq);
+    var up=(S.review||[]).filter(function(r){ return !r.done; });
+    return toast(up.length?'다음 복습은 내일 · '+up.length+'문항 대기 중':'아직 복습할 문항이 없습니다.'); }
   if(s.kind==='boss'){ var b=bossById(s.id);
     if(bossReady(b)) return startBoss(b);
     return toast(THEMES[b.stat].k+' 스탯 '+b.need+'부터 붙을 수 있습니다.'); }
@@ -3684,7 +3724,7 @@ function triggerSpot(s){
 /* ── 루프와 손가락 ───────────────────────────────────────────────────── */
 function startWalk(){
   stopWalk(); fitScene();
-  if(S.pos&&MAPS[S.pos.map]){ ME.map=S.pos.map; ME.tx=S.pos.tx; ME.ty=S.pos.ty; ME.dir=S.pos.dir||0; }
+  if(S.pos&&mapById(S.pos.map)){ ME.map=S.pos.map; ME.tx=S.pos.tx; ME.ty=S.pos.ty; ME.dir=S.pos.dir||0; }
   if(!walkable(curMap(),ME.tx,ME.ty)) enterMap(ME.map,ME.tx,ME.ty);
   drawScene();
   MAPT=setInterval(function(){
@@ -3748,7 +3788,7 @@ function bindScene(){
       PLACE.y=Math.max(1,Math.min(mm.h-1-PLACE.h,tp.y));
       sfx('pick'); showPlaceBar(); drawScene(); return; }
     if(MOVE) return;
-    var m=curMap(),t=sceneTile(ev),s=spotAt(m,t.x,t.y);
+    var m=curMap(),t=sceneTile(ev),s=spotAt(m,t.x,t.y)||spotAt(m,t.x,t.y+1);
     if(s){
       if(Math.abs(s.x-ME.tx)+Math.abs(s.y-ME.ty)<=1){ faceSpot(s); sfx('pick'); return triggerSpot(s); }
       var near=adjacentTo(m,s);
@@ -3756,7 +3796,11 @@ function bindScene(){
       sfx('pick');
       return goTo(near.x,near.y,function(){ faceSpot(s); drawScene(); triggerSpot(s); });
     }
-    if(!walkable(m,t.x,t.y)) return;
+    if(!walkable(m,t.x,t.y)){
+      var ch=tileAt(m,t.x,t.y);
+      if(ch==='D'&&!warpAt(m,t.x,t.y)) toast('아직 문이 잠겨 있습니다.');
+      else if(ch==='r'||ch==='-') toast('찻길은 건널 수 없습니다.');
+      return; }
     sfx('pick'); goTo(t.x,t.y,null);
   });
 }
@@ -3834,6 +3878,13 @@ function renderHome(){
   if(S.lastTier!==S.tier){                      /* 이사했다 */
     S.lastTier=S.tier;
     if(furniList().length) S.redecorate=1;
+    ROOMC={};
+    if(ME.map==='room'||(S.pos&&S.pos.map==='room')){
+      var nr=roomMap();
+      if(nr){ ME.map='room'; ME.tx=nr.spawn.x; ME.ty=nr.spawn.y; }
+      else { ME.map='town'; ME.tx=2; ME.ty=3; }          /* 들어갈 방이 없어졌다 */
+      ME.dir=0; S.pos={map:ME.map,tx:ME.tx,ty:ME.ty,dir:0};
+    }
     save();
   }
   autoClaim();
@@ -4143,11 +4194,13 @@ function epStart(e){
   EP={e:e,i:0,risk:0,day:0,spent:0};
   ev('ep_start',{id:e.id});
   document.getElementById('epname').textContent=e.title;
-  epSprite(document.getElementById('epspr'),e.face,3);
+  epSprite(document.getElementById('epspr'),e.face,2);
   epMeter(); go('ep'); epStep();
 }
 function epMeter(){
-  document.getElementById('epday').textContent='D+'+EP.day+(EP.spent?(' · -'+EP.spent+'만'):'');
+  var dy=document.getElementById('epday'),bits=[];
+  if(EP.day) bits.push('D+'+EP.day); if(EP.spent) bits.push('-'+EP.spent+'만');
+  dy.textContent=bits.join(' · '); dy.hidden=!bits.length;
   var r=document.getElementById('eprisk');
   r.textContent='위험 '+EP.risk;
   r.className='chip pix'+(EP.risk>=5?' bad':EP.risk>=2?' warn':'');
@@ -4214,7 +4267,7 @@ function epEnd(){
   var g=document.createElement('div'); g.className='card pix';
   g.innerHTML=better
     ? '<span class="lbold">+'+gain.xp+' XP \u00B7 \uFFE6'+gain.coin+' \u00B7 '+THEMES[e.stat].k+' +'+gain.stat+'</span>'+
-      '<span class="micro" style="display:block;margin-top:4px">이 사건의 최고 기록을 새로 세웠습니다.</span>'
+      '<span class="micro" style="display:block;margin-top:4px">'+(was===null?'이 사건의 첫 기록입니다. 더 나은 결말을 내면 차액이 더 들어옵니다.':'이 사건의 최고 기록을 새로 세웠습니다.')+'</span>'
     : '<span class="lbold">이번 판은 보상이 없습니다</span>'+
       '<span class="micro" style="display:block;margin-top:4px">이미 \u300C'+e.ends[was].big+'\u300D까지 가 봤습니다. 더 나은 결말을 내면 그 차액만 들어옵니다.</span>';
   body.appendChild(g);
@@ -4745,6 +4798,21 @@ function paintQuestNpc(name){
   var ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
   ctx.clearRect(0,0,cv.width,cv.height);
   if(src) ctx.drawImage(src,0,0); }
+/* 보기 순서를 섞는다. 문항 95개의 정답이 전부 첫 번째 보기였다. 몇 문제만 풀면
+   내용이 아니라 위치를 외우게 된다. */
+function shuffledIdx(n){ var a=[],i,j,t2; for(i=0;i<n;i++) a.push(i);
+  for(i=n-1;i>0;i--){ j=Math.floor(Math.random()*(i+1)); t2=a[i]; a[i]=a[j]; a[j]=t2; } return a; }
+/* 해설과 다음 버튼이 작은 화면에서 아래로 밀려 안 보이던 것 */
+function reveal(el){ if(!el) return; setTimeout(function(){
+  try{ el.scrollIntoView({block:'end',behavior:'smooth'}); }catch(e){ el.scrollIntoView(false); } },60); }
+function drawHearts(){ var hs=document.getElementById('qhearts'); if(!hs) return; hs.innerHTML='';
+  for(var i=0;i<HEARTS;i++) hs.appendChild(heartCv(i<RUN.hearts)); }
+function drawProg(intro){
+  var pg=document.getElementById('qprog'); pg.innerHTML='';
+  RUN.q.qs.forEach(function(_,i){ var e=document.createElement('i');
+    if(i<RUN.i||(i===RUN.i&&RUN.marks[i]!==undefined)) e.className='on'+(RUN.marks[i]===false?' no':'');
+    else if(i===RUN.i&&!intro) e.className='cur';
+    pg.appendChild(e); }); }
 function startQuest(q){
   RUN={q:q,i:0,hearts:HEARTS,correct:0,marks:[]};
   ev('quest_start',{id:q.id,theme:q.theme,n:q.qs.length});
@@ -4752,12 +4820,7 @@ function startQuest(q){
   battleWipe(function(){ paintQuestNpc(q.npc); go('quest'); stepQuest(true); }); }
 function stepQuest(intro){
   var q=RUN.q,item=q.qs[RUN.i];
-  var pg=document.getElementById('qprog'); pg.innerHTML='';
-  q.qs.forEach(function(_,i){ var e=document.createElement('i');
-    e.className=i<RUN.i?'on':(i===RUN.i&&!intro?'cur':''); pg.appendChild(e); });
-  var hs=document.getElementById('qhearts'); hs.innerHTML='';
-  for(var i=0;i<HEARTS;i++) hs.appendChild(heartCv(i<RUN.hearts));
-  refreshRamen();
+  drawProg(intro); drawHearts(); refreshRamen();
   document.getElementById('qexplain').hidden=true;
   var next=document.getElementById('qnext'),box=document.getElementById('qchoices'); box.innerHTML='';
   var qt=document.getElementById('qtext');
@@ -4769,16 +4832,18 @@ function stepQuest(intro){
     return; }
   box.hidden=true; next.hidden=true;
   typeInto(qt,item.q,function(){ box.hidden=false; });
-  item.a.forEach(function(text,idx){ var b=document.createElement('button'); b.className='choice pix';
-    b.innerHTML='<span class="k">\u25B6</span><span>'+text+'</span>';
-    b.onclick=function(){ answer(idx,b); }; box.appendChild(b); }); }
+  RUN.order=shuffledIdx(item.a.length);
+  RUN.order.forEach(function(orig){ var b=document.createElement('button'); b.className='choice pix';
+    b.dataset.orig=orig;
+    b.innerHTML='<span class="k">\u25B6</span><span>'+item.a[orig]+'</span>';
+    b.onclick=function(){ answer(orig,b); }; box.appendChild(b); }); }
 function answer(idx,btn){
   var item=RUN.q.qs[RUN.i],right=(idx===item.ok);
-  document.querySelectorAll('#qchoices .choice').forEach(function(b,i){ b.disabled=true;
-    if(i===item.ok) b.classList.add('ok'); else if(b===btn) b.classList.add('no'); });
+  document.querySelectorAll('#qchoices .choice').forEach(function(b){ b.disabled=true;
+    if(+b.dataset.orig===item.ok) b.classList.add('ok'); else if(b===btn) b.classList.add('no'); });
   if(right) RUN.correct++; else RUN.hearts--;
-  refreshRamen();
   RUN.marks[RUN.i]=right; sfx(right?'good':'bad');
+  drawHearts(); drawProg(false); refreshRamen();
   ev('quest_answer',{id:RUN.q.id,i:RUN.i,ok:right});
   var ex=document.getElementById('qexplain');
   ex.className='explain pix '+(right?'good':'bad');
@@ -4788,6 +4853,9 @@ function answer(idx,btn){
    (sc[1]?'<a href="'+sc[1]+'" target="_blank" rel="noopener">'+sc[0]+'</a>':sc[0])+
    '<br>제도는 바뀝니다. 실제 결정 전에 원문을 확인하세요.</span>';
   ex.hidden=false;
+  wireNext(); reveal(document.getElementById('qnext')); }
+/* 목숨이 남았으면 다음 문제로, 다 잃었으면 결과로. 라면을 먹으면 다시 불러서 이어 간다. */
+function wireNext(){
   var next=document.getElementById('qnext'); next.hidden=false;
   if(RUN.hearts<=0){                              /* 목숨을 다 잃으면 남은 문항은 묻지 않는다 */
     next.textContent='결과 보기';
@@ -4814,8 +4882,8 @@ function finish(failed){
     ev('review_finish',{n:q.keys.length,ok:RUN.correct});
   } else {
     q.qs.forEach(function(_,i){ if(RUN.marks[i]===false) reviewAdd(q.id,i); });
-    if(S.done.indexOf(q.id)<0){ S.done.push(q.id);
-      if(!failed&&q.reward&&S.owned.indexOf(q.reward)<0){ S.owned.push(q.reward); got=allItems(q.reward); } }
+    if(!failed&&S.done.indexOf(q.id)<0){ S.done.push(q.id);
+      if(q.reward&&S.owned.indexOf(q.reward)<0){ S.owned.push(q.reward); got=allItems(q.reward); } }
     if(!failed&&S.todayQ.indexOf(q.id)>=0&&S.todayDone.indexOf(q.id)<0) S.todayDone.push(q.id);
     if(!failed&&!S.bonus&&S.todayQ.length&&todayLeft()===0){
       S.bonus=true; bonus=80*dailyMult(); S.coin+=bonus;
@@ -4890,32 +4958,33 @@ function bossStep(){
   document.getElementById('bexplain').hidden=true; document.getElementById('bnext').hidden=true;
   var box=document.getElementById('bchoices'); box.innerHTML=''; box.hidden=true;
   typeInto(document.getElementById('btext'),item.q,function(){ box.hidden=false; });
-  item.a.forEach(function(text,idx){ var b=document.createElement('button'); b.className='choice pix';
-    b.innerHTML='<span class="k">\u25B6</span><span>'+text+'</span>';
-    b.onclick=function(){ bossAnswer(idx,b); }; box.appendChild(b); }); }
+  shuffledIdx(item.a.length).forEach(function(orig){ var b=document.createElement('button'); b.className='choice pix';
+    b.dataset.orig=orig;
+    b.innerHTML='<span class="k">\u25B6</span><span>'+item.a[orig]+'</span>';
+    b.onclick=function(){ bossAnswer(orig,b); }; box.appendChild(b); }); }
 function bossAnswer(idx,btn){
   var item=FIGHT.b.qs[FIGHT.i],right=(idx===item.ok);
-  document.querySelectorAll('#bchoices .choice').forEach(function(b,i){ b.disabled=true;
-    if(i===item.ok) b.classList.add('ok'); else if(b===btn) b.classList.add('no'); });
+  document.querySelectorAll('#bchoices .choice').forEach(function(b){ b.disabled=true;
+    if(+b.dataset.orig===item.ok) b.classList.add('ok'); else if(b===btn) b.classList.add('no'); });
   var log=document.getElementById('bhit'); log.innerHTML='';
   var row=document.createElement('div');
   var stage=document.getElementById('bstage');
   if(right){ FIGHT.boss-=FIGHT.dmg; row.className='hit dmg';
-    row.innerHTML='<span>반박 성공 · 공격 '+totals().atk+' → 데미지</span><b>-'+FIGHT.dmg+'</b>';
+    row.innerHTML='<span>반박 성공 · '+FIGHT.b.name+'에게</span><b>-'+FIGHT.dmg+'</b>';
     blinkEl(document.getElementById('bossspr'));
     damagePop(stage,FIGHT.dmg,P.y1); }
   else { FIGHT.my-=FIGHT.take; row.className='hit hurt';
-    row.innerHTML='<span>당했다 · 보스 '+FIGHT.b.atk+' − 경감 '+Math.floor(totals().def/4)+'</span><b>-'+FIGHT.take+'</b>';
-    damagePop(stage,FIGHT.take,P.r1);
+    row.innerHTML='<span>당했다 · 내 체력</span><b>-'+FIGHT.take+'</b>';
+    damagePop(document.querySelector('#boss .qhead')||stage,FIGHT.take,P.r1);   /* 내가 맞은 숫자는 내 체력 쪽에 */
     stage.classList.add('shake');
     setTimeout(function(){ stage.classList.remove('shake'); },700); }
   log.appendChild(row); paintFight();
   var ex=document.getElementById('bexplain');
   ex.className='explain pix '+(right?'good':'bad');
   ex.innerHTML='<b>'+(right?'정답':'오답')+'</b> · '+item.why+
-   '<span class="src">기준일 2026-09 · 실제 서비스에서는 출처 링크가 붙습니다</span>';
+   '<span class="src">기준일 '+CONTENT.asOf+' · 확인처 <a href="'+FIGHT.b.src[1]+'" target="_blank" rel="noopener">'+FIGHT.b.src[0]+'</a></span>';
   ex.hidden=false;
-  var nx=document.getElementById('bnext'); nx.hidden=false;
+  var nx=document.getElementById('bnext'); nx.hidden=false; reveal(nx);
   if(FIGHT.boss<=0){ nx.textContent='마무리'; nx.onclick=function(){ bossEnd(true); }; return; }
   if(FIGHT.my<=0){ nx.textContent='결과'; nx.onclick=function(){ bossEnd(false); }; return; }
   FIGHT.i++;
@@ -4965,8 +5034,8 @@ document.getElementById('qback').onclick=function(){ render('home'); };
 document.getElementById('rback').onclick=function(){ render('home'); };
 document.getElementById('beback').onclick=function(){ render('home'); };
 document.getElementById('qramen').onclick=eatRamen;
-document.getElementById('epback').onclick=function(){ render('quests'); };
-document.getElementById('eeback').onclick=function(){ render('quests'); };
+document.getElementById('epback').onclick=function(){ render('home'); };
+document.getElementById('eeback').onclick=function(){ render('home'); };
 document.getElementById('reset').onclick=function(){ S=fresh(); save(); obStep=0; stopWalk(); obRender(); go('onboard'); };
 window.addEventListener('resize',function(){
   if(document.getElementById('home').classList.contains('on')){ fitScene(); drawScene(); } });
