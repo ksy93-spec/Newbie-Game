@@ -207,7 +207,9 @@ function Ending({
       <Card style={{ width: '100%' }}>
         <T size="body">{end.t}</T>
         <T size="micro" color={COLORS.inkSoft}>
-          위험 {risk} · 걸린 날 {day}일{spent ? ` · 쓴 돈 ${spent}만원` : ''}
+          위험 {risk}
+          {day ? ` · 걸린 날 ${day}일` : ''}
+          {spent ? ` · 쓴 돈 ${spent}만원` : ''}
         </T>
       </Card>
       <Card style={{ width: '100%' }}>

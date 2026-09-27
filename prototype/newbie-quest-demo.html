@@ -274,6 +274,12 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .travel button i{font-style:normal;color:var(--s2);font-size:10px;line-height:17px;}
 .travel button i.sub{margin-left:auto;}
 .travel button b{color:var(--r3);font-weight:400;}
+.tutor{position:absolute;left:8px;right:8px;bottom:8px;z-index:9;display:flex;gap:10px;align-items:flex-end;
+  background:var(--w);border:3px solid var(--s4);box-shadow:4px 4px 0 var(--s4);padding:10px;cursor:pointer;}
+.tutor canvas{flex:none;width:45px;height:96px;image-rendering:pixelated;}
+.tutor .tt{flex:1;font-size:14px;line-height:1.55;color:var(--s4);overflow-wrap:anywhere;}
+.tutor .nm{display:block;font-family:var(--f-ui);font-weight:700;font-size:10px;line-height:14px;color:var(--g3);margin-bottom:3px;}
+.tutor .tn{display:block;margin-top:6px;font-family:var(--f-ui);font-size:10px;line-height:14px;color:var(--s2);text-align:right;}
 .placebar{position:absolute;left:0;right:0;top:0;z-index:7;background:rgba(46,39,64,.94);
   display:flex;align-items:center;gap:6px;padding:6px 8px;}
 .placebar .pl{flex:1;font-family:var(--f-ui);font-size:10px;line-height:15px;color:var(--s0);}
@@ -292,6 +298,8 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
   background:rgba(46,39,64,.92);color:var(--p0);font-family:var(--f-ui);font-size:11px;
   line-height:16px;padding:6px 9px;pointer-events:none;text-align:center;
   overflow-wrap:anywhere;}
+.card .rc{display:block;margin-top:8px;font-size:12px;line-height:1.6;}
+.card .rc.ok{color:var(--g3);} .card .rc.no{color:var(--r3);}
 .epname{flex:1;font-family:var(--f-ui);font-weight:700;font-size:12px;color:var(--s4);}
 .chip{background:var(--p2);border:3px solid var(--s4);padding:2px 6px;
   font-family:var(--f-ui);font-size:10px;color:var(--s3);white-space:nowrap;}
@@ -439,6 +447,11 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
         <button class="minimap pix" id="hmini" aria-label="지도 열기"><canvas id="hminicv"></canvas></button>
         <div class="travel" id="htravel" hidden></div>
         <div class="nearbar pix" id="hnear" hidden></div>
+        <div class="tutor pix" id="htutor" hidden>
+          <canvas id="htutorcv" width="30" height="64"></canvas>
+          <div class="tt"><span class="nm" id="htutornm">부동산 사장</span><span id="htutortx">—</span>
+            <span class="tn">눌러서 계속 ▶</span></div>
+        </div>
         <div class="placebar pix" id="hplace" hidden></div>
       </div>
       <div class="sceneinfo"><span class="tiername" id="htier">노숙</span><span class="def pix">방어 <b id="hdef">0</b></span></div>
@@ -592,18 +605,6 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
       <div style="display:flex;flex-direction:column;gap:var(--u2)" id="cthemes"></div>
       <div class="sectlab">내 정보</div><div class="card pix"><div class="kv" id="mekv"></div></div>
       <div class="sectlab">큐레이션</div><div class="card pix"><div class="micro" id="mewhy">—</div></div>
-      <div class="sectlab">디자인 규격</div>
-      <div class="card pix" style="display:flex;flex-direction:column;gap:var(--u3)">
-        <div class="swatches" id="cswatch"></div>
-        <div class="kv">
-          <b>팔레트</b><span>8개 램프 고정. 램프 밖 색 금지</span>
-          <b>스프라이트</b><span>64×64 단일 격자, 정수 배율만</span>
-          <b>생성</b><span>도형 → 음영 패스 → 외곽선 패스</span>
-          <b>서체</b><span>Galmuri 14 / 11 / 9, 정수배 크기만</span>
-          <b>모서리</b><span>radius 0, clip-path 4px 모따기</span>
-          <b>모션</b><span>steps() 만. ease 금지</span>
-        </div>
-      </div>
       <div class="sectlab">설정</div>
       <div class="card pix" style="display:flex;flex-direction:column;gap:var(--u2)" id="csettings"></div>
       <div class="sectlab">문항 묶음</div>
@@ -1431,7 +1432,7 @@ function syncShareBtn(){
   b.hidden=!ok&&DLREADY&&!DL;
   var n=document.getElementById('sharenote');
   if(n) n.hidden=b.hidden?false:true, n.textContent=b.hidden?
-    '이 화면에서는 이미지 저장이 막혀 있습니다. 앱으로 빌드하면 바로 공유됩니다.':''; }
+    '이 브라우저에서는 이미지를 바로 저장할 수 없습니다.':''; }
 function shareCardOut(){
   var cv=shareCard();
   ev('share_card',{lv:S.lv,tier:S.tier,streak:S.streak});
@@ -1453,7 +1454,7 @@ function shareCardOut(){
           say(c==='declined'?'저장을 취소했습니다':
               c==='rate_limited'?'잠시 후 다시 눌러 주세요':'이 화면에서는 저장할 수 없습니다'); });
       return; }
-    say('이 화면에서는 이미지 저장이 막혀 있습니다');
+    say('이 브라우저에서는 이미지를 바로 저장할 수 없습니다');
   },'image/png'); }
 
 /* ══════════ 펫 · 탈것 ══════════ */
@@ -2292,15 +2293,16 @@ var KEY='nq.v8';
 function fresh(){ return {onboarded:false,status:null,age:null,years:null,company:null,living:null,prep:null,region:null,
  lv:1,xp:0,coin:150,tier:0,peak:0,done:[],bossCleared:false,bossDone:[],epBest:{},
  pos:{map:'town',tx:2,ty:4,dir:0},
- furni:[],ramen:0,redecorate:0,lastTier:0,
+ furni:[],ramen:0,redecorate:0,lastTier:0,econ:2,tut:0,
  stats:{ju:5,sik:5,ui:5,geum:5,jik:5},
  avatar:'stuM',
  look:{hair:0,haircol:-1,skin:0},
- demo:true,
+ demo:false,
  first:null,day:null,streak:0,best:0,todayQ:[],todayDone:[],claimed:null,bonus:false,
  snd:true,vib:true,notif:{on:false,hour:20},notified:null,
  review:[],log:[],packVer:CONTENT.ver,
- owned:Object.keys(ITEMS).concat(Object.keys(PETS),Object.keys(MOUNTS)).filter(function(id){ return id!=='bosssuit'; }),
+ owned:Object.keys(ITEMS).concat(Object.keys(PETS),Object.keys(MOUNTS)).filter(function(id){
+   var it=ITEMS[id]||PETS[id]||MOUNTS[id]; return id!=='bosssuit'&&it&&!(it.cost>0); }),   /* 처음엔 공짜 기본템만 */
  equip:{weapon:'pen',top:'shirt',head:'hnone',bottom:'beige',pet:'pnone',mount:'mnone'}}; }
 var S=null;
 function load(){ var o=null;
@@ -2312,6 +2314,7 @@ function load(){ var o=null;
   if(!o.bossDone) o.bossDone=o.bossCleared?['jeonse']:[];   /* 보스가 하나이던 시절의 저장 */
   if(Array.isArray(o.furni)) o.furni=o.furni.map(function(f){
     return (typeof f==='string')?{id:f,x:null,y:null}:f; });   /* 세간이 자리를 갖기 전 저장 */
+  if(o.econ!==2){ o.demo=false; o.econ=2; }     /* 시연(전부 무료·전부 열림)을 끝낸다. 가진 것은 그대로 */
   if(o.avatar==='imgM') o.avatar='stuM';
   if(o.avatar==='imgF') o.avatar='stuF';
   return o; }
@@ -3455,13 +3458,15 @@ function spotMark(s){
   if(s.kind==='npc'){ var a=questAt(s.who); return a?(a.today?'!':'?'):null; }
   if(s.kind==='review') return reviewQuest()?'!':null;
   if(s.kind==='ep') return epBestOf(s.id)===0?null:'?';
-  if(s.kind==='boss') return bossCleared(s.id)?null:'!';
+  if(s.kind==='boss') return bossCleared(s.id)?null:(bossReady(bossById(s.id))?'!':'lock');
   return null;
 }
 function spotHint(s){
   if(s.kind==='ep') return epBestOf(s.id)===null?'눌러서 걸어 보기':'다시 걸어 보기';
   if(s.kind==='review') return reviewQuest()?'눌러서 복습하기':'복습할 문항이 없다';
-  if(s.kind==='boss') return bossCleared(s.id)?'다시 맞서기':'눌러서 맞서기';
+  if(s.kind==='boss'){ var bb=bossById(s.id);
+    if(!bossReady(bb)) return THEMES[bb.stat].k+' 스탯 '+bb.need+'부터 · 지금 '+S.stats[bb.stat];
+    return bossCleared(s.id)?'다시 맞서기':'눌러서 맞서기'; }
   var a=questAt(s.who);
   return a?('눌러서 말 걸기 · '+a.q.title):'지금은 할 말이 없다';
 }
@@ -3489,6 +3494,12 @@ function drawDone(ctx,x,y){
   rcx(ctx,P.s4,x+1,y-7,9,9); rcx(ctx,'#9B93A8',x+2,y-6,7,7);
   rcx(ctx,P.p0,x+3,y-3,2,2); rcx(ctx,P.p0,x+4,y-2,2,2);
   rcx(ctx,P.p0,x+5,y-4,2,2); rcx(ctx,P.p0,x+6,y-5,2,2);
+}
+/* 아직 못 붙는 보스. 누르라는 손짓을 띄우면 거짓말이 된다 */
+function drawLock(ctx,x,y){
+  rcx(ctx,P.s4,x-5,y-9,10,9); rcx(ctx,'#9B93A8',x-4,y-8,8,7);
+  rcx(ctx,P.s4,x-3,y-13,6,5); rcx(ctx,'#9B93A8',x-2,y-12,4,4); rcx(ctx,P.s4,x-1,y-11,2,3);
+  rcx(ctx,P.s4,x-1,y-6,2,3);
 }
 function drawRing(ctx,cx,cy,tone){
   rcx(ctx,tone,cx-5,cy,10,1); rcx(ctx,tone,cx-6,cy-1,2,1); rcx(ctx,tone,cx+4,cy-1,2,1);
@@ -3584,7 +3595,11 @@ function checkWarp(){
       enterMap(w.to,w.tx,w.ty); return true; } }
   if(m.edges){
     if(m.edges.west&&ME.tx<=0){ var wm=MAPS[m.edges.west]; enterMap(m.edges.west,wm.w-2,Math.min(wm.h-2,ME.ty)); return true; }
-    if(m.edges.east&&ME.tx>=m.w-1){ var em=MAPS[m.edges.east]; enterMap(m.edges.east,1,Math.min(em.h-2,ME.ty)); return true; }
+    if(m.edges.east&&ME.tx>=m.w-1){
+      if(!mapOpen(m.edges.east)){
+        toast(MAPS[m.edges.east].name+'은 Lv.'+MAP_LV[m.edges.east]+'부터 갈 수 있습니다.');
+        ME.tx=m.w-2; ME.dir=1; savePos(); drawScene(); return true; }
+      var em=MAPS[m.edges.east]; enterMap(m.edges.east,1,Math.min(em.h-2,ME.ty)); return true; }
   }
   return false;
 }
@@ -3617,7 +3632,7 @@ function drawScene(){
   if(ME.map==='room') roomObjs().forEach(function(o){ if(PLACE&&o.id===PLACE.id) return; drawObj(ctx,o,o.x*TS,o.y*TS); });
 
   (m.spots||[]).forEach(function(s){ var mk0=spotMark(s);
-    if(mk0) drawRing(ctx,s.x*TS+TS/2,s.y*TS+TS-1,mk0==='!'?P.y1:P.p0); });
+    if(mk0&&mk0!=='lock') drawRing(ctx,s.x*TS+TS/2,s.y*TS+TS-1,mk0==='!'?P.y1:P.p0); });
   /* 서 있는 것들과 나를 세로 순서로 섞어 그린다. 뒤에 있으면 가려져야 한다. */
   var p=mePx(),cast=[];
   (m.spots||[]).forEach(function(s){ cast.push({y:s.y*TS,draw:function(){ drawSpot(ctx,s,s.x*TS,s.y*TS); }}); });
@@ -3632,7 +3647,8 @@ function drawScene(){
   cast.forEach(function(c){ c.draw(); });
   (m.spots||[]).forEach(function(s){
     var mk=spotMark(s),cx2=s.x*TS+TS/2,top=s.y*TS-(s.kind==='ep'||s.kind==='review'?6:10);
-    if(mk){ drawMark(ctx,cx2,top,(mk==='!')?P.y1:P.p0); }
+    if(mk==='lock') drawLock(ctx,cx2,top);
+    else if(mk){ drawMark(ctx,cx2,top,(mk==='!')?P.y1:P.p0); }
     else if(s.kind==='npc'||s.kind==='boss') drawDone(ctx,s.x*TS+7,s.y*TS-2); });
   ctx.restore();
 
@@ -3678,6 +3694,9 @@ function drawMini(){
 }
 /* 옆으로만 걸어서 다섯 맵을 오가는 건 길다. 지도를 열어 바로 건너뛴다. */
 var MAP_ORDER=['room','town','campus','center','office','bank'];
+/* 갈 수 있는 곳이 늘어나는 것 자체가 진행이다. 퀘스트로 레벨을 올리면 오른쪽이 열린다. */
+var MAP_LV={town:1,campus:1,center:2,office:3,bank:4};
+function mapOpen(id){ return id==='room'||S.lv>=(MAP_LV[id]||1); }
 function mapById(id){ return id==='room'?roomMap():MAPS[id]; }
 function openTravel(){
   var el=document.getElementById('htravel'); if(!el) return;
@@ -3688,6 +3707,9 @@ function openTravel(){
     (m.spots||[]).forEach(function(s){ if(spotMark(s)) left++; });
     var b=document.createElement('button');
     if(id===ME.map) b.className='here';
+    if(!mapOpen(id)){ b.disabled=true;
+      b.innerHTML='<span>'+m.name+'</span><i class="sub">Lv.'+MAP_LV[id]+'부터</i><i>잠김</i>';
+      el.appendChild(b); return; }
     var sub=(id==='room')?'내 방':(m.sub||'');
     b.innerHTML='<span>'+(id==='room'?TIERS[S.tier].name:m.name)+'</span>'+
       '<i class="sub">'+sub+'</i>'+
@@ -3747,6 +3769,7 @@ function sceneTile(ev){
 var HOLD={dir:null};
 /* 한 칸씩 누르는 것만으로는 스물두 칸짜리 맵을 못 걷는다. 누르고 있으면 계속 간다. */
 function stepDir(d){
+  if(TUT) return;
   if(PLACE){ return movePlace(d===2?1:d===1?-1:0,d===0?1:d===3?-1:0); }
   if(MOVE) return;
   var m=curMap(),dx=(d===2?1:d===1?-1:0),dy=(d===0?1:d===3?-1:0);
@@ -3754,7 +3777,7 @@ function stepDir(d){
   var nx=ME.tx+dx,ny=ME.ty+dy;
   if(!walkable(m,nx,ny)){
     /* 가장자리를 향해 한 발 더 디디면 다음 맵이다 */
-    if(m.edges&&((m.edges.west&&nx<0)||(m.edges.east&&nx>=m.w))){ ME.tx=nx; checkWarp(); return; }
+    if(m.edges&&((m.edges.west&&nx<0)||(m.edges.east&&nx>=m.w))){ ME.tx=Math.max(0,Math.min(m.w-1,nx)); checkWarp(); return; }
     savePos(); drawScene(); return; }
   MOVE={path:[{x:nx,y:ny}],pi:-1,then:null};
   nextStep();
@@ -3783,6 +3806,7 @@ function bindScene(){
   var cv=document.getElementById('scene'); if(!cv||cv.__bound) return; cv.__bound=1;
   cv.addEventListener('pointerdown',function(ev){ ev.preventDefault(); });
   cv.addEventListener('pointerup',function(ev){
+    if(TUT){ stepTutor(); return; }
     if(PLACE){ var tp=sceneTile(ev),mm=roomMap();
       PLACE.x=Math.max(1,Math.min(mm.w-1-PLACE.w,tp.x));
       PLACE.y=Math.max(1,Math.min(mm.h-1-PLACE.h,tp.y));
@@ -3858,6 +3882,7 @@ function questRow(q,onClick){
   return b; }
 function renderHome(){
   autoClaim();
+  if(!S.tut) setTimeout(startTutor,700);
   var n=need(S.lv),tt=totals();
   document.getElementById('hnm').textContent=S.status+' Lv.'+S.lv;
   document.getElementById('hsub').textContent=whyLine();
@@ -3908,12 +3933,47 @@ function renderHome(){
 /* 출석과 연속 보너스. 끊기면 1일로 돌아가는 구조가 매일 켜는 이유를 만든다. */
 /* 출석 버튼을 걷어냈다. 지도만 남기라는 주문이고, 누를 이유가 없는 버튼이기도 했다.
    그날 처음 홈에 들어오면 알아서 받고 한 줄로 알린다. 연속 보너스 규칙은 그대로다. */
+/* 처음 지도에 들어온 사람은 무엇을 해야 할지 모른다. 설명서를 띄우는 대신 동네 사람이
+   먼저 말을 건다. 한 번만 한다. */
+var TUT=null,TUT_AFTER=null;
+var TUT_LINES=[
+ '어, 새로 온 얼굴이네. 나는 이 동네에서 부동산 하는 사람이야.',
+ '머리 위에 손가락이 떠 있는 사람은 너한테 해 줄 얘기가 있다는 뜻이야. 노란 건 오늘 꼭 들어 볼 얘기고.',
+ '만나고 싶은 사람을 톡 누르면 알아서 걸어가서 말을 걸어. 왼쪽 아래 버튼으로 걸어도 되고.',
+ '오른쪽 아래 작은 지도를 누르면 다른 동네로 바로 가. 레벨이 오르면 갈 수 있는 곳이 늘어나.',
+ '자, 나부터 눌러 봐.'
+];
+function startTutor(){
+  if(S.tut||TUT) return;
+  TUT={i:0};
+  var cv=document.getElementById('htutorcv');
+  if(cv) epSprite(cv,'gpa',1);
+  if(cv){ cv.style.width=(cv.width*1.5)+'px'; cv.style.height=(cv.height*1.5)+'px'; }
+  showTutor();
+}
+function showTutor(){
+  var el=document.getElementById('htutor'); if(!el||!TUT) return;
+  el.hidden=false;
+  typeInto(document.getElementById('htutortx'),TUT_LINES[TUT.i],function(){});
+}
+function stepTutor(){
+  if(!TUT) return;
+  if(TW&&!TW.done){ typeSkip(); return; }
+  TUT.i++; sfx('pick');
+  if(TUT.i>=TUT_LINES.length){
+    TUT=null; S.tut=1; save();
+    document.getElementById('htutor').hidden=true; drawScene();
+    if(TUT_AFTER){ var m2=TUT_AFTER; TUT_AFTER=null; setTimeout(function(){ sfx('coin'); toast(m2); },300); }
+    return; }
+  showTutor();
+}
 function autoClaim(){
   if(S.claimed===dayKey()) return;
   var c=dailyCoin(); S.coin+=c; S.claimed=dayKey();
   ev('daily_claim',{streak:S.streak,coin:c,auto:1}); save();
-  setTimeout(function(){ sfx('coin');
-    toast('출석 · 연속 '+S.streak+'일'+(dailyMult()>1?' · 보너스 '+dailyMult()+'배':'')+' · ￦'+c); },500);
+  var msg='출석 · 연속 '+S.streak+'일'+(dailyMult()>1?' · 보너스 '+dailyMult()+'배':'')+' · ￦'+c;
+  /* 첫날엔 동네 사람 대사와 겹친다. 대사가 끝난 뒤에 알린다 */
+  setTimeout(function(){ if(TUT||!S.tut){ TUT_AFTER=msg; return; } sfx('coin'); toast(msg); },500);
 }
 function renderDaily(){
   var host=document.getElementById('hdaily'); if(!host||host.hidden) return;
@@ -4021,9 +4081,9 @@ var EPISODES=[
   {a:'무서워서 일단 나가겠다고 한다',risk:3,
    note:'나가는 순간 점유가 끊기고 대항력도 함께 사라진다. 보증금을 받기 전에는 짐을 빼지 않는다.'}]}],
  ends:[
- {big:'보증금을 지켰다',t:'2년 뒤 계약이 끝났고, 보증금은 그대로 돌아왔다. 특별한 일이 없었던 이유는 특별한 일을 미리 막아 뒀기 때문이다.',xp:200,coin:250,stat:12},
- {big:'아슬아슬하게 넘겼다',t:'큰일은 없었다. 다만 몇 달 동안 등기부등본을 다시 떼어 보는 밤이 있었다. 운이 좋았다는 말은 칭찬이 아니다.',xp:120,coin:120,stat:7},
- {big:'보증금이 묶였다',t:'집이 경매로 넘어갔고, 앞선 권리들이 먼저 가져갔다. 서류 한 장과 하루가 순서를 바꿨을 자리였다.',xp:60,coin:0,stat:3}]},
+ {big:'보증금을 지켰다',t:'2년 뒤 계약이 끝났고, 보증금은 그대로 돌아왔다.',xp:200,coin:250,stat:12},
+ {big:'아슬아슬하게 넘겼다',t:'큰일은 없었지만 몇 달을 조마조마하게 보냈다. 운이 좋았다는 말은 칭찬이 아니다.',xp:120,coin:120,stat:7},
+ {big:'보증금이 묶였다',t:'집이 경매로 넘어갔고, 앞선 권리들이 먼저 가져갔다. 순서 하나가 결과를 바꿨다.',xp:60,coin:0,stat:3}]},
 
 {id:'first-job',title:'첫 알바 한 달',theme:'jik',stat:'jik',face:'peerf',npc:'알바 선배',
  one:'근로계약서 한 장에서 시작해서, 마지막 급여에서 끝난다.',
@@ -4070,9 +4130,9 @@ var EPISODES=[
   {a:'단톡방에 올려 망신을 준다',risk:2,
    note:'속은 풀려도 돈은 안 들어온다. 오히려 다툼이 다른 문제로 번질 수 있다.'}]}],
  ends:[
- {big:'받을 것을 다 받았다',t:'마지막 급여까지 정산이 끝났다. 계약서 한 장을 처음에 받아 둔 덕에, 나중에 할 말이 전부 종이에 있었다.',xp:170,coin:200,stat:12},
- {big:'절반은 받았다',t:'주휴수당은 챙겼지만 연장근로는 증거가 없어 넘어갔다. 다음 알바에서는 첫날부터 기록을 남기기로 했다.',xp:110,coin:100,stat:7},
- {big:'그냥 떼였다',t:'계약서도 기록도 없었다. 남은 것은 억울함뿐이고, 억울함은 청구가 안 된다.',xp:50,coin:0,stat:3}]},
+ {big:'받을 것을 다 받았다',t:'마지막 급여까지 정산이 끝났다. 할 말이 필요할 때 전부 종이에 있었다.',xp:170,coin:200,stat:12},
+ {big:'절반은 받았다',t:'받은 것도 있고 놓친 것도 있다. 다음에는 첫날부터 챙기기로 했다.',xp:110,coin:100,stat:7},
+ {big:'그냥 떼였다',t:'한 달 일하고 받을 돈을 제대로 못 받았다. 억울함은 청구가 안 된다.',xp:50,coin:0,stat:3}]},
 
 {id:'first-pay',title:'첫 월급 세 달',theme:'geum',stat:'geum',face:'deskf',npc:'은행 창구 직원',
  one:'통장에 찍힌 금액과 계약서의 연봉은 원래 다르다.',
@@ -4119,9 +4179,9 @@ var EPISODES=[
   {a:'집주인이 싫어할까 봐 신청하지 않는다',risk:2,
    note:'세액공제는 임차인이 신청하는 것이고, 요건을 갖췄다면 신청할 수 있는 권리다.'}]}],
  ends:[
- {big:'세 달 만에 자리를 잡았다',t:'자동이체가 돌고, 청약통장에 회차가 쌓이고, 연말정산에서 돌려받았다. 큰돈을 번 것은 아니지만 새는 곳이 없다.',xp:180,coin:220,stat:12},
- {big:'절반만 챙겼다',t:'저축은 시작했지만 챙기지 못한 공제가 있었다. 내년에는 서류를 먼저 모아 두기로 했다.',xp:110,coin:110,stat:7},
- {big:'세 달이 그냥 지나갔다',t:'통장에 남은 것이 없다. 첫 습관이 기준선이 된다는 말을 세 달 만에 실감했다.',xp:50,coin:0,stat:3}]},
+ {big:'세 달 만에 자리를 잡았다',t:'큰돈을 번 것은 아니지만, 세 달 만에 새는 곳 없이 자리를 잡았다.',xp:180,coin:220,stat:12},
+ {big:'절반만 챙겼다',t:'시작은 했지만 챙기지 못한 것이 남았다. 내년에는 먼저 챙기기로 했다.',xp:110,coin:110,stat:7},
+ {big:'세 달이 그냥 지나갔다',t:'세 달이 지나도 통장에 남은 것이 없다. 첫 습관이 기준선이 된다.',xp:50,coin:0,stat:3}]},
 
 {id:'job-hunt',title:'면접 다니는 달',theme:'jik',stat:'jik',face:'officem',npc:'고용센터 상담원',
  one:'퇴사한 다음 날부터 시계가 돈다. 늦게 알면 늦은 만큼 못 받는다.',
@@ -4176,9 +4236,9 @@ var EPISODES=[
   {a:'절반만 내고 나머지는 나중에 주겠다고 한다',risk:2,cost:15,
    note:'금액을 깎는 문제가 아니라 요구 자체가 문제다. 절반을 내면 절반만큼 엮인다.'}]}],
  ends:[
- {big:'제때 받고, 제대로 들어갔다',t:'구직급여는 첫 회차부터 나왔고, 면접비 지원도 챙겼다. 공고와 달랐던 조건은 계약서를 쓰기 전에 바로잡았다. 늦게 알았으면 하나도 못 했을 일들이다.',xp:190,coin:230,stat:12},
- {big:'절반은 챙겼다',t:'급여는 받았지만 몇 주를 흘려보냈고, 따지지 못하고 넘어간 조건이 하나 남았다. 다음에는 퇴사한 다음 날에 움직이기로 했다.',xp:120,coin:110,stat:7},
- {big:'놓치고 밀리고 냈다',t:'수급기간은 지나갔고, 조건은 공고보다 낮아졌고, 교육비까지 냈다. 셋 다 하루 이틀 안에 확인할 수 있던 것들이었다.',xp:55,coin:0,stat:3}]}
+ {big:'제때 받고, 제대로 들어갔다',t:'받을 것은 제때 받고, 조건은 계약서를 쓰기 전에 바로잡았다.',xp:190,coin:230,stat:12},
+ {big:'절반은 챙겼다',t:'받은 것도 있지만 흘려보낸 것이 있다. 다음에는 하루라도 먼저 움직이기로 했다.',xp:120,coin:110,stat:7},
+ {big:'놓치고 밀리고 냈다',t:'놓치고, 밀리고, 돈까지 냈다. 하루 이틀 안에 확인할 수 있던 것들이었다.',xp:55,coin:0,stat:3}]}
 ];
 function epBestOf(id){ var v=S.epBest&&S.epBest[id]; return (v===undefined||v===null)?null:v; }
 
@@ -4191,7 +4251,7 @@ function epSprite(cv,face,scale){
   x.clearRect(0,0,c.w,c.h); if(src) x.drawImage(src,0,0);
 }
 function epStart(e){
-  EP={e:e,i:0,risk:0,day:0,spent:0};
+  EP={e:e,i:0,risk:0,day:0,spent:0,picks:[]};
   ev('ep_start',{id:e.id});
   document.getElementById('epname').textContent=e.title;
   epSprite(document.getElementById('epspr'),e.face,2);
@@ -4225,6 +4285,7 @@ function epPick(o,btn){
   document.querySelectorAll('#epchoices .choice').forEach(function(b){ b.disabled=true; });
   btn.classList.add(o.risk?'no':'ok');
   EP.risk+=(o.risk||0); EP.day+=(o.days||0); EP.spent+=(o.cost||0);
+  EP.picks.push(o);
   sfx(o.risk?'hit':'good'); epMeter();
   ev('ep_pick',{id:EP.e.id,i:EP.i,risk:o.risk||0});
   var n=document.getElementById('epnote');
@@ -4260,9 +4321,16 @@ function epEnd(){
   big.style.color=tier===0?P.g3:tier===1?P.y2:P.r2;
   var body=document.getElementById('eebody'); body.innerHTML='';
   var card=document.createElement('div'); card.className='card pix';
-  card.innerHTML='<span>'+end.t+'</span>'+
+  /* 결말 문장은 등급만 보고 고정돼 있어서, 기록을 남겼는데 '기록도 없었다'는 식으로
+     어긋났다. 실제로 고른 것에서 잘한 것과 놓친 것을 뽑아 붙인다. */
+  var good=EP.picks.filter(function(o){ return !o.risk; }),bad=EP.picks.filter(function(o){ return o.risk; });
+  bad.sort(function(a,b){ return (b.risk||0)-(a.risk||0); });
+  var recap='';
+  if(good.length) recap+='<span class="rc ok">'+good.slice(0,2).map(function(o){ return '✓ '+o.a; }).join('<br>')+'</span>';
+  if(bad.length) recap+='<span class="rc no">'+bad.slice(0,2).map(function(o){ return '✗ '+o.a; }).join('<br>')+'</span>';
+  card.innerHTML='<span>'+end.t+'</span>'+recap+
     '<span class="micro" style="display:block;margin-top:8px">'+
-      '위험 '+EP.risk+' \u00B7 걸린 날 '+EP.day+'일'+(EP.spent?(' \u00B7 쓴 돈 '+EP.spent+'만원'):'')+'</span>';
+      '위험 '+EP.risk+(EP.day?(' \u00B7 걸린 날 '+EP.day+'일'):'')+(EP.spent?(' \u00B7 쓴 돈 '+EP.spent+'만원'):'')+'</span>';
   body.appendChild(card);
   var g=document.createElement('div'); g.className='card pix';
   g.innerHTML=better
@@ -4311,7 +4379,7 @@ function renderQuests(){
       '<span class="bm">HP '+b.hp+' · 공격 '+b.atk+' · 문항 '+b.qs.length+'개 · '+pl.need+'개 맞추면 승리'+
       '<br>'+(done?'이미 물리쳤습니다. 다시 붙을 수 있습니다.'
         :S.stats[b.stat]>=b.need?'오답 '+pl.take+' 피해 · '+pl.survive+'번까지 버팁니다.'
-        :'시연이라 바로 붙을 수 있습니다. 실제 앱은 '+THEMES[b.stat].k+' 스탯 '+b.need+'부터')+'</span>';
+        :THEMES[b.stat].k+' 스탯 '+b.need+'부터 붙을 수 있습니다 · 지금 '+S.stats[b.stat])+'</span>';
     row.appendChild(txt); bc.appendChild(row);
     bc.disabled=!ready;
     if(ready) bc.onclick=function(){ startBoss(b); };
@@ -4415,11 +4483,7 @@ function renderShop(){
   bigCharCanvas(document.getElementById('shopchar'));
   document.getElementById('scoin').textContent=S.coin;
   var wrap=document.getElementById('shopbody'); wrap.innerHTML='';
-  if(S.demo){ var nt=document.createElement('div'); nt.className='card pix';
-    nt.innerHTML='<span class="lbold">시연 모드</span><br><span class="micro">'+
-      '전 품목이 해금되어 있습니다. 눌러서 바로 장착해 보세요.<br>'+
-      '실제 앱에서는 퀘스트로 모은 코인으로 구매합니다.</span>';
-    wrap.appendChild(nt); }
+  /* 시연 안내 카드는 걷었다. 이제 코인으로 산다. */
   var fbox=document.createElement('div'); fbox.style.cssText='display:flex;flex-direction:column;gap:8px';
   var flab=document.createElement('div'); flab.className='sectlab';
   flab.innerHTML='세간 · 방에 들이면 능력치가 오릅니다'+
@@ -5035,6 +5099,7 @@ document.getElementById('rback').onclick=function(){ render('home'); };
 document.getElementById('beback').onclick=function(){ render('home'); };
 document.getElementById('qramen').onclick=eatRamen;
 document.getElementById('epback').onclick=function(){ render('home'); };
+document.getElementById('htutor').onclick=function(){ stepTutor(); };
 document.getElementById('eeback').onclick=function(){ render('home'); };
 document.getElementById('reset').onclick=function(){ S=fresh(); save(); obStep=0; stopWalk(); obRender(); go('onboard'); };
 window.addEventListener('resize',function(){
