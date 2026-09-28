@@ -510,6 +510,8 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
   background:repeating-linear-gradient(to bottom,rgba(0,0,0,.22) 0 1px,transparent 1px 3px),
              radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%)}
 #opening.out{opacity:0}
+#opening .cskip{position:absolute;top:calc(10px + env(safe-area-inset-top));right:10px;z-index:2;background:rgba(20,16,38,.7);color:#C9C3D6;
+  border:1px solid #57517A;font:11px Galmuri11,monospace;padding:6px 10px;border-radius:0;cursor:pointer}
 </style>
 
 <div id="app">
@@ -1388,7 +1390,7 @@ var RIDE={
 };
 var RCACHE={};
 function rideCv(kind,frame){
-  var av=AVATARS[S.avatar||'imgM'],rg=RIDE[kind]||RIDE.bike;
+  var av=AVATARS[S.avatar||'imgM'],rg=RIDE[(MOUNTS[kind]&&MOUNTS[kind].kind)||kind]||RIDE.bike;
   var hero=heroCv(rg.pose,frame||0); if(!hero) return null;
   var mc=mountCv(kind);
   var key='R'+kind+(frame||0)+'|'+(S.avatar||'imgM')+'|'+heroKey();
@@ -1412,7 +1414,7 @@ function rideCv(kind,frame){
   RCACHE[key]=cv; return cv;
 }
 function heroKey(){ var o=equipOpts(),hd=ITEMS[S.equip.head],wp=ITEMS[S.equip.weapon];
-  return o.hair+o.top+o.bot+o.ts+o.bs+o.ac+(hd&&hd.gear)+(wp&&wp.gear); }
+  return o.hair+o.top+o.bot+o.ts+o.bs+o.ac+S.equip.head+S.equip.weapon+(hd&&hd.gear)+(wp&&wp.gear); }
 /* 걷기: 두 다리가 붙어 있어 가로로 쪼개면 잘린다. 허리 아래를 좌우로 나눠
    1px씩 엇갈리게 들어 올리고 몸 전체를 들썩인다.
    타는 자세는 다리를 짧게 눌러 앉은 것처럼 만든다. */
@@ -1441,7 +1443,7 @@ function tidyCv(cv){
 function imgAvatarCv(id,pose,frame){
   var av=AVATARS[id]; if(!av) return null;
   var o=equipOpts(),hd=ITEMS[S.equip.head],wp=ITEMS[S.equip.weapon];
-  var key='A'+id+pose+(frame||0)+'|'+o.hair+o.top+o.bot+o.ts+o.bs+o.ac+'|'+(hd&&hd.gear)+'|'+(wp&&wp.gear);
+  var key='A'+id+pose+(frame||0)+'|'+o.hair+o.top+o.bot+o.ts+o.bs+o.ac+'|'+(hd&&hd.gear)+S.equip.head+'|'+(wp&&wp.gear);
   if(CVCACHE[key]) return CVCACHE[key];
   var src=avatarSheet(id,o); if(!src) return null;
   var cv=mkcv(64,64),ctx=cv.getContext('2d');
@@ -1472,7 +1474,8 @@ function imgAvatarCv(id,pose,frame){
     if(hd.gear==='glass'){            /* 렌즈는 실제 눈 위치(중심에서 ±5)에 맞춘다 */
       [-5,5].forEach(function(dxx){ var lx=fc+dxx;
         ctx.fillStyle=P.s5; ctx.fillRect(lx-3,ey-3,7,6);
-        ctx.drawImage(src,lx-2-ox,ey-2-bob,5,4, lx-2,ey-2, 5,4); });
+        if(hd.dark){ ctx.fillStyle='#2E2740'; ctx.fillRect(lx-2,ey-2,5,4); ctx.fillStyle='#6B6380'; ctx.fillRect(lx-2,ey-2,2,1); }
+        else ctx.drawImage(src,lx-2-ox,ey-2-bob,5,4, lx-2,ey-2, 5,4); });
       ctx.fillStyle=P.s5; ctx.fillRect(fc-2,ey-1,4,1);
       var ge=edge(ey-1); ctx.fillRect(ge[0],ey-2,fc-8-ge[0],1); }
     else if(hd.gear==='band'){        /* 회식 넥타이를 이마에 두른 모양. 매듭은 옆머리 위, 꼬리는 짧게 두 가닥 */
@@ -1485,16 +1488,17 @@ function imgAvatarCv(id,pose,frame){
     else if(hd.gear==='beanie'){
       var t0=0; while(t0<av.h&&(!rows[t0]||rows[t0][0]<0)) t0++;
       var te=edge(t0+bob),tc=Math.round((te[0]+te[1])/2);
-      band(t0+bob+2,ey-8+bob,P.v1,2); band(t0+bob,t0+bob+1,P.v1,4);
+      var bc1=hd.color||P.v1,bc2=hd.color2||P.v2;
+      band(t0+bob+2,ey-8+bob,bc1,2); band(t0+bob,t0+bob+1,bc1,4);
       band(t0+bob+1,t0+bob+1,'rgba(0,0,0,.30)',4);
       band(t0+bob+4,t0+bob+5,'rgba(255,255,255,.20)',6);
       band(ey-10+bob,ey-9+bob,'rgba(0,0,0,.18)',2);
-      band(ey-8+bob,ey-5+bob,P.v2,1);
+      band(ey-8+bob,ey-5+bob,bc2,1);
       var re=edge(ey-7);
       for(var rx2=re[0]+2;rx2<=re[1]-2;rx2+=3){
         ctx.fillStyle='rgba(0,0,0,.22)'; ctx.fillRect(rx2,ey-8+bob,1,4); }
       band(ey-5+bob,ey-5+bob,'rgba(0,0,0,.30)',1);
-      ctx.fillStyle=P.v1; ctx.fillRect(tc-2,t0+bob-3,4,3);
+      ctx.fillStyle=bc1; ctx.fillRect(tc-2,t0+bob-3,4,3);
       ctx.fillStyle=P.p1; ctx.fillRect(tc-2,t0+bob-5,4,3); ctx.fillRect(tc-1,t0+bob-6,2,1); } }
   tidyCv(cv);
   CVCACHE[key]=cv; return cv;
@@ -1688,7 +1692,7 @@ function petG(kind,frame){
   }
   shade(g); outline(g,P.s5); return g;
 }
-function mountG(kind){
+function mountG(kind,pal){
   var g=Gr(52,30);
   if(kind==='kick'){                        /* 전동 킥보드 */
     rc(g,7,23,41,26,P.s2); rc(g,7,23,41,23,P.s1);
@@ -1720,6 +1724,8 @@ function mountG(kind){
     rc(g,47,15,49,17,P.y1); rc(g,3,15,5,17,P.r3);
     rc(g,9,17,24,18,P.r2); rc(g,30,12,45,13,P.r3); rc(g,26,19,28,20,P.s2);
   }
+  if(pal){ var mp={}; Object.keys(pal).forEach(function(a){ mp[P[a]]=P[pal[a]]; });
+    g.d.forEach(function(r){ for(var i=0;i<r.length;i++) if(r[i]&&mp[r[i]]) r[i]=mp[r[i]]; }); }
   shade(g); outline(g,P.s5); return g;
 }
 
@@ -1784,7 +1790,9 @@ function petCv(k,f){
     var cv=mkcv(c.w,c.h+1),ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
     ctx.drawImage(im,0,f?0:1); PCACHE[key]=cv; return cv; }
   PCACHE[key]=toCanvas(petG(k,f)); return PCACHE[key]; }
-function mountCv(k){ var key='m'+k; if(!PCACHE[key]) PCACHE[key]=toCanvas(mountG(k)); return PCACHE[key]; }
+/* k는 탈것 id(ebike·sedan)나 종류(kick·bike·car). 색만 다른 탈것은 같은 그림에 팔레트를 바꿔 끼운다 */
+function mountCv(k){ var key='m'+k; if(PCACHE[key]) return PCACHE[key];
+  var mo=MOUNTS[k],kind=(mo&&mo.kind)||k,g=mountG(kind,mo&&mo.pal); return (PCACHE[key]=toCanvas(g)); }
 
 /* ══════════ 거처 ══════════
    열 단계인데 여섯 개가 같은 건물에 색만 달랐다. 거처는 이 게임의 유일한 보상 트랙이라,
@@ -2046,9 +2054,24 @@ var MOUNTS={
  mnone:{slot:'mount',name:'없음', cost:0, desc:'두 발로 다닙니다.'},
  kick: {slot:'mount',perk:{speed:1},name:'전동 킥보드', atk:6, kind:'kick', cost:320, desc:'헬멧은 쓰고 타세요.'},
  bike: {slot:'mount',perk:{speed:1,fullSave:2},name:'따릉이',     def:8, atk:3, kind:'bike', cost:420, desc:'연간권이 제일 싸다.'},
- car:  {slot:'mount',perk:{speed:1,road:1},name:'중고 경차',  def:16, atk:8, kind:'car', cost:900, desc:'유지비가 곧 월세다.'}
+ car:  {slot:'mount',perk:{speed:1,road:1},name:'중고 경차',  def:16, atk:8, kind:'car', cost:900, desc:'유지비가 곧 월세다.'},
+ ebike:{slot:'mount',perk:{speed:1,fullSave:4},name:'전기자전거', def:10,atk:6, kind:'bike', cost:760, pal:{g1:'y1',g2:'y2',g3:'y3'},
+   top:{frame:'#EDA523',frameL:'#FFC53C',frameD:'#D98A16'}, desc:'오르막에서 친구를 앞지른다. 배터리는 매일 충전.'},
+ sedan:{slot:'mount',perk:{speed:1,road:1,mak:1},name:'중형 세단', def:24,atk:10, kind:'car', cost:1800, pal:{r1:'n1',r2:'n2',r3:'n3'},
+   top:{car:'#48598A',carL:'#6B7FB8',carD:'#2C3A5E'}, desc:'할부가 끝나기 전까지는 은행 차다.'}
 };
 /* 숨은 곳에서만 얻는 물건. 상점에 없고, 넌센스 퀴즈나 분실물로 손에 들어온다. */
+/* 새 퀘스트의 보상이자 상점 물건. 모양은 기존 장비를 쓰고 색과 능력만 다르다 */
+ITEMS.receipt ={slot:'weapon',perk:{xp:5},name:'연말정산 영수증 파일',atk:22,gear:'board',cost:400,desc:'1년치 영수증이 들어 있다. 13월의 월급이 여기서 나온다.'};
+ITEMS.otp     ={slot:'weapon',perk:{mak:1},name:'OTP 카드',atk:15,def:4,gear:'card',cost:300,desc:'숫자 여섯 자리가 계좌를 지킨다.'};
+ITEMS.lunchbox={slot:'weapon',perk:{foodDisc:10},name:'보온 도시락통',atk:11,gear:'tumbler',cost:220,desc:'점심값이 한 달에 십만 원 넘게 준다.'};
+ITEMS.nomu    ={slot:'top',perk:{kan:1},name:'노무사 정장',def:18,atk:2,color:'#26406B',accent:'#C9C3D6',ts:'sharp',cost:420,desc:'근로계약서를 펼치면 눈빛이 달라진다.'};
+ITEMS.windbrk ={slot:'top',perk:{fullSave:2},name:'바람막이',def:13,atk:3,color:'#3A9BC9',accent:'#FFFDF6',ts:'hood',cost:260,desc:'공항에서도 산에서도 한 벌.'};
+ITEMS.knitvest={slot:'top',perk:{coin:5},name:'니트 조끼',def:10,color:'#8E7C5A',cost:160,desc:'셔츠 위에 걸치면 사무실 3년 차처럼 보인다.'};
+ITEMS.cargo   ={slot:'bottom',perk:{fullSave:2},name:'카고 팬츠',def:14,color:'#6E6A52',bs:'seam',cost:230,desc:'주머니가 여섯 개. 영수증을 잃어버리지 않는다.'};
+ITEMS.linen   ={slot:'bottom',name:'린넨 바지',def:9,atk:3,color:'#E3D2B4',cost:150,desc:'여름 출근의 구세주.'};
+ITEMS.beanie2 ={slot:'head',perk:{fullMax:10,coin:5},name:'주황 비니',def:9,atk:3,gear:'beanie',color:'#E07A3C',color2:'#B85A24',cost:280,desc:'멀리서도 보인다. 약속 장소에서 찾기 쉽다.'};
+ITEMS.shades  ={slot:'head',perk:{mak:1},name:'선글라스',def:6,atk:6,gear:'glass',dark:1,cost:240,desc:'보이스피싱 전화를 받을 때도 쓰고 있으면 침착해진다.'};
 ITEMS.goldpen ={slot:'weapon',perk:{mak:1},name:'황금 볼펜',        atk:13,def:3,gear:'pen',cost:0,special:1,
   from:'동네 편의점 알바생의 넌센스 퀴즈', desc:'편의점 퀴즈왕 상품. 사인할 일이 기다려진다.'};
 ITEMS.catmug  ={slot:'weapon',perk:{foodBoost:20},name:'고양이 머그',      atk:10,def:5,gear:'tumbler',cost:0,special:1,
@@ -2075,7 +2098,30 @@ function perkList(){
   furniList().forEach(function(o){ var f=FURNI[o&&o.id]; if(f&&f.perk&&o.x!=null) out.push(f.perk); });
   return out; }
 function perkSum(k){ var n=0; perkList().forEach(function(p){ n+=p[k]||0; }); return n; }
-function carOn(){ return S.equip.mount==='car'&&ME.map!=='room'&&!(MAPS[ME.map]&&MAPS[ME.map].interior); }
+/* 탈것은 동네 길과 전국 지도에서만 탄다. 건물 안과 내 방은 물론이고, 휴게소와 여행지에 닿으면
+   세워 두고 걷는다. 세운 자리에 차(또는 자전거)가 그대로 서 있다. */
+var PARK_MAPS={rest:1,gangneung:1,jeonju:1,busan:1};
+function rideHere(){
+  var mo=MOUNTS[S.equip.mount]; if(!mo||!mo.kind||!ME) return false;
+  if(ME.map==='room') return false;
+  var m=MAPS[ME.map]; if(!m||m.interior||PARK_MAPS[ME.map]) return false;
+  return true; }
+function parkOnArrive(id){
+  var mo=MOUNTS[S.equip.mount];
+  if(!PARK_MAPS[id]||!mo||!mo.kind){ if(S.park&&S.park.map!==id&&!(MAPS[id]&&MAPS[id].interior)) S.park=null; return; }
+  if(S.park&&S.park.map===id) return;
+  var m=MAPS[id],D=[[-1,0],[1,0],[0,1],[-1,1],[1,1],[0,-1]],i;
+  S.park=null;
+  for(i=0;i<D.length;i++){ var x=ME.tx+D[i][0],y=ME.ty+D[i][1];
+    if(walkable(m,x,y,1)&&!warpAt(m,x,y)&&!spotAt(m,x,y)){ S.park={map:id,x:x,y:y,kind:mo.kind,id:S.equip.mount,dir:D[i][0]<0?1:2}; break; } } }
+function drawParked(ctx){
+  var pk=S.park; if(!pk||pk.map!==ME.map) return;
+  var tp=(MOUNTS[pk.id]||{}).top,g=mountTopG2(pk.kind,2,0,tp),g2=mountTopG2(pk.kind,2,1,tp);
+  for(var y=0;y<g.h;y++) for(var x=0;x<g.w;x++) if(g2.d[y][x]) g.d[y][x]=g2.d[y][x];
+  outline(g,P.s5); var cv=toCanvas(g); if(pk.dir===1) cv=mirrorCv(cv);
+  rcx(ctx,'rgba(46,39,64,.3)',pk.x*TS-4,pk.y*TS+TS-2,TS+8,3);
+  ctx.drawImage(cv,Math.round(pk.x*TS+(TS-cv.width)/2),pk.y*TS+TS-cv.height+2); }
+function carOn(){ var mo=MOUNTS[S.equip.mount]; return !!(mo&&mo.kind==='car')&&ME.map!=='room'&&!(MAPS[ME.map]&&MAPS[ME.map].interior); }
 /* ── 포만감 ───────────────────────────────────────────────────────────
    공부도 배가 불러야 한다. 퀘스트·사건·보스를 시작할 때 줄고, 사 먹으면 바로 차고,
    가만히 둬도 4분에 1씩 찬다. 돈이 없다고 완전히 막히지는 않게. */
@@ -2562,6 +2608,140 @@ function bossCleared(id){ return (S.bossDone||[]).indexOf(id)>=0; }
 function bossReady(b){ return S.demo||S.stats[b.stat]>=b.need; }
 
 
+/* ── 4차 플레이테스트에서 빠졌다고 나온 주제들 (2026-09-28 기준으로 확인) ── */
+QUESTS.push(
+Q('tax1','geum','연말정산, 카드는 이렇게',80,70,{status:['직장인','취준생']},'인사팀','receipt',
+ '연말정산 때 카드 공제 얼마 받았어? 대부분 그냥 쓰던 대로 써서 손해 봐.',[
+ {q:'신용카드 등 사용금액 소득공제는 어디서부터 시작될까?',a:['총급여의 25%를 넘게 쓴 금액부터','첫 결제부터 전부','총급여의 50%를 넘게 쓴 금액부터'],ok:0,
+  why:'총급여의 25%까지는 어떤 수단으로 써도 공제가 없다. 그 위로 쓴 금액만 공제 대상이 된다.'},
+ {q:'25%를 넘긴 뒤 같은 돈을 쓸 때 공제율이 가장 높은 것은?',a:['전통시장·대중교통 40%','신용카드 15%','해외 결제'],ok:0,
+  why:'신용카드 15%, 체크카드·현금영수증 30%, 전통시장·대중교통 40%. 25%를 넘긴 다음에는 체크카드 쪽으로 옮기는 게 이득이다.'},
+ {q:'총급여 3,000만원이면 얼마까지는 어떤 카드를 써도 공제가 없을까?',a:['750만원','300만원','1,500만원'],ok:0,
+  why:'3,000만원 × 25% = 750만원. 여기까지는 혜택 많은 신용카드로, 넘는 부분은 체크카드로 쓰는 식으로 나눈다.'}],{geum:12}),
+Q('tax2','geum','3.3% 떼고 들어온 돈',80,70,{},'프리랜서 선배','knitvest',
+ '외주비 받았는데 금액이 이상하지? 그거 누가 떼먹은 거 아니야.',[
+ {q:'용역비 100만원인데 96만 7천원이 들어왔다. 빠진 3만 3천원은?',a:['소득세 3%와 지방소득세 0.3%를 미리 뗀 것','플랫폼 수수료','은행 이체 수수료'],ok:0,
+  why:'사업소득을 줄 때 주는 쪽이 3.3%를 원천징수해 대신 낸다. 내 세금을 미리 낸 것이라 나중에 정산된다.'},
+ {q:'3.3%를 떼인 소득은 언제 정산할까?',a:['다음 해 5월 종합소득세 신고','연말에 자동으로 끝난다','신고할 필요가 없다'],ok:0,
+  why:'5월에 1년 소득을 신고해 이미 낸 3.3%와 비교한다. 경비와 공제가 많으면 돌려받고, 모자라면 더 낸다.'},
+ {q:'회사를 다니면서 3.3% 외주도 했다. 5월에 할 일은?',a:['두 소득을 합쳐 종합소득세를 신고한다','회사 연말정산으로 끝난다','외주 소득은 신고하지 않는다'],ok:0,
+  why:'근로소득은 연말정산으로 끝나도 사업소득이 따로 있으면 5월에 합쳐 신고해야 한다. 안 하면 돌려받을 돈도 못 받는다.'}],{geum:12}),
+Q('fin1','geum','청년 적금, 지금 들 수 있는 것',80,70,{status:['대학생','취준생','직장인']},'청년센터 상담원',null,
+ '청년도약계좌 들려고 왔다고? 올해는 이름이 바뀌었어요.',[
+ {q:'2026년에 청년도약계좌 신규 가입은?',a:['2025년 말로 끝났고 청년미래적금이 뒤를 잇는다','여전히 가입할 수 있다','청년 정책 적금은 모두 없어졌다'],ok:0,
+  why:'청년도약계좌 신규 가입은 2025년 12월 31일로 끝났다. 2026년부터는 3년 만기 청년미래적금이 나왔다.'},
+ {q:'청년 정책 적금의 핵심 혜택은?',a:['내가 넣은 돈에 정부 기여금이 붙고 이자에 세금이 붙지 않는다','원금이 두 배가 된다','이자를 매달 현금으로 준다'],ok:0,
+  why:'정부 기여금과 이자 비과세가 핵심이다. 기여금 비율과 요건은 해마다 바뀔 수 있으니 가입 전에 금융위원회 공고를 본다.'},
+ {q:'가입 조건으로 따지지 않는 것은?',a:['가지고 있는 신용카드 개수','나이','개인·가구 소득'],ok:0,
+  why:'만 19~34세라는 나이와 개인·가구 소득 기준이 핵심이다. 카드 개수는 상관없다.'}],{geum:13}),
+Q('rent1','ju','청년월세지원 받는 법',80,70,{status:['대학생','취준생','직장인']},'주민센터 직원',null,
+ '월세 사는 청년이면 한 번 알아봐요. 올해부터 아무 때나 신청돼요.',[
+ {q:'2026년 청년월세지원은 한 달 최대 얼마를, 몇 개월까지 줄까?',a:['월 20만원, 최대 24개월','월 50만원, 12개월','월 10만원, 6개월'],ok:0,
+  why:'2026년부터 상시 사업이 되어 월 최대 20만원씩 최대 24개월, 모두 480만원까지 받을 수 있다.'},
+ {q:'신청하는 곳은?',a:['복지로 또는 주소지 주민센터','집주인','은행 창구'],ok:0,
+  why:'온라인은 복지로, 오프라인은 주소지 행정복지센터에서 신청한다.'},
+ {q:'따로 사는데도 부모님(원가구) 소득까지 보는 이유는?',a:['청년 가구와 부모 가구 형편을 함께 보는 사업이라서','부모님 명의로 돈이 나가서','실제로는 보지 않는다'],ok:0,
+  why:'청년 가구는 기준 중위소득 60% 이하, 원가구는 100% 이하여야 한다. 재산 기준도 따로 있다.'}],{ju:11}),
+Q('scam1','geum','택배 문자와 검사님 전화',80,70,{},'은행 창구 직원','otp',
+ '요즘은 문자 하나, 전화 한 통으로 통장이 털려요. 이것만 기억해요.',[
+ {q:'"택배 주소를 확인하세요"라는 문자에 링크가 달려 있다.',a:['링크는 누르지 않고 택배사 공식 앱에서 직접 조회한다','링크를 눌러 확인한다','답장으로 무슨 택배인지 묻는다'],ok:0,
+  why:'스미싱 링크는 악성 앱을 깔거나 개인정보를 빼 간다. 의심 문자는 118(한국인터넷진흥원)에 신고한다.'},
+ {q:'"검사인데 계좌가 범죄에 쓰였으니 안전계좌로 옮기세요."',a:['전화를 끊고 기관 대표번호로 직접 확인한다','안전계좌로 옮긴다','시키는 앱을 깔아 원격으로 확인받는다'],ok:0,
+  why:'수사기관은 전화로 돈을 옮기라고 하지 않는다. 안전계좌라는 것은 없다.'},
+ {q:'이미 돈을 보냈다면 가장 먼저 할 일은?',a:['112나 돈을 보낸 은행 콜센터에 지급정지를 요청한다','다음 날 은행에 간다','사기범에게 돌려 달라고 연락한다'],ok:0,
+  why:'지급정지는 빠를수록 돌려받을 가능성이 커진다. 112에 신고하면 지급정지까지 이어서 도와준다.'}],{geum:13}),
+Q('scam2','sik','중고거래, 입금 전에',70,60,{},'동기',null,
+ '나 중고로 아이패드 살 뻔했는데 사기였어. 이상한 링크를 보내더라.',[
+ {q:'판매자가 앱 밖 메신저로 옮기자며 "안전결제" 링크를 보냈다.',a:['가짜 결제 페이지일 수 있어 앱 안 결제만 쓴다','링크로 결제한다','그냥 계좌로 보낸다'],ok:0,
+  why:'앱 밖으로 끌어낸 뒤 가짜 안전결제 페이지로 돈을 받는 수법이 흔하다. 대화와 결제는 앱 안에서만 한다.'},
+ {q:'선입금하기 전에 해 볼 수 있는 확인은?',a:['경찰청 사이버범죄 신고시스템에서 계좌·전화번호 사기 이력 조회','프로필 사진만 확인','확인할 방법이 없다'],ok:0,
+  why:'경찰청 사이버범죄 신고시스템(ECRM)에서 사기 신고가 들어온 번호와 계좌를 조회할 수 있다.'},
+ {q:'사기를 당했다면?',a:['대화와 입금 내역을 저장해 경찰에 신고한다','포기한다','판매자 집을 찾아간다'],ok:0,
+  why:'증거가 있어야 수사가 된다. 대화방이 지워지기 전에 캡처부터 남긴다.'}],{sik:10}),
+Q('card1','geum','리볼빙이라는 늪',80,70,{},'은행 창구 직원',null,
+ '카드값이 버거울 때 "최소결제"만 누르는 분들이 있어요. 그게 제일 비싸요.',[
+ {q:'카드값을 일부만 내는 리볼빙을 쓰면?',a:['남은 금액이 넘어가면서 높은 수수료가 붙는다','이자 없이 미뤄진다','결제가 취소된다'],ok:0,
+  why:'결제성 리볼빙은 넘긴 금액에 높은 수수료가 붙고, 다음 달 사용액이 그 위에 또 쌓인다.'},
+ {q:'리볼빙이 무서운 이유는?',a:['원금이 잘 줄지 않고 쌓이는 구조라서','신용점수가 반드시 오른다','카드가 바로 정지된다'],ok:0,
+  why:'매달 일부만 갚으면 남은 돈에 수수료가 붙어 원금이 줄지 않는다. 오래 쓰면 빚이 불어난다.'},
+ {q:'카드를 만들 때 리볼빙이 같이 신청됐는지 확인하려면?',a:['카드사 앱에서 결제 방식(일부결제금액이월약정)을 확인한다','확인할 수 없다','한 번 신청하면 끌 수 없다'],ok:0,
+  why:'카드사 앱이나 홈페이지에서 신청 여부를 보고 바로 해지할 수 있다.'}],{geum:12}),
+Q('sub1','sik','새는 구독 막기',70,60,{},'자취 선배','lunchbox',
+ '통장에서 매달 몇천 원씩 빠져나가는 거, 다 합쳐 본 적 있어?',[
+ {q:'OTT 13,900원, 음악 10,900원, 클라우드 3,300원을 매달 낸다. 1년이면?',a:['337,200원','28,100원','168,600원'],ok:0,
+  why:'13,900 + 10,900 + 3,300 = 28,100원. 12개월이면 337,200원이다.'},
+ {q:'무료 체험이 유료로 바뀌거나 구독료가 오를 때 사업자는?',a:['바뀌기 전 30일 이내에 소비자 동의를 받아야 한다','알림 없이 결제해도 된다','1년 뒤에 알리면 된다'],ok:0,
+  why:'2025년 2월부터 시행된 개정 전자상거래법이 정기결제 금액을 올리거나 유료로 바꾸기 전 30일 안에 동의를 받게 했다.'},
+ {q:'안 쓰는 구독을 찾는 가장 빠른 방법은?',a:['카드·통장 자동결제 내역을 한 번에 훑는다','앱을 전부 지운다','해지는 어려우니 둔다'],ok:0,
+  why:'앱을 지워도 결제는 계속된다. 카드사 앱과 계좌 자동이체 목록에서 정기결제를 찾아 해지한다.'}],{sik:10}),
+Q('labor1','jik','월급이 안 들어왔다',90,80,{},'노무 상담원','nomu',
+ '"다음 달에 같이 줄게"라는 말, 몇 번째예요? 참을 일이 아니에요.',[
+ {q:'월급날이 지났는데 회사가 계속 미룬다.',a:['고용노동부에 임금체불 진정을 낼 수 있다','참고 기다리는 수밖에 없다','바로 소송부터 해야 한다'],ok:0,
+  why:'진정을 내면 근로감독관이 조사하고, 체불이 확인되면 지급하라고 지시한다. 비용이 들지 않는다.'},
+ {q:'진정을 내기 전에 챙겨 둘 것은?',a:['근로계약서·급여명세서·출퇴근 기록·통장 내역','회사 로고','동료 연락처만'],ok:0,
+  why:'얼마를 못 받았는지 보여 줄 기록이 있어야 한다. 문자와 메신저 대화도 증거가 된다.'},
+ {q:'정해진 날에 임금을 못 받으면 붙는 지연이자는?',a:['연 20%','연 1%','붙지 않는다'],ok:0,
+  why:'지급일 다음 날부터 실제로 줄 때까지 연 20%의 지연이자가 붙는다. 재직 중인 사람에게도 적용되도록 법이 바뀌었다.'}],{jik:13}),
+Q('labor2','jik','퇴직금, 나도 받을까',80,70,{status:['직장인','취준생']},'노무 상담원','cargo',
+ '알바도 퇴직금 받냐고요? 조건만 맞으면 받아요.',[
+ {q:'퇴직금을 받을 수 있는 최소 조건은?',a:['1년 이상 일하고 4주 평균 주 15시간 이상','6개월 이상 일하면','정규직만'],ok:0,
+  why:'계속 근로 1년 이상, 4주 평균 1주 소정근로시간 15시간 이상이면 알바·계약직도 받는다.'},
+ {q:'퇴직금은 대략 어떻게 계산할까?',a:['30일분 평균임금 × 근속연수','마지막 달 월급의 절반','연봉의 10%'],ok:0,
+  why:'1년마다 30일분 평균임금. 평균임금은 퇴직 전 3개월 동안 받은 임금 총액을 그 기간 일수로 나눈 값이다.'},
+ {q:'회사가 퇴직금을 줘야 하는 기한은?',a:['퇴직 후 14일 이내, 합의하면 늦출 수 있다','퇴직 후 1년 이내','회사 마음대로'],ok:0,
+  why:'14일 안에 줘야 하고, 특별한 사정이 있으면 당사자 합의로 늦출 수 있다. 넘기면 지연이자가 붙는다.'}],{jik:12}),
+Q('labor3','jik','직장 내 괴롭힘',80,70,{status:['직장인']},'노무 상담원',null,
+ '그게 괴롭힘인지 아닌지 헷갈린다면 기준부터 봐요.',[
+ {q:'직장 내 괴롭힘을 판단하는 요소가 아닌 것은?',a:['가해자의 연봉','지위나 관계의 우위를 이용했는지','업무상 적정 범위를 넘었는지'],ok:0,
+  why:'근로기준법은 지위·관계의 우위를 이용해 업무상 적정 범위를 넘어 고통을 주거나 근무환경을 나쁘게 만드는 행위로 본다.'},
+ {q:'괴롭힘을 신고하면 회사는?',a:['지체 없이 조사하고 피해자를 보호해야 한다','신고자를 징계할 수 있다','아무 의무가 없다'],ok:0,
+  why:'사용자는 신고를 받으면 바로 조사하고, 피해자가 원하면 근무 장소를 바꾸는 등 조치해야 한다. 신고자에게 불리하게 대하면 처벌받는다.'},
+ {q:'이 조항이 적용되지 않는 곳은?',a:['상시 근로자 5인 미만 사업장','공공기관','대기업'],ok:0,
+  why:'직장 내 괴롭힘 금지 조항은 5인 이상 사업장에 적용된다. 5인 미만이면 노동청 상담으로 다른 방법을 찾는다.'}],{jik:12}),
+Q('wage1','jik','최저임금과 수습 기간',70,60,{status:['대학생','취준생']},'알바 선배','linen',
+ '수습이라고 시급 깎는 데 있지? 되는 경우랑 안 되는 경우가 있어.',[
+ {q:'2026년 최저임금 시간급은?',a:['10,320원','10,030원','9,860원'],ok:0,
+  why:'2026년 적용 최저임금은 시간급 10,320원이다. 주 40시간이면 주휴를 포함해 월 2,156,880원.'},
+ {q:'1년 이상 계약한 수습 3개월 동안 최저임금을 깎을 수 있는 한도는?',a:['10%까지','30%까지','제한 없음'],ok:0,
+  why:'1년 이상 계약한 수습 근로자는 3개월까지 최저임금의 90%를 줄 수 있다. 계약 기간이 1년 미만이면 깎을 수 없다.'},
+ {q:'편의점·패스트푸드 같은 단순노무 알바의 수습 감액은?',a:['할 수 없다','3개월 동안 10%','6개월 동안 20%'],ok:0,
+  why:'고용노동부가 정한 단순노무 직종은 수습이어도 최저임금을 깎을 수 없다.'}],{jik:11}),
+Q('pen1','geum','13월의 월급, 연금계좌',80,70,{status:['직장인']},'인사팀',null,
+ '연말정산에서 제일 크게 돌려받는 방법, 알려 줄까요?',[
+ {q:'연금저축과 IRP를 합쳐 세액공제 받을 수 있는 연간 납입 한도는?',a:['900만원','300만원','제한 없음'],ok:0,
+  why:'연금저축만으로는 600만원, IRP를 더하면 합쳐서 900만원까지 공제 대상이다.'},
+ {q:'총급여 5,500만원 이하 직장인이 900만원을 채우면 돌려받는 세금은?',a:['약 148만원','약 9만원','900만원 전부'],ok:0,
+  why:'5,500만원 이하는 16.5%, 넘으면 13.2%. 900만원 × 16.5% = 148만 5천원.'},
+ {q:'연금저축의 단점으로 맞는 것은?',a:['중간에 깨면 공제받은 만큼 기타소득세를 낸다','언제 빼도 불이익이 없다','원금이 보장된다'],ok:0,
+  why:'연금으로 받지 않고 중도 해지하면 16.5% 기타소득세가 붙는다. 당장 쓸 돈은 넣지 않는다.'}],{geum:13}),
+Q('ins1','geum','실손보험 기본',70,60,{},'3년차 선배',null,
+ '실손 두 개 들어 놨다고? 그거 돈 두 번 나가는 거야.',[
+ {q:'실손보험을 두 개 들면 병원비를 두 번 받을까?',a:['아니다. 실제 낸 돈 안에서 나눠 받는다','두 배로 받는다','먼저 청구한 곳만 준다'],ok:0,
+  why:'실손은 실제 손해만 보상한다. 겹쳐 들면 보험료만 두 번 낸다.'},
+ {q:'회사 단체실손과 개인실손이 겹친다면?',a:['개인실손을 잠시 멈추는 중지 제도를 쓸 수 있다','개인 것을 무조건 해지해야 한다','방법이 없다'],ok:0,
+  why:'개인실손 중지 제도로 단체보험이 있는 동안 개인실손을 멈췄다가 퇴사 후 다시 살릴 수 있다.'},
+ {q:'보험금 청구를 미루면 안 되는 이유는?',a:['청구권은 3년이 지나면 사라진다','10년까지는 괜찮다','기한이 없다'],ok:0,
+  why:'보험금 청구권의 소멸시효는 3년이다. 영수증과 진료비 세부내역서는 받자마자 청구한다.'}],{geum:11}),
+Q('trip5','sik','해외여행 가기 전에',70,60,{},'관광안내소 직원','windbrk',
+ '첫 해외여행이에요? 공항 가기 전에 이것만 챙겨요.',[
+ {q:'여권 유효기간이 넉넉한지 볼 때 흔히 쓰는 기준은?',a:['출국일 기준 6개월 이상 남았는지','1주일만 남아도 된다','기간은 상관없다'],ok:0,
+  why:'많은 나라가 입국할 때 여권 잔여기간 6개월 이상을 요구한다. 나라마다 다르니 외교부 해외안전여행에서 확인한다.'},
+ {q:'해외에서 여권을 잃어버렸을 때 24시간 도움받는 곳은?',a:['외교부 영사콜센터','항공사 마일리지 센터','동네 주민센터'],ok:0,
+  why:'영사콜센터(+82-2-3210-0404)는 24시간 운영하고 현지 대사관·영사관과 연결해 준다.'},
+ {q:'출국 전에 해 두면 좋은 것은?',a:['해외안전여행 앱으로 여행경보를 보고 여권 사본을 따로 챙긴다','여권 사본은 버린다','카드는 한 장만 챙긴다'],ok:0,
+  why:'여행경보와 현지 사건 소식을 받을 수 있다. 여권 사본이 있으면 분실했을 때 재발급이 빨라진다.'}],{sik:10})
+);
+QUESTS.forEach(function(q){ if(q.id==='trip5') q.trip=1; });
+Object.assign(SRC_BY_ID,{
+ tax1:['찾기쉬운 생활법령정보','https://easylaw.go.kr'], tax2:['국세청','https://www.nts.go.kr'],
+ fin1:['금융위원회','https://www.fsc.go.kr'], rent1:['복지로','https://www.bokjiro.go.kr'],
+ scam1:['금융감독원 파인','https://fine.fss.or.kr'], scam2:['경찰청 사이버범죄 신고시스템','https://ecrm.police.go.kr'],
+ card1:['금융감독원 파인','https://fine.fss.or.kr'], sub1:['공정거래위원회','https://www.ftc.go.kr'],
+ labor1:['고용노동부 노동포털','https://labor.moel.go.kr'], wage1:['최저임금위원회','https://www.minimumwage.go.kr'],
+ pen1:['금융감독원 통합연금포털','https://100lifeplan.fss.or.kr'], ins1:['금융감독원 파인','https://fine.fss.or.kr'],
+ trip5:['외교부 해외안전여행','https://www.0404.go.kr']});
+QUESTS.forEach(function(q){ if(SRC_BY_ID[q.id]) q.src=SRC_BY_ID[q.id]; });
+Object.assign(NPC_BY_NAME,{'노무 상담원':'officem','청년센터 상담원':'deskf','프리랜서 선배':'peerf','관광안내소 직원':'gma'});
 var QMAP={};
 QUESTS.forEach(function(q){ QMAP[q.id]=q; });
 /* 실제 앱에서는 아래가 서버(또는 EAS Update)에서 같은 모양의 JSON을 받아 QUESTS를 갈아 끼운다.
@@ -3544,8 +3724,11 @@ var MC={metal:'#A9A3BC',metalD:'#6B6380',metalL:'#D6D2E2',tire:'#26222F',hub:'#C
   car:'#E0503E',carL:'#F47A62',carD:'#A8382B',glass:'#9BDCF7',glassL:'#DDF4FF',light:'#FFE79B',lightD:'#FFC53C',grille:'#3A3350'};
 function wheelV(g,cx,cy,rx,ry){ el(g,cx,cy,rx,ry,MC.tire); if(rx>1) rc(g,cx,cy-ry+1,cx,cy+ry-1,MC.hub); }
 function wheelH(g,cx,cy,r){ el(g,cx,cy,r,r,MC.tire); el(g,cx,cy,r-2,r-2,MC.hub); el(g,cx,cy,Math.max(0,r-3),Math.max(0,r-3),MC.metalD); sp(g,cx,cy,MC.metalL); }
-function mountTopG2(kind,dir,front){
+function mountTopG2(kind,dir,front,top){
   var g=Gr(28,40),vert=(dir===0||dir===3),away=(dir===3);
+  var MC0=MC; if(top){ MC=Object.assign({},MC0,top); }
+  try{ return mountTopG2_(kind,dir,front,g,vert,away); } finally { MC=MC0; } }
+function mountTopG2_(kind,dir,front,g,vert,away){
   if(kind==='kick'){
     if(vert){
       var stemFront=!away;
@@ -3615,8 +3798,8 @@ function mountTopG2(kind,dir,front){
   }
   return g;
 }
-function mountLayerCv(kind,dir,front){
-  var g=mountTopG2(kind,dir,front); outline(g,P.s5); return toCanvas(g);
+function mountLayerCv(kind,dir,front,top){
+  var g=mountTopG2(kind,dir,front,top); outline(g,P.s5); return toCanvas(g);
 }
 /* [사람 x, 사람 y, 보일 높이]. 사람 판은 24×34, 엉덩이는 23줄, 발은 31줄. */
 var RIDE_TOP={
@@ -3624,14 +3807,14 @@ var RIDE_TOP={
   bike:{v:[2,3,34],h:[0,3,34]},
   car: {v:[2,5,26],h:[0,4,27]}
 };
-function ridingCv(p,kind,dir,f){
+function ridingCv(p,kind,dir,f,top){
   var vert=(dir===0||dir===3),r=(RIDE_TOP[kind]||RIDE_TOP.bike)[vert?'v':'h'];
   var cv=mkcv(28,40),x=cv.getContext('2d'); x.imageSmoothingEnabled=false;
   var d2=(dir===1)?2:dir;
   var rider=personTopCv(p,d2,(kind==='car')?0:f);
-  x.drawImage(mountLayerCv(kind,d2,0),0,0);
+  x.drawImage(mountLayerCv(kind,d2,0,top),0,0);
   x.drawImage(rider,0,0,rider.width,r[2],r[0],r[1],rider.width,r[2]);
-  x.drawImage(mountLayerCv(kind,d2,1),0,0);
+  x.drawImage(mountLayerCv(kind,d2,1,top),0,0);
   return (dir===1)?mirrorCv(cv):cv;
 }
 /* 내 캐릭터는 상점에서 산 것이 그대로 보여야 한다. 안 보이면 살 이유가 없다. */
@@ -3644,18 +3827,18 @@ function heroDesc(){
     hood:o.ts==='hood',badge:o.ts==='badge',sharp:o.ts==='sharp',puff:o.ts==='puff',
     stripe:o.bs==='stripe',shirt:(E.top==='shirt'||!o.ts)?1:0};     /* 일러스트처럼 재킷 안 흰 깃 */
   var hg=hd&&hd.gear;
-  if(hg==='glass') p.glasses=1;
-  if(hg==='beanie'){ p.hat='#3A5F8C'; p.hatband='#2C4668'; }
+  if(hg==='glass'){ if(hd.dark) p.shades=1; else p.glasses=1; }
+  if(hg==='beanie'){ p.hat=hd.color||'#3A5F8C'; p.hatband=hd.color2||'#2C4668'; }
   if(hg==='band') p.band=P.r1;
   return p;
 }
 function heroTop(dir,f){
   var E=S.equip,L=S.look||{},mt=MOUNTS[E.mount];
-  if(ME&&ME.map==='room') mt=null;                  /* 방 안에서까지 자전거를 타지는 않는다 */
+  if(!rideHere()) mt=null;                          /* 방·건물 안·휴게소·여행지에서는 내려서 걷는다 */
   var key='HT'+dir+f+'|'+(L.haircol)+(L.skin||0)+E.top+E.bottom+E.weapon+E.head+(mt?E.mount:'-')+S.avatar;
   if(TOPC[key]) return TOPC[key];
   var p=heroDesc();
-  var cv=(mt&&mt.kind)?ridingCv(p,mt.kind,dir,f):personTopCv(p,dir,f);
+  var cv=(mt&&mt.kind)?ridingCv(p,mt.kind,dir,f,mt.top):personTopCv(p,dir,f);
   return (TOPC[key]=cv);
 }
 /* 조연도 역할이 보여야 한다. 흰머리에 지팡이면 동네 어른, 명찰에 흰 셔츠면 창구 직원. */
@@ -3749,11 +3932,14 @@ function showAd(cb){
 function benchRest(m){
   var key='bench_'+ME.map,a={t:'벤치',cd:20,d:{energy:12,mood:4},msg:'벤치에 앉아 잠깐 쉬었다. 체력 +12'};
   doAct(key,a,function(r){ toast(r[0]); }); return true; }
+/* 가구 방향 바꾸기. 돌리면 가로·세로 칸 수가 바뀐다. 모든 칸 계산은 이 함수를 거친다 */
+function fItem(o){ var it=FURNI[o&&o.id]; if(!it) return null; if(!o.rot||!it.w||it.w===it.h) return it;
+  return Object.assign({},it,{w:it.h,h:it.w}); }
 function furniAtTile(x,y){ var r=null;
-  roomObjs().forEach(function(o){ if(o===BUILTIN||o.id==='deskbuilt') return; var it=FURNI[o.id]; if(!it) return;
+  roomObjs().forEach(function(o){ if(o===BUILTIN||o.id==='deskbuilt') return; var it=fItem(o); if(!it) return;
     if(x>=o.x&&x<o.x+(it.w||1)&&y>=o.y&&y<o.y+(it.h||1)) r=o; }); return r; }
 function nearObj(m,o){
-  var it=FURNI[o.id],best=null,bl=1e9,x,y;
+  var it=fItem(o)||o,best=null,bl=1e9,x,y;
   for(y=o.y-1;y<=o.y+(it.h||1);y++) for(x=o.x-1;x<=o.x+(it.w||1);x++){
     var inside=(x>=o.x&&x<o.x+(it.w||1)&&y>=o.y&&y<o.y+(it.h||1)); if(inside) continue;
     var diag=(x<o.x||x>=o.x+(it.w||1))&&(y<o.y||y>=o.y+(it.h||1)); if(diag) continue;
@@ -3781,7 +3967,7 @@ function fitsAt(m,it,x,y,skipId){
     if(tx>=BUILTIN.x&&tx<BUILTIN.x+BUILTIN.w&&ty>=BUILTIN.y&&ty<BUILTIN.y+BUILTIN.h) return false;
     if(ME.map==='room'&&tx===ME.tx&&ty===ME.ty) return false;
     var hit=false;
-    furniList().forEach(function(o){ var f=FURNI[o&&o.id];
+    furniList().forEach(function(o){ var f=fItem(o);
       if(!f||o.id===skipId||o.x==null) return;
       if(tx>=o.x&&tx<o.x+(f.w||1)&&ty>=o.y&&ty<o.y+(f.h||1)) hit=true; });
     if(hit) return false;
@@ -3794,7 +3980,7 @@ function fitsAt(m,it,x,y,skipId){
 /* 놓은 뒤에도 문과 복습 노트까지 걸어갈 수 있어야 한다. 선풍기 하나로 방에 갇히던 것 */
 function stillReachable(m,it,x,y,skipId){
   var W=m.w,H=m.h,block={},k;
-  furniList().forEach(function(o){ var f=FURNI[o.id]; if(!f||o.id===skipId||o.x==null) return;
+  furniList().forEach(function(o){ var f=fItem(o); if(!f||o.id===skipId||o.x==null) return;
     for(var j=0;j<(f.h||1);j++) for(var i=0;i<(f.w||1);i++) block[(o.x+i)+','+(o.y+j)]=1; });
   for(var j2=0;j2<(it.h||1);j2++) for(var i2=0;i2<(it.w||1);i2++) block[(x+i2)+','+(y+j2)]=1;
   block[BUILTIN.x+','+BUILTIN.y]=1; block[(BUILTIN.x+1)+','+BUILTIN.y]=1;
@@ -3843,10 +4029,11 @@ function startPlace(id,queue,cost){
     toast(TIERS[it.need].name+'부터 놓을 수 있습니다. 창고에 둡니다.');
     if(queue) placeNext(queue); return; }
   if(ME.map!=='room'){ var rm=roomMap(); enterMap('room',rm.spawn.x,rm.spawn.y); }
-  var m=roomMap(),cur=furniOf(id);
-  var at=(cur&&cur.x!=null&&fitsAt(m,it,cur.x,cur.y,id))?{x:cur.x,y:cur.y}:autoSpot(m,it,id);
+  var m=roomMap(),cur=furniOf(id),rot=cur&&cur.rot?1:0,ri=fItem({id:id,rot:rot});
+  var at=(cur&&cur.x!=null&&fitsAt(m,ri,cur.x,cur.y,id))?{x:cur.x,y:cur.y}:autoSpot(m,ri,id);
+  if(!at&&it.w!==it.h){ rot=1-rot; ri=fItem({id:id,rot:rot}); at=autoSpot(m,ri,id); }
   if(!at){ toast('방에 빈 자리가 없습니다.'); return; }
-  PLACE={id:id,x:at.x,y:at.y,w:it.w,h:it.h,queue:queue||null,cost:cost||0};
+  PLACE={id:id,x:at.x,y:at.y,w:ri.w,h:ri.h,rot:rot,queue:queue||null,cost:cost||0};
   render('home');
   showPlaceBar();
 }
@@ -3858,10 +4045,10 @@ function placeNext(q){
 function showPlaceBar(){
   var el=document.getElementById('hplace'); if(!el) return;
   if(!PLACE){ el.hidden=true; return; }
-  var it=FURNI[PLACE.id],ok=fitsAt(roomMap(),it,PLACE.x,PLACE.y,PLACE.id);
+  var it=FURNI[PLACE.id],ok=fitsAt(roomMap(),{w:PLACE.w,h:PLACE.h},PLACE.x,PLACE.y,PLACE.id);
   el.hidden=false;
   var left=PLACE.queue?PLACE.queue.length:0;
-  el.innerHTML='<span class="pl"><b>'+it.name+'</b> '+it.w+'×'+it.h+' · 눌러서 자리를 고르세요'+
+  el.innerHTML='<span class="pl"><b>'+it.name+'</b> '+PLACE.w+'×'+PLACE.h+' · 눌러서 자리를 고르세요'+
     (left?' <span style="color:var(--s0)">· '+left+'개 남음</span>':'')+'</span>';
   var a=document.createElement('button'); a.textContent=ok?'여기 놓기':'놓을 수 없음';
   a.disabled=!ok; a.onclick=commitPlace;
@@ -3869,6 +4056,11 @@ function showPlaceBar(){
   c.textContent=PLACE.queue?'창고에':'취소';
   c.onclick=function(){ var q=PLACE.queue; PLACE=null; showPlaceBar(); drawScene(); placeNext(q); };
   el.appendChild(a); el.appendChild(c);
+  if(it.w!==it.h){ var rb=document.createElement('button'); rb.className='no'; rb.textContent='↻ 돌리기';
+    rb.onclick=function(){ var t=PLACE.w; PLACE.w=PLACE.h; PLACE.h=t; PLACE.rot=PLACE.rot?0:1;
+      var mm=roomMap(); PLACE.x=Math.max(1,Math.min(mm.w-1-PLACE.w,PLACE.x)); PLACE.y=Math.max(1,Math.min(mm.h-1-PLACE.h,PLACE.y));
+      sfx('pick'); showPlaceBar(); drawScene(); };
+    el.insertBefore(rb,c); }
   if(left){ var d=document.createElement('button'); d.className='no'; d.textContent='나머지 알아서';
     d.onclick=autoPlaceRest; el.appendChild(d); }
 }
@@ -3889,12 +4081,12 @@ function autoPlaceRest(){
 }
 function commitPlace(){
   var it=FURNI[PLACE.id];
-  if(!fitsAt(roomMap(),it,PLACE.x,PLACE.y,PLACE.id)) return;
+  if(!fitsAt(roomMap(),{w:PLACE.w,h:PLACE.h},PLACE.x,PLACE.y,PLACE.id)) return;
   if(PLACE.cost){ if(S.coin<PLACE.cost){ toast('코인이 모자랍니다.'); return; }
     S.coin-=PLACE.cost; ev('buy',{id:PLACE.id}); }
   var cur=furniOf(PLACE.id);
-  if(cur){ cur.x=PLACE.x; cur.y=PLACE.y; }
-  else furniList().push({id:PLACE.id,x:PLACE.x,y:PLACE.y});
+  if(cur){ cur.x=PLACE.x; cur.y=PLACE.y; cur.rot=PLACE.rot||0; }
+  else furniList().push({id:PLACE.id,x:PLACE.x,y:PLACE.y,rot:PLACE.rot||0});
   var nm=it.name,q=PLACE.queue;
   PLACE=null; ROOMC={}; save(); sfx('good');
   showPlaceBar(); drawScene();
@@ -3972,6 +4164,11 @@ function eatRamen(){
 }
 /* ── 물건 그리기. 칸 수만큼 넓게 ─────────────────────────────────────── */
 function drawObj(ctx,o,px,py){
+  var it0=FURNI[o.id];
+  if(o.rot&&it0&&it0.w&&it0.w!==it0.h){                 /* 돌린 가구: 원래 방향으로 그려서 90도 돌려 붙인다 */
+    var ow=it0.w*TS,oh=it0.h*TS,oc=mkcv(ow,oh),ox=oc.getContext('2d'); ox.imageSmoothingEnabled=false;
+    drawObj(ox,{id:o.id},0,0);
+    ctx.save(); ctx.translate(px+oh,py); ctx.rotate(Math.PI/2); ctx.drawImage(oc,0,0); ctx.restore(); return; }
   var it=FURNI[o.id]||(o.id==='deskbuilt'?BUILTIN:{}),W=(it.w||1)*TS,H=(it.h||1)*TS,i;
   function R(c,x,y,w,h){ rcx(ctx,c,px+x,py+y,w,h); }
   function shadow(){ R('rgba(30,26,48,.22)',1,H-3,W-2,3); }
@@ -4098,14 +4295,14 @@ function roomMap(){
     [Math.floor(x1/2)+1,Math.floor((x1+x2)/2),Math.floor((x2+w-1)/2)].forEach(function(cx){ grid[ry][cx]=':'; });
   }
   /* 화장실: 왼쪽 아래 한 칸 방. 화2면 오른쪽 아래에도. 신축은 욕조가 들어간다. */
-  function bath(x0,right){ var bw=3,by=h-4,wxl=right?x0-1:x0+bw;
+  function bath(x0,right,tub){ var bw=3,by=h-4,wxl=right?x0-1:x0+bw;
     for(x=x0;x<x0+bw;x++) grid[by-1][x]='#';
     for(y=by-1;y<h-1;y++) grid[y][wxl]='#';
     grid[h-3][wxl]=':';
     for(y=by;y<h-1;y++) for(x=x0;x<x0+bw;x++) grid[y][x]='Z';
     grid[h-2][right?x0+bw-1:x0]='U'; grid[by][right?x0+bw-1:x0]='U';
-    if(sp.fresh) grid[by][right?x0:x0+bw-1]='V'; }
-  if(sp.baths){ bath(1,0); if(sp.baths>1) bath(w-4,1); }
+    grid[by][right?x0:x0+bw-1]=tub?'V':'Y'; }                /* 신축 안방 욕실은 욕조, 나머지는 샤워부스 */
+  if(sp.baths){ bath(1,0,sp.fresh); if(sp.baths>1) bath(w-4,1,0); }
   if(sp.kind==='jjim'||sp.kind==='tent') for(y=2;y<h-1;y++) for(x=2;x<w-2;x++) grid[y][x]=',';
   var rows=grid.map(function(r){ return r.join(''); });
   var m={name:TIERS[S.tier].name,sub:'지금 사는 곳',w:w,h:h,rows:rows,
@@ -4115,7 +4312,7 @@ function roomMap(){
   /* 자리가 안 맞는 물건은 창고로. 다시 놓는 것은 사람이 한다. */
   ROOMC={k:key,m:m};
   furniList().forEach(function(o){
-    var it=FURNI[o.id]; if(!it||!it.w) return;
+    var it=fItem(o); if(!it||!it.w) return;
     if(o.x!=null&&!fitsAt(m,it,o.x,o.y,o.id)){ o.x=null; o.y=null; }
   });
   return m;
@@ -4130,7 +4327,7 @@ function objBlocks(x,y){
   if(ME.map!=='room') return false;
   var hit=false;
   roomObjs().forEach(function(o){
-    var it=FURNI[o.id]||o;
+    var it=fItem(o)||o;
     if(x>=o.x&&x<o.x+(it.w||1)&&y>=o.y&&y<o.y+(it.h||1)) hit=true; });
   return hit;
 }
@@ -4148,7 +4345,7 @@ var TILES={
  /* 건물 안과 공원 */
  'S':{kind:'shelf'},'F':{kind:'cooler'},'K':{kind:'bookcase'},'M':{kind:'machine'},'P':{kind:'plant'},
  'L':{kind:'washer'},'A':{kind:'stall'},'w':{kind:'water'},'o':{walk:1,kind:'flower'},
- 's':{walk:1,kind:'sand'},':':{walk:1,kind:'floor'},'Z':{walk:1,kind:'bathfloor'},'U':{kind:'toilet'},'V':{kind:'tub'},'N':{kind:'land'},'m':{kind:'mountain'},'=':{walk:1,kind:'highway'},'X':{walk:1,kind:'city'}
+ 's':{walk:1,kind:'sand'},':':{walk:1,kind:'floor'},'Z':{walk:1,kind:'bathfloor'},'U':{kind:'toilet'},'V':{kind:'tub'},'Y':{kind:'shower'},'N':{kind:'land'},'m':{kind:'mountain'},'=':{walk:1,kind:'highway'},'X':{walk:1,kind:'city'}
 };
 var MAPS={
  town:{spawn:{x:4,y:4},name:'동네',sub:'1 · 집 앞',w:22,h:20,rows:[
@@ -4325,13 +4522,14 @@ MAPS.town_hall={name:'주민센터',sub:'1 · 동네 안',w:12,h:8,interior:1,
   '############',
   '#MKK..KK.P.#',
   '#..........#',
-  '#CCCC..CCCC#',
+  '#CCCCC.CCCC#',
   '#..........#',
   '#.b..b..b..#',
   '#..........#',
   '######D#####'],
   warps:[{x:6,y:7,to:'town',tx:14,ty:3}],
   spots:[{x:2,y:3,kind:'desk',id:'h_move',label:'전입신고'},
+         {x:5,y:3,kind:'desk',id:'h_youth',label:'청년 지원'},
          {x:9,y:3,kind:'desk',id:'h_report',label:'전월세 신고'},
          {x:1,y:1,kind:'thing',id:'ticket1',name:'번호표 기계',xp:10}],
   eggs:[{id:'th_sofa',x:10,y:6,coin:20,msg:'대기석 틈에서 동전이 나왔다.'}]};
@@ -4404,7 +4602,7 @@ MAPS.center_lobby={name:'고용센터',sub:'3 · 고용센터 앞 안',w:14,h:9,
   '##############',
   '#KK.M....KK.P#',
   '#............#',
-  '#.C...C...C..#',
+  '#.C...C...C.C#',
   '#............#',
   '#.bb..bb..bb.#',
   '#............#',
@@ -4414,9 +4612,10 @@ MAPS.center_lobby={name:'고용센터',sub:'3 · 고용센터 앞 안',w:14,h:9,
   spots:[{x:2,y:3,kind:'desk',id:'l_benefit',label:'실업급여'},
          {x:6,y:3,kind:'desk',id:'l_quit',label:'이직·구직'},
          {x:10,y:3,kind:'desk',id:'l_support',label:'취업지원'},
+         {x:12,y:3,kind:'desk',id:'l_labor',label:'노동 상담'},
          {x:12,y:6,kind:'talk',id:'lobby',name:'구직 중인 선배',face:'peerm',dir:1},
          {x:4,y:1,kind:'thing',id:'ticket2',name:'번호표 기계',xp:10},
-         {x:12,y:4,kind:'ep',id:'job-hunt'}],
+         {x:8,y:6,kind:'ep',id:'job-hunt'}],
   eggs:[{id:'cel_memo',x:1,y:6,xp:25,msg:'누가 두고 간 이력서 첨삭 메모를 읽었다. 배울 게 많다.'}]};
 MAPS.center_nhis={name:'공단',sub:'3 · 고용센터 앞 안',w:12,h:8,interior:1,
   tint:{fl:'#D9D2C2',fl2:'#C2BAA8',wl:'#E4EEF7',wl2:'#C3D3E3'},spawn:{x:6,y:6},rows:[
@@ -4437,7 +4636,7 @@ MAPS.office_lobby={name:'회사',sub:'4 · 회사 앞 안',w:14,h:9,interior:1,
   '##############',
   '#P.KK....KK.P#',
   '#............#',
-  '#.C.....C....#',
+  '#.C..C..C....#',
   '#............#',
   '#MM........FF#',
   '#............#',
@@ -4445,6 +4644,7 @@ MAPS.office_lobby={name:'회사',sub:'4 · 회사 앞 안',w:14,h:9,interior:1,
   '######DD######'],
   warps:[{x:6,y:8,to:'office',tx:7,ty:3},{x:7,y:8,to:'office',tx:8,ty:3}],
   spots:[{x:2,y:3,kind:'desk',id:'o_hr',label:'인사팀'},
+         {x:5,y:3,kind:'desk',id:'o_tax',label:'연말정산'},
          {x:8,y:3,kind:'desk',id:'o_senior',label:'선배 자리'},
          {x:4,y:6,kind:'talk',id:'guard',name:'경비 아저씨',face:'gpa',dir:2},
          {x:11,y:4,kind:'ep',id:'first-pay'}],
@@ -4461,6 +4661,7 @@ MAPS.bank_branch={name:'은행',sub:'5 · 은행 골목 안',w:12,h:8,interior:1
   '####D#######'],
   warps:[{x:4,y:7,to:'bank',tx:4,ty:3}],
   spots:[{x:2,y:3,kind:'desk',id:'b_sub',label:'청약'},
+         {x:5,y:3,kind:'desk',id:'b_scam',label:'금융사기'},
          {x:9,y:3,kind:'desk',id:'b_credit',label:'신용·대출'},
          {x:7,y:2,kind:'talk',id:'teller',name:'은행 안내 직원',face:'deskf'},
          {x:1,y:1,kind:'thing',id:'atm1',name:'ATM'},
@@ -4648,7 +4849,9 @@ MAPS.busan={name:'부산 해운대',sub:'여행지 · 남해',w:22,h:16,spawn:{x
 var QPLACE={car1:'r_gas',car2:'r_truck',trip1:'g_info',trip2:'g_guard',trip3:'j_inn',trip4:'b_rent',ju1:'e_jeonse',ju3:'e_wolse',ju5:'e_maemae',ju2:'h_move',ju4:'h_report',sik1:'m_table',sik2:'m_table',
  stu2:'u_loan',stu3:'u_dorm',stu1:'c_alba',job3:'c_friend',geum2:'c_friend',jik3:'l_benefit',job7:'l_benefit',
  job4:'l_quit',job5:'l_support',job1:'n_health',job2:'n_pension',jik1:'o_hr',jik2:'o_hr',job6:'o_hr',
- geum4:'o_senior',ui1:'o_senior',geum1:'b_sub',geum3:'b_credit',ui2:'w_laundry'};
+ geum4:'o_senior',ui1:'o_senior',geum1:'b_sub',geum3:'b_credit',ui2:'w_laundry',
+ tax1:'o_tax',tax2:'o_tax',pen1:'o_tax',fin1:'h_youth',rent1:'h_youth',scam1:'b_scam',card1:'b_credit',scam2:'c_friend',
+ sub1:'m_table',labor1:'l_labor',labor2:'l_labor',labor3:'l_labor',wage1:'c_alba',ins1:'o_senior',trip5:'g_info'};
 function deskQuests(id){ return QUESTS.filter(function(q){ return QPLACE[q.id]===id; }); }
 function questAtDesk(id){
   var today=todayList(),pick=null,isToday=false;
@@ -4888,8 +5091,10 @@ function tileAt(m,x,y){
 function warpAt(m,x,y){
   var r=null; (m.warps||[]).forEach(function(w){ if(w.x===x&&w.y===y) r=w; }); return r;
 }
-function walkable(m,x,y){
+function walkable(m,x,y,petSelf){
   var c=tileAt(m,x,y); if(c===null) return false;
+  if(!petSelf&&PETW&&ME.map==='room'&&((PETW.x===x&&PETW.y===y)||(PETW.mv&&PETW.nx===x&&PETW.ny===y))&&!(x===ME.tx&&y===ME.ty)) return false;
+  if(S.park&&S.park.map===ME.map&&S.park.x===x&&S.park.y===y) return false;
   if(spotAt(m,x,y)) return false;
   if(objBlocks(x,y)) return false;
   var wp=warpAt(m,x,y);
@@ -5166,6 +5371,12 @@ var INT_B={
      rcx(ctx,'#C9C3D6',px+7,py+7,2,6); }
    else { rcx(ctx,'rgba(30,26,48,.2)',px+4,py+13,9,2); rcx(ctx,'#E4E0EC',px+4,py+1,8,4); rcx(ctx,'#FFFFFF',px+4,py+1,8,1);
      rcx(ctx,'#C9C3D6',px+4,py+5,8,9); rcx(ctx,'#FFFFFF',px+5,py+6,6,6); rcx(ctx,'#CDEEFF',px+6,py+7,4,4); } },
+ Y:function(ctx,px,py,tx,ty,m,T){ bathI(ctx,px,py,tx,ty,m);                                 /* 샤워부스 */
+   rcx(ctx,'#CBD3DE',px+1,py+1,14,14); rcx(ctx,'#DDE6F0',px+2,py+2,12,12);
+   rcx(ctx,'#9B93A8',px+1,py+1,14,1); rcx(ctx,'#9B93A8',px+1,py+1,1,14); rcx(ctx,'#9B93A8',px+14,py+1,1,14); rcx(ctx,'#9B93A8',px+1,py+14,14,1);
+   rcx(ctx,'rgba(155,220,247,.55)',px+2,py+2,12,12); rcx(ctx,'rgba(255,255,255,.7)',px+3,py+3,1,10); rcx(ctx,'rgba(255,255,255,.5)',px+5,py+3,1,6);
+   rcx(ctx,'#6B6380',px+11,py+2,2,1); rcx(ctx,'#C9C3D6',px+11,py+3,2,2); rcx(ctx,'#6B6380',px+7,py+10,2,2);
+   rcx(ctx,'#9B93A8',px+8,py+1,1,14); },
  V:function(ctx,px,py,tx,ty,m,T){ bathI(ctx,px,py,tx,ty,m);                                 /* 욕조 */
    rcx(ctx,'#C9C3D6',px+1,py+1,14,14); rcx(ctx,'#FFFFFF',px+2,py+2,12,12); rcx(ctx,'#9BDCF7',px+3,py+4,10,9); rcx(ctx,'#CDEEFF',px+4,py+5,4,2);
    rcx(ctx,'#9B93A8',px+7,py+2,2,1); },
@@ -5424,7 +5635,7 @@ function pathTo(m,gx,gy){
     }
     for(i=0;i<4;i++){
       var nx=c.x+D[i][0],ny=c.y+D[i][1],kk=key(nx,ny);
-      if(seen[kk]||!walkable(m,nx,ny)) continue;
+      if(seen[kk]||!walkable(m,nx,ny,1)) continue;           /* 펫은 길을 막지 않는다. 걸어가면 비킨다 */
       /* 문은 목적지일 때만 지난다. 지나가다 딸려 들어가면 안 된다 */
       if(warpAt(m,nx,ny)&&!(nx===gx&&ny===gy)) continue;
       seen[kk]=1; from[kk]={x:nx,y:ny,px:c.x,py:c.y}; q.push({x:nx,y:ny});
@@ -5450,7 +5661,8 @@ function nextStep(){
     return;
   }
   var n=MOVE.path[MOVE.pi];
-  MOVE.fx=ME.tx; MOVE.fy=ME.ty; MOVE.tx=n.x; MOVE.ty=n.y; MOVE.t=0; MOVE.dur=(perkSum('speed')&&ME.map!=='room'&&!curMap().interior)?3:4;
+  if(!petNudge(n.x,n.y)){ MOVE=null; ME.step=0; savePos(); drawScene(); return; }
+  MOVE.fx=ME.tx; MOVE.fy=ME.ty; MOVE.tx=n.x; MOVE.ty=n.y; MOVE.t=0; MOVE.dur=(perkSum('speed')&&rideHere())?3:4;
   ME.dir=(n.x>ME.tx)?2:(n.x<ME.tx)?1:(n.y<ME.ty)?3:0;
   ME.tx=n.x; ME.ty=n.y;
 }
@@ -5488,7 +5700,9 @@ function enterMap(id,tx,ty){
     for(i=0;i<D.length;i++){ if(walkable(m,ME.tx+D[i][0],ME.ty+D[i][1])){
       ME.tx+=D[i][0]; ME.ty+=D[i][1]; break; } }
   }
+  parkOnArrive(id);
   sfx('pick'); savePos(); drawScene(); checkEgg();
+  setTimeout(function(){ maybeLifeEvent(); },1400);
   if(id==='room'&&perkSum('dogcoin')&&S.dogDay!==dayKey()){ S.dogDay=dayKey(); S.coin+=15; save(); hudRefresh();
     setTimeout(function(){ sfx('coin'); toast('강아지가 어디선가 동전을 물어 왔다. ￦15'); },400); }
   setTimeout(checkTutor,500);
@@ -5529,6 +5743,7 @@ function drawScene(){
   /* 서 있는 것들과 나를 세로 순서로 섞어 그린다. 뒤에 있으면 가려져야 한다. */
   var p=mePx(),cast=[];
   (m.spots||[]).forEach(function(s){ cast.push({y:s.y*TS,draw:function(){ drawSpot(ctx,s,s.x*TS,s.y*TS); }}); });
+  if(S.park&&S.park.map===ME.map) cast.push({y:S.park.y*TS,draw:function(){ drawParked(ctx); }});
   cast.push({y:p.y+1,draw:function(){
     /* 조연들과 실루엣이 비슷해서, 발밑에 표시가 없으면 내가 누군지 못 찾는다 */
     var cx2=Math.round(p.x+TS/2),cy2=Math.round(p.y+TS+1);
@@ -5536,7 +5751,7 @@ function drawScene(){
     rcx(ctx,P.p0,cx2-5,cy2-1,10,2); rcx(ctx,'#9BDCF7',cx2-3,cy2+1,6,1);
     var wf=0;
     if(MOVE&&MOVE.dur){ wf=(MOVE.t<MOVE.dur/2)?(ME.step?3:1):2; }
-    var mo=MOUNTS[S.equip.mount],riding=mo&&mo.kind&&ME.map!=='room';
+    var riding=rideHere();
     var im=heroTop(ME.dir,wf),bob=(wf===2&&!riding)?1:0;              /* 두 발이 스칠 때 몸이 한 칸 뜬다 */
     ctx.drawImage(im,Math.round(p.x+(TS-im.width)/2),Math.round(p.y+TS-im.height+2)-bob); }});
   var pw=petTick(m);
@@ -5559,9 +5774,9 @@ function drawScene(){
   if(zn) zn.innerHTML='<b>'+(m.sub?m.sub.split(' · ')[0]:'')+'</b> '+m.name+
     (m.sub&&m.sub.indexOf(' · ')>=0?' <span>· '+m.sub.split(' · ')[1]+'</span>':'');
   if(PLACE){                                      /* 놓을 자리 미리보기 */
-    var pit=FURNI[PLACE.id],okp=fitsAt(m,pit,PLACE.x,PLACE.y,PLACE.id);
+    var okp=fitsAt(m,{w:PLACE.w,h:PLACE.h},PLACE.x,PLACE.y,PLACE.id);
     ctx.save(); ctx.scale(cam.z,cam.z); ctx.translate(-cam.x,-cam.y);
-    ctx.globalAlpha=0.75; drawObj(ctx,{id:PLACE.id},PLACE.x*TS,PLACE.y*TS); ctx.globalAlpha=1;
+    ctx.globalAlpha=0.75; drawObj(ctx,{id:PLACE.id,rot:PLACE.rot},PLACE.x*TS,PLACE.y*TS); ctx.globalAlpha=1;
     var gw=PLACE.w*TS,gh=PLACE.h*TS,col=okp?P.g1:P.r1;
     rcx(ctx,col,PLACE.x*TS,PLACE.y*TS,gw,2); rcx(ctx,col,PLACE.x*TS,PLACE.y*TS+gh-2,gw,2);
     rcx(ctx,col,PLACE.x*TS,PLACE.y*TS,2,gh); rcx(ctx,col,PLACE.x*TS+gw-2,PLACE.y*TS,2,gh);
@@ -5578,35 +5793,60 @@ function drawScene(){
 var PETW=null;
 var PET_SAY={dog:'가 꼬리를 흔든다.',bird:'가 어깨에 앉았다 날아간다.',turtle:'가 고개를 쏙 내민다.'};
 function petFree(m,x,y){
-  if(!walkable(m,x,y)||warpAt(m,x,y)) return false;
+  if(!walkable(m,x,y,1)||warpAt(m,x,y)) return false;
   if(x===ME.tx&&y===ME.ty) return false;
-  if(MOVE&&MOVE.nx===x&&MOVE.ny===y) return false;
   return true; }
+/* 펫마다 걸음이 다르다. 강아지는 종종걸음에 가끔 신나서 뛰고, 참새는 통통 튀고, 거북은 느리다.
+   가만히 두면 방을 어슬렁거리다가, 내가 멀어지면 따라온다. 내가 부딪히면 옆으로 비켜 준다. */
+var PET_GAIT={dog:{dur:320,hop:1,rest:[900,2600],follow:3,zoom:.18},bird:{dur:260,hop:3,rest:[500,1600],follow:2,zoom:.3},turtle:{dur:900,hop:0,rest:[1800,4200],follow:4,zoom:0}};
+function petStep(W,n,now,fast){ var g=PET_GAIT[W.kind]||PET_GAIT.dog;
+  W.nx=n.x; W.ny=n.y; W.mv=true; W.t0=now; W.dur=fast?Math.round(g.dur*0.6):g.dur;
+  if(n.x!==W.x) W.flip=n.x>W.x; }
+function petNear(m,W){ var c=[]; [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){ if(petFree(m,W.x+d[0],W.y+d[1])) c.push({x:W.x+d[0],y:W.y+d[1]}); }); return c; }
+/* 내가 펫 칸으로 들어가려 하면 펫이 먼저 비킨다. 비킬 데가 없으면 막힌다 */
+function petNudge(x,y){
+  var W=PETW; if(!W||ME.map!=='room') return true;
+  var px=W.mv?W.nx:W.x,py=W.mv?W.ny:W.y; if(px!==x||py!==y) return true;
+  if(W.mv){ W.x=W.nx; W.y=W.ny; W.mv=false; }
+  var m=curMap(),c=petNear(m,W).filter(function(n){ return !(n.x===ME.tx&&n.y===ME.ty); });
+  if(!c.length) return false;
+  c.sort(function(a,b){ return (Math.abs(b.x-ME.tx)+Math.abs(b.y-ME.ty))-(Math.abs(a.x-ME.tx)+Math.abs(a.y-ME.ty)); });
+  petStep(W,c[0],Date.now(),1); W.heart=Date.now(); return true; }
 function petTick(m){
   var pe=PETS[S.equip.pet];
   if(ME.map!=='room'||!pe||!pe.kind||!petHome()){ PETW=null; return null; }
-  var now=Date.now(),x,y,c=[];
-  if(!PETW||PETW.key!==S.tier+'|'+pe.kind||(!PETW.mv&&!walkable(m,PETW.x,PETW.y))){
+  var now=Date.now(),x,y,c=[],g=PET_GAIT[pe.kind]||PET_GAIT.dog;
+  if(!PETW||PETW.key!==S.tier+'|'+pe.kind||(!PETW.mv&&!walkable(m,PETW.x,PETW.y,1))){
     for(y=1;y<m.h-1;y++) for(x=1;x<m.w-1;x++) if(petFree(m,x,y)) c.push({x:x,y:y});
     if(!c.length){ PETW=null; return null; }
     var s0=c[Math.floor(Math.random()*c.length)];
-    PETW={key:S.tier+'|'+pe.kind,kind:pe.kind,x:s0.x,y:s0.y,fx:s0.x,fy:s0.y,mv:false,flip:false,next:now+900}; }
+    PETW={key:S.tier+'|'+pe.kind,kind:pe.kind,x:s0.x,y:s0.y,fx:s0.x,fy:s0.y,mv:false,flip:false,next:now+900,run:0}; }
   var W=PETW;
   if(W.mv){ var k=(now-W.t0)/W.dur;
-    if(k>=1){ W.mv=false; W.x=W.nx; W.y=W.ny; W.fx=W.x; W.fy=W.y; W.next=now+700+Math.random()*2600; }
-    else { W.fx=W.x+(W.nx-W.x)*k; W.fy=W.y+(W.ny-W.y)*k; } }
-  var crowded=(W.x===ME.tx&&W.y===ME.ty)||(MOVE&&MOVE.nx===W.x&&MOVE.ny===W.y);
-  if(!W.mv&&(now>=W.next||crowded)){
-    [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){ if(petFree(m,W.x+d[0],W.y+d[1])) c.push({x:W.x+d[0],y:W.y+d[1]}); });
-    if(c.length){ var n=c[Math.floor(Math.random()*c.length)];
-      W.nx=n.x; W.ny=n.y; W.mv=true; W.t0=now; W.dur=crowded?220:420;
-      if(n.x!==W.x) W.flip=n.x>W.x; }
+    if(k>=1){ W.mv=false; W.x=W.nx; W.y=W.ny; W.fx=W.x; W.fy=W.y;
+      W.next=now+(W.run>0?60:g.rest[0]+Math.random()*(g.rest[1]-g.rest[0])); if(W.run>0) W.run--; }
+    else { W.fx=W.x+(W.nx-W.x)*k; W.fy=W.y+(W.ny-W.y)*k; W.hopY=g.hop?Math.round(Math.sin(k*Math.PI)*g.hop):0; } }
+  if(!W.mv){ W.hopY=0; }
+  var dist=Math.abs(W.x-ME.tx)+Math.abs(W.y-ME.ty);
+  if(!W.mv&&(now>=W.next||(dist>g.follow+2&&now>=W.next-600))){
+    c=petNear(m,W);
+    if(c.length){ var n;
+      if(dist>g.follow){                                        /* 멀어지면 따라온다 */
+        c.sort(function(a,b){ return (Math.abs(a.x-ME.tx)+Math.abs(a.y-ME.ty))-(Math.abs(b.x-ME.tx)+Math.abs(b.y-ME.ty)); });
+        n=c[0]; }
+      else {
+        if(W.run<=0&&Math.random()<g.zoom) W.run=2+Math.floor(Math.random()*3);   /* 신나서 몇 칸 뛴다 */
+        var same=c.filter(function(q){ return W.lx!==undefined&&(q.x-W.x)===W.lx&&(q.y-W.y)===W.ly; });
+        n=(same.length&&Math.random()<.6)?same[0]:c[Math.floor(Math.random()*c.length)]; }
+      W.lx=n.x-W.x; W.ly=n.y-W.y;
+      petStep(W,n,now,W.run>0); }
     else W.next=now+800; }
   return W; }
 function drawPet(ctx,W){
   var im=petCv(W.kind,W.mv?(Math.floor(Date.now()/140)%2):(Math.floor(Date.now()/600)%2)),sc=0.5;
   var w=Math.round(im.width*sc),h=Math.round(im.height*sc);
-  var px=Math.round(W.fx*TS+(TS-w)/2),py=Math.round(W.fy*TS+TS-h+1);
+  var px=Math.round(W.fx*TS+(TS-w)/2),py=Math.round(W.fy*TS+TS-h+1)-(W.hopY||0);
+  if(!W.mv&&ME.tx!==W.x) W.flip=ME.tx>W.x;                  /* 서 있을 땐 나를 본다 */
   rcx(ctx,'rgba(46,39,64,.3)',px+2,W.fy*TS+TS-1,w-4,2);
   ctx.save();
   if(W.flip){ ctx.translate(px+w,py); ctx.scale(-1,1); ctx.drawImage(im,0,0,w,h); }
@@ -5629,7 +5869,7 @@ function drawMini(){
     var mk=spotMark(sp);
     x.fillStyle=mk==='!'?'#FFC53C':mk?'#FFFDF6':'#6B6380';
     x.fillRect(sp.x*s,sp.y*s,s,s); });
-  if(ME.map==='room') roomObjs().forEach(function(o){ var it=FURNI[o.id]||o;
+  if(ME.map==='room') roomObjs().forEach(function(o){ var it=fItem(o)||o;
     x.fillStyle='#B99B6E'; x.fillRect(o.x*s,o.y*s,(it.w||1)*s,(it.h||1)*s); });
   (m.warps||[]).forEach(function(w){ x.fillStyle=(MAPS[w.to]&&marksIn(w.to).n)?'#FFC53C':'#62C85C'; x.fillRect(w.x*s,w.y*s,s,s); });
   x.fillStyle='#F4705A'; x.fillRect(ME.tx*s-1,ME.ty*s-1,s+2,s+2);
@@ -5723,7 +5963,7 @@ function stepDir(d){
   var m=curMap(),dx=(d===2?1:d===1?-1:0),dy=(d===0?1:d===3?-1:0);
   ME.dir=d;
   var nx=ME.tx+dx,ny=ME.ty+dy;
-  if(!walkable(m,nx,ny)){
+  if(!walkable(m,nx,ny,1)||!petNudge(nx,ny)){
     /* 가장자리를 향해 한 발 더 디디면 다음 맵이다 */
     if(m.edges&&((m.edges.west&&nx<0)||(m.edges.east&&nx>=m.w))){ ME.tx=Math.max(0,Math.min(m.w-1,nx)); checkWarp(); return; }
     savePos(); drawScene(); return; }
@@ -6447,7 +6687,7 @@ function bigCharCanvas(cv){
   /* 미리보기에서는 셋 다 왼쪽을 보게 맞춘다. 탈것 합성은 오른쪽을 보므로 뒤집고,
      아바타는 그림에 따라, 펫 손그림은 이미 왼쪽이라 그대로 둔다. */
   var mt=MOUNTS[S.equip.mount],av=AVATARS[S.avatar]||{};
-  if(mt&&mt.kind){ var rc2=rideCv(mt.kind,0);
+  if(mt&&mt.kind){ var rc2=rideCv(S.equip.mount,0);
     if(rc2) drawFlip(ctx,rc2,6,cv.height-rc2.height,true); }
   else drawFlip(ctx,heroCv('idle',0),16,cv.height-64,!!av.faceRight);
   var pet=PETS[S.equip.pet];
@@ -6460,7 +6700,7 @@ function thumbFor(slot,id){
   var ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
   if(slot==='pet'){ var k=PETS[id].kind; if(k) ctx.drawImage(petCv(k,0),0,1); return cv; }
   if(slot==='mount'){ var mk=MOUNTS[id].kind;
-    if(mk){ var mc=mountCv(mk); ctx.drawImage(mc,0,0,mc.width,mc.height,-1,5,28,Math.round(28*mc.height/mc.width)); }
+    if(mk){ var mc=mountCv(id); ctx.drawImage(mc,0,0,mc.width,mc.height,-1,5,28,Math.round(28*mc.height/mc.width)); }
     return cv; }
   if(slot==='weapon'){ var g=Gr(26,26); drawWeapon(g,{equip:{weapon:id}},13,22);
     shade(g); outline(g,P.s5); blitG(ctx,g,0,0); return cv; }
@@ -7584,8 +7824,9 @@ function openingStart(){
     var a=actx(); if(a&&a.state==='suspended') a.resume();
     OPEN.coin=1; OPEN.go=performance.now(); sfx('coin'); setTimeout(function(){ sfx('win'); },260);
     ev('opening_start',{t:Math.round((OPEN.go-OPEN.t0)/100)/10});
-    setTimeout(function(){ wrap.classList.add('out'); },950);
-    setTimeout(openingEnd,1450);
+    /* 처음이면 어두운 프롤로그로 이어진다. 본 적 있으면 바로 게임으로 */
+    if(!S.prologue) setTimeout(function(){ playPrologue(null,function(){ setTimeout(function(){ if(typeof checkTutor==='function') checkTutor(); },300); }); openingEnd(); },1000);
+    else { setTimeout(function(){ wrap.classList.add('out'); },950); setTimeout(openingEnd,1450); }
   }
   wrap.addEventListener('pointerdown',insert);
   document.addEventListener('keydown',insert,true);
@@ -7599,6 +7840,242 @@ function openingEnd(){
 }
 function skipOpening(){ if(OPEN){ OPEN.done=true; openingEnd(); } }
 
+/* ══════════ 컷신 (프롤로그 · 엔딩) ══════════
+   오프닝과 같은 오락기 화면 위에서 장면을 넘긴다. 누르면 글자가 다 찍히고, 다 찍힌 뒤 누르면 다음 장면.
+   오른쪽 위 SKIP으로 건너뛸 수 있다.
+   프롤로그: 처음 동전을 넣었을 때 한 번. 촌구석에서 상경한 나, 어디에 물어봐야 할지 모르는 것들,
+   그리고 귀인 할배의 등장. 엔딩: 보스를 다 이기고 84㎡ 신축에 들어간 날. 할배의 정체가 밝혀진다. */
+function cinemaHost(){
+  var W=160,H=Math.max(240,Math.min(356,Math.round(160*innerHeight/Math.max(1,innerWidth))));
+  var wrap=document.createElement('div'); wrap.id='opening'; wrap.className='cine';
+  wrap.innerHTML='<canvas width="'+(W*RES)+'" height="'+(H*RES)+'"></canvas><div class="crt"></div><button class="cskip" data-nosfx="1">SKIP ▶</button>';
+  document.body.appendChild(wrap);
+  var cv=wrap.querySelector('canvas'),ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
+  function fit(){ var s=Math.min(innerWidth/W,innerHeight/H); cv.style.width=Math.floor(W*s)+'px'; cv.style.height=Math.floor(H*s)+'px'; }
+  fit(); addEventListener('resize',fit);
+  return {W:W,H:H,wrap:wrap,cv:cv,ctx:ctx,fit:fit};
+}
+function ctext(ctx,s,x,y,size,col,align,shadow){ ctx.font=size+'px Galmuri11,monospace'; ctx.textBaseline='top';
+  var w=ctx.measureText(s).width,xx=align==='c'?Math.round(x-w/2):align==='r'?Math.round(x-w):x;
+  if(shadow){ ctx.fillStyle=shadow; ctx.fillText(s,xx+1,y+1); } ctx.fillStyle=col; ctx.fillText(s,xx,y); return w; }
+function playCinema(panels,onDone,host){
+  host=host||cinemaHost();
+  var ctx=host.ctx,W=host.W,H=host.H,pi=0,p0=performance.now(),done=false,shown=0;
+  /* 줄이 상자보다 길면 단어 단위로 접는다 */
+  function wrapLines(p){ if(p._w) return p._w; ctx.font='8px Galmuri11,monospace'; var out=[],max=W-30;
+    (p.text||[]).forEach(function(line){ var words=line.split(' '),cur='';
+      words.forEach(function(wd){ var t2=cur?cur+' '+wd:wd; if(ctx.measureText(t2).width>max&&cur){ out.push(cur); cur=wd; } else cur=t2; });
+      if(cur) out.push(cur); });
+    return (p._w=out); }
+  function total(p){ return wrapLines(p).reduce(function(a,l){ return a+l.length+6; },0); }
+  function frame(now){
+    if(done) return;
+    var p=panels[pi],t=(now-p0)/1000;
+    ctx.setTransform(RES,0,0,RES,0,0);
+    ctx.fillStyle=p.bg||'#07060E'; ctx.fillRect(0,0,W,H);
+    if(p.draw) try{ p.draw(ctx,t,W,H); }catch(e){}
+    /* 대사 상자: 화면 아래 3분의 1 */
+    var bx=8,by=H-92,bw=W-16,bh=76;
+    ctx.fillStyle='rgba(8,6,18,.88)'; ctx.fillRect(bx,by,bw,bh);
+    ctx.fillStyle='#57517A'; ctx.fillRect(bx,by,bw,1); ctx.fillRect(bx,by+bh-1,bw,1); ctx.fillRect(bx,by,1,bh); ctx.fillRect(bx+bw-1,by,1,bh);
+    if(p.who) ctext(ctx,p.who,bx+6,by-11,8,'#FFE79B',null,'#07060E');
+    shown=Math.min(total(p),Math.floor(t*16));
+    var left=shown;
+    wrapLines(p).forEach(function(line,j){ var n=Math.max(0,Math.min(line.length,left)); left-=line.length+6;
+      if(n>0) ctext(ctx,line.slice(0,n),bx+7,by+8+j*14,8,p.col||'#FFFDF6'); });
+    if(shown>=total(p)&&Math.floor(t*2.4)%2===0) ctext(ctx,'▼',bx+bw-12,by+bh-12,8,'#FFE79B');
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  function next(e){
+    if(e&&e.type==='keydown'){ e.stopPropagation(); e.preventDefault(); }
+    if(done) return;
+    var p=panels[pi],t=(performance.now()-p0)/1000;
+    if(Math.floor(t*16)<total(p)){ p0-=100000; return; }          /* 글자 먼저 다 찍기 */
+    sfx('tap');
+    if(pi<panels.length-1){ pi++; p0=performance.now(); if(panels[pi].sfx) sfx(panels[pi].sfx); return; }
+    finish(); }
+  function finish(){ if(done) return; done=true;
+    document.removeEventListener('keydown',next,true);
+    host.wrap.classList.add('out');
+    setTimeout(function(){ if(host.wrap.parentNode) host.wrap.parentNode.removeChild(host.wrap); if(onDone) onDone(); },500); }
+  host.wrap.addEventListener('pointerdown',function(e){ if(e.target.className==='cskip') return; next(e); });
+  host.wrap.querySelector('.cskip').addEventListener('click',function(e){ e.stopPropagation(); finish(); });
+  document.addEventListener('keydown',next,true);
+}
+/* 장면 그림 몇 가지. 전부 사각형과 이미 있는 사람 스프라이트로만 그린다. */
+function sceneStars(ctx,t,W,H,n){ for(var i=0;i<(n||30);i++){ var x=Math.floor(hrand(i,9,1)*W),y=Math.floor(hrand(i,9,2)*H*0.5);
+  if(((Math.floor(t*5)+i)%23)<19){ ctx.fillStyle=i%6?'#6B6380':'#C9C3D6'; ctx.fillRect(x,y,1,1); } } }
+/* 좌표는 1배 기준 왼쪽 위로 받고, 발밑을 기준으로 2배로 키워 그린다. 어두운 화면에서 사람이 작으면 안 읽힌다 */
+function sceneP(ctx,p,x,y,dir,f,sc){ sc=sc||2; var c=personTopCv(p,dir,f),cx=x+12,base=y+34;
+  ctx.drawImage(c,Math.round(cx-c.width*sc/2),Math.round(base-c.height*sc),c.width*sc,c.height*sc); return c; }
+function sceneHero(ctx,x,y,dir,f,sc){ return sceneP(ctx,heroDesc(),x,y,dir,f,sc); }
+function sceneGpa(ctx,x,y,dir,f,sc){ return sceneP(ctx,NPC_TOP.gpa,x,y,dir,f,sc); }
+var PROLOGUE=[
+ {text:['20XX년.'],draw:function(ctx,t,W,H){ sceneStars(ctx,t,W,H,40); }},
+ {text:['산 너머 버스가 하루 네 번 서는 마을.','나는 오늘, 그 마을을 떠난다.'],draw:function(ctx,t,W,H){
+   sceneStars(ctx,t,W,H,40); var gy=H-110;
+   ctx.fillStyle='#1D2A22'; for(var i=0;i<W;i+=2){ var hh=18+Math.round(Math.sin(i/13)*8+Math.sin(i/5)*3); ctx.fillRect(i,gy-hh,2,hh); }
+   ctx.fillStyle='#16201A'; ctx.fillRect(0,gy,W,H-gy);
+   ctx.fillStyle='#3A3350'; ctx.fillRect(22,gy-14,16,14); ctx.fillStyle='#5E2F27'; ctx.fillRect(20,gy-18,20,4);
+   ctx.fillStyle='#FFD66B'; ctx.fillRect(27,gy-9,4,4);
+   var bx=Math.round(W+20-((t*26)%(W+80)));                 /* 버스가 지나간다 */
+   ctx.fillStyle='#3A6FB0'; ctx.fillRect(bx,gy-12,34,10); ctx.fillStyle='#CDEEFF'; for(var k=0;k<4;k++) ctx.fillRect(bx+3+k*7,gy-10,5,4);
+   ctx.fillStyle='#1B1826'; ctx.fillRect(bx+5,gy-2,5,3); ctx.fillRect(bx+24,gy-2,5,3); ctx.fillStyle='#FFE79B'; ctx.fillRect(bx,gy-6,2,2); }},
+ {text:['서울. 보증금이 뭔지도 모르고','일단 원룸 계약서에 도장부터 찍었다.'],draw:function(ctx,t,W,H){
+   var gy=H-104; ctx.fillStyle='#141026'; ctx.fillRect(0,0,W,gy);
+   for(var i=0;i<W;i+=14){ var hh=40+Math.floor(hrand(i,3,3)*70); ctx.fillStyle='#231D3D'; ctx.fillRect(i,gy-hh,12,hh);
+     for(var yy=gy-hh+4;yy<gy-4;yy+=6) if(hrand(i,yy,4)<.45){ ctx.fillStyle='#FFD66B'; ctx.fillRect(i+3,yy,2,2); } }
+   ctx.fillStyle='#2E2740'; ctx.fillRect(0,gy,W,H-gy);
+   sceneHero(ctx,W/2-12,gy-30,0,[0,1,0,3][Math.floor(t*3)%4]); }},
+ {text:['월세 계약은? 4대보험은? 연말정산은...?','네이*, Chat*PT, Cl*ude...','어디에 뭘 물어봐야 할지도 모르겠다.'],draw:function(ctx,t,W,H){
+   var gy=H-104; ctx.fillStyle='#0B0A14'; ctx.fillRect(0,0,W,gy+10);
+   var glow=ctx.createRadialGradient(W/2,gy-18,4,W/2,gy-18,60); glow.addColorStop(0,'rgba(120,180,255,.35)'); glow.addColorStop(1,'rgba(0,0,0,0)');
+   ctx.fillStyle=glow; ctx.fillRect(0,0,W,gy+10);
+   sceneHero(ctx,W/2-12,gy-30,0,0);
+   ctx.fillStyle='#CDEEFF'; ctx.fillRect(W/2-3,gy-26,7,10); ctx.fillStyle='#6EC8F0'; ctx.fillRect(W/2-2,gy-25,5,8);
+   var bubbles=[['네이*',20,30],['Chat*PT',96,22],['Cl*ude',30,70],['?',118,64],['?',70,12]];
+   bubbles.forEach(function(b,i){ var on=t>i*0.5; if(!on) return; var yy=b[2]+Math.round(Math.sin(t*2+i)*2);
+     ctx.font='8px Galmuri11,monospace'; var w=ctx.measureText(b[0]).width+8;
+     ctx.fillStyle='#FFFDF6'; ctx.fillRect(b[1],yy,w,12); ctx.fillStyle='#2E2740'; ctx.fillRect(b[1],yy+12,w,1);
+     ctext(ctx,b[0],b[1]+4,yy+2,8,'#2E2740'); }); }},
+ {text:['학교에선 왜 이런 걸','하나도 안 가르쳐 줬을까...'],col:'#C9C3D6',draw:function(ctx,t,W,H){
+   var gy=H-104; sceneHero(ctx,W/2-12,gy-30,0,0);
+   if(Math.floor(t*1.5)%2===0){ ctx.fillStyle='#6B6380'; ctx.fillRect(W/2+10,gy-40,2,2); ctx.fillRect(W/2+14,gy-44,3,3); } }},
+ {who:'???',sfx:'win',text:['허허, 그 얼굴 보니 딱 옛날 생각이 나는구먼.','걱정 말게. 내가 하나씩 알려 주지.'],draw:function(ctx,t,W,H){
+   var gy=H-104,k=Math.min(1,t/1.2);
+   var g=ctx.createRadialGradient(W/2+26,gy-16,2,W/2+26,gy-16,50*k); g.addColorStop(0,'rgba(255,231,155,.5)'); g.addColorStop(1,'rgba(0,0,0,0)');
+   ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+   sceneHero(ctx,W/2-34,gy-30,2,0);
+   ctx.globalAlpha=k; sceneGpa(ctx,W/2+14,gy-30,1,0); ctx.globalAlpha=1;
+   for(var i=0;i<6;i++){ var a=t*2+i,rx=W/2+26+Math.round(Math.cos(a)*18),ry=gy-18+Math.round(Math.sin(a)*14); ctx.fillStyle='#FFE79B'; ctx.fillRect(rx,ry,1,1); } }},
+ {who:'귀인 할배',text:['동네 사람들 말을 잘 들어 보게.','느낌표(!)가 뜬 사람이 할 얘기가 있는 사람이야.','자, 가 보세나.'],draw:function(ctx,t,W,H){
+   var gy=H-104; sceneHero(ctx,W/2-34,gy-30,2,0); sceneGpa(ctx,W/2+14,gy-30,1,[0,1,0,3][Math.floor(t*2)%4]); }}
+];
+var ENDING=[
+ {who:'귀인 할배',text:['허허, 드디어 여기까지 왔구먼.','계약서도, 세금도, 사기꾼도 이제 안 무섭지?'],draw:function(ctx,t,W,H){
+   var gy=H-104; ctx.fillStyle='#1D2A44'; ctx.fillRect(0,0,W,gy); sceneStars(ctx,t,W,H,24);
+   ctx.fillStyle='#2E2740'; ctx.fillRect(0,gy,W,H-gy); sceneHero(ctx,W/2-34,gy-30,2,0); sceneGpa(ctx,W/2+14,gy-30,1,0); }},
+ {who:'귀인 할배',text:['사실 자네한테 숨긴 게 하나 있네.'],draw:function(ctx,t,W,H){
+   var gy=H-104; ctx.fillStyle='#141026'; ctx.fillRect(0,0,W,H); sceneHero(ctx,W/2-34,gy-30,2,0); sceneGpa(ctx,W/2+14,gy-30,1,0); }},
+ {who:'귀인 할배',sfx:'win',text:['나는... 마흔 해 뒤의 자네라네.','그때 아무도 안 알려 줘서 참 많이 잃었거든.'],draw:function(ctx,t,W,H){
+   var gy=H-104; ctx.fillStyle='#0B0A14'; ctx.fillRect(0,0,W,H);
+   var f=(Math.floor(t*8)%2===0&&t<1.2)?1:0; if(f){ ctx.fillStyle='rgba(255,255,255,.4)'; ctx.fillRect(0,0,W,H); }
+   sceneHero(ctx,W/2-34,gy-30,2,0); sceneGpa(ctx,W/2+14,gy-30,1,0);
+   if(t>0.4) ctext(ctx,'!',W/2-22,gy-92,8,'#FFE79B','c','#07060E'); }},
+ {who:'나',text:['...그럼 할아버지가 알려 준 건 전부,','내가 겪을 뻔한 일들이었어요?'],draw:function(ctx,t,W,H){
+   var gy=H-104; ctx.fillStyle='#141026'; ctx.fillRect(0,0,W,H); sceneHero(ctx,W/2-34,gy-30,2,0); sceneGpa(ctx,W/2+14,gy-30,1,0); }},
+ {who:'미래의 나',text:['이제 자네 차례일세.','언젠가 막 상경한 누군가를 만나면,','그 사람의 귀인이 되어 주게.'],draw:function(ctx,t,W,H){
+   var gy=H-104,k=Math.min(1,t/2);
+   ctx.fillStyle='#141026'; ctx.fillRect(0,0,W,H);
+   sceneHero(ctx,W/2-34,gy-30,2,0);
+   ctx.globalAlpha=1-k*0.85; sceneGpa(ctx,W/2+14,gy-30-Math.round(k*6),1,0); ctx.globalAlpha=1;
+   for(var i=0;i<10;i++){ ctx.fillStyle='#FFE79B'; ctx.fillRect(W/2+20+Math.round(hrand(i,1,1)*14),gy-30+Math.round(hrand(i,2,1)*30)-Math.round(t*10*(i%3+1))%40,1,1); } }},
+ {text:['CONGRATULATIONS!','뉴비 퀘스트를 모두 깼습니다.','그리고 오늘도, 누군가의 귀인이 된다.'],col:'#FFE79B',sfx:'win',draw:function(ctx,t,W,H){
+   sceneStars(ctx,t,W,H,50); var gy=H-104;
+   ctx.font='bold 20px Galmuri14,Galmuri11,monospace'; ctx.textBaseline='top'; var s='THE END',w=ctx.measureText(s).width;
+   ctx.fillStyle='#1B1826'; ctx.fillText(s,W/2-w/2+2,40+2); ctx.fillStyle=(Math.floor(t*3)%2)?'#FFC53C':'#FFE79B'; ctx.fillText(s,W/2-w/2,40);
+   sceneHero(ctx,W/2-12,gy-30,0,[0,1,0,3][Math.floor(t*3)%4]);
+   ctext(ctx,'PLAY TIME '+(S.first?dayGap(S.first,dayKey())+1:1)+'일 · Lv.'+S.lv,W/2,72,8,'#CDEEFF','c'); }}
+];
+function playPrologue(host,done){ S.prologue=1; save(); ev('prologue',{}); playCinema(PROLOGUE,done,host); }
+/* 최종 클리어: 보스를 모두 이기고 거처가 맨 위(84㎡ 신축)에 닿은 뒤 처음 홈으로 돌아왔을 때 */
+function endingReady(){ return !S.ending&&S.peak>=TIERS.length-1&&BOSSES.every(function(b){ return bossCleared(b.id); }); }
+function checkEnding(){
+  if(!endingReady()||document.getElementById('opening')) return;
+  S.ending=dayKey(); save(); ev('ending',{lv:S.lv});
+  playCinema(ENDING,function(){ toast('엔딩을 봤습니다. 이어서 계속 플레이할 수 있어요.'); });
+}
+
+/* ══════════ 생활 이벤트 ══════════
+   바깥을 걷다 보면 가끔 휴대폰이 울리거나 누가 말을 건다. 퀘스트와 달리 정답을 고르는 게 아니라
+   실제로 겪을 법한 순간에 어떻게 반응하는지를 고른다. 고른 대로 돈·기분·경험치가 바로 움직이고,
+   끝에 할배가 한 줄 설명을 붙인다. 하루 두 번까지, 한 번 본 사건은 전부 돌기 전까지 다시 안 나온다. */
+var LIFE_EV=[
+ {id:'ev_smish',who:'휴대폰',text:'[택배] 주소지 불일치로 배송이 보류되었습니다. 주소 확인: http://bit.ly/…',
+  choices:[{t:'링크를 눌러 주소를 고친다',d:{coin:-80,mood:-15},msg:'이상한 앱이 깔렸다. 통신사에 전화하고 비밀번호를 전부 바꾸느라 반나절을 날렸다.'},
+           {t:'택배사 공식 앱에서 직접 조회한다',d:{xp:25},msg:'보류된 택배는 없었다. 스미싱이었다.'},
+           {t:'118에 신고하고 문자를 지운다',d:{xp:30,coin:10},msg:'신고 완료. 같은 번호로 온 문자가 차단됐다.'}],
+  tip:'주소 확인, 택배 보류, 과태료 조회 문자에 달린 링크는 누르지 말게. 의심 문자는 118에 신고하면 되네.'},
+ {id:'ev_prosecutor',who:'모르는 번호',text:'"서울중앙지검 수사관입니다. 고객님 명의 계좌가 범죄에 이용돼 안전계좌로 옮기셔야 합니다."',
+  choices:[{t:'시키는 대로 안전계좌로 옮긴다',d:{coin:-150,mood:-25},msg:'전화가 끊기고 다시는 연결되지 않았다.'},
+           {t:'전화를 끊고 대표번호로 확인한다',d:{xp:30},msg:'그런 수사는 없다고 했다.'}],
+  tip:'수사기관은 전화로 돈을 옮기라고 하지 않아. 이미 보냈다면 곧바로 112에 지급정지를 부탁하게.'},
+ {id:'ev_used',who:'중고거래 채팅',text:'"직거래는 어렵고요, 여기 안전결제 링크로 결제해 주시면 바로 보낼게요~"',
+  when:function(){ return S.lv>=2; },
+  choices:[{t:'링크로 결제한다',d:{coin:-120,mood:-20},msg:'결제 페이지가 가짜였다. 판매자는 사라졌다.'},
+           {t:'앱 안 결제가 아니면 안 산다고 한다',d:{xp:25},msg:'판매자가 대화방을 나갔다.'},
+           {t:'계좌번호를 경찰청 사이버범죄 신고시스템에서 조회한다',d:{xp:30,coin:5},msg:'사기 신고가 세 건 있는 계좌였다.'}],
+  tip:'앱 밖으로 불러내서 안전결제 링크를 보내면 거의 사기라고 보면 되네.'},
+ {id:'ev_revolving',who:'카드사 문자',text:'"이번 달 결제 부담되시죠? 리볼빙 신청하시면 최소 금액만 결제됩니다."',
+  when:function(){ return S.lv>=2; },
+  choices:[{t:'편하니까 신청한다',d:{coin:-60,mood:-5},msg:'다음 달 명세서에 수수료가 붙어 있었다.'},
+           {t:'신청하지 않고 지출을 줄인다',d:{xp:20,mood:-3},msg:'한 달 동안 배달을 끊었다. 통장은 무사하다.'}],
+  tip:'리볼빙은 넘긴 금액에 높은 수수료가 붙는 빚이야. 한 번 빠지면 원금이 잘 안 줄어.'},
+ {id:'ev_trial',who:'앱 알림',text:'"무료 체험이 3일 뒤 끝납니다. 이후 월 13,900원이 결제됩니다."',
+  choices:[{t:'그냥 둔다',d:{coin:-14},msg:'한 번도 안 봤는데 13,900원이 빠져나갔다.'},
+           {t:'바로 해지한다',d:{xp:15,coin:14},msg:'해지 완료. 한 달 커피값을 지켰다.'}],
+  tip:'무료 체험은 가입하자마자 해지 예약을 걸어 두는 게 제일이지.'},
+ {id:'ev_nopay',who:'통장 알림',text:'월급날인데 입금 알림이 오지 않는다. 팀장은 "회사 사정이 좀…"이라고만 한다.',
+  when:function(){ return S.status==='직장인'; },
+  choices:[{t:'참고 기다린다',d:{mood:-20},msg:'두 달째 소식이 없다.'},
+           {t:'근로계약서와 급여명세서를 챙겨 노동청에 진정한다',d:{xp:35,coin:40},msg:'근로감독관 조사 끝에 밀린 월급과 지연이자가 들어왔다.'}],
+  tip:'임금은 정해진 날 줘야 하네. 못 받으면 고용노동부에 진정을 넣을 수 있고, 지연이자도 붙어.'},
+ {id:'ev_trainee',who:'편의점 점장',text:'"수습 3개월은 시급 9천원이야. 원래 다 그래."',
+  when:function(){ return S.status!=='직장인'; },
+  choices:[{t:'그런가 보다 하고 일한다',d:{coin:-40,mood:-10},msg:'석 달 동안 최저임금보다 적게 받았다.'},
+           {t:'단순노무 알바는 수습 감액이 안 된다고 말한다',d:{xp:30,coin:20},msg:'점장이 알아보더니 시급을 고쳐 줬다.'}],
+  tip:'편의점 같은 단순노무 일은 수습이어도 최저임금을 깎을 수 없네. 2026년 최저시급은 10,320원이야.'},
+ {id:'ev_landlord',who:'집주인',text:'"대출 때문에 그런데, 전입신고는 좀 나중에 해 주면 안 될까요?"',
+  when:function(){ return S.tier>=6&&S.tier<=8; },
+  choices:[{t:'부탁이니 들어준다',d:{mood:-10},msg:'며칠 뒤 등기부를 떼 보니 집에 근저당이 새로 잡혀 있었다.'},
+           {t:'바로 전입신고하고 확정일자를 받는다',d:{xp:35},msg:'대항력과 우선변제권을 챙겼다.'}],
+  tip:'전입신고를 미뤄 달라는 집주인은 조심하게. 보증금을 지키는 힘이 전입신고와 확정일자에서 나와.'},
+ {id:'ev_survey',who:'길에서 만난 사람',text:'"설문 하나만 해 주시면 선물 드려요. 근처 사무실에서 잠깐이면 돼요."',
+  choices:[{t:'따라간다',d:{mood:-15,coin:-30},msg:'두 시간 동안 "부업 설명회"를 들었다. 가입비 얘기가 나왔다.'},
+           {t:'정중히 거절하고 지나간다',d:{xp:15},msg:'가던 길을 갔다.'}],
+  tip:'공짜 선물로 사무실까지 데려가는 건 다단계 권유인 경우가 많네.'},
+ {id:'ev_insure',who:'보험설계사 친구',text:'"실손 하나 더 들어 둬. 두 개면 병원비 두 배로 나와!"',
+  when:function(){ return S.lv>=3; },
+  choices:[{t:'친구니까 가입한다',d:{coin:-50,mood:-5},msg:'나중에 청구해 보니 나눠서 나올 뿐이었다. 보험료만 두 번.'},
+           {t:'실손은 실제 낸 돈만 나온다며 거절한다',d:{xp:25},msg:'친구가 머쓱하게 웃었다.'}],
+  tip:'실손은 실제 손해만 보상해. 겹쳐 들면 보험료만 두 배지.'},
+ {id:'ev_passport',who:'휴대폰 달력',text:'다음 달 해외여행. 여권을 꺼내 보니 유효기간이 4개월 남았다.',
+  when:function(){ return S.lv>=3; },
+  choices:[{t:'아직 안 지났으니 그냥 간다',d:{coin:-60,mood:-20},msg:'공항 카운터에서 탑승을 거절당했다.'},
+           {t:'미리 재발급받는다',d:{xp:25,coin:-10},msg:'새 여권으로 무사히 출국했다.'}],
+  tip:'많은 나라가 여권 잔여기간 6개월 이상을 요구하네. 떠나기 전에 꼭 확인하게.'},
+ {id:'ev_yearend',who:'회사 공지',text:'"연말정산 간소화 자료 제출 기한은 다음 주 금요일까지입니다."',
+  when:function(){ return S.status==='직장인'; },
+  choices:[{t:'나중에 하지 뭐',d:{mood:-5},msg:'기한을 넘겨 월세 세액공제를 못 받았다.'},
+           {t:'간소화 자료와 월세 영수증을 챙겨 낸다',d:{xp:30,coin:30},msg:'2월 월급과 함께 환급금이 들어왔다.'}],
+  tip:'간소화 서비스에 안 잡히는 월세나 안경 구입비는 따로 챙겨서 내야 하네.'}
+];
+function lifeEvPick(){
+  S.evSeen=S.evSeen||[];
+  var pool=LIFE_EV.filter(function(e){ return (!e.when||e.when())&&S.evSeen.indexOf(e.id)<0; });
+  if(!pool.length){ S.evSeen=[]; pool=LIFE_EV.filter(function(e){ return !e.when||e.when(); }); }
+  return pool.length?pool[Math.floor(Math.random()*pool.length)]:null; }
+function maybeLifeEvent(force){
+  if(TUT||PLACE||MOVE||!S.onboarded||!S.tut) return;
+  if(ME.map==='room'||ME.map==='korea'||(MAPS[ME.map]&&MAPS[ME.map].interior)) return;
+  if(S.evDay!==dayKey()){ S.evDay=dayKey(); S.evN=0; }
+  if(!force&&((S.evN||0)>=2||Math.random()>0.3)) return;
+  var e=lifeEvPick(); if(!e) return;
+  S.evN=(S.evN||0)+1; S.evSeen.push(e.id); save(); ev('life_event',{id:e.id});
+  sfx('pick');
+  talkTo({name:'생활 이벤트 · '+e.who,face:null,lines:[e.text,{q:'어떻게 할까?',a:e.choices.map(function(c){ return c.t; }),choose:function(k){
+      var c=e.choices[k],d=c.d||{},res=[];
+      if(d.coin&&d.coin<0){ S.coin=Math.max(0,S.coin+d.coin); }
+      addNeeds({mood:d.mood||0,xp:d.xp||0,coin:(d.coin>0?d.coin:0)});
+      var bits=[]; if(d.coin) bits.push((d.coin>0?'+':'−')+'￦'+Math.abs(d.coin)); if(d.xp) bits.push('경험치 +'+d.xp); if(d.mood) bits.push('기분 '+(d.mood>0?'+':'')+d.mood);
+      sfx((d.xp||0)>0?'good':'bad');
+      res.push(c.msg+(bits.length?' ('+bits.join(' · ')+')':''));
+      res.push('귀인 할배: "'+e.tip+'"');
+      return res; }}]});
+}
+
+var _renderHome0=renderHome; renderHome=function(){ _renderHome0.apply(this,arguments); setTimeout(checkEnding,900); };
 if(S.onboarded) render('home'); else { obRender(); go('onboard'); }
 openingStart();
 </script>
