@@ -531,6 +531,8 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .chkchip{position:absolute;right:8px;top:8px;z-index:3;background:rgba(44,44,49,.9);color:var(--p0);border:0;
   font-family:var(--f-ui);font-size:10px;line-height:14px;padding:5px 8px;max-width:60%;text-align:left;}
 .chkchip b{color:var(--y1);margin-right:3px;}
+.todaybtn{background:var(--y1);color:var(--s4);border:2px solid var(--s4);font-family:var(--f-ui);font-size:11px;line-height:16px;padding:3px 9px;min-height:28px;cursor:pointer;}
+.todaybtn b{background:var(--s4);color:var(--y1);padding:0 4px;margin-left:3px;font-weight:400;}
 #opening.drive .crt{background:repeating-linear-gradient(to bottom,rgba(0,0,0,.12) 0 1px,transparent 1px 3px);}
 </style>
 
@@ -600,7 +602,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
         </div>
         <div class="placebar pix" id="hplace" hidden></div>
       </div>
-      <div class="sceneinfo"><span class="tiername" id="htier">노숙</span><span class="def pix">방어 <b id="hdef">0</b></span></div>
+      <div class="sceneinfo"><span class="tiername" id="htier">노숙</span><span class="def pix">방어 <b id="hdef">0</b></span><button class="todaybtn pix" id="htoday" type="button">오늘 할 일</button></div>
     </div>
     <div class="homefoot" id="hfoot" hidden>
       <div id="hdaily" hidden></div>
@@ -1981,19 +1983,46 @@ var TIERS=[
  {name:'움막',      def:6,  need:6,  kind:'hut',     w:50,h:44},
  {name:'텐트',      def:12, need:12, kind:'tent',    w:56,h:44},
  {name:'찜질방',    def:18, need:18, kind:'jjim',    w:64,h:54},
- {name:'고시원',    def:26, need:26, kind:'gosi',    w:44,h:78},
- {name:'반지하',    def:34, need:34, kind:'banji',   w:60,h:52},
- {name:'원룸 월세', def:44, need:42, kind:'villa',   w:62,h:76},
- {name:'원룸 전세', def:58, need:50, kind:'brick',   w:62,h:76},
- {name:'투룸 전세', def:74, need:58, kind:'tworoom', w:70,h:84},
+ {name:'고시원',    def:26, need:24, kind:'gosi',    w:44,h:78},
+ {name:'반지하',    def:34, need:30, kind:'banji',   w:60,h:52},
+ {name:'원룸 월세', def:44, need:36, kind:'villa',   w:62,h:76},
+ {name:'원룸 전세', def:58, need:42, kind:'brick',   w:62,h:76},
+ {name:'투룸 전세', def:74, need:48, kind:'tworoom', w:70,h:84},
  /* 여기부터 자가 */
- {name:'도시형생활주택', def:82, need:66, kind:'dosi',  w:56,h:92, own:1, rooms:'원룸형 · 화1'},
- {name:'빌라 자가',     def:88, need:72, kind:'villa2',w:68,h:88, own:1, rooms:'방2 · 화1'},
- {name:'오피스텔 자가', def:94, need:78, kind:'offi',  w:56,h:104,own:1, rooms:'원룸 · 화1'},
- {name:'59㎡ 구축',     def:102,need:84, kind:'apt59', w:66,h:100,own:1, rooms:'방3 · 화1'},
- {name:'84㎡ 구축',     def:110,need:90, kind:'apt84', w:76,h:108,own:1, rooms:'방3 · 화2'},
- {name:'84㎡ 신축',     def:120,need:97, kind:'aptnew',w:70,h:118,own:1, rooms:'방3 · 화2 · 새 인테리어'}
+ {name:'도시형생활주택', def:82, need:54, kind:'dosi',  w:56,h:92, own:1, rooms:'원룸형 · 화1'},
+ {name:'빌라 자가',     def:88, need:60, kind:'villa2',w:68,h:88, own:1, rooms:'방2 · 화1'},
+ {name:'오피스텔 자가', def:94, need:66, kind:'offi',  w:56,h:104,own:1, rooms:'원룸 · 화1'},
+ {name:'59㎡ 구축',     def:102,need:70, kind:'apt59', w:66,h:100,own:1, rooms:'방3 · 화1'},
+ {name:'84㎡ 구축',     def:110,need:74, kind:'apt84', w:76,h:108,own:1, rooms:'방3 · 화2'},
+ {name:'84㎡ 신축',     def:120,need:78, kind:'aptnew',w:70,h:118,own:1, rooms:'방3 · 화2 · 새 인테리어'}
 ];
+/* 신축 need를 97에서 78로 내렸다. 주 스탯을 주는 곳은 주 퀘스트 5~8개(합 59~81) + 사건 12 + 보스 15 + 시작값 5뿐이라
+   가장 불리한 신분(직장인·취준생, 비수도권)의 만점 합계가 91이고, 정답률 85%로 풀면 약 80~86이다.
+   97은 만점에 수도권이어야 겨우 닿았다. 78이면 내용의 90%를 만점 가까이 풀면 닿는다.
+   입주 보증금은 누적 표(TIER_DEP)다. 지금 사는 곳과 이미 낸 곳 가운데 가장 높은 곳까지는 이미 낸 것으로 보고,
+   그보다 높은 곳으로 옮길 때 그 차액을 낸다. 한 번 낸 곳은 다시 옮겨도 무료. */
+var TIER_DEP=[0,20,50,90,140,200,280,380,500,650,830,1040,1280,1550,1850];
+/* 새 거처는 하루에 하나(설치 첫날만 둘)까지만 열린다. 15단계를 퀘스트 15개로 다 오르던 것을 막는다.
+   스탯이 앞서 가도 열리는 속도는 하루 한 칸이라, 매일 성실히 하면 신축이 열리는 것은 2주째다. */
+function upLeft(){ var t=dayKey(); if(S.upDay!==t){ S.upDay=t; S.upN=0; }
+  return ((S.first&&dayGap(S.first,t)===0)?2:1)-(S.upN||0); }
+function upUse(){ upLeft(); S.upN=(S.upN||0)+1; }
+/* 스탯이 충분하고 오늘 몫이 남았으면 거처를 한 칸 연다. 퀘스트를 끝낼 때와 새 하루를 열 때 부른다
+   (퀘스트가 바닥나도 매일 접속하면 남은 거처가 하루 한 칸씩 열리도록). 열렸으면 {wasTop} */
+function tierGrow(){
+  if(S.peak>=TIERS.length-1||tierFor(S.stats.ju)<=S.peak||upLeft()<=0) return null;
+  var wasTop=(S.tier===S.peak); upUse(); S.peak=Math.min(S.peak+1,TIERS.length-1);
+  return {wasTop:wasTop}; }
+function paidBase(){ return Math.max(S.paid||0,S.tier||0); }
+function tierCost(i){ var b=paidBase(); return i<=b?0:TIER_DEP[i]-TIER_DEP[b]; }
+var LASTMOVE=null;
+/* 거처를 옮긴다. 코인이 모자라면 안 옮기고 이유를 돌려준다 */
+function tierMove(i){
+  var c=tierCost(i);
+  if(c>S.coin) return {ok:0,i:i,cost:c};
+  S.coin-=c; S.tier=i; S.paid=Math.max(S.paid||0,i);
+  if(c) ev('tier_deposit',{i:i,cost:c});
+  return {ok:1,i:i,cost:c}; }
 /* 자가 여섯 단계. 내 집 하나로 끝나면 가장 긴 보상 트랙이 거기서 멈춘다.
    도시형생활주택 → 빌라 → 오피스텔 → 59㎡ 구축 → 84㎡ 구축 → 84㎡ 신축.
    실루엣부터 다르다: 필로티에 좁고 높은 건물 → 발코니 달린 붉은 벽돌 → 유리 탑 →
@@ -2997,6 +3026,7 @@ function fresh(){ return {onboarded:false,status:null,age:null,years:null,compan
  first:null,day:null,streak:0,best:0,todayQ:[],todayDone:[],claimed:null,bonus:false,
  snd:true,vib:true,notif:{on:false,hour:20},notified:null,
  review:[],log:[],packVer:CONTENT.ver,
+ drip:{v:0,u:[],g:0,d0:null,at:null},adDay:null,adN:0,adK:{},paid:0,ms:[],msNew:[],restore:null,quizDay:null,attAd:null,claimC:null,
  owned:Object.keys(ITEMS).concat(Object.keys(PETS),Object.keys(MOUNTS)).filter(function(id){
    var it=ITEMS[id]||PETS[id]||MOUNTS[id]; return id!=='bosssuit'&&it&&!it.special&&!(it.cost>0); }),   /* 처음엔 공짜 기본템만 */
  full:100,fullAt:Date.now(),energy:100,clean:100,mood:100,
@@ -3026,7 +3056,8 @@ function seedRand(str){ var h=2166136261,i;
   for(i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); }
   return function(){ h=Math.imul(h^(h>>>15),2246822507); h^=h>>>13; return ((h>>>0)%100000)/100000; }; }
 function pickDaily(){
-  var pool=curated().filter(function(q){ return S.done.indexOf(q.id)<0&&!q.trip; }).slice(0,8);
+  dripEnsure();
+  var pool=curated().filter(function(q){ return S.done.indexOf(q.id)<0&&!q.trip&&qOpen(q); }).slice(0,8);
   var r=seedRand(dayKey()+'|'+(S.status||'')),out=[];
   while(out.length<DAILY_N&&pool.length) out.push(pool.splice(Math.floor(r()*pool.length),1)[0].id);
   return out; }
@@ -3035,10 +3066,14 @@ function rollDay(){
   var t=dayKey();
   if(!S.first) S.first=t;
   if(S.day===t) return false;
-  var gap=S.day?dayGap(S.day,t):null;
-  S.streak=(gap===1)?(S.streak||0)+1:1;
+  var gap=S.day?dayGap(S.day,t):null,prev=S.streak||0;
+  S.streak=(gap===1)?prev+1:1;
+  S.restore=(gap===2&&prev>=2)?{prev:prev,day:t}:null;    /* 딱 하루만 걸렀을 때, 광고로 연속 기록을 지킬 기회 */
   if(S.streak>(S.best||0)) S.best=S.streak;
   S.day=t; S.todayDone=[]; S.claimed=null; S.bonus=false;
+  msCheck();
+  if(S.onboarded){ var gr=tierGrow();                       /* 스탯은 됐는데 오늘 몫 때문에 미뤄진 거처 */
+    if(gr){ var mv=gr.wasTop?tierMove(S.peak):null; S.upNote={i:S.peak,ok:mv?mv.ok:0,cost:mv?mv.cost:0,stay:!gr.wasTop}; } }
   S.todayQ=S.onboarded?pickDaily():[];
   ev('day_start',{streak:S.streak,gap:gap,dayN:dayGap(S.first,t)+1});
   save(); return true; }
@@ -3046,6 +3081,179 @@ function todayList(){
   if(!S.todayQ||!S.todayQ.length) S.todayQ=pickDaily();
   return S.todayQ.map(function(id){ return QMAP[id]; }).filter(Boolean); }
 function todayLeft(){ return todayList().filter(function(q){ return S.todayDone.indexOf(q.id)<0; }).length; }
+
+/* ══════════ 새 퀘스트는 하루에 조금씩 ══════════
+   고유 콘텐츠가 두 시간 남짓이라 한꺼번에 열면 사흘에 바닥이 난다. 새(한 번도 못 푼) 퀘스트는
+   첫날 5개, 그다음 하루 3개씩 열고, 광고를 보면 하루 두 개까지 더 연다. 이미 푼 것, 이미 시작한 것,
+   여행 퀘스트, 복습은 잠그지 않는다. 열린 목록은 S.drip.u에 남고 다시 잠기지 않는다. */
+var DRIP_FIRST=5,DRIP_DAILY=3;
+function dscore(q){ return score(q)+(S.done.indexOf(q.id)>=0?100:0); }
+/* 열리는 순서. 주(ju) 퀘스트가 앞에 몰리면 거처가 며칠 만에 끝나서, 주 퀘스트를 전체에 고르게 흩는다 */
+function dripOrder(){
+  var pool=QUESTS.filter(function(q){ return fits(q)&&!q.trip; }).sort(function(a,b){ return dscore(b)-dscore(a); });
+  var jus=pool.filter(function(q){ return q.theme==='ju'; }),rest=[],grp={},keys=[];
+  pool.forEach(function(q){ if(q.theme==='ju') return; if(!grp[q.theme]){ grp[q.theme]=[]; keys.push(q.theme); } grp[q.theme].push(q); });
+  for(var k=0;rest.length<pool.length-jus.length;k++) keys.forEach(function(th){ if(grp[th][k]) rest.push(grp[th][k]); });   /* 나머지는 분야를 번갈아 */
+  var N=pool.length,J=jus.length,out=[],ji=0,ri=0,i;
+  for(i=0;i<N;i++){
+    var wantJu=ji<J&&i>=(J===1?0:Math.round(ji*(N-1)/(J-1)));
+    if(wantJu||ri>=rest.length) out.push(jus[ji++]); else out.push(rest[ri++]); }
+  return out; }
+/* 예전 저장: 이미 푼 것·오늘 목록·복습에 있는 것은 열어 둔 채로 두고, 오늘 몫을 더한다 */
+function dripInit(d){
+  var t=dayKey(),base={};
+  (S.done||[]).forEach(function(id){ base[id]=1; });
+  (S.todayQ||[]).forEach(function(id){ base[id]=1; });
+  (S.review||[]).forEach(function(r){ if(r&&r.q) base[r.q]=1; });
+  d.u=Object.keys(base).filter(function(id){ var q=QMAP[id]; return q&&!q.trip; });
+  if(!d.u.length){ d.d0=t; d.g=0; }
+  else { d.d0=S.first||t; var idx=Math.max(0,dayGap(d.d0,t)); d.g=DRIP_FIRST+DRIP_DAILY*idx-(idx===0?DRIP_FIRST:DRIP_DAILY); }
+  d.v=1; }
+function dripOpen(n){
+  var d=S.drip,got=[];
+  dripOrder().forEach(function(q){ if(got.length<n&&d.u.indexOf(q.id)<0&&S.done.indexOf(q.id)<0) got.push(q.id); });
+  got.forEach(function(id){ d.u.push(id); });
+  return got; }
+function dripEnsure(){
+  if(!S||!S.onboarded) return;
+  var d=S.drip; if(!d||!Array.isArray(d.u)) d=S.drip={v:0,u:[],g:0,d0:null,at:null};
+  var t=dayKey();
+  if(d.v!==1) dripInit(d);
+  if(d.at===t) return;
+  d.at=t;
+  var owed=DRIP_FIRST+DRIP_DAILY*Math.max(0,dayGap(d.d0,t))-(d.g||0);
+  if(owed>0){ dripOpen(owed); d.g=(d.g||0)+owed; ev('quest_drip',{n:owed,open:d.u.length}); }
+  save(); }
+function qOpen(q){
+  if(!q) return false;
+  if(q.trip||q.keys||q.dq||!S.onboarded) return true;
+  if(S.done.indexOf(q.id)>=0) return true;
+  dripEnsure();
+  return S.drip.u.indexOf(q.id)>=0; }
+function dripLocked(){ return dripOrder().filter(function(q){ return !qOpen(q); }); }
+function openLeft(){ return QUESTS.filter(function(q){ return !q.trip&&fits(q)&&S.done.indexOf(q.id)<0&&qOpen(q); }).length; }
+function lockedFor(match){ var r=null;
+  QUESTS.forEach(function(q){ if(!r&&match(q)&&fits(q)&&S.done.indexOf(q.id)<0&&!qOpen(q)) r=q; });
+  return r; }
+
+/* ══════════ 보상형 광고 ══════════
+   하루 공동 상한 8회 하나로 묶는다. 광고는 반드시 "광고"라고 쓰인 버튼을 누른 뒤에만 뜬다.
+   보상은 showAd의 콜백에서만 준다. 앱에서는 showAd가 네이티브 광고로 바뀌고, 광고를 못 받으면
+   콜백이 오지 않는다. 그러니 횟수도 콜백 안에서만 센다. */
+var AD_CAP=8,AD_LIM={unl:2,dbl:3,life:2,att:1,rst:1},AD_DONE='오늘 광고 보상은 다 받았어요',AD_BUSY=0;
+function adSync(){ var d=dayKey(); if(S.adDay!==d){ S.adDay=d; S.adN=0; S.adK={}; } if(!S.adK) S.adK={}; }
+function adLeft(kind){ adSync(); var l=AD_CAP-(S.adN||0);
+  if(kind&&AD_LIM[kind]!=null) l=Math.min(l,AD_LIM[kind]-(S.adK[kind]||0));
+  return Math.max(0,l); }
+function adCount(kind){ adSync(); S.adN=(S.adN||0)+1; S.adK[kind]=(S.adK[kind]||0)+1; ev('ad_reward',{k:kind,n:S.adN}); }
+function adGo(kind,cb){
+  if(adLeft(kind)<=0){ toast(AD_DONE); return; }
+  if(Date.now()<AD_BUSY) return;          /* 두 번 눌러 광고가 겹치는 것만 막는다 */
+  AD_BUSY=Date.now()+700;
+  showAd(function(){ AD_BUSY=0; adCount(kind); save(); cb(); }); }
+function sheetStack(){
+  var row=document.querySelector('#itipbox .ibtns'); if(!row) return;
+  row.style.flexDirection='column';
+  Array.prototype.forEach.call(row.children,function(b){ b.style.flex='none'; }); }
+
+/* 광고로 하나 더 열기. qid가 있으면 그 퀘스트를, 없으면 다음 순서를 연다 */
+function dripAdOpen(qid,after){
+  adGo('unl',function(){
+    var d=S.drip,id=qid;
+    if(!id||d.u.indexOf(id)>=0){ var nx=dripLocked()[0]; id=nx?nx.id:null; }
+    if(id&&d.u.indexOf(id)<0) d.u.push(id);
+    ev('quest_unlock_ad',{id:id}); save(); sfx('open');
+    toast(id?'새 퀘스트가 열렸어요 · '+QMAP[id].title:'열 퀘스트가 더 없어요');
+    if(after) after(id); }); }
+function lockedDialog(q){
+  var h='<div class="ih"><div><span class="inm">'+esc(q.title)+'</span><span class="isub">'+esc(q.npc)+' · 내일 열림</span></div></div><hr>'+
+    '<div class="il"><i>◆</i>오늘 열린 새 퀘스트는 여기까지예요. 매일 '+DRIP_DAILY+'개씩 새로 열려요.</div>',bt=[];
+  if(adLeft('unl')>0) bt.push({t:'광고 보고 이 퀘스트 열기 · 오늘 '+adLeft('unl')+'회 남음',f:function(){ dripAdOpen(q.id,function(){ closeTip(); }); }});
+  else h+='<div class="il warn"><i>◆</i>'+AD_DONE+'</div>';
+  openTip(h,'#FFC53C',bt); sheetStack(); }
+
+/* ══════════ 일일 복습 퀴즈 ══════════
+   새 퀘스트를 다 풀었거나 오늘 퀘스트를 완주했으면, 푼 문항 중에서 세 개를 다시 낸다.
+   오답 노트가 먼저고 모자라면 푼 퀘스트에서 채운다. 하루 한 번, 코인은 적게. */
+function quizBuild(){
+  var qs=[],keys=[],seen={},t=dayKey();
+  function add(qid,i,rec){ var q=QMAP[qid],k=qid+'#'+i; if(qs.length>=3||seen[k]||!q||!q.qs[i]) return;
+    seen[k]=1; qs.push(q.qs[i]); keys.push(rec||{q:qid,i:i,box:0,due:t,syn:1}); }
+  (S.review||[]).filter(function(r){ return !r.done; }).sort(function(a,b){ return dayNum(a.due)-dayNum(b.due); })
+    .forEach(function(r){ add(r.q,r.i,r); });
+  var pool=[]; (S.done||[]).forEach(function(id){ var q=QMAP[id]; if(q) q.qs.forEach(function(_,i){ pool.push([id,i]); }); });
+  var r=seedRand(t+'|quiz'); while(qs.length<3&&pool.length){ var p=pool.splice(Math.floor(r()*pool.length),1)[0]; add(p[0],p[1]); }
+  if(qs.length<3) return null;
+  return {id:'dquiz',dq:1,theme:'jik',title:'오늘의 복습 퀴즈',xp:20,coin:30,basis:CONTENT.asOf,src:['복습 노트',null],fit:{},npc:'복습 노트',reward:null,
+    intro:'오늘의 복습 퀴즈야. 푼 문제 중에서 세 개만 다시 풀어 보자.',qs:qs,stat:{},keys:keys}; }
+function quizAvail(){
+  if(!S||!S.onboarded||S.quizDay===dayKey()||!(S.done||[]).length) return false;
+  var bonus=!!(S.bonus||(S.todayQ&&S.todayQ.length&&todayLeft()===0));
+  return (openLeft()===0||bonus)&&!!quizBuild(); }
+function quizStart(){ var q=quizBuild(); if(!q) return; closeTip(); startQuest(q); }
+
+/* ══════════ 연속 출석 ══════════
+   3·7·14일에 한 번씩만 주는 한정 보상. 새 그림 없이 있는 물건을 쓴다. */
+var MILESTONES=[{d:3,coin:100,item:'beanie2'},{d:7,coin:200,item:'bird'},{d:14,coin:400,item:'ebike'}];
+function msCheck(){
+  if(!S.ms) S.ms=[]; if(!S.msNew) S.msNew=[];
+  MILESTONES.forEach(function(m){
+    if(S.streak<m.d||S.ms.indexOf(m.d)>=0) return;
+    S.ms.push(m.d); S.coin+=m.coin;
+    var nm=''; if(m.item&&S.owned.indexOf(m.item)<0){ S.owned.push(m.item); nm=allItems(m.item).name; }
+    S.msNew.push({d:m.d,coin:m.coin,item:nm}); ev('streak_reward',{d:m.d,coin:m.coin,item:m.item}); }); }
+function restoreOffer(){ var r=S.restore; return !!(r&&!r.used&&r.day===dayKey()); }
+function restoreStreak(){
+  if(!restoreOffer()) return;
+  adGo('rst',function(){
+    var r=S.restore,t=dayKey(); r.used=1;
+    S.streak=r.prev+1; if(S.streak>(S.best||0)) S.best=S.streak;
+    if(S.claimed===t&&S.claimC!=null){ var diff=Math.max(0,dailyCoin()-S.claimC); if(diff){ S.coin+=diff; S.claimC+=diff; } }
+    msCheck(); ev('streak_restore',{streak:S.streak}); save(); sfx('good');
+    toast('연속 '+S.streak+'일을 지켰어요'); todaySheet(); }); }
+function attBonus(){ return Math.max(10,Math.round((S.claimC||dailyCoin())*0.5)); }
+function attAdGo(){
+  adGo('att',function(){ var c=attBonus(); S.coin+=c; S.attAd=dayKey(); ev('att_ad',{coin:c}); save(); sfx('coin');
+    toast('출석 보너스 ￦'+c); todaySheet(); }); }
+
+/* ── 오늘 할 일 ──────────────────────────────────────────────────────── */
+function todaySheet(){
+  dripEnsure();
+  var t=dayKey(),open=openLeft(),lk=dripLocked().length,bt=[];
+  var h='<div class="ih"><div><span class="inm">오늘 할 일</span><span class="isub">연속 '+S.streak+'일 · 최고 '+Math.max(S.best||0,S.streak)+'일</span></div></div><hr>';
+  (S.msNew||[]).forEach(function(m){
+    h+='<div class="il good"><i>◆</i>연속 '+m.d+'일 한정 보상 · ￦'+m.coin+(m.item?' · '+esc(m.item):'')+'</div>'; });
+  S.msNew=[];
+  h+='<div class="il"><i>◆</i>풀 수 있는 새 퀘스트 '+open+'개'+(lk?' · 내일 '+Math.min(DRIP_DAILY,lk)+'개 더 열려요':' · 새 퀘스트는 전부 열렸어요')+'</div>';
+  if(quizAvail()) bt.push({t:'오늘의 복습 퀴즈 · 3문항 · ￦30',f:quizStart});
+  else h+='<div class="il"><i>◆</i>'+(S.quizDay===t?'오늘의 복습 퀴즈를 마쳤어요':S.done.length?'복습 퀴즈는 새 퀘스트를 다 풀거나 오늘 퀘스트를 완주하면 열려요':'퀘스트를 하나 풀면 복습 퀴즈가 열려요')+'</div>';
+  if(lk>0){
+    if(adLeft('unl')>0) bt.push({t:'광고 보고 하나 더 열기 · 오늘 '+adLeft('unl')+'회 남음',f:function(){ dripAdOpen(null,function(){ todaySheet(); }); }});
+    else h+='<div class="il warn"><i>◆</i>'+AD_DONE+'</div>'; }
+  if(S.claimed===t){
+    h+='<div class="il"><i>◆</i>오늘 출석 ￦'+(S.claimC!=null?S.claimC:dailyCoin())+' 받았어요'+(S.attAd===t?' · 광고 보너스도 받았어요':'')+'</div>';
+    if(S.attAd!==t){
+      if(adLeft('att')>0) bt.push({t:'광고 보고 출석 보너스 +￦'+attBonus(),f:attAdGo});
+      else h+='<div class="il warn"><i>◆</i>'+AD_DONE+'</div>'; } }
+  if(restoreOffer()){
+    h+='<div class="il warn"><i>◆</i>어제 하루를 걸렀어요. 연속 '+S.restore.prev+'일이 끊겼어요.</div>';
+    if(adLeft('rst')>0) bt.push({t:'광고 보고 연속 출석 지키기 · 연속 '+(S.restore.prev+1)+'일',f:restoreStreak});
+    else h+='<div class="il warn"><i>◆</i>'+AD_DONE+'</div>'; }
+  h+='<div class="il" style="color:#9A9AA0"><i>◆</i>연속 보상 '+MILESTONES.map(function(m){ return m.d+'일 '+(S.ms.indexOf(m.d)>=0?'받음':'대기'); }).join(' · ')+'</div>';
+  openTip(h,'#FFC53C',bt); sheetStack(); todayBtn(); }
+function todayBtn(){
+  var b=document.getElementById('htoday'); if(!b||!S||!S.onboarded) return;
+  var n=(quizAvail()?1:0)+(restoreOffer()?1:0)+((S.msNew||[]).length?1:0);
+  b.innerHTML='오늘 할 일'+(n?' <b>'+n+'</b>':'');
+  b.onclick=function(){ sfx('pick'); todaySheet(); }; }
+/* 한정 보상이나 끊긴 연속은 놓치기 쉬워서 그날 처음 한 번 알아서 펼친다 */
+function todayAuto(){
+  if(!S.onboarded||S.tdAuto===dayKey()) return;
+  if(!((S.msNew||[]).length||restoreOffer())) return;
+  S.tdAuto=dayKey(); save();
+  setTimeout(function(){ var hs=document.getElementById('home');
+    if(TUT||!hs||!hs.classList.contains('on')||document.getElementById('opening')) { S.tdAuto=null; return; }
+    todaySheet(); },1800); }
 
 /* ══════════ 복습 큐 ══════════
    퀴즈는 한 번 풀면 재미가 0이다. 틀린 문항만 간격을 두고 되돌려 주면
@@ -4037,17 +4245,18 @@ var FURNI_ACT={
 function actReady(key,a){
   if(!S.fcd) S.fcd={};
   if(a.daily) return S.fcd[key]===dayKey()?'내일 다시 할 수 있다.':null;
-  if(a.ad){ var n=(S.adDay===dayKey())?(S.adN||0):0; return n>=5?'오늘 광고는 다 봤다. 내일 다시.':null; }
+  if(a.ad){ return adLeft()<=0?AD_DONE:null; }
   var left=(S.fcd[key]||0)-Date.now(); return left>0?'아직은 못 한다 · '+Math.ceil(left/60000)+'분 뒤':null; }
 function doAct(key,a,cb){
   var nr=actReady(key,a); if(nr) return cb([nr]);
-  var fin=function(){ if(a.daily) S.fcd[key]=dayKey(); else if(a.ad){ if(S.adDay!==dayKey()){ S.adDay=dayKey(); S.adN=0; } S.adN++; }
+  var fin=function(){ if(a.daily) S.fcd[key]=dayKey(); else if(a.ad) adCount('bed');
     else S.fcd[key]=Date.now()+a.cd*60000;
     sfx('good'); addNeeds(a.d); cb([a.msg]); };
   if(a.ad) showAd(fin); else fin(); }
 function openFurni(id){
-  var it=FURNI[id],acts=FURNI_ACT[id]||[];
-  var opts=acts.map(function(a,i){ var nr=actReady(id+i,a); return a.t+(nr&&!a.ad?' (대기)':''); }).concat(['자세히 보기','그만']);
+  needTick();
+  var it=FURNI[id],acts=(FURNI_ACT[id]||[]).filter(function(a){ return !(a.ad&&S.energy>=100); });   /* 체력이 가득이면 광고로 채울 게 없다 */
+  var opts=acts.map(function(a,i){ var nr=actReady(id+i,a); return a.ad&&nr===AD_DONE?AD_DONE:a.t+(nr&&!a.ad?' (대기)':''); }).concat(['자세히 보기','그만']);
   talkTo({name:it.name,face:null,lines:[{q:it.name+' · 무엇을 할까?',a:opts,choose:function(k){
     if(k<acts.length){
       if(acts[k].ad){ var nr=actReady(id+k,acts[k]); if(nr) return [nr];
@@ -4286,7 +4495,19 @@ function refreshRamen(){
   var can=(typeof RUN!=='undefined'&&RUN&&RUN.hearts<HEARTS&&(S.ramen||0)>0);
   el.hidden=!can;
   if(can) el.textContent=(RUN.hearts<=0?'라면 먹고 버티기':'라면 먹기')+' · 목숨 하나 회복 ('+S.ramen+'봉지)';
+  lifeAdSync();
 }
+/* 목숨이 0이면 광고로 하나 이어 풀 수 있다. 라면과 "결과 보기"(무료 선택지)는 그대로 둔다. 하루 2회 */
+function lifeAdSync(){
+  var nx=document.getElementById('qnext'); if(!nx) return;
+  var b=document.getElementById('qlife');
+  if(!b){ b=document.createElement('button'); b.id='qlife'; b.className='btn btn--wide pix btn--plain'; b.hidden=true; nx.parentNode.insertBefore(b,nx); }
+  var on=(typeof RUN!=='undefined'&&RUN&&RUN.hearts<=0);
+  b.hidden=!on; if(!on) return;
+  if(adLeft('life')>0){ b.disabled=false; b.textContent='광고 보고 목숨 1개 · 이어 풀기 (오늘 '+adLeft('life')+'회 남음)';
+    b.onclick=function(){ adGo('life',function(){ if(!RUN||RUN.hearts>0) return;
+      RUN.hearts=1; save(); sfx('good'); drawHearts(); refreshRamen(); wireNext(); toast('광고 보상 · 목숨 1개'); }); }; }
+  else { b.disabled=true; b.textContent=AD_DONE; b.onclick=null; } }
 function eatRamen(){
   if(!RUN||RUN.hearts>=HEARTS||!(S.ramen>0)) return;
   var wasOut=RUN.hearts<=0;
@@ -4989,7 +5210,7 @@ function deskQuests(id){ return QUESTS.filter(function(q){ return QPLACE[q.id]==
 function questAtDesk(id){
   var today=todayList(),pick=null,isToday=false;
   deskQuests(id).forEach(function(q){
-    if(S.done.indexOf(q.id)>=0||!fits(q)) return;
+    if(S.done.indexOf(q.id)>=0||!fits(q)||!qOpen(q)) return;
     var tq=today.some(function(x){ return x.id===q.id; });
     if(!pick||(tq&&!isToday)){ pick=q; isToday=tq; } });
   return pick?{q:pick,today:isToday}:null; }
@@ -5623,10 +5844,10 @@ function spotLabel(s){
 }
 function epById(id){ var r=EPISODES[0]; EPISODES.forEach(function(e){ if(e.id===id) r=e; }); return r; }
 function spotMark(s){
-  if(s.kind==='desk'){ var dq=questAtDesk(s.id); return dq?(dq.today?'!':'?'):null; }
+  if(s.kind==='desk'){ var dq=questAtDesk(s.id); return dq?(dq.today?'!':'?'):(lockedFor(function(q){ return QPLACE[q.id]===s.id; })?'lock':null); }
   if(s.kind==='talk'){ var T=TALKS[s.id]; return (T&&T.quiz&&((S.quiz||{})[s.id]||0)<T.quiz.length)?'q':null; }
   if(s.kind==='thing') return null;
-  if(s.kind==='npc'){ var a=questAt(s.who); return a?(a.today?'!':'?'):null; }
+  if(s.kind==='npc'){ var a=questAt(s.who); return a?(a.today?'!':'?'):(lockedFor(function(q){ return q.npc===s.who; })?'lock':null); }
   if(s.kind==='review') return reviewQuest()?'!':null;
   if(s.kind==='ep') return epBestOf(s.id)===0?null:'?';
   if(s.kind==='boss') return bossCleared(s.id)?null:(bossReady(bossById(s.id))?'!':'lock');
@@ -5636,6 +5857,7 @@ function spotHint(s){
   if(s.kind==='shelf') return '눌러서 도감 · 진행 · 설정 보기';
   if(s.kind==='desk'){ var dq=questAtDesk(s.id);
     if(dq) return '눌러서 상담 · '+dq.q.title+' · 포만감 '+fullCost('quest');
+    var lq=lockedFor(function(q){ return QPLACE[q.id]===s.id; }); if(lq) return '내일 열림 · '+lq.title;
     return deskQuests(s.id).some(fits)?'이 창구 상담은 다 들었다':'지금 신분엔 볼일이 없는 창구'; }
   if(s.kind==='talk') return spotMark(s)?'넌센스 퀴즈 · 눌러서 말 걸기':'눌러서 말 걸기';
   if(s.kind==='thing') return '눌러서 살펴보기';
@@ -5645,12 +5867,13 @@ function spotHint(s){
     if(!bossReady(bb)) return THEMES[bb.stat].k+' 스탯 '+bb.need+'부터 · 지금 '+S.stats[bb.stat];
     return bossCleared(s.id)?'다시 맞서기':'눌러서 맞서기'; }
   var a=questAt(s.who);
+  if(!a){ var lq2=lockedFor(function(q){ return q.npc===s.who; }); if(lq2) return '내일 열림 · '+lq2.title; }
   return a?('눌러서 말 걸기 · '+a.q.title):'지금은 할 말이 없다';
 }
 function questAt(name){
   var today=todayList(),pick=null,isToday=false;
   QUESTS.forEach(function(q){
-    if(q.npc!==name||S.done.indexOf(q.id)>=0||!fits(q)) return;
+    if(q.npc!==name||S.done.indexOf(q.id)>=0||!fits(q)||!qOpen(q)) return;
     var t=today.some(function(x){ return x.id===q.id; });
     if(!pick||(t&&!isToday)){ pick=q; isToday=t; } });
   return pick?{q:pick,today:isToday}:null;
@@ -6058,6 +6281,7 @@ function facingSpot(){
 function triggerSpot(s){
   if(s.kind==='shelf'){ sfx('pick'); return render('codex'); }
   if(s.kind==='desk'){ var dq=questAtDesk(s.id); if(dq) return startQuest(dq.q);
+    var lq=lockedFor(function(q){ return QPLACE[q.id]===s.id; }); if(lq) return lockedDialog(lq);
     return toast(deskQuests(s.id).some(fits)?s.label+' 창구 · 지금은 더 들을 얘기가 없어요.':s.label+' 창구 · 지금 신분엔 해당이 없어요.'); }
   if(s.kind==='talk') return openTalk(s);
   if(s.kind==='thing') return openThing(s);
@@ -6070,6 +6294,7 @@ function triggerSpot(s){
     return toast(THEMES[b.stat].k+' 스탯 '+b.need+'부터 붙을 수 있습니다 · 지금 '+S.stats[b.stat]); }
   var a=questAt(s.who);
   if(a) return startQuest(a.q);
+  var lq2=lockedFor(function(q){ return q.npc===s.who; }); if(lq2) return lockedDialog(lq2);
   toast(s.who+' · 오늘은 더 알려 줄 게 없네요.');
 }
 /* ── 루프와 손가락 ───────────────────────────────────────────────────── */
@@ -6217,15 +6442,16 @@ function go(id){ if(id!=='home') stopWalk();
   document.querySelectorAll('.scroll').forEach(function(s){ s.scrollTop=0; }); }
 
 function questRow(q,onClick){
-  var isDone=S.done.indexOf(q.id)>=0,t=THEMES[q.theme];
+  var isDone=S.done.indexOf(q.id)>=0,t=THEMES[q.theme],isLock=!isDone&&!qOpen(q);
   var b=document.createElement('button'); b.className='quest pix'+(isDone?' done':'');
-  var sub=isDone?'완료':q.keys?'맞히면 다음 복습 간격이 늘어납니다'
+  var sub=isDone?'완료':isLock?'내일 열림':q.keys?'맞히면 다음 복습 간격이 늘어납니다'
     :q.npc+(allItems(q.reward)?' · 보상 '+allItems(q.reward).name:'');
   b.innerHTML='<span class="qt"><span class="tag" style="background:'+t.color+'">'+
    (q.keys?'복':t.k)+'</span>'+q.title+'</span>'+
    '<span class="qw">'+sub+'</span>'+
    '<span class="qx">+'+q.xp+' XP<br>￦'+q.coin+'</span>';
-  if(!isDone) b.onclick=onClick; else b.disabled=true;
+  if(isLock){ b.onclick=function(){ lockedDialog(q); }; b.style.opacity='.6'; }
+  else if(!isDone) b.onclick=onClick; else b.disabled=true;
   return b; }
 function renderHome(){
   if(demoOn()&&S.onboarded&&!S.demoDone) applyDemo();
@@ -6245,7 +6471,7 @@ function renderHome(){
   document.getElementById('htier').innerHTML=TIERS[S.tier].name+
    (nx===null?' <span class="micro">· 최종 단계</span>'
     :nx>0?' <span class="micro">· 다음 해금까지 주 '+nx+'</span>'
-    :' <span class="micro">· 다음 퀘스트에서 해금</span>');
+    :' <span class="micro">· '+(upLeft()>0?'다음 퀘스트에서 해금':'주 스탯은 충분 · 새 거처는 내일 해금')+'</span>');
   document.getElementById('hdef').textContent=tt.def;
   if(S.lastTier===undefined) S.lastTier=S.tier;
   if(S.lastTier!==S.tier){                      /* 이사했다 */
@@ -6409,7 +6635,7 @@ function checkTutor(){
 function startTutor(){ checkTutor(); }
 function autoClaim(){
   if(S.claimed===dayKey()) return;
-  var c=dailyCoin(); S.coin+=c; S.claimed=dayKey();
+  var c=dailyCoin(); S.coin+=c; S.claimed=dayKey(); S.claimC=c;
   ev('daily_claim',{streak:S.streak,coin:c,auto:1}); save();
   var msg='출석 · 연속 '+S.streak+'일'+(dailyMult()>1?' · 보너스 '+dailyMult()+'배':'')+' · ￦'+c;
   /* 첫날엔 동네 사람 대사와 겹친다. 대사가 끝난 뒤에 알린다 */
@@ -7003,7 +7229,7 @@ function renderBag(){
   if(CHARSEL==='house'){
     lab.textContent='거처 · 해금 '+(S.peak+1)+'/'+TIERS.length; hint.textContent='해금한 곳 중 골라서 삽니다';
     TIERS.forEach(function(tr,i){ g.appendChild(bagCell(houseThumb(i,40),tr.name,{off:i>S.peak,on:S.tier===i,
-      lock:i>S.peak?'주 '+tr.need:null,color:null,tap:function(){ houseTip(i); }})); });
+      lock:i>S.peak?'주 '+tr.need:(tierCost(i)>0?'￦'+tierCost(i):null),color:null,tap:function(){ houseTip(i); }})); });
     return; }
   if(CHARSEL==='furni'){
     lab.textContent='세간'; hint.textContent='놓인 것은 방에서 자리를 바꿀 수 있습니다';
@@ -7070,7 +7296,7 @@ function gearTip(slot,id){
         ev('buy',{slot:slot,id:id,cost:it.cost,from:'char'}); save(); closeTip(); renderChar(); }}); }
   openTip(h,r.c,bt); }
 function houseTip(i){
-  var tr=TIERS[i],sp=ROOMSPEC[i],open=i<=S.peak,here=S.tier===i;
+  var tr=TIERS[i],sp=ROOMSPEC[i],open=i<=S.peak,here=S.tier===i,dep=(open&&!here)?tierCost(i):0;
   var h='<div class="ih"><div class="ithumb"></div><div><span class="inm">'+tr.name+'</span>'+
     '<span class="isub">거처 · '+(i+1)+'단계</span>'+(here?'<span class="ion">사는 곳</span>':'')+'</div></div><hr>'+
     statLine('방어',tr.def,here?null:TIERS[S.tier].def)+
@@ -7078,11 +7304,16 @@ function houseTip(i){
     (tr.own?'<div class="il good"><i>◆</i>자가 · 이사 걱정 없음</div>':'')+
     '<div class="il '+(sp&&!PET_NO[i]?'good':'warn')+'"><i>◆</i>펫 '+(sp&&!PET_NO[i]?'키울 수 있음':'키울 수 없음')+'</div>'+
     (open?'':'<div class="il warn"><i>◆</i>주 스탯 '+tr.need+' 필요 · 지금 '+S.stats.ju+'</div>')+
+    (dep?'<div class="il '+(S.coin>=dep?'good':'warn')+'"><i>◆</i>입주 보증금 ￦'+dep+' · 지금 ￦'+S.coin+
+      (S.coin>=dep?'':' · ￦'+(dep-S.coin)+' 모자라요. 퀘스트·출석·광고 보상으로 모을 수 있어요')+'</div>'
+     :(open&&!here&&i>0?'<div class="il good"><i>◆</i>이미 살아 본 곳이라 보증금 없이 옮길 수 있어요</div>':''))+
     '<div class="iq">"'+HOUSE_DESC[i]+'"</div>'+
     (HOUSE_TIP[i]?'<div class="il" style="color:#9BDCF7"><i>✦</i>'+HOUSE_TIP[i]+'</div>':'');
   openTip.thumb=houseThumb(i,52);
   var bt=[];
-  if(open&&!here) bt.push({t:'여기서 살기',f:function(){ S.tier=i; save(); closeTip(); toast(tr.name+'(으)로 옮겼습니다.'); renderChar(); }});
+  if(open&&!here) bt.push({t:dep?(S.coin>=dep?'￦'+dep+' 내고 여기서 살기':'보증금 ￦'+dep+' 모자람'):'여기서 살기',off:!!dep&&S.coin<dep,
+    f:function(){ var mv=tierMove(i); if(!mv.ok){ toast('보증금 ￦'+mv.cost+'이 모자랍니다.'); return; }
+      save(); closeTip(); toast(tr.name+'(으)로 옮겼습니다.'+(mv.cost?' 보증금 ￦'+mv.cost:'')); renderChar(); }});
   openTip(h,open?'#FFC53C':'#6B6380',bt); }
 function furniTip(id){
   var it=FURNI[id],r=rarityOf(it),o=furniOf(id),have=!!o||(id==='ramen'&&S.ramen>0);
@@ -7533,6 +7764,7 @@ function drawProg(intro){
     else if(i===RUN.i&&!intro) e.className='cur';
     pg.appendChild(e); }); }
 function startQuest(q){
+  if(!qOpen(q)) return lockedDialog(q);              /* 오늘 몫이 아닌 새 퀘스트 */
   if(!useFull(q.keys?'review':'quest')) return;
   var tt=totals();
   HEARTS=(!q.keys&&!S.done.length)?3:2;                     /* 첫 퀘스트는 목숨 3개. 첫 경험이 패배로 끝나지 않게 */
@@ -7627,8 +7859,9 @@ function finish(failed){
     q.keys.forEach(function(r,i){
       if(RUN.marks[i]){ r.box=Math.min(r.box+1,BOXDUE.length-1); r.due=addDays(dayKey(),BOXDUE[r.box]);
         if(r.box>=BOXDUE.length-1) r.done=1; }
-      else { r.box=0; r.due=addDays(dayKey(),1); } });
+      else { if(r.syn) reviewAdd(r.q,r.i); r.box=0; r.due=addDays(dayKey(),1); } });
     S.review=S.review.filter(function(r){ return !r.done; });
+    if(q.dq&&!failed){ S.quizDay=dayKey(); ev('daily_quiz',{ok:RUN.correct,coin:coin}); }
     ev('review_finish',{n:q.keys.length,ok:RUN.correct});
   } else {
     q.qs.forEach(function(_,i){ if(RUN.marks[i]===false) reviewAdd(q.id,i); });
@@ -7639,8 +7872,9 @@ function finish(failed){
       S.bonus=true; bonus=80*dailyMult(); S.coin+=bonus;
       ev('daily_complete',{streak:S.streak,bonus:bonus}); } }
   ev('quest_finish',{id:q.id,correct:RUN.correct,n:q.qs.length,xp:xp,coin:coin,failed:!!failed});
-  if(!failed&&tierFor(S.stats.ju)>S.peak){ var wasTop=(S.tier===S.peak);
-    S.peak=Math.min(S.peak+1,TIERS.length-1); if(wasTop) S.tier=S.peak; }
+  LASTMOVE=null;
+  var gr=failed?null:tierGrow();
+  if(gr&&gr.wasTop) LASTMOVE=tierMove(S.peak);          /* 새 집에 들어가려면 보증금이 든다 */
   var unlocked=S.peak>before.peak;
   save();
   sfx(failed?'hit':(S.lv>before.lv)?'level':unlocked?'open':'win');
@@ -7673,7 +7907,26 @@ function finish(failed){
     cv.getContext('2d').drawImage(hc,0,0); up.appendChild(cv);
     var t2=document.createElement('span'); t2.className='lbold';
     t2.textContent=TIERS[S.peak].name+' · 방어 '+TIERS[S.peak].def; up.appendChild(t2);
+    if(LASTMOVE&&LASTMOVE.i===S.peak){ var t3=document.createElement('span'); t3.className='micro';
+      t3.textContent=LASTMOVE.ok?(LASTMOVE.cost?'입주 보증금 ￦'+LASTMOVE.cost+'을 내고 옮겼습니다':'보증금 없이 옮겼습니다')
+        :'입주 보증금 ￦'+LASTMOVE.cost+'이 모자라 아직 못 옮겼습니다. 코인을 모아 캐릭터 탭의 거처에서 옮기세요.';
+      up.appendChild(t3); }
   } else up.hidden=true;
+  /* 결과 화면 광고: 이번에 번 코인만큼 더. 한 결과에 한 번, 하루 3회 */
+  var od=document.getElementById('rdbl'); if(od) od.remove();
+  if(!failed&&coin>=30){
+    var dw=document.createElement('div'); dw.id='rdbl'; dw.style.cssText='width:100%;display:flex;flex-direction:column;gap:var(--u2)';
+    if(adLeft('dbl')>0){
+      var db=document.createElement('button'); db.className='btn btn--wide pix'; db.textContent='광고 보고 ￦'+coin+' 더 받기 (오늘 '+adLeft('dbl')+'회 남음)';
+      var got2=false;
+      db.onclick=function(){ adGo('dbl',function(){ if(got2) return; got2=true;
+        S.coin+=coin; save(); sfx('coin'); ev('result_double',{coin:coin});
+        rxp.textContent='+'+xp+' XP · ￦'+coin+' + 광고 ￦'+coin;
+        dw.innerHTML=''; var nt=document.createElement('div'); nt.className='micro'; nt.style.textAlign='center';
+        nt.textContent='광고 보상 ￦'+coin+'을 받았어요 · 합계 ￦'+(coin*2); dw.appendChild(nt); }); };
+      dw.appendChild(db);
+    } else { var dn=document.createElement('div'); dn.className='micro'; dn.style.textAlign='center'; dn.textContent=AD_DONE; dw.appendChild(dn); }
+    var rb0=document.getElementById('rback'); rb0.parentNode.insertBefore(dw,rb0); }
   go('result'); }
 
 /* ══════════ 보스전 ══════════ */
@@ -7752,8 +8005,8 @@ function bossEnd(win){
     if(!S.bossDone) S.bossDone=[];
     if(S.bossDone.indexOf(B.id)<0) S.bossDone.push(B.id);
     S.coin+=200; S.stats[B.stat]=Math.min(100,S.stats[B.stat]+15);
-    if(tierFor(S.stats.ju)>S.peak){ var wasTop=(S.tier===S.peak);
-      S.peak=Math.min(S.peak+1,TIERS.length-1); if(wasTop) S.tier=S.peak; } }
+    var gb=tierGrow();
+    if(gb&&gb.wasTop){ var mv=tierMove(S.peak); if(!mv.ok) setTimeout(function(){ toast('입주 보증금 ￦'+mv.cost+'이 모자라 아직 못 옮겼습니다'); },900); } }
   else { S.peak=Math.max(0,S.peak-1); if(S.tier>S.peak) S.tier=S.peak; }
   save();
   paintHero(document.getElementById('bechar'),win?'cheer':'idle',0);
@@ -7888,6 +8141,12 @@ function renderFunnel(){
 /* QA용. 콘솔에서 __shiftDay(1)로 하루를 밀어 연속·복습을 확인한다. */
 window.__shiftDay=function(n){ TESTSHIFT+=n*DAYMS; rollDay(); render('home'); return dayKey(); };
 
+/* 홈을 그릴 때마다 "오늘 할 일" 버튼을 갱신하고, 새 한정 보상이나 끊긴 연속이 있으면 그날 한 번 펼친다 */
+function upNoteShow(){
+  var n=S.upNote; if(!n) return; S.upNote=null; save();
+  setTimeout(function(){ toast('새 거처 해금 · '+TIERS[n.i].name+(n.stay?' · 캐릭터 탭에서 옮길 수 있어요'
+    :n.ok?(n.cost?' · 입주 보증금 ￦'+n.cost:''):' · 보증금 ￦'+n.cost+'이 모자라 아직 못 옮겼어요')); },3600); }
+var _renderHomeB=renderHome; renderHome=function(){ _renderHomeB.apply(this,arguments); todayBtn(); todayAuto(); upNoteShow(); };
 S=load();
 if(!S.first) S.first=dayKey();
 rollDay();
