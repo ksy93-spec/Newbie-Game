@@ -76,14 +76,14 @@ test('첫 퀘스트는 목숨 3개, 이후 퀘스트는 2개', async () => {
   const { ctx, page } = await open('#nointro');
   const first = await page.evaluate(() => {
     S.onboarded = true; save();
-    startQuest(QUESTS.filter((q) => !q.keys)[0]);
+    startQuest(QUESTS.filter((q) => !q.keys && qOpen(q))[0]);
     return new Promise((res) => setTimeout(() => res({ hearts: RUN.hearts, drawn: document.querySelectorAll('#qhearts canvas').length }), 900));
   });
   assert.equal(first.hearts, 3);
   assert.equal(first.drawn, 3);
   const second = await page.evaluate(() => {
     S.done.push('x_done'); S.full = 100; go('home');
-    startQuest(QUESTS.filter((q) => !q.keys)[1]);
+    startQuest(QUESTS.filter((q) => !q.keys && qOpen(q))[1]);
     return new Promise((res) => setTimeout(() => res({ hearts: RUN.hearts, drawn: document.querySelectorAll('#qhearts canvas').length }), 900));
   });
   assert.equal(second.hearts, 2);
@@ -95,7 +95,7 @@ test('결과 화면의 정답은 실제로 나온 문항 수 기준이다 (0 / 2
   const { ctx, page } = await open('#nointro');
   const txt = await page.evaluate(() => {
     S.onboarded = true; S.done.push('x_done'); save();
-    const q = QUESTS.filter((x) => !x.keys && x.qs.length >= 3)[0];
+    const q = QUESTS.filter((x) => !x.keys && qOpen(x) && x.qs.length >= 3)[0];
     startQuest(q);
     return new Promise((res) => setTimeout(() => {
       RUN.mak = 0;
@@ -113,7 +113,7 @@ test('간파·막기 툴팁은 첫 진입에만 뜨고 저장된다', async () =
   const { ctx, page } = await open('#nointro');
   const r = await page.evaluate(() => {
     S.onboarded = true; save();
-    startQuest(QUESTS.filter((q) => !q.keys)[0]);
+    startQuest(QUESTS.filter((q) => !q.keys && qOpen(q))[0]);
     return new Promise((res) => setTimeout(() => {
       RUN.i = 0; stepQuest(false);
       const shown = !document.getElementById('qtip').hidden;
@@ -123,7 +123,7 @@ test('간파·막기 툴팁은 첫 진입에만 뜨고 저장된다', async () =
   assert.equal(r.shown, true);
   assert.equal(r.saved, 1);
   const again = await page.evaluate(() => {
-    go('home'); startQuest(QUESTS.filter((q) => !q.keys)[1]);
+    go('home'); startQuest(QUESTS.filter((q) => !q.keys && qOpen(q))[1]);
     return new Promise((res) => setTimeout(() => { RUN.i = 0; stepQuest(false); res(!document.getElementById('qtip').hidden); }, 900));
   });
   assert.equal(again, false);

@@ -196,7 +196,7 @@ test('5. 결과 화면 "광고 보고 코인 더 받기"는 한 번만, 딱 획�
 test('5-2. 목숨 0이면 "광고 보고 목숨 1개"로 이어 풀 수 있고 무료 선택지(결과 보기)는 남는다', async () => {
   const { ctx, page, errors } = await open();
   const id = await st(page, () => S.drip.u[0]);
-  await page.evaluate((id) => { S.full = fullMax(); S.energy = 100; startQuest(QMAP[id]); }, id);
+  await page.evaluate((id) => { S.done.push("x_done"); S.full = fullMax(); S.energy = 100; startQuest(QMAP[id]); }, id);
   await page.waitForFunction(() => document.getElementById('quest').classList.contains('on'));
   await page.evaluate(() => {
     const q = RUN.q; RUN.mak = 0;
