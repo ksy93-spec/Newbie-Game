@@ -68,10 +68,4 @@ jobs:
       - name: 결과 링크
         if: always()
         run: |
-          if [ -s build.json ]; then
-            node -e 'const b=JSON.parse(require("fs").readFileSync("build.json","utf8"))[0]||{};
-              const u=(b.artifacts||{}).buildUrl||(b.artifacts||{}).applicationArchiveUrl||"";
-              console.log("상태:",b.status); console.log("파일:",u);
-              require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY,
-                `## 안드로이드 빌드 (${b.buildProfile||""})\n\n- 상태: ${b.status}\n- 파일: ${u}\n- 상세: https://expo.dev/accounts/${b.project&&b.project.ownerAccount&&b.project.ownerAccount.name}/projects/newbie-quest/builds/${b.id}\n`);'
-          fi
+          if [ -s build.json ]; then node .github/scripts/build-summary.mjs build.json; fi
