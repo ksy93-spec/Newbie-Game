@@ -531,6 +531,19 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .chkchip{position:absolute;right:8px;top:8px;z-index:3;background:rgba(44,44,49,.9);color:var(--p0);border:0;
   font-family:var(--f-ui);font-size:10px;line-height:14px;padding:5px 8px;max-width:60%;text-align:left;}
 .chkchip b{color:var(--y1);margin-right:3px;}
+.chkchip .cx{display:inline-block;margin-left:4px;padding:2px 6px;color:var(--s0);cursor:pointer;}
+.guidechip{position:absolute;left:100px;right:86px;bottom:10px;z-index:5;background:var(--y1);color:var(--s4);border:3px solid var(--s4);
+  font-family:var(--f-ui);font-size:11px;line-height:15px;padding:6px 8px;min-height:44px;text-align:left;cursor:pointer;animation:guidepulse 1s steps(2) infinite;}
+.guidechip b{display:block;font-size:12px;line-height:16px;}
+@keyframes guidepulse{0%{box-shadow:0 0 0 0 var(--y1),0 0 0 3px var(--s4);}50%{box-shadow:0 0 0 3px var(--y1),0 0 0 6px var(--s4);}}
+.mvbanner{position:absolute;left:12px;right:12px;top:36px;z-index:80;background:var(--s4);color:var(--p0);border:3px solid var(--y1);
+  padding:12px 12px 10px;text-align:center;font-family:var(--f-ui);animation:pop .3s steps(3) both;cursor:pointer;}
+.mvbanner .mvt{font-size:11px;line-height:15px;color:var(--y1);}
+.mvbanner .mvr{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin:8px 0 6px;color:var(--y1);}
+.mvbanner canvas{image-rendering:pixelated;max-height:60px;width:auto;}
+.mvbanner .mvn{font-size:16px;line-height:22px;}
+.mvbanner .mvs{font-size:10px;line-height:14px;color:var(--s0);margin-top:4px;}
+@media(prefers-reduced-motion:reduce){.guidechip,.mvbanner{animation:none;}}
 .todaybtn{background:var(--y1);color:var(--s4);border:2px solid var(--s4);font-family:var(--f-ui);font-size:11px;line-height:16px;padding:3px 9px;min-height:28px;cursor:pointer;}
 .todaybtn b{background:var(--s4);color:var(--y1);padding:0 4px;margin-left:3px;font-weight:400;}
 #opening.drive .crt{background:repeating-linear-gradient(to bottom,rgba(0,0,0,.12) 0 1px,transparent 1px 3px);}
@@ -584,6 +597,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
         <canvas id="scene"></canvas>
         <div class="zonetag pix" id="hzone"><b>1</b> 집 앞</div>
         <button class="chkchip pix" id="hchk" hidden></button>
+        <button class="guidechip pix" id="hguide" hidden type="button"></button>
 
         <div class="dpad" id="hdpad">
           <button data-d="3" aria-label="위">▲</button>
@@ -1624,7 +1638,8 @@ function shareCard(){
     ctx.fillStyle=P.s2; ctx.fillText(String(v),CARDW-52,yy+1);
     yy+=21; });
   ctx.fillStyle=P.s1; ctx.font='10px Galmuri9,monospace';
-  ctx.fillText('대학생·취준생·사회초년생을 위한 도트 RPG',16,CARDH-16);
+  ctx.fillText(SHARE_PITCH,16,CARDH-30);
+  ctx.fillText(SHARE_BASE.replace(/^https?:\/\//,'').replace(/\/$/,''),16,CARDH-16);
   return cv; }
 var DL=null,DLREADY=false;
 if(window.claude&&claude.use) claude.use('downloads').then(function(d){ DL=d; DLREADY=true; syncShareBtn(); },
@@ -1636,19 +1651,33 @@ function canShareFile(){
   catch(e){ return false; } }
 function syncShareBtn(){
   var b=document.getElementById('sharebtn'); if(!b) return;
-  var ok=canShareFile();
-  b.hidden=!ok&&DLREADY&&!DL;
+  b.hidden=false;                              /* 이미지를 못 내보내는 브라우저도 문구와 링크는 보낸다 */
   var n=document.getElementById('sharenote');
-  if(n) n.hidden=b.hidden?false:true, n.textContent=b.hidden?
-    '이 브라우저에서는 이미지를 바로 저장할 수 없습니다.':''; }
+  if(n){ n.hidden=false; n.textContent=canShareFile()?'지금 모습을 이미지로 저장하거나 바로 공유합니다'
+    :'이 브라우저에서는 이미지 대신 문구와 링크를 공유하거나 복사합니다'; } }
+/* 이미지를 못 보내는 곳: 문구+링크를 공유창으로, 그것도 없으면 복사 */
+function shareTextOut(txt,title,say,tag){
+  function copy(){
+    function ok(){ say('문구와 링크를 복사했어요. 메신저에 붙여 넣으세요'); }
+    function legacy(){ try{ var ta=document.createElement('textarea'); ta.value=txt; ta.setAttribute('readonly','');
+      ta.style.cssText='position:fixed;left:-9999px;top:0'; document.body.appendChild(ta); ta.select();
+      var done=document.execCommand&&document.execCommand('copy'); document.body.removeChild(ta);
+      if(done) ok(); else say('복사하지 못했어요. 아래 문구를 직접 복사해 주세요: '+txt); }
+      catch(e){ say('복사하지 못했어요. 아래 문구를 직접 복사해 주세요: '+txt); } }
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok,legacy); else legacy(); }
+  if(navigator.share){
+    navigator.share({title:title,text:txt}).then(function(){ say('공유했어요'); },
+      function(e){ if(e&&e.name==='AbortError') say(''); else copy(); });
+    return; }
+  copy(); }
 function shareCardOut(){
   var cv=shareCard();
   ev('share_card',{lv:S.lv,tier:S.tier,streak:S.streak});
-  var txt='뉴비 퀘스트 · '+TIERS[S.tier].name+' · Lv.'+S.lv+' · 연속 '+S.streak+'일';
+  var txt='뉴비 퀘스트 · '+TIERS[S.tier].name+' · Lv.'+S.lv+' · 연속 '+S.streak+'일\n'+SHARE_PITCH+'\n'+SHARE_BASE;
   var note=document.getElementById('sharenote');
   function say(m){ if(note){ note.hidden=false; note.textContent=m; } }
   cv.toBlob(function(blob){
-    if(!blob){ say('이미지를 만들지 못했습니다'); return; }
+    if(!blob){ shareTextOut(txt,'뉴비 퀘스트',say); return; }
     var file=null;
     try{ file=new File([blob],'newbie-quest.png',{type:'image/png'}); }catch(e){}
     if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
@@ -1662,7 +1691,7 @@ function shareCardOut(){
           say(c==='declined'?'저장을 취소했습니다':
               c==='rate_limited'?'잠시 후 다시 눌러 주세요':'이 화면에서는 저장할 수 없습니다'); });
       return; }
-    say('이 브라우저에서는 이미지를 바로 저장할 수 없습니다');
+    shareTextOut(txt,'뉴비 퀘스트',say);          /* 파일 공유가 안 되는 브라우저: 문구+링크로 */
   },'image/png'); }
 
 /* ══════════ 펫 · 탈것 ══════════ */
@@ -3217,14 +3246,18 @@ function attAdGo(){
     toast('출석 보너스 ￦'+c); todaySheet(); }); }
 
 /* ── 오늘 할 일 ──────────────────────────────────────────────────────── */
-function todaySheet(){
+function todaySheet(eod){
   dripEnsure();
   var t=dayKey(),open=openLeft(),lk=dripLocked().length,bt=[];
   var h='<div class="ih"><div><span class="inm">오늘 할 일</span><span class="isub">연속 '+S.streak+'일 · 최고 '+Math.max(S.best||0,S.streak)+'일</span></div></div><hr>';
   (S.msNew||[]).forEach(function(m){
     h+='<div class="il good"><i>◆</i>연속 '+m.d+'일 한정 보상 · ￦'+m.coin+(m.item?' · '+esc(m.item):'')+'</div>'; });
   S.msNew=[];
-  h+='<div class="il"><i>◆</i>풀 수 있는 새 퀘스트 '+open+'개'+(lk?' · 내일 '+Math.min(DRIP_DAILY,lk)+'개 더 열려요':' · 새 퀘스트는 전부 열렸어요')+'</div>';
+  if(eod){                                   /* 그날 새 퀘스트를 다 풀고 처음 열 때 */
+    var rest=[]; if(quizAvail()) rest.push('복습 퀴즈'); if(S.claimed===t&&S.attAd!==t&&adLeft('att')>0) rest.push('출석 광고 보너스');
+    h+='<div class="il good"><i>◆</i>오늘 몫 끝! '+(lk?'내일 새 퀘스트 '+Math.min(DRIP_DAILY,lk)+'개가 열려요':'새 퀘스트를 전부 풀었어요')+'</div>'+
+      '<div class="il"><i>◆</i>'+(rest.length?'남은 일 · '+rest.join(', '):'더 할 일은 없어요. 내일 만나요')+'</div>'; }
+  else h+='<div class="il"><i>◆</i>풀 수 있는 새 퀘스트 '+open+'개'+(lk?' · 내일 '+Math.min(DRIP_DAILY,lk)+'개 더 열려요':' · 새 퀘스트는 전부 열렸어요')+'</div>';
   if(quizAvail()) bt.push({t:'오늘의 복습 퀴즈 · 3문항 · ￦30',f:quizStart});
   else h+='<div class="il"><i>◆</i>'+(S.quizDay===t?'오늘의 복습 퀴즈를 마쳤어요':S.done.length?'복습 퀴즈는 새 퀘스트를 다 풀거나 오늘 퀘스트를 완주하면 열려요':'퀘스트를 하나 풀면 복습 퀴즈가 열려요')+'</div>';
   if(lk>0){
@@ -6133,6 +6166,7 @@ function drawScene(){
     if(w.to==='center_lobby'&&w.x===9) return;
     var r=marksIn(w.to); if(!r.n) return;
     drawMark(ctx,w.x*TS+(w.to==='center_lobby'||w.to==='office_lobby'?TS:TS/2),w.y*TS+13,r.today?P.y1:P.p0); });
+  guideDraw(ctx);
   ctx.restore();
 
   var zn=document.getElementById('hzone');
@@ -6147,7 +6181,7 @@ function drawScene(){
     rcx(ctx,col,PLACE.x*TS,PLACE.y*TS,2,gh); rcx(ctx,col,PLACE.x*TS+gw-2,PLACE.y*TS,2,gh);
     ctx.restore();
   }
-  drawMini();
+  drawMini(); guideSync();
   var nb=document.getElementById('hnear'),ns=PLACE?null:facingSpot(),zt=document.getElementById('hzone');
   if(nb){ if(ns){ nb.hidden=false; nb.innerHTML='<b>'+spotLabel(ns)+'</b> <span>'+spotHint(ns)+'</span>'; }
     else nb.hidden=true; }
@@ -7851,7 +7885,7 @@ function finish(failed){
   var dirty=S.clean<30,blue=S.mood<30;                    /* 지저분하면 코인이, 기분이 처지면 경험치가 깎인다 */
   var xp=failed?0:Math.round(q.xp*(0.5+0.5*ratio)*(1+perkSum('xp')/100)*(blue?0.8:1)),coin=failed?0:Math.round(q.coin*(0.5+0.5*ratio)*(1+perkSum('coin')/100)*(dirty?0.8:1));
   if(!failed) S.mood=Math.min(100,S.mood+4);
-  var before={lv:S.lv,peak:S.peak};
+  var before={lv:S.lv,peak:S.peak,tier:S.tier};
   S.xp+=xp; S.coin+=coin;
   while(S.xp>=need(S.lv)){ S.xp-=need(S.lv); S.lv++; }
   if(!failed) Object.keys(q.stat||{}).forEach(function(k){ S.stats[k]=Math.min(100,S.stats[k]+Math.round(q.stat[k]*ratio)); });
@@ -7877,6 +7911,7 @@ function finish(failed){
   var gr=failed?null:tierGrow();
   if(gr&&gr.wasTop) LASTMOVE=tierMove(S.peak);          /* 새 집에 들어가려면 보증금이 든다 */
   var unlocked=S.peak>before.peak;
+  if(!failed&&unlocked&&!S.mvSeen&&LASTMOVE&&LASTMOVE.ok&&S.tier!==before.tier){ S.mvSeen=1; MVB={from:before.tier,to:S.tier,cost:LASTMOVE.cost}; }
   save();
   sfx(failed?'hit':(S.lv>before.lv)?'level':unlocked?'open':'win');
   var big=document.getElementById('rbig');
@@ -7928,7 +7963,8 @@ function finish(failed){
       dw.appendChild(db);
     } else { var dn=document.createElement('div'); dn.className='micro'; dn.style.textAlign='center'; dn.textContent=AD_DONE; dw.appendChild(dn); }
     var rb0=document.getElementById('rback'); rb0.parentNode.insertBefore(dw,rb0); }
-  go('result'); }
+  go('result');
+  if(MVB){ var mb=MVB; MVB=null; setTimeout(function(){ moveBanner(mb); },350); } }
 
 /* ══════════ 보스전 ══════════ */
 var FIGHT=null;
@@ -8415,7 +8451,7 @@ function endingReady(){ return !S.ending&&S.peak>=TIERS.length-1&&BOSSES.every(f
 function checkEnding(){
   if(!endingReady()||document.getElementById('opening')) return;
   S.ending=dayKey(); save(); ev('ending',{lv:S.lv});
-  playCinema(ENDING,function(){ toast('엔딩을 봤습니다. 이어서 계속 플레이할 수 있어요.'); });
+  playCinema(ENDING,function(){ endingShareSheet(); });
 }
 
 /* ══════════ 생활 이벤트 ══════════
@@ -8513,6 +8549,7 @@ function maybeLifeEvent(force){
    실제 돈이 걸린 목록이라 항목마다 근거가 되는 제도를 적고, 기준일을 화면에 띄운다. */
 var CHECK_ASOF='2026-09-29';
 var SHARE_BASE='https://ksy93-spec.github.io/Newbie-Game/';
+var SHARE_PITCH='사회초년생 생활 RPG, 뉴비 퀘스트';   /* 카드·엔딩 공유 문구의 한 줄 소개 */
 var CHECKS=[
  {id:'lease',k:'주',title:'전세·월세 계약',one:'집 보는 날부터 보증보험 가입까지',dateLabel:'잔금·입주일',
   src:['찾기쉬운 생활법령정보','https://easylaw.go.kr'],stages:[
@@ -8679,7 +8716,7 @@ function homeCheckChip(){
   var best=null;
   CHECKS.forEach(function(c){ var g=chkDday(c),cnt=chkCount(c); if(g==null||cnt.d===cnt.n||g<-30||g>90) return;
     if(!best||Math.abs(g)<Math.abs(best.g)) best={c:c,g:g,left:cnt.n-cnt.d}; });
-  if(!best){ el.hidden=true; return; }
+  if(!best){ var ss=seasonNow(); if(ss) return seasonChip(el,ss); el.hidden=true; return; }
   el.hidden=false; el.innerHTML='<b>'+ddayTxt(best.g)+'</b> '+esc(best.c.title)+' · 남은 할 일 '+best.left;
   el.onclick=function(){ sfx('pick'); openCheck(best.c.id); }; }
 function checkSearch(q){
@@ -8691,6 +8728,128 @@ function checkSearch(q){
   return out; }
 
 var _renderHome0=renderHome; renderHome=function(){ _renderHome0.apply(this,arguments); homeCheckChip(); setTimeout(checkEnding,900); };
+/* ══════════ 첫 3분 · 하루의 끝 · 시즌 칩 · 엔딩 공유 (스프린트 C2) ══════════ */
+/* 첫 상담 안내. 온보딩과 부동산 사장 대사가 끝나면 아직 아무 퀘스트도 못 푼 사람에게 가야 할 창구를 보여 준다.
+   지도에서는 문(동네)과 창구(건물 안)에 맥박 테두리와 화살표가 뜨고, 아래 칩을 누르면 알아서 걸어간다.
+   첫 퀘스트는 대개 ju1(등기부등본). 보상 ￦70과 시작 코인이면 첫 보증금 ￦20은 충분하고, 주 스탯이 +12라 움막이 바로 열린다. */
+var GUIDE_AUTO=0,MVB=null;
+function guideQuest(){
+  if(!S||!S.onboarded||S.done.length||!S.tut) return null;
+  var q=QMAP.ju1;
+  if(!(q&&fits(q)&&qOpen(q)&&QPLACE[q.id])) q=QUESTS.filter(function(x){ return x.theme==='ju'&&QPLACE[x.id]&&fits(x)&&qOpen(x); })[0];
+  return q||null; }
+function guideTarget(){
+  var q=guideQuest(); if(!q) return null;
+  var did=QPLACE[q.id],mk=null,sp=null,w=null;
+  Object.keys(MAPS).forEach(function(k){ (MAPS[k].spots||[]).forEach(function(s){ if(s.kind==='desk'&&s.id===did){ mk=k; sp=s; } }); });
+  if(!mk) return null;
+  (MAPS.town.warps||[]).forEach(function(x){ if(x.to===mk) w=x; });
+  return {q:q,map:mk,spot:sp,warp:w}; }
+function guideDraw(ctx){
+  if(TUT||PLACE) return;
+  var t=guideTarget(); if(!t) return;
+  var tx,ty,up;
+  if(ME.map===t.map){ tx=t.spot.x; ty=t.spot.y; up=0; }
+  else if(ME.map==='town'&&t.warp){ tx=t.warp.x; ty=t.warp.y; up=1; }
+  else return;
+  var f=Math.floor(TICK/4),c=(f%2)?P.y1:P.s4,x0=tx*TS,y0=ty*TS,bob=[0,1,2,1][f%4],r;
+  rcx(ctx,c,x0-1,y0-1,TS+2,2); rcx(ctx,c,x0-1,y0+TS-1,TS+2,2); rcx(ctx,c,x0-1,y0-1,2,TS+2); rcx(ctx,c,x0+TS-1,y0-1,2,TS+2);
+  var ax=x0+TS/2,ay=up?y0+TS+2+bob:y0-14-bob;            /* 문은 아래에서 위로, 창구는 위에서 아래로 가리킨다 */
+  for(r=0;r<4;r++){ var w=up?2*r+1:7-2*r,yy=up?ay+3-r:ay+r;
+    rcx(ctx,P.s4,ax-Math.floor(w/2)-1,yy,w+2,1); }
+  for(r=0;r<4;r++){ var w2=up?2*r+1:7-2*r,y2=up?ay+3-r:ay+r;
+    rcx(ctx,P.y1,ax-Math.floor(w2/2),y2,w2,1); } }
+function guideSync(){
+  var el=document.getElementById('hguide'); if(!el) return;
+  var t=(TUT||PLACE)?null:guideTarget(),key=t?(t.q.id+'|'+ME.map):'';
+  if(el.__k===key) return; el.__k=key;
+  if(!t){ el.hidden=true; return; }
+  var here=(ME.map===t.map),dir=(!here&&ME.map==='town'&&t.warp)?(t.warp.x>ME.tx?'오른쪽 ':'왼쪽 '):'';   /* 문이 화면 밖에 있어도 어느 쪽인지 알게 */
+  el.hidden=false;
+  el.innerHTML='<b>여기서 첫 상담</b>'+dir+esc(MAPS[t.map].name)+' '+esc(t.spot.label)+' 창구 · '+(here?'눌러서 상담':'눌러서 걷기');
+  el.onclick=guideGo; }
+function guideGo(){
+  var t=guideTarget(); if(!t||TUT||MOVE||PLACE) return;
+  sfx('pick'); ev('first_guide_tap',{map:ME.map}); GUIDE_AUTO=Date.now();
+  guideStep(t); }
+function guideStep(t){
+  if(ME.map===t.map){
+    var m=curMap(),s=t.spot;
+    if(Math.abs(s.x-ME.tx)+Math.abs(s.y-ME.ty)<=1){ GUIDE_AUTO=0; faceSpot(s); return triggerSpot(s); }
+    var near=adjacentTo(m,s); if(!near){ GUIDE_AUTO=0; return; }
+    return goTo(near.x,near.y,function(){ GUIDE_AUTO=0; faceSpot(s); drawScene(); triggerSpot(s); }); }
+  if(ME.map==='town'&&t.warp){ goTo(t.warp.x,t.warp.y,null); return guideWait(t); }
+  if(S.onFoot){ S.onFoot=false; S.park=null; }                /* 지도에서 옮길 때와 같다 */
+  enterMap('town',MAPS.town.spawn.x,MAPS.town.spawn.y);
+  setTimeout(function(){ if(GUIDE_AUTO) guideStep(t); },300); }
+/* 문을 지나 건물 안으로 들어가면 이어서 창구까지 걷는다 */
+function guideWait(t){
+  setTimeout(function(){
+    if(!GUIDE_AUTO||Date.now()-GUIDE_AUTO>10000){ GUIDE_AUTO=0; return; }
+    if(MOVE||TUT) return guideWait(t);
+    if(ME.map===t.map) return guideStep(t);
+    GUIDE_AUTO=0; },250); }
+/* 첫 이사: 박스에서 움막으로. 결과 화면 위에 잠깐 띄운다 */
+function moveBanner(o){
+  var app=document.getElementById('app'); if(!app||!TIERS[o.from]||!TIERS[o.to]) return;
+  var old=document.getElementById('mvbanner'); if(old&&old.parentNode) old.parentNode.removeChild(old);
+  var el=document.createElement('div'); el.id='mvbanner'; el.className='mvbanner pix'; el.setAttribute('role','status');
+  el.innerHTML='<div class="mvt">첫 이사</div><div class="mvr"></div><div class="mvn">'+esc(TIERS[o.from].name)+' → '+esc(TIERS[o.to].name)+'</div>'+
+    '<div class="mvs">'+(o.cost?'입주 보증금 ￦'+o.cost+'을 냈어요':'보증금 없이 옮겼어요')+' · 다음 집은 주 스탯을 올리면 열려요</div>';
+  var row=el.querySelector('.mvr');
+  [o.from,o.to].forEach(function(i,k){
+    if(k){ var ar=document.createElement('span'); ar.textContent='▶'; ar.style.cssText='align-self:center'; row.appendChild(ar); }
+    var hc=houseCv(i),cv=document.createElement('canvas'); cv.width=hc.width; cv.height=hc.height;
+    cv.getContext('2d').drawImage(hc,0,0); row.appendChild(cv); });
+  function bye(){ if(el.parentNode) el.parentNode.removeChild(el); }
+  el.onclick=bye; app.appendChild(el); setTimeout(bye,3000);
+  sfx('level'); ev('first_move',{from:o.from,to:o.to,cost:o.cost}); }
+
+/* 하루의 끝. 그날 새 퀘스트를 다 풀었으면 처음 한 번, 남은 일과 내일 몫을 알려 준다 */
+function eodMaybe(){
+  if(!S||!S.onboarded||S.eodArm!==dayKey()||S.eodDay===dayKey()||openLeft()!==0) return false;
+  var hs=document.getElementById('home'),tp=document.getElementById('itip');
+  if(!hs||!hs.classList.contains('on')||TUT||document.getElementById('opening')||(tp&&!tp.hidden)) return false;
+  S.eodDay=dayKey(); save(); ev('eod_sheet',{done:S.done.length,left:dripLocked().length});
+  sfx('good'); todaySheet(true); return true; }
+(function(){ var rb=document.getElementById('rback'),prev=rb.onclick;
+  rb.onclick=function(){ prev.apply(this,arguments);
+    if(S&&S.onboarded){ S.eodArm=dayKey(); setTimeout(eodMaybe,900); } }; })();
+
+/* 시즌 칩. 사용자가 날짜를 넣은 체크리스트가 없을 때만, 지금 철에 맞는 목록을 하나 권한다 */
+var SEASONS=[
+ {id:'yearend',months:[1],check:'yearend',label:'연말정산',chip:'놓친 공제 체크리스트'},
+ {id:'move',months:[2,3,8,9],check:'lease',label:'이사철',chip:'전세 체크리스트'},
+ {id:'firstjob',months:[3,9],check:'firstjob',label:'입사철',chip:'첫 출근 체크리스트'}];
+function seasonFit(s){
+  var newbie=S.status==='취준생'||(S.status==='직장인'&&S.years===0);
+  return s.id==='firstjob'?(newbie?1:0):s.id==='yearend'?(S.status==='직장인'?1:0):(newbie?0:1); }
+function seasonNow(){
+  if(!S||!S.onboarded||!S.done.length||S.seasonHide===dayKey()) return null;
+  var mo=+dayKey().slice(5,7);
+  var hits=SEASONS.filter(function(s){ if(s.months.indexOf(mo)<0) return false;
+    var c=CHECKS.filter(function(x){ return x.id===s.check; })[0]; if(!c) return false;
+    var n=chkCount(c); return n.d<n.n; });
+  hits=hits.map(function(s,i){ return {s:s,i:i,f:seasonFit(s)}; }).sort(function(a,b){ return (b.f-a.f)||(a.i-b.i); });
+  return hits.length?hits[0].s:null; }
+function seasonChip(el,ss){
+  el.hidden=false;
+  el.innerHTML='<b>'+esc(ss.label)+'</b> · '+esc(ss.chip)+' <span class="cx" role="button" aria-label="오늘은 숨기기">×</span>';
+  el.onclick=function(e){
+    if(e&&e.target&&e.target.classList&&e.target.classList.contains('cx')){ S.seasonHide=dayKey(); save(); el.hidden=true; sfx('pick'); return; }
+    sfx('pick'); ev('season_chip',{id:ss.id}); openCheck(ss.check); }; }
+
+/* 엔딩 공유. 대사가 "그 사람의 귀인이 되어 주게"로 끝나니 친구에게 링크를 보내는 것이 이야기와 맞는다 */
+function shareEnding(){
+  var txt='"그 사람의 귀인이 되어 주게." 뉴비 퀘스트 엔딩을 봤다 · Lv.'+S.lv+' · '+TIERS[S.tier].name+'\n'+SHARE_PITCH+'\n'+SHARE_BASE;
+  ev('share_ending',{lv:S.lv});
+  shareTextOut(txt,'뉴비 퀘스트',function(m){ if(m) toast(m); }); }
+function endingShareSheet(){
+  openTip('<div class="ih"><div><span class="inm">엔딩을 봤어요</span><span class="isub">이어서 계속 플레이할 수 있어요</span></div></div><hr>'+
+    '<div class="il good"><i>◆</i>"그 사람의 귀인이 되어 주게."</div>'+
+    '<div class="il"><i>◆</i>막 상경한 친구에게 링크를 보내 보세요.</div>','#FFC53C',
+    [{t:'친구에게 링크 보내기',f:shareEnding}]); sheetStack(); }
+var _renderHome1=renderHome; renderHome=function(){ _renderHome1.apply(this,arguments); setTimeout(eodMaybe,1200); };
 if(S.onboarded) render('home'); else { obRender(); go('onboard'); }
 /* 딥링크: 주소 끝 #c=lease 처럼 체크리스트 id를 붙이면 그 목록을 바로 연다 (공유 문구의 링크) */
 function deepCheckId(){ var m=/[#&]c=([\w-]+)/.exec(location.hash||''); if(!m) return null;
