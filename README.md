@@ -54,6 +54,9 @@ Branch를 `main`, 폴더를 `/docs`로 두면 `https://ksy93-spec.github.io/Newb
 
 구조: `App.tsx`가 `src/GameShell.tsx`를 띄우고, 웹뷰가 게임 HTML을 `https://newbie-quest.app/` 주소(가짜 origin, 네트워크 요청 없음)로 연다.
 `src/bridge/`가 저장 백업(`nq.v8` → AsyncStorage), 보상형 광고, 뒤로가기, 외부 링크, 공유를 맡는다.
+
+PC에 Node가 없어도 빌드할 수 있다. GitHub Actions의 "Android build" 워크플로가 EAS 클라우드에 빌드를 맡긴다.
+저장소 시크릿 `EXPO_TOKEN`(expo.dev > Account settings > Access tokens)이 있어야 하고, Actions 탭에서 Run workflow를 누르거나 `android-preview-*` 태그(폰 설치용 APK), `android-release-*` 태그(스토어용 AAB)를 푸시하면 돈다. 결과 파일 링크는 실행 요약에 나온다.
 게임 HTML은 앱을 위해 고치지 않는다. 필요한 연결은 `src/bridge/injected.mjs`가 웹뷰에 주입한다.
 
 ```bash
