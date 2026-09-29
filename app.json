@@ -6,7 +6,8 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "platforms": [
-      "android"
+      "android",
+      "ios"
     ],
     "android": {
       "package": "com.ksy93.newbiequest",
@@ -28,7 +29,12 @@
       [
         "react-native-google-mobile-ads",
         {
-          "androidAppId": "ca-app-pub-3940256099942544~3347511713"
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+          "userTrackingUsageDescription": "광고를 내 관심사에 맞게 보여 주는 데만 쓰여요. 허용하지 않아도 게임과 보상은 똑같이 받을 수 있어요.",
+          "skAdNetworkItems": [
+            "cstr6suwn9.skadnetwork"
+          ]
         }
       ],
       [
@@ -39,6 +45,12 @@
             "targetSdkVersion": 36
           }
         }
+      ],
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission": "광고를 내 관심사에 맞게 보여 주는 데만 쓰여요. 허용하지 않아도 게임과 보상은 똑같이 받을 수 있어요."
+        }
       ]
     ],
     "extra": {
@@ -46,10 +58,46 @@
         "projectId": ""
       }
     },
-    "icon": "./assets/app/icon.png"
+    "icon": "./assets/app/icon.png",
+    "ios": {
+      "bundleIdentifier": "com.ksy93.newbiequest",
+      "supportsTablet": false,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": [
+              "CA92.1"
+            ]
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryFileTimestamp",
+            "NSPrivacyAccessedAPITypeReasons": [
+              "C617.1"
+            ]
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategorySystemBootTime",
+            "NSPrivacyAccessedAPITypeReasons": [
+              "35F9.1"
+            ]
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryDiskSpace",
+            "NSPrivacyAccessedAPITypeReasons": [
+              "E174.1"
+            ]
+          }
+        ]
+      }
+    }
   },
   "react-native-google-mobile-ads": {
     "android_app_id": "ca-app-pub-3940256099942544~3347511713",
-    "delay_app_measurement_init": true
+    "delay_app_measurement_init": true,
+    "ios_app_id": "ca-app-pub-3940256099942544~1458002511"
   }
 }

@@ -7,6 +7,8 @@ import mobileAds, {
   RewardedAd,
   RewardedAdEventType,
 } from 'react-native-google-mobile-ads';
+import { Platform } from 'react-native';
+import { getTrackingPermissionsAsync, requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 import { AD_LOAD_TIMEOUT_MS, REWARDED_UNIT_ID, UMP_DEBUG_EEA, UMP_TEST_DEVICE_IDS } from '../config/ads';
 import { createRewardedController, type AdEvent, type AdHandle } from './adController';
 
@@ -51,6 +53,13 @@ export async function startAds(): Promise<void> {
     try { canRequestAds = (await AdsConsent.getConsentInfo()).canRequestAds; } catch { /* 광고 없이 진행 */ }
   }
   if (!canRequestAds) return;
+  // 아이폰: 광고 추적 허용 여부를 한 번 묻는다. 거절해도 광고와 보상은 그대로다(맞춤 광고만 빠진다)
+  if (Platform.OS === 'ios') {
+    try {
+      const cur = await getTrackingPermissionsAsync();
+      if (cur.status === 'undetermined') await requestTrackingPermissionsAsync();
+    } catch { /* 무시 */ }
+  }
   try {
     await mobileAds().initialize();
     rewarded.setEnabled(true);

@@ -7,7 +7,7 @@ const art = b.artifacts || {};
 const url = art.buildUrl || art.applicationArchiveUrl || '';
 const owner = b.project?.ownerAccount?.name || b.initiatingActor?.displayName || '';
 const lines = [
-  `## 안드로이드 빌드 (${b.buildProfile || ''})`,
+  `## ${b.platform === 'IOS' ? '아이폰' : '안드로이드'} 빌드 (${b.buildProfile || ''})`,
   '',
   `- 상태: ${b.status}`,
   `- 파일: ${url}`,

@@ -1,15 +1,25 @@
-# 안드로이드 빌드를 EAS 클라우드에 맡긴다. PC에 Node를 깔 필요가 없다.
-# 필요한 것: 저장소 Settings > Secrets and variables > Actions 에 EXPO_TOKEN (expo.dev > Account settings > Access tokens)
+# 앱 빌드를 EAS 클라우드에 맡긴다. PC에 Node나 Mac이 없어도 된다.
+# 공통 시크릿: EXPO_TOKEN (expo.dev > Account settings > Access tokens)
+# 아이폰 시크릿(App Store Connect > 사용자 및 액세스 > 통합 > App Store Connect API 에서 발급):
+#   ASC_API_KEY(.p8 파일 내용 전체), ASC_KEY_ID, ASC_ISSUER_ID, APPLE_TEAM_ID, ASC_APP_ID(앱 정보의 Apple ID 숫자)
 # 실행 방법
-#   1) Actions 탭 > "Android build" > Run workflow 에서 프로필 선택
-#   2) 태그 푸시: android-preview-* 는 폰 설치용 APK, android-release-* 는 스토어용 AAB
-name: Android build
+#   1) Actions 탭 > "App build" > Run workflow 에서 플랫폼·프로필 선택
+#   2) 태그 푸시
+#      android-preview-*  폰 설치용 APK
+#      android-release-*  플레이 스토어용 AAB
+#      ios-testflight-*   아이폰 빌드 후 TestFlight 업로드
+name: App build
 
 on:
   workflow_dispatch:
     inputs:
+      platform:
+        description: "android 또는 ios"
+        type: choice
+        options: [android, ios]
+        default: android
       profile:
-        description: "preview = 폰 설치용 APK, production = 스토어용 AAB"
+        description: "preview = 안드로이드 설치용 APK, production = 스토어용(아이폰은 항상 production)"
         type: choice
         options: [preview, production]
         default: preview
@@ -17,20 +27,42 @@ on:
     tags:
       - "android-preview-*"
       - "android-release-*"
+      - "ios-testflight-*"
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
-      - name: EXPO_TOKEN 확인
+      - name: 플랫폼·프로필 정하기
+        id: prof
+        run: |
+          PL="${{ github.event.inputs.platform }}"; P="${{ github.event.inputs.profile }}"
+          case "$GITHUB_REF_NAME" in
+            android-release-*) PL=android; P=production;;
+            android-preview-*) PL=android; P=preview;;
+            ios-testflight-*)  PL=ios; P=production;;
+          esac
+          PL="${PL:-android}"; P="${P:-preview}"
+          [ "$PL" = ios ] && P=production
+          echo "platform=$PL" >> "$GITHUB_OUTPUT"; echo "profile=$P" >> "$GITHUB_OUTPUT"
+          echo "플랫폼 $PL, 프로필 $P"
+
+      - name: 시크릿 확인
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          ASC_APP_ID: ${{ secrets.ASC_APP_ID }}
         run: |
-          if [ -z "$EXPO_TOKEN" ]; then
-            echo "::error::저장소 시크릿 EXPO_TOKEN 이 없습니다. expo.dev 에서 액세스 토큰을 만들어 넣어 주세요."
-            exit 1
+          miss=""
+          [ -z "$EXPO_TOKEN" ] && miss="$miss EXPO_TOKEN"
+          if [ "${{ steps.prof.outputs.platform }}" = ios ]; then
+            for v in ASC_API_KEY ASC_KEY_ID ASC_ISSUER_ID APPLE_TEAM_ID ASC_APP_ID; do [ -z "${!v}" ] && miss="$miss $v"; done
           fi
+          if [ -n "$miss" ]; then echo "::error::저장소 시크릿이 없습니다:$miss"; exit 1; fi
 
       - uses: actions/checkout@v4
 
@@ -49,21 +81,43 @@ jobs:
       - name: 게임 HTML 내장 파일 만들기
         run: npm run build:game
 
-      - name: 테스트
+      - name: 타입 검사
         run: npx tsc --noEmit
-
-      - name: 빌드 프로필 정하기
-        id: prof
-        run: |
-          P="${{ github.event.inputs.profile }}"
-          case "$GITHUB_REF_NAME" in android-release-*) P=production;; android-preview-*) P=preview;; esac
-          echo "profile=${P:-preview}" >> "$GITHUB_OUTPUT"
 
       - name: EAS 프로젝트 연결
         run: eas init --non-interactive --force
 
+      - name: 아이폰 인증 정보 준비
+        if: steps.prof.outputs.platform == 'ios'
+        env:
+          ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          ASC_APP_ID: ${{ secrets.ASC_APP_ID }}
+        run: |
+          printf '%s\n' "$ASC_API_KEY" > "$RUNNER_TEMP/asc.p8"
+          {
+            echo "EXPO_ASC_API_KEY_PATH=$RUNNER_TEMP/asc.p8"
+            echo "EXPO_ASC_KEY_ID=$ASC_KEY_ID"
+            echo "EXPO_ASC_ISSUER_ID=$ASC_ISSUER_ID"
+            echo "EXPO_APPLE_TEAM_ID=$APPLE_TEAM_ID"
+            echo "EXPO_APPLE_TEAM_TYPE=INDIVIDUAL"
+          } >> "$GITHUB_ENV"
+          # 제출 설정은 저장소에 두지 않고 여기서만 채운다
+          node -e '
+            const fs=require("fs"); const j=JSON.parse(fs.readFileSync("eas.json","utf8"));
+            j.submit=j.submit||{}; j.submit.production=j.submit.production||{};
+            j.submit.production.ios={ascApiKeyPath:process.env.RUNNER_TEMP+"/asc.p8",ascApiKeyId:process.env.ASC_KEY_ID,
+              ascApiKeyIssuerId:process.env.ASC_ISSUER_ID,ascAppId:process.env.ASC_APP_ID,appleTeamId:process.env.APPLE_TEAM_ID};
+            fs.writeFileSync("eas.json",JSON.stringify(j,null,2));'
+
       - name: EAS 빌드
-        run: eas build --platform android --profile ${{ steps.prof.outputs.profile }} --non-interactive --wait --json > build.json
+        run: |
+          EXTRA=""
+          [ "${{ steps.prof.outputs.platform }}" = ios ] && EXTRA="--auto-submit"
+          eas build --platform ${{ steps.prof.outputs.platform }} --profile ${{ steps.prof.outputs.profile }} \
+            --non-interactive --wait --json $EXTRA > build.json
 
       - name: 결과 링크
         if: always()

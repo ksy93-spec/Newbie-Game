@@ -82,9 +82,10 @@ export function GameShell() {
     const now = Date.now();
     if (now - lastBackAt.current < EXIT_WINDOW_MS) { BackHandler.exitApp(); return; }
     lastBackAt.current = now;
-    ToastAndroid.show('한 번 더 누르면 종료', ToastAndroid.SHORT);
+    if (Platform.OS === 'android') ToastAndroid.show('한 번 더 누르면 종료', ToastAndroid.SHORT);
   }, []);
   useEffect(() => {
+    if (Platform.OS !== 'android') return;   // 아이폰에는 뒤로가기 버튼이 없다
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
       if (backTimer.current) return true;    // 앞선 물음에 아직 답을 기다리는 중
       backTimer.current = setTimeout(() => onBackResult(false), BACK_REPLY_TIMEOUT_MS);
@@ -133,7 +134,7 @@ export function GameShell() {
   if (mirror === undefined) return <View style={styles.root} />;
 
   return (
-    <View style={[styles.root, { paddingBottom: kb }]}>
+    <View style={[styles.root, { paddingBottom: Platform.OS === 'android' ? kb : 0 }]}>
       <WebView
         key={webKey}
         ref={web}
@@ -158,6 +159,10 @@ export function GameShell() {
         allowsInlineMediaPlayback
         webviewDebuggingEnabled={__DEV__}
         androidLayerType={Platform.OS === 'android' ? 'hardware' : undefined}
+        bounces={false}
+        contentInsetAdjustmentBehavior="never"
+        allowsBackForwardNavigationGestures={false}
+        keyboardDisplayRequiresUserAction={false}
       />
     </View>
   );
