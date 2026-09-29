@@ -6,7 +6,7 @@ export const USE_TEST_ADS = true;
 
 // TODO(출시 전): AdMob 콘솔에서 앱과 보상형 광고 단위를 만든 뒤 아래 값을 채운다.
 //   1) 아래 REAL_REWARDED_UNIT_ID 에 광고 단위 ID(ca-app-pub-XXXX/YYYY)
-//   2) app.json 의 react-native-google-mobile-ads 플러그인 androidAppId 를 실제 앱 ID(ca-app-pub-XXXX~ZZZZ)로
+//   2) app.json 두 곳을 실제 앱 ID(ca-app-pub-XXXX~ZZZZ)로: expo.plugins 의 androidAppId, 맨 위 "react-native-google-mobile-ads".android_app_id
 //   3) USE_TEST_ADS 를 false 로
 //   자세한 절차는 README "Android 앱 빌드" 참고.
 const REAL_REWARDED_UNIT_ID = '';

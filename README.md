@@ -83,7 +83,7 @@ npx eas build --profile production --platform android   # AAB, 플레이 스토�
 
 1. AdMob 콘솔에서 앱과 보상형 광고 단위를 만든다.
 2. `src/config/ads.ts`: `REAL_REWARDED_UNIT_ID`에 광고 단위 ID를 넣고 `USE_TEST_ADS`를 `false`로 바꾼다.
-3. `app.json`: `react-native-google-mobile-ads` 플러그인의 `androidAppId`를 실제 앱 ID로 바꾼다. 지금 값은 구글 공개 테스트 앱 ID다.
+3. `app.json`: 두 곳을 실제 앱 ID로 바꾼다. `expo.plugins`의 `react-native-google-mobile-ads` → `androidAppId`, 그리고 맨 위 `"react-native-google-mobile-ads"` → `android_app_id`(광고 라이브러리의 Gradle 스크립트가 이 값을 직접 읽는다). 지금 값은 구글 공개 테스트 앱 ID다.
 4. 동의창(UMP)은 AdMob 콘솔의 개인정보 및 메시지에서 메시지를 만든 뒤에 나온다. 창을 미리 보려면 `UMP_DEBUG_EEA`를 잠시 `true`로 둔다. 출시 빌드에서는 `false`.
 
 ---
