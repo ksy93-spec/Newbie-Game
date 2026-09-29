@@ -11,15 +11,18 @@
     "android": {
       "package": "com.ksy93.newbiequest",
       "adaptiveIcon": {
-        "backgroundColor": "#FFC53C"
+        "foregroundImage": "./assets/app/adaptive-icon.png",
+        "backgroundColor": "#8FD4F0"
       }
     },
     "plugins": [
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#2E2740",
-          "resizeMode": "contain"
+          "backgroundColor": "#FFF8EC",
+          "resizeMode": "contain",
+          "image": "./assets/app/splash-icon.png",
+          "imageWidth": 200
         }
       ],
       [
@@ -42,7 +45,8 @@
       "eas": {
         "projectId": ""
       }
-    }
+    },
+    "icon": "./assets/app/icon.png"
   },
   "react-native-google-mobile-ads": {
     "android_app_id": "ca-app-pub-3940256099942544~3347511713",
