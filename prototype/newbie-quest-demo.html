@@ -166,6 +166,9 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .fullbar i.low{background:var(--r1);box-shadow:inset 0 -2px 0 var(--r3);}
 .qtools{display:flex;gap:var(--u2);align-items:center;}
 .qtools .btn{padding:7px 12px;font-size:12px;}
+.qtip{background:var(--y1);border:3px solid var(--s4);padding:8px 10px;font-size:13px;line-height:1.5;color:var(--s4);cursor:pointer;}
+.qtip b{font-family:var(--f-ui);}
+.qtip .qtipx{display:block;margin-top:4px;font-family:var(--f-ui);font-size:10px;line-height:14px;color:var(--s2);text-align:right;}
 .qtools .mak{font-family:var(--f-ui);font-size:12px;line-height:16px;color:var(--k4);background:var(--w);border:3px solid var(--s4);padding:6px 10px;}
 .choice.gone{opacity:.35;text-decoration:line-through;pointer-events:none;}
 .hud-top{display:flex;align-items:center;gap:var(--u2);}
@@ -306,6 +309,14 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .tut-hl{animation:tuthl 1s steps(2) infinite;position:relative;z-index:8;}
 @keyframes tuthl{0%{box-shadow:0 0 0 3px var(--y1),0 0 0 6px var(--s4);}50%{box-shadow:0 0 0 0 var(--y1);}}
 .tutor .tn{display:block;margin-top:6px;font-family:var(--f-ui);font-size:10px;line-height:14px;color:var(--s2);text-align:right;}
+/* 낮은 화면에서는 대화창이 D-패드와 주인공을 가리지 않게 위로 올리고 줄인다 */
+@media (max-height:700px){
+  .tutor{top:6px;bottom:auto;padding:6px 8px;gap:8px;align-items:flex-start;}
+  .tutor canvas{width:30px!important;height:64px!important;}
+  .tutor .tt{font-size:12.5px;line-height:1.45;}
+  .tutor .topts{margin-top:4px;gap:4px;} .tutor .topt{padding:4px 8px;font-size:12px;line-height:16px;}
+  .tutor .tn{margin-top:2px;}
+}
 .placebar{position:absolute;left:0;right:0;top:0;z-index:7;background:rgba(44,44,49,.94);
   display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;}
 .placebar .pl{flex:1 1 100%;font-family:var(--f-ui);font-size:10px;line-height:15px;color:var(--s0);}
@@ -620,6 +631,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
     <div class="scroll" style="gap:var(--u3)">
       <div class="dlg pix"><span class="nm" id="qnpc">3년차 선배</span><span id="qtext">—</span></div>
       <div class="qtools" id="qtools"><button class="btn btn--plain pix" id="qkan">간파 0</button><span class="mak" id="qmak">막기 0</span></div>
+      <div class="qtip" id="qtip" hidden><b>간파</b> 오답 보기 하나를 지워 줍니다. 한 문제에 한 번 씁니다. <b>막기</b> 틀려도 목숨이 깎이지 않고 막기 횟수만 하나 줄어듭니다. 둘 다 공격력과 방어력이 오르면 늘어납니다.<span class="qtipx">눌러서 닫기 ✕</span></div>
       <div style="display:flex;flex-direction:column;gap:var(--u2)" id="qchoices"></div>
       <div id="qexplain" hidden></div>
       <button class="btn btn--wide pix" id="qramen" hidden>라면 먹기</button>
@@ -2322,8 +2334,8 @@ var THEME_ORDER=['ju','sik','ui','geum','jik'];
    제도는 자주 바뀐다. 문항을 코드에 박아 두면 최저임금 하나 고치는 데 스토어 심사를 다시 받는다.
    그래서 묶음에 버전과 기준일을 달고, 실제 앱에서는 아래 loadPack()이 서버에서 같은 모양의
    JSON을 받아 덮어쓴다. 내려받기 실패하면 내장 묶음으로 돌아간다. */
-var CONTENT={ver:'2026.09.2',asOf:'2026-09-20',origin:'내장',
-  note:'제도 기준일은 문항마다 표시됩니다. 법률·세무 자문이 아니라 정보 제공입니다.'};
+var CONTENT={ver:'2026.09.2',asOf:'2026-09-29',origin:'내장',
+  note:'전체 내용 점검일 2026-09-29. 제도는 바뀌므로 실제 결정 전에 원문을 확인하세요. 법률·세무 자문이 아니라 정보 제공입니다.'};
 var SRC={
  jik:['고용노동부','https://www.moel.go.kr'],
  geum:['금융감독원 파인','https://fine.fss.or.kr'],
@@ -2333,7 +2345,7 @@ var SRC={
 var SRC_BY_ID={
  car1:['오피넷','https://www.opinet.co.kr'],
  car2:['한국도로공사','https://www.ex.co.kr'],
- trip1:['여신금융협회','https://www.crefia.or.kr'],
+ trip1:['한국관광공사 1330','https://www.knto.or.kr'],
  trip2:['국민재난안전포털','https://www.safekorea.go.kr'],
  trip3:['한국소비자원','https://www.kca.go.kr'],
  trip4:['한국소비자원','https://www.kca.go.kr'],
@@ -2748,17 +2760,17 @@ Q('tax2','geum','3.3% 떼고 들어온 돈',80,70,{},'프리랜서 선배','knit
 Q('fin1','geum','청년 적금, 지금 들 수 있는 것',80,70,{status:['대학생','취준생','직장인']},'청년센터 상담원',null,
  '청년도약계좌 들려고 왔다고? 올해는 이름이 바뀌었어요.',[
  {q:'2026년에 청년도약계좌 신규 가입은?',a:['2025년 말로 끝났고 청년미래적금이 뒤를 잇는다','여전히 가입할 수 있다','청년 정책 적금은 모두 없어졌다'],ok:0,
-  why:'청년도약계좌 신규 가입은 2025년 12월 31일로 끝났다. 2026년부터는 3년 만기 청년미래적금이 나왔다.'},
+  why:'청년도약계좌 신규 가입은 2025년 12월 31일로 끝났다. 2026년부터는 3년 만기 청년미래적금이 나왔다. 청년미래적금은 정해진 접수 기간에만 가입할 수 있어, 접수 일정은 금융위원회·가입 은행 공지에서 미리 확인한다.'},
  {q:'청년 정책 적금의 핵심 혜택은?',a:['내가 넣은 돈에 정부 기여금이 붙고 이자에 세금이 붙지 않는다','원금이 두 배가 된다','이자를 매달 현금으로 준다'],ok:0,
   why:'정부 기여금과 이자 비과세가 핵심이다. 기여금 비율과 요건은 해마다 바뀔 수 있으니 가입 전에 금융위원회 공고를 본다.'},
  {q:'가입 조건으로 따지지 않는 것은?',a:['가지고 있는 신용카드 개수','나이','개인·가구 소득'],ok:0,
   why:'만 19~34세라는 나이와 개인·가구 소득 기준이 핵심이다. 카드 개수는 상관없다.'}],{geum:13}),
 Q('rent1','ju','청년월세지원 받는 법',80,70,{status:['대학생','취준생','직장인']},'주민센터 직원',null,
- '월세 사는 청년이면 한 번 알아봐요. 올해부터 아무 때나 신청돼요.',[
+ '월세 사는 청년이면 한 번 알아봐요. 매년 정해진 접수 기간이 있어서, 그때를 놓치면 안 돼요.',[
  {q:'2026년 청년월세지원은 한 달 최대 얼마를, 몇 개월까지 줄까?',a:['월 20만원, 최대 24개월','월 50만원, 12개월','월 10만원, 6개월'],ok:0,
-  why:'2026년부터 상시 사업이 되어 월 최대 20만원씩 최대 24개월, 모두 480만원까지 받을 수 있다.'},
+  why:'월 최대 20만원씩 최대 24개월, 모두 480만원까지 받을 수 있다. 다만 상시 신청이 아니라 매년 정해진 접수 기간에 신청하는 사업이고, 생애 1회만 받는다. 2026년은 3월 30일부터 5월 29일까지였다. 올해 접수는 이미 닫혔을 수 있으니 다음 접수 일정은 복지로 공고에서 확인한다.'},
  {q:'신청하는 곳은?',a:['복지로 또는 주소지 주민센터','집주인','은행 창구'],ok:0,
-  why:'온라인은 복지로, 오프라인은 주소지 행정복지센터에서 신청한다.'},
+  why:'온라인은 복지로, 오프라인은 주소지 행정복지센터에서 신청한다. 접수 기간 안에 해야 한다.'},
  {q:'따로 사는데도 부모님(원가구) 소득까지 보는 이유는?',a:['청년 가구와 부모 가구 형편을 함께 보는 사업이라서','부모님 명의로 돈이 나가서','실제로는 보지 않는다'],ok:0,
   why:'청년 가구는 기준 중위소득 60% 이하, 원가구는 100% 이하여야 한다. 재산 기준도 따로 있다.'}],{ju:11}),
 Q('scam1','geum','택배 문자와 검사님 전화',80,70,{},'은행 창구 직원','otp',
@@ -2789,8 +2801,10 @@ Q('sub1','sik','새는 구독 막기',70,60,{},'자취 선배','lunchbox',
  '통장에서 매달 몇천 원씩 빠져나가는 거, 다 합쳐 본 적 있어?',[
  {q:'OTT 13,900원, 음악 10,900원, 클라우드 3,300원을 매달 낸다. 1년이면?',a:['337,200원','28,100원','168,600원'],ok:0,
   why:'13,900 + 10,900 + 3,300 = 28,100원. 12개월이면 337,200원이다.'},
- {q:'무료 체험이 유료로 바뀌거나 구독료가 오를 때 사업자는?',a:['바뀌기 전 30일 이내에 소비자 동의를 받아야 한다','알림 없이 결제해도 된다','1년 뒤에 알리면 된다'],ok:0,
-  why:'2025년 2월부터 시행된 개정 전자상거래법이 정기결제 금액을 올리거나 유료로 바꾸기 전 30일 안에 동의를 받게 했다.'},
+ {q:'정기결제 구독료가 오르거나 유료 구독으로 바뀔 때 사업자는?',a:['소비자에게 미리 알리고 동의를 받아야 한다(30일 이내 동의 기준으로 안내됨)','알림 없이 결제해도 된다','1년 뒤에 알리면 된다'],ok:0,
+  why:'정기결제 금액을 올리거나 유료로 전환할 때는 소비자 동의를 받도록 전자상거래법이 정하고 있고, 동의 기한은 30일 이내로 안내된다. 세부 시행 시점과 기준은 공정거래위원회·소비자원 공지를 확인한다.'},
+ {q:'무료 체험 기간이 끝나 유료로 넘어가기 전에 사업자는?',a:['종료 전에 유료로 바뀐다는 것을 미리 알려야 한다(14일 전 고지로 안내됨)','알리지 않고 다음 날부터 결제해도 된다','체험이 끝난 뒤에 알리면 된다'],ok:0,
+  why:'무료 체험은 동의 절차와 별개로 종료 전에 유료 전환을 고지하게 되어 있고, 14일 전 고지로 안내된다. 체험을 시작할 때 종료일을 달력에 적어 두면 안전하다.'},
  {q:'안 쓰는 구독을 찾는 가장 빠른 방법은?',a:['카드·통장 자동결제 내역을 한 번에 훑는다','앱을 전부 지운다','해지는 어려우니 둔다'],ok:0,
   why:'앱을 지워도 결제는 계속된다. 카드사 앱과 계좌 자동이체 목록에서 정기결제를 찾아 해지한다.'}],{sik:10}),
 Q('labor1','jik','월급이 안 들어왔다',90,80,{},'노무 상담원','nomu',
@@ -6354,7 +6368,7 @@ var TUT_STEPS=[
  {id:'hungry',when:function(){ fullTick(); return S.full<35; },lines:[
    '배고파 보이는데? 편의점 알바생한테 말 걸면 먹을 걸 팔아.',
    '회사 앞 푸드트럭이나 학교 앞 카페도 있어. 돈이 없으면 좀 쉬어. 시간이 지나면 조금씩 차니까.']},
- {id:'doors',when:function(){ return S.done.length>=2||ME.map!=='town'; },lines:[
+ {id:'doors',when:function(){ return S.done.length>=2; },lines:[
    '동네마다 건물 안에 창구가 있어. 학교 앞은 학생지원센터, 고용센터 앞은 고용센터랑 공단.',
    '가게 사람 중엔 넌센스 퀴즈를 내는 사람도 있어. 보라색 말풍선이야. 다 맞히면 특별한 물건을 준대.',
    '그리고 땅에서 가끔 반짝이는 게 보이면 밟아 봐. 동전이나 경험치가 떨어져 있거든.']},
@@ -6389,6 +6403,7 @@ function checkTutor(){
   for(var i=0;i<TUT_STEPS.length;i++){ var st=TUT_STEPS[i];
     if(S.tuts.indexOf(st.id)>=0) continue;
     if(st.id!=='intro'&&S.tuts.indexOf('intro')<0) return;
+    if(ME.map!==(st.map||'town')) return;           /* 그 장소에 서 있을 때만 이어 간다. 방 안에 부동산 사장이 나타나던 것 */
     var ok=false; try{ ok=st.when(); }catch(e){}
     if(ok){ talkTo({name:'부동산 사장',face:'gpa',lines:st.lines,hl:st.hl,tut:st.id}); return; } } }
 function startTutor(){ checkTutor(); }
@@ -7293,10 +7308,13 @@ var WIKI=[
 ];
 
 /* 검색은 제목·단계·문항을 한 통에 넣고 훑는다. 항목이 수백 개가 아니니 색인은 과하다. */
+/* 체크리스트와 같은 주제(전세·월세, 첫 직장)는 체크리스트 카드로만 보여 준다. 두 번 나오고 항목 수가 서로 달랐다. */
+function wikiDup(w){ return CHECKS.some(function(c){ return c.id===w.id; }); }
 function wikiSearch(qs){
   var s=qs.trim().toLowerCase(); if(!s) return null;
   var out=[];
   WIKI.forEach(function(w){
+    if(wikiDup(w)) return;
     if((w.title+w.one).toLowerCase().indexOf(s)>=0)
       out.push({kind:'topic',w:w,label:w.title,sub:w.one});
     w.steps.forEach(function(st,i){
@@ -7350,6 +7368,7 @@ function renderWiki(){
   }
 
   WIKI.forEach(function(w){
+    if(wikiDup(w)) return;
     var card=document.createElement('div'); card.className='card pix wtopic';
     var head=document.createElement('button'); head.className='whead';
     head.innerHTML='<span class="tag" style="background:'+THEMES[themeOf(w.k)].color+'">'+w.k+'</span>'+
@@ -7379,7 +7398,7 @@ function renderWiki(){
       card.appendChild(tl);
       var sr=document.createElement('div'); sr.className='micro';
       sr.style.marginTop='var(--u2)';
-      sr.innerHTML='기준일 '+CONTENT.asOf+' · 확인처 <a href="'+w.src[1]+'" target="_blank" rel="noopener">'+esc(w.src[0])+'</a>'+
+      sr.innerHTML='전체 점검일 '+CONTENT.asOf+' · 확인처 <a href="'+w.src[1]+'" target="_blank" rel="noopener">'+esc(w.src[0])+'</a>'+
         '<br>제도는 바뀝니다. 실제 결정 전에 원문을 확인하세요.';
       card.appendChild(sr);
     }
@@ -7516,6 +7535,7 @@ function drawProg(intro){
 function startQuest(q){
   if(!useFull(q.keys?'review':'quest')) return;
   var tt=totals();
+  HEARTS=(!q.keys&&!S.done.length)?3:2;                     /* 첫 퀘스트는 목숨 3개. 첫 경험이 패배로 끝나지 않게 */
   RUN={q:q,i:0,hearts:HEARTS,correct:0,marks:[],
     kan:Math.min(4,1+Math.floor(tt.atk/15))+perkSum('kan'),       /* 공격이 높을수록 오답 지우기를 더 쓴다 */
     mak:Math.min(3,Math.floor(tt.def/30))+perkSum('mak')};         /* 방어가 높을수록 틀려도 버틴다 */
@@ -7531,6 +7551,7 @@ function stepQuest(intro){
   if(intro){
     box.hidden=true; next.hidden=true;
     var tl0=document.getElementById('qtools'); if(tl0) tl0.hidden=true;
+    var tp0=document.getElementById('qtip'); if(tp0) tp0.hidden=true;
     typeInto(qt,q.intro,function(){
       caretOn(qt); next.hidden=false; next.textContent='들어보기';
       next.onclick=function(){ box.hidden=false; stepQuest(false); }; });
@@ -7548,6 +7569,8 @@ function drawTools(){
   if(!kb) return;
   var answered=RUN.marks[RUN.i]!==undefined;
   tl.hidden=false;
+  var tip=document.getElementById('qtip');                  /* 처음 퀘스트에 들어왔을 때 한 번만 간파·막기를 설명한다 */
+  if(tip){ if(!S.tipTools){ tip.hidden=false; S.tipTools=1; save(); tip.onclick=function(){ tip.hidden=true; }; } }
   kb.textContent='간파 '+RUN.kan+(RUN.kanUsed?' · 사용함':'');
   kb.disabled=!(RUN.kan>0)||RUN.kanUsed||answered;
   mk.textContent='막기 '+RUN.mak;
@@ -7573,7 +7596,7 @@ function answer(idx,btn){
   drawTools();
   ex.innerHTML=(blocked?'<b>막기!</b> 방어로 버텨서 목숨은 그대로입니다 (막기 '+RUN.mak+' 남음).<br>':'')+
    '<b>'+(right?'정답':'오답')+'</b> · '+item.why+
-   '<span class="src">기준일 '+RUN.q.basis+' · 확인처 '+
+   '<span class="src">전체 점검일 '+RUN.q.basis+' · 확인처 '+
    (sc[1]?'<a href="'+sc[1]+'" target="_blank" rel="noopener">'+sc[0]+'</a>':sc[0])+
    '<br>제도는 바뀝니다. 실제 결정 전에 원문을 확인하세요.</span>';
   ex.hidden=false;
@@ -7588,7 +7611,7 @@ function wireNext(){
   next.textContent=(RUN.i+1<RUN.q.qs.length)?'다음 문제':'결과 보기';
   next.onclick=function(){ RUN.i++; if(RUN.i<RUN.q.qs.length) stepQuest(false); else finish(false); }; }
 function finish(failed){
-  var q=RUN.q,ratio=RUN.correct/q.qs.length;
+  var q=RUN.q,shown=Math.max(1,RUN.marks.filter(function(m){ return m!==undefined; }).length),ratio=RUN.correct/q.qs.length;
   /* 실패하면 보상이 없다. 틀린 문항은 그대로 복습 큐로 넘어가고 퀘스트는 완료로 찍히지 않는다.
      다시 도전할 수 있어야 배우는 장치가 되지, 한 번 막히고 끝나면 그냥 벽이다. */
   needTick();
@@ -7632,7 +7655,7 @@ function finish(failed){
   Object.keys(q.stat).forEach(function(k){ var d=document.createElement('div'); d.className='gain';
     d.innerHTML='<span>'+THEMES[k].full+' · '+THEMES[k].role+'</span><b>'+S.stats[k]+'</b>'; g.appendChild(d); });
   var d2=document.createElement('div'); d2.className='gain';
-  d2.innerHTML='<span>정답</span><b>'+RUN.correct+' / '+q.qs.length+'</b>'; g.appendChild(d2);
+  d2.innerHTML='<span>정답</span><b>'+RUN.correct+' / '+shown+'</b>'; g.appendChild(d2);
   var wrong=RUN.marks.filter(function(m){ return m===false; }).length;
   if(wrong&&!q.keys){ var d4=document.createElement('div'); d4.className='gain';
     d4.innerHTML='<span>복습 예약</span><b>'+wrong+'문항 · 내일</b>'; g.appendChild(d4); }
@@ -7712,7 +7735,7 @@ function bossAnswer(idx,btn){
   var ex=document.getElementById('bexplain');
   ex.className='explain pix '+(right?'good':'bad');
   ex.innerHTML='<b>'+(right?'정답':'오답')+'</b> · '+item.why+
-   '<span class="src">기준일 '+CONTENT.asOf+' · 확인처 <a href="'+FIGHT.b.src[1]+'" target="_blank" rel="noopener">'+FIGHT.b.src[0]+'</a></span>';
+   '<span class="src">전체 점검일 '+CONTENT.asOf+' · 확인처 <a href="'+FIGHT.b.src[1]+'" target="_blank" rel="noopener">'+FIGHT.b.src[0]+'</a></span>';
   ex.hidden=false;
   var nx=document.getElementById('bnext'); nx.hidden=false; reveal(nx);
   if(FIGHT.boss<=0){ nx.textContent='마무리'; nx.onclick=function(){ bossEnd(true); }; return; }
@@ -7789,12 +7812,14 @@ function toggleRow(host,label,on,onChange,note){
   b.onclick=function(){ onChange(!on); };
   host.appendChild(b); return b; }
 /* ── 시연 모드 ─────────────────────────────────────────────────────────
-   직접 눌러 보며 확인하려면 모든 장비·탈것·세간·거처가 열려 있어야 한다. 끄면 다음 판부터 실제 경제. */
-function demoOn(){ try{ return localStorage.getItem('nq_demo')!=='0'; }catch(e){ return true; } }
+   직접 눌러 보며 확인하려면 모든 장비·탈것·세간·거처가 열려 있어야 한다. 기본은 꺼짐. 주소 끝 #demo 로 열 때만 켠다. */
+function demoHash(){ return /demo/.test((location.hash||'')+(location.search||'')); }
+try{ if(demoHash()) localStorage.setItem('nq_demo','1'); }catch(e){}
+function demoOn(){ try{ return localStorage.getItem('nq_demo')==='1'; }catch(e){ return demoHash(); } }
 function applyDemo(){
   Object.keys(ITEMS).concat(Object.keys(PETS),Object.keys(MOUNTS)).forEach(function(id){ if(id!=='bosssuit'&&S.owned.indexOf(id)<0) S.owned.push(id); });
   FURNI_ORDER.forEach(function(id){ if(id==='ramen'){ S.ramen=Math.max(S.ramen||0,10); return; } if(!furniOf(id)) furniList().push({id:id,x:null,y:null}); });
-  S.peak=TIERS.length-1; if(S.tier<6) S.tier=6; S.lv=Math.max(S.lv,5); S.coin=Math.max(S.coin,5000); S.demoDone=1;
+  S.peak=TIERS.length-1; if(S.tier<6) S.tier=6; S.lv=Math.max(S.lv,5); S.coin=Math.max(S.coin,5000); S.demoDone=1; S.lastTier=S.tier;
   fullTick(); S.full=fullMax(); ROOMC={}; save(); }
 function renderSettings(){
   var h=document.getElementById('csettings'); h.innerHTML='';
@@ -7832,7 +7857,7 @@ function renderSettings(){
 function renderPackInfo(){
   var k=document.getElementById('ckv');
   k.innerHTML='<b>버전</b><span>'+CONTENT.ver+'</span>'+
-    '<b>기준일</b><span>'+CONTENT.asOf+'</span>'+
+    '<b>전체 점검일</b><span>'+CONTENT.asOf+'</span>'+
     '<b>출처</b><span>'+CONTENT.origin+(PACK_URL?' · 원격 갱신 켜짐':' · 원격 갱신 꺼짐')+'</span>'+
     '<b>문항</b><span>'+QUESTS.reduce(function(a,q){ return a+q.qs.length; },0)+'개 · 퀘스트 '+QUESTS.length+'개</span>'+
     '<b>복습 대기</b><span>'+(S.review||[]).length+'문항 · 오늘 '+reviewDue().length+'문항</span>'+
@@ -7884,7 +7909,7 @@ stageBack(document.getElementById('bstage'));
    PLAYER 1 START가 깜박이고 게임으로 들어간다. 주소 끝에 #nointro를 붙이면 건너뛴다. */
 var OPEN=null;
 function openingStart(){
-  if(location.hash.indexOf('nointro')>=0||window.__NOINTRO) return;
+  if(location.hash.indexOf('nointro')>=0||window.__NOINTRO||deepCheckId()) return;   /* 체크리스트 링크로 들어오면 오프닝 없이 바로 */
   /* 가로는 160칸으로 고정하고 세로는 화면 비율을 따른다. 세로로 긴 폰에서 위아래가 텅 비지 않게 */
   var W=160,H=Math.max(240,Math.min(356,Math.round(160*innerHeight/Math.max(1,innerWidth))));
   var LY=Math.round(H*0.2),PY=Math.round(H*0.5),GY=H-50;
@@ -8227,6 +8252,7 @@ function maybeLifeEvent(force){
    항목을 누르면 왜 해야 하는지 한 줄, 관련 퀘스트가 있으면 복습으로 이어진다.
    실제 돈이 걸린 목록이라 항목마다 근거가 되는 제도를 적고, 기준일을 화면에 띄운다. */
 var CHECK_ASOF='2026-09-29';
+var SHARE_BASE='https://ksy93-spec.github.io/Newbie-Game/';
 var CHECKS=[
  {id:'lease',k:'주',title:'전세·월세 계약',one:'집 보는 날부터 보증보험 가입까지',dateLabel:'잔금·입주일',
   src:['찾기쉬운 생활법령정보','https://easylaw.go.kr'],stages:[
@@ -8235,7 +8261,7 @@ var CHECKS=[
    {id:'reg',t:'등기부등본을 떼서 소유자·압류·근저당을 봤다',why:'갑구에서 소유자와 압류·가압류를, 을구에서 근저당 채권최고액을 본다.',q:'ju1'},
    {id:'sum',t:'선순위 채권 + 내 보증금이 집값보다 적다',why:'경매로 넘어가면 앞 순위 빚부터 가져간다. 합이 집값을 넘으면 보증금을 다 못 돌려받을 수 있다.'},
    {id:'tax',t:'집주인 세금 체납 여부를 확인할 방법을 챙겼다',why:'체납 세금은 보증금보다 먼저 가져갈 수 있다. 계약 전 납세증명서를 요청하거나, 계약 뒤 입주 전까지 세무서에서 미납 국세를 열람한다.'},
-   {id:'hugok',t:'전세보증보험에 가입할 수 있는 집인지 봤다',why:'선순위 채권이 집값의 60%를 넘거나, 보증금과 선순위 채권의 합이 집값을 넘으면 가입이 안 된다.'}]},
+   {id:'hugok',t:'전세보증보험에 가입할 수 있는 집인지 봤다',why:'선순위 채권이 집값의 60%를 넘거나, 보증금과 선순위 채권의 합이 주택가격의 90%를 넘으면 가입이 어렵다(다가구 등은 80%). 주택가격은 공시가격 126%나 KB시세 등 보증기관이 정한 기준이라 실제 한도는 더 낮을 수 있으니 HUG 1566-9009에 확인한다.'}]},
   {t:'계약 당일',items:[
    {id:'id',t:'집주인 신분증과 등기부 소유자가 같다',why:'대리인이면 위임장과 인감증명서를 받는다. 소유자 아닌 사람과 계약하면 보증금을 돌려받을 상대가 사라진다.'},
    {id:'acct',t:'계약금은 등기부상 소유자 명의 계좌로 보냈다',why:'다른 사람 계좌로 보내 달라고 하면 멈춘다.'},
@@ -8249,7 +8275,7 @@ var CHECKS=[
    {id:'meter',t:'관리비·공과금을 정산하고 계량기 사진을 찍었다',why:'이전 사람이 쓴 요금을 내가 내지 않게 입주 날 숫자를 남긴다.'}]},
   {t:'입주 후',items:[
    {id:'hug',t:'전세보증보험에 가입했다',why:'신규 계약은 잔금일과 전입신고일 중 늦은 날부터 계약기간의 절반이 지나기 전까지 가입할 수 있다. 전입신고와 확정일자가 먼저 있어야 한다.'},
-   {id:'renew',t:'만료 전 연락 시기를 달력에 적었다',why:'집주인은 만료 6~2개월 전, 세입자는 2개월 전까지 갱신이나 종료 뜻을 알린다.'},
+   {id:'renew',t:'만료 전 연락 시기를 달력에 적었다',why:'세입자의 갱신요구는 만료 6~2개월 전에, 집주인의 갱신거절 통지도 만료 6~2개월 전에 해야 한다. 이 기간을 놓치면 같은 조건으로 자동 갱신될 수 있다.'},
    {id:'rentlog',t:'(월세) 계약서와 이체 내역을 모아 둔다',why:'무주택 세대주이고 총급여 8천만원 이하면 연말정산 월세 세액공제를 받을 수 있다.'}]}]},
  {id:'firstjob',k:'직',title:'첫 출근',one:'근로계약서부터 첫 월급 명세서까지',dateLabel:'입사일',
   src:['고용노동부','https://www.moel.go.kr'],stages:[
@@ -8257,7 +8283,7 @@ var CHECKS=[
    {id:'contract',t:'근로계약서를 서면으로 받았다',why:'임금·근로시간·휴일·연차가 적힌 계약서를 받아야 한다. 안 주면 회사가 처벌받는다.',q:'jik1'},
    {id:'probation',t:'수습 기간과 그동안의 급여를 확인했다',why:'1년 이상 계약한 수습 3개월까지만 최저임금의 90%를 줄 수 있다. 단순노무 직종은 깎을 수 없다.',q:'wage1'},
    {id:'bank',t:'급여 계좌와 비상연락처를 냈다',why:'첫 급여가 늦어지는 흔한 이유다.'},
-   {id:'youthtax',t:'(중소기업 청년) 소득세 감면 신청서를 냈다',why:'중소기업에 취업한 청년은 5년간 소득세 90%를 감면받을 수 있다(한도 있음). 회사에 신청해야 적용된다.'}]},
+   {id:'youthtax',t:'(중소기업 청년) 소득세 감면 신청서를 냈다',why:'중소기업에 취업한 만 15~34세 청년(병역 이행 기간은 나이에서 뺀다)은 5년간 소득세 90%를 감면받을 수 있고, 연 200만원 한도가 있다. 비수도권 등으로 확대하는 세제개편안이 논의 중이라 연말에 다시 확인한다. 회사에 신청해야 적용된다.'}]},
   {t:'첫 달',items:[
    {id:'ins4',t:'4대보험에 가입됐는지 확인했다',why:'건강보험 자격득실 확인서나 4대사회보험 정보연계센터에서 볼 수 있다.'},
    {id:'payslip',t:'첫 급여명세서를 받았다',why:'회사는 임금을 줄 때 항목과 계산 방법이 적힌 명세서를 줘야 한다.'},
@@ -8372,6 +8398,7 @@ function shareCheck(c){
   c.stages.forEach(function(s,si){ lines.push(''); lines.push('■ '+s.t);
     s.items.forEach(function(it){ lines.push((st.done[si+':'+it.id]?'[x] ':'[ ] ')+it.t); }); });
   lines.push(''); lines.push('기준일 '+CHECK_ASOF+' · 법률 자문이 아닌 확인용 목록');
+  lines.push(''); lines.push(SHARE_BASE+'#c='+c.id);
   var txt=lines.join('\n'); ev('check_share',{id:c.id});
   if(navigator.share){ navigator.share({title:c.title+' 체크리스트',text:txt}).catch(function(){}); return; }
   if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(function(){ toast('체크리스트를 복사했습니다. 메신저에 붙여 넣으세요.'); },function(){ toast('복사하지 못했습니다.'); }); return; }
@@ -8405,5 +8432,11 @@ function checkSearch(q){
 
 var _renderHome0=renderHome; renderHome=function(){ _renderHome0.apply(this,arguments); homeCheckChip(); setTimeout(checkEnding,900); };
 if(S.onboarded) render('home'); else { obRender(); go('onboard'); }
+/* 딥링크: 주소 끝 #c=lease 처럼 체크리스트 id를 붙이면 그 목록을 바로 연다 (공유 문구의 링크) */
+function deepCheckId(){ var m=/[#&]c=([\w-]+)/.exec(location.hash||''); if(!m) return null;
+  return CHECKS.some(function(c){ return c.id===m[1]; })?m[1]:null; }
+function openDeepCheck(){ var id=deepCheckId(); if(id) openCheck(id); }
+window.addEventListener('hashchange',openDeepCheck);
+openDeepCheck();
 openingStart();
 </script>
