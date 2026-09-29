@@ -4,11 +4,13 @@
 월세 계약, 전세사기, 주휴수당, 4대보험처럼 어려워 보이는 제도를 **의·식·주·금·직** 다섯 테마로 나눠
 퀘스트로 푼다. 캐릭터는 배운 만큼 성장하고, 거처는 노숙에서 시작해 한 단계씩 올라간다.
 
-Expo(React Native) · TypeScript · Skia.
+게임 본체는 `prototype/newbie-quest-demo.html` 한 파일이다. 안드로이드 앱은 Expo(React Native) 셸이 이 HTML을 웹뷰로 열고, 광고·뒤로가기·공유·외부 링크만 네이티브로 처리한다.
 
 ---
 
 ## 지금 상태
+
+> 아래 표와 "구조" 절은 예전 React Native 재작성 버전(태그 `legacy-rn-app`)의 기록이다. 그 코드는 저장소에서 지웠고 태그로만 남아 있다. 현재 앱 구조는 "Android 앱 빌드" 절을 본다.
 
 프로토타입(`prototype/newbie-quest-demo.html`)에서 검증한 것을 네이티브로 옮기는 중이다.
 게임 로직은 전부 넘어왔고 테스트가 붙어 있다. 화면은 핵심 루프가 돈다.
@@ -48,24 +50,42 @@ Branch를 `main`, 폴더를 `/docs`로 두면 `https://ksy93-spec.github.io/Newb
 폰 브라우저로 열고 "홈 화면에 추가"를 하면 주소창 없이 전체 화면으로 열린다.
 프로토타입을 고친 뒤에는 `node tools/pages/build.mjs`로 `docs/`를 다시 만든다.
 
-## 실행
+## Android 앱 빌드
+
+구조: `App.tsx`가 `src/GameShell.tsx`를 띄우고, 웹뷰가 게임 HTML을 `https://newbie-quest.app/` 주소(가짜 origin, 네트워크 요청 없음)로 연다.
+`src/bridge/`가 저장 백업(`nq.v8` → AsyncStorage), 보상형 광고, 뒤로가기, 외부 링크, 공유를 맡는다.
+게임 HTML은 앱을 위해 고치지 않는다. 필요한 연결은 `src/bridge/injected.mjs`가 웹뷰에 주입한다.
 
 ```bash
 npm install
-npx expo start          # Expo Go 또는 개발 빌드에서 열기
-npm test                # 게임 로직 테스트
-npm run lint            # 타입 검사
+npm run build:game     # prototype HTML -> src/game/gameHtml.ts (저장소에는 없는 생성 파일)
+npm run typecheck      # tsc --noEmit
+npm test               # 브릿지(Playwright)·광고 상태 기계 테스트. 크로미움 필요
+npm run export:android # 번들이 만들어지는지만 확인(빌드 아님)
 ```
 
-Skia와 알림은 네이티브 모듈이라 개발 빌드가 필요하다.
+- `build:game`은 `start`, `android`, `typecheck`, EAS 빌드(`eas-build-pre-install`) 앞에서 자동으로 돈다. 게임 HTML을 고쳤으면 다시 돌린다.
+- 광고 SDK는 네이티브 모듈이라 Expo Go에서 안 돈다. 개발 빌드나 APK로 확인한다.
+
+EAS 빌드(처음 한 번 `eas init`으로 `app.json`의 `extra.eas.projectId`를 채운다):
 
 ```bash
-npx eas build --profile development --platform android
+npx eas build --profile preview --platform android      # APK, 내부 배포
+npx eas build --profile production --platform android   # AAB, 플레이 스토어 제출용
 ```
+
+`development` 프로파일은 개발 클라이언트가 필요하다. 쓰려면 `npx expo install expo-dev-client`를 먼저 한다.
+
+테스트 광고에서 실제 광고로 바꾸는 곳(출시 전에 사람이 한다):
+
+1. AdMob 콘솔에서 앱과 보상형 광고 단위를 만든다.
+2. `src/config/ads.ts`: `REAL_REWARDED_UNIT_ID`에 광고 단위 ID를 넣고 `USE_TEST_ADS`를 `false`로 바꾼다.
+3. `app.json`: `react-native-google-mobile-ads` 플러그인의 `androidAppId`를 실제 앱 ID로 바꾼다. 지금 값은 구글 공개 테스트 앱 ID다.
+4. 동의창(UMP)은 AdMob 콘솔의 개인정보 및 메시지에서 메시지를 만든 뒤에 나온다. 창을 미리 보려면 `UMP_DEBUG_EEA`를 잠시 `true`로 둔다. 출시 빌드에서는 `false`.
 
 ---
 
-## 구조
+## 구조 (예전 RN 버전, 참고용)
 
 ```
 src/

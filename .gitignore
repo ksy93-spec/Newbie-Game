@@ -19,3 +19,6 @@ android/
 
 # 번들 파일은 전달용이라 저장소에 넣지 않는다
 *.bundle
+
+# 웹뷰에 실어 보내는 게임 HTML 문자열. npm run build:game 이 만든다
+src/game/gameHtml.ts
