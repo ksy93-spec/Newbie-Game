@@ -45,7 +45,7 @@ async function approach(page) {
   await page.evaluate(() => {
     const p = leasePlace(leaseCh().place);
     let map = null, sp = null;
-    Object.keys(MAPS).forEach((k) => (MAPS[k].spots || []).forEach((s) => { if (s.kind === 'lease' && s.place === p) { map = k; sp = s; } }));
+    Object.keys(MAPS).forEach((k) => (MAPS[k].spots || []).forEach((s) => { if (s.kind === 'lease' && leaseHere(s)) { map = k; sp = s; } }));
     const m = MAPS[map], n = [[0, 1], [0, -1], [-1, 0], [1, 0]].map((d) => [sp.x + d[0], sp.y + d[1]]).find(([x, y]) => walkable(m, x, y, 1, 'foot') && !warpAt(m, x, y));
     S.onFoot = true; enterMap(map, n[0], n[1]); ME.dir = n[1] > sp.y ? 3 : n[1] < sp.y ? 0 : n[0] > sp.x ? 1 : 2; drawScene();
   });
@@ -93,6 +93,7 @@ test('2. 안전한 구축을 고르고 순서대로 확인하면: 네 장면 끝
   assert.equal(st.lease.ch, 1); assert.equal(st.lease.pick, 'B'); assert.equal(st.scr, 'home');
   await approach(page);
   assert.match(await page.textContent('#epname'), /2장 · 가계약/);
+  assert.equal(await page.evaluate(() => ME.map), 'villa_old', '가계약은 주택가 구축 아파트 안에서');
   assert.match(await page.textContent('#epdoc'), /예금주/);
   await playChapter(page, [0, 0]);
   await approach(page);
@@ -179,7 +180,9 @@ test('6. 잔금(입주 보증금)이 모자라면 이사 당일 장면을 열지
   const { ctx, page } = await open();
   await page.evaluate(() => { tierMove(7); S.lease.ch = 3; S.lease.b = 0; S.lease.pick = 'B'; S.coin = 5; save();
     window.__t = []; const t0 = window.toast; window.toast = (m) => { window.__t.push(m); return t0(m); }; });
-  await page.evaluate(() => { const s = MAPS.town_estate.spots.find((x) => x.kind === 'lease'); S.onFoot = true; enterMap('town_estate', s.x, s.y + 1); ME.dir = 3; });
+  await page.evaluate(() => { let map = null, sp = null;          // 이사 당일 오전은 고른 집(주택가 구축 아파트) 안
+    Object.keys(MAPS).forEach((k) => (MAPS[k].spots || []).forEach((s) => { if (s.kind === 'lease' && leaseHere(s)) { map = k; sp = s; } }));
+    S.onFoot = true; enterMap(map, sp.x, sp.y + 1); ME.dir = 3; });
   await page.keyboard.press(' '); await sleep(page, 300);
   const r = await page.evaluate(() => ({ scr: document.querySelector('.screen.on').id, t: window.__t.join('/') }));
   assert.equal(r.scr, 'home');

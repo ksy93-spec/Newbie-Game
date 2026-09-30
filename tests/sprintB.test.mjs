@@ -169,7 +169,10 @@ test('4. 광고는 하루 공동 8회 상한이고 9번째는 막힌다', async 
 
 test('5. 결과 화면 "광고 보고 코인 더 받기"는 한 번만, 딱 획득량만큼', async () => {
   const { ctx, page, errors } = await open();
-  const pick = await st(page, () => S.todayQ.length ? dripOrder().find((q) => q.theme !== 'ju' && S.drip.u.includes(q.id) && !S.todayQ.includes(q.id)).id : null);
+  // 오늘 목록 밖의 열린 퀘스트를 고른다. 날짜에 따라 오늘 목록이 열린 퀘스트를 다 덮으면, 하나를 오늘 목록에서 뺀다(완주 보너스가 섞이지 않게)
+  const pick = await st(page, () => { const c = dripOrder().filter((q) => q.theme !== 'ju' && S.drip.u.includes(q.id));
+    const q = c.find((x) => !S.todayQ.includes(x.id)) || c[0]; if (!q) return null;
+    if (S.todayQ.includes(q.id)) { S.todayQ = S.todayQ.filter((id) => id !== q.id); save(); } return q.id; });
   assert.ok(pick);
   const coin0 = await st(page, () => S.coin);
   assert.equal(await playQuest(page, pick), 'ok');
@@ -186,7 +189,9 @@ test('5. 결과 화면 "광고 보고 코인 더 받기"는 한 번만, 딱 획�
   assert.match(await page.locator('#rxp').innerText(), new RegExp('광고 ￦' + gain));
   // 하루 3회. 세 번 채우고 나면 다음 결과에는 안내 문구
   await page.evaluate(() => { S.adK.dbl = 3; S.adN = 3; });
-  const pick2 = await st(page, () => dripOrder().find((q) => q.theme !== 'ju' && S.drip.u.includes(q.id) && S.done.indexOf(q.id) < 0 && !S.todayQ.includes(q.id)).id);
+  const pick2 = await st(page, () => { const c = dripOrder().filter((q) => q.theme !== 'ju' && S.drip.u.includes(q.id) && S.done.indexOf(q.id) < 0);
+    const q = c.find((x) => !S.todayQ.includes(x.id)) || c[0];
+    if (S.todayQ.includes(q.id)) { S.todayQ = S.todayQ.filter((id) => id !== q.id); save(); } return q.id; });
   assert.equal(await playQuest(page, pick2), 'ok');
   assert.equal(await page.locator('#rdbl button').count(), 0);
   assert.match(await page.locator('#rdbl').innerText(), /오늘 광고 보상은 다 받았어요/);
