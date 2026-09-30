@@ -567,6 +567,11 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .mvbanner .mvn{font-size:16px;line-height:22px;}
 .mvbanner .mvs{font-size:10px;line-height:14px;color:var(--s0);margin-top:4px;}
 @media(prefers-reduced-motion:reduce){.guidechip,.mvbanner{animation:none;}}
+.mqchip{position:absolute;left:8px;top:34px;z-index:4;background:rgba(44,44,49,.9);color:var(--p0);border:2px solid var(--s2);
+  font-family:var(--f-ui);font-size:10px;line-height:14px;padding:4px 8px;max-width:62%;text-align:left;cursor:pointer;}
+.mqchip b{color:var(--y1);margin-right:3px;} .mqchip span{display:block;color:var(--s0);font-size:9px;line-height:12px;}
+.mqchip.on{border-color:var(--y1);animation:guidepulse 1s steps(2) infinite;}
+@media(prefers-reduced-motion:reduce){.mqchip.on{animation:none;}}
 .todaybtn{background:var(--y1);color:var(--s4);border:2px solid var(--s4);font-family:var(--f-ui);font-size:11px;line-height:16px;padding:3px 9px;min-height:28px;cursor:pointer;}
 .todaybtn b{background:var(--s4);color:var(--y1);padding:0 4px;margin-left:3px;font-weight:400;}
 #opening.drive .crt{background:repeating-linear-gradient(to bottom,rgba(0,0,0,.12) 0 1px,transparent 1px 3px);}
@@ -621,6 +626,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
         <div class="zonetag pix" id="hzone"><b>1</b> 집 앞</div>
         <button class="chkchip pix" id="hchk" hidden></button>
         <button class="guidechip pix" id="hguide" hidden type="button"></button>
+        <button class="mqchip pix" id="hmq" hidden type="button"></button>
 
         <div class="dpad" id="hdpad">
           <button data-d="3" aria-label="위">▲</button>
@@ -802,6 +808,8 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
     <div class="qhead"><button class="lbold" id="cback" style="padding:6px 8px;min-height:44px">‹ 돌아가기</button>
       <b style="font-family:var(--f-ui);font-size:13px">수집 노트</b><span></span></div>
     <div class="scroll">
+      <div class="sectlab">메인 퀘스트 · 끝낸 장은 다시 볼 수 있습니다</div>
+      <div style="display:flex;flex-direction:column;gap:var(--u2)" id="cmq"></div>
       <div class="sectlab">진행 · 건물마다 남은 상담</div>
       <div style="display:flex;flex-direction:column;gap:var(--u2)" id="cprog"></div>
       <div class="sectlab">사건과 보스</div>
@@ -2064,6 +2072,7 @@ function upUse(){ upLeft(); S.upN=(S.upN||0)+1; }
    (퀘스트가 바닥나도 매일 접속하면 남은 거처가 하루 한 칸씩 열리도록). 열렸으면 {wasTop} */
 function tierGrow(){
   if(S.peak>=TIERS.length-1||tierFor(S.stats.ju)<=S.peak||upLeft()<=0) return null;
+  if(typeof tierCap==='function'&&S.peak>=tierCap()) return null;        /* 자가는 메인 6장이 연다 */
   var wasTop=(S.tier===S.peak); upUse(); S.peak=Math.min(S.peak+1,TIERS.length-1);
   return {wasTop:wasTop}; }
 function paidBase(){ return Math.max(S.paid||0,S.tier||0); }
@@ -2193,6 +2202,27 @@ ITEMS.goldstamp={slot:'weapon',name:'황금 인감도장',atk:18,def:4,gear:'car
   from:'학교 앞 게임 동아리 · 지옥 난이도', desc:'이걸 꺼내면 계약서가 떤다.'};
 ITEMS.luckypants={slot:'bottom',perk:{eggx2:1},name:'행운의 체크 바지',def:13,atk:2,color:'#8C4A6E',bs:'stripe',accent:'#F7DDB0',cost:0,special:1,
   from:'회사 앞 로비 경비 아저씨의 넌센스 퀴즈', desc:'입은 날은 이상하게 결재가 잘 난다.'};
+/* 메인 퀘스트 보상(처음 깰 때 한 번)과 메인 퀘스트가 여는 상점 물건. mq 필드가 있으면 그 장을 깨기 전엔 못 산다 */
+ITEMS.mq_badge    ={slot:'top',perk:{coin:10,xp:5},name:'정규직 사원증',def:12,color:'#EDE2CC',accent:'#2C3A5E',ts:'badge',cost:0,special:1,
+  from:'메인 퀘스트 1장 · 첫 취업',desc:'수습이 끝난 날 새로 받은 목걸이. 근로계약서는 서랍에 한 부 있다.'};
+ITEMS.mq_lease    ={slot:'weapon',perk:{kan:1,mak:1},name:'확정일자 받은 계약서',atk:21,def:3,gear:'board',cost:0,special:1,
+  from:'메인 퀘스트 2장 · 첫 전세 계약',desc:'도장 옆에 확정일자 도장이 하나 더 있다. 이게 보증금 순서를 정한다.'};
+ITEMS.mq_card     ={slot:'weapon',perk:{foodDisc:15},name:'한도 낮춘 첫 카드',atk:24,def:2,gear:'card',cost:0,special:1,
+  from:'메인 퀘스트 3장 · 첫 신용카드',desc:'한도는 내가 정했다. 결제일 전날 알림도 켜 뒀다.'};
+ITEMS.mq_shades   ={slot:'head',perk:{mak:1,fullSave:2},name:'초보운전 선글라스',def:8,atk:6,gear:'glass',dark:1,cost:0,special:1,
+  from:'메인 퀘스트 4장 · 첫 차',desc:'역광에도 앞차 브레이크등이 보인다. 뒷유리엔 초보운전 스티커.'};
+ITEMS.mq_suit     ={slot:'top',perk:{kan:1,mak:1,coin:5},name:'상견례 정장',def:21,atk:3,color:'#4A3B5E',accent:'#E8D9B0',ts:'sharp',cost:0,special:1,
+  from:'메인 퀘스트 5장 · 결혼 준비',desc:'양가 어른 앞에서 한 번 입었다. 예산표는 안주머니에.'};
+ITEMS.mq_homepants={slot:'bottom',perk:{fullMax:10,fullSave:3},name:'집들이 실내복',def:16,atk:2,color:'#7C9A6E',accent:'#FFF8EC',bs:'stripe',cost:0,special:1,
+  from:'메인 퀘스트 6장 · 첫 내 집 마련',desc:'등기부 갑구에 내 이름이 오른 날 처음 입었다.'};
+ITEMS.oxford  ={slot:'top',perk:{xp:5},name:'옥스퍼드 셔츠',def:11,color:'#DCE6F2',cost:240,mq:'job',desc:'다림질 없이 입어도 구김이 덜하다. 월요일 아침의 친구.'};
+ITEMS.cardigan={slot:'top',perk:{coin:5},name:'사무실 가디건',def:14,color:'#8A6E5A',cost:300,mq:'job',desc:'에어컨 바람 아래 자리에 앉았다면 필수.'};
+ITEMS.wideslk ={slot:'bottom',perk:{fullSave:2},name:'와이드 슬랙스',def:13,color:'#4A4756',bs:'seam',cost:220,mq:'job',desc:'앉아 있는 여덟 시간이 편하다.'};
+ITEMS.wallet  ={slot:'weapon',perk:{foodDisc:10},name:'카드지갑',atk:18,gear:'card',cost:360,mq:'card',desc:'카드는 두 장만. 쓰는 카드를 줄이면 명세서가 읽힌다.'};
+ITEMS.card.mq='card';
+MOUNTS.car.mq='car'; MOUNTS.sedan.mq='car';
+MOUNTS.evcar={slot:'mount',perk:{speed:1,road:1,fullSave:3},name:'소형 전기차',def:20,atk:9,kind:'car',cost:1300,mq:'car',
+  pal:{r1:'g1',r2:'g2',r3:'g3'},top:{car:'#2F8C39',carL:'#5DBB63',carD:'#1F5E27'},desc:'충전소 위치부터 외웠다. 기름값 대신 충전비.'};
 function allItems(id){ return ITEMS[id]||PETS[id]||MOUNTS[id]; }
 /* ── 특수 능력 ────────────────────────────────────────────────────────
    능력치 숫자만으로는 무엇이 좋아졌는지 체감이 안 된다. 물건마다 하는 일이 하나씩 있다.
@@ -3097,6 +3127,7 @@ function fresh(){ return {onboarded:false,status:null,age:null,years:null,compan
  lv:1,xp:0,coin:150,tier:0,peak:0,done:[],bossCleared:false,bossDone:[],epBest:{},
  pos:{map:'town',tx:2,ty:4,dir:0},
  furni:[],ramen:0,redecorate:0,lastTier:0,econ:2,tut:0,
+ mq:{done:{},gf:{},ann:{},cur:null,i:0,ok:0,n:0,adPend:null},
  stats:{ju:5,sik:5,ui:5,geum:5,jik:5},
  avatar:'stuM',
  look:{hair:0,haircol:-1,skin:0},
@@ -3113,8 +3144,10 @@ var S=null;
 function load(){ var o=null;
   try{ var r=localStorage.getItem(KEY); if(r) o=JSON.parse(r); }catch(e){}
   if(!o) return fresh();
-  var f=fresh();                                  /* 새 필드가 생겨도 예전 저장이 깨지지 않게 메운다 */
+  var f=fresh(),legacy=(o.mq===undefined)&&!!o.onboarded;   /* 메인 퀘스트 전의 저장인지 메우기 전에 본다 */
   Object.keys(f).forEach(function(k){ if(o[k]===undefined) o[k]=f[k]; });
+  if(!o.mq.gf) o.mq.gf={};
+  if(legacy) o.mq.gf=mqGrandfather(o);
   /* 그림체가 다른 옛 정장 한 쌍은 목록에서 뺐다. 그걸 쓰던 저장은 같은 성별로 옮긴다. */
   if(!o.bossDone) o.bossDone=o.bossCleared?['jeonse']:[];   /* 보스가 하나이던 시절의 저장 */
   if(Array.isArray(o.furni)) o.furni=o.furni.map(function(f){
@@ -3218,7 +3251,7 @@ function lockedFor(match){ var r=null;
    하루 공동 상한 8회 하나로 묶는다. 광고는 반드시 "광고"라고 쓰인 버튼을 누른 뒤에만 뜬다.
    보상은 showAd의 콜백에서만 준다. 앱에서는 showAd가 네이티브 광고로 바뀌고, 광고를 못 받으면
    콜백이 오지 않는다. 그러니 횟수도 콜백 안에서만 센다. */
-var AD_CAP=8,AD_LIM={unl:2,dbl:3,life:2,att:1,rst:1},AD_DONE='오늘 광고 보상은 다 받았어요',AD_BUSY=0;
+var AD_CAP=8,AD_LIM={unl:2,dbl:3,life:2,att:1,rst:1,mq:1},AD_DONE='오늘 광고 보상은 다 받았어요',AD_BUSY=0;
 function adSync(){ var d=dayKey(); if(S.adDay!==d){ S.adDay=d; S.adN=0; S.adK={}; } if(!S.adK) S.adK={}; }
 function adLeft(kind){ adSync(); var l=AD_CAP-(S.adN||0);
   if(kind&&AD_LIM[kind]!=null) l=Math.min(l,AD_LIM[kind]-(S.adK[kind]||0));
@@ -4303,9 +4336,15 @@ var FURNI={
  robot: {name:'로봇청소기',   cost:1600,need:11,def:12, atk:8,w:1,h:1,desc:'출근한 사이에 바닥을 민다.'},
  dish:  {name:'식기세척기',   cost:1900,need:12,def:18, w:1,h:1,      desc:'설거지로 싸울 일이 줄었다.'},
  massage:{name:'안마의자',    cost:2400,need:13,def:24, w:1,h:2,      desc:'퇴근하고 앉으면 일어나기 싫다.'},
- bigtv: {name:'75인치 TV',    cost:3000,need:14,atk:16,def:10,w:3,h:1,desc:'거실 벽 하나가 전부 화면이다.'}
+ bigtv: {name:'75인치 TV',    cost:3000,need:14,atk:16,def:10,w:3,h:1,desc:'거실 벽 하나가 전부 화면이다.'},
+ fridge2:{name:'양문형 냉장고',perk:{fullMax:30},cost:820,need:7,def:12,w:2,h:2,mq:'lease',desc:'장 본 걸 한 번에 넣는다. 배달 앱을 덜 연다.'},
+ purifier:{name:'공기청정기',perk:{xp:5},cost:620,need:7,def:8,w:1,h:1,mq:'lease',desc:'미세먼지 많은 날에도 창문 대신 이걸 켠다.'},
+ bed2:  {name:'퀸 침대',perk:{fullMax:15},cost:1100,need:8,def:16,w:2,h:2,mq:'wedding',desc:'둘이 누워도 팔이 안 부딪힌다.'},
+ table2:{name:'2인 식탁',perk:{foodBoost:15},cost:720,need:8,def:8,w:2,h:1,mq:'wedding',desc:'밥을 식탁에서 먹으니 배달이 줄었다.'},
+ shelf: {name:'거실 책장',perk:{xp:5},cost:1300,need:9,atk:6,def:10,w:2,h:1,mq:'home',desc:'이사 걱정 없이 책을 꽂는다. 벽에 못도 박을 수 있다.'},
+ plant: {name:'큰 화분',perk:{fullSave:2},cost:500,need:9,def:4,w:1,h:1,mq:'home',desc:'2년마다 옮길 일이 없으니 큰 걸 들였다.'}
 };
-var FURNI_ORDER=['ramen','mat','fan','desk2','fridge','bed','wash','tv','styler','sofa','aircon','dryer','robot','dish','massage','bigtv'];
+var FURNI_ORDER=['ramen','mat','fan','desk2','fridge','fridge2','bed','wash','tv','purifier','styler','sofa','bed2','table2','aircon','plant','shelf','dryer','robot','dish','massage','bigtv'];
 /* 세간을 누르면 쓸 수 있다. 침대는 자고, 선풍기는 실내 온도를 내리고, 세탁기는 빨래를 한다. */
 var FURNI_ACT={
  mat:[{t:'낮잠 자기',cd:20,d:{energy:30},msg:'매트 위에서 잠깐 눈을 붙였다. 체력 +30'}],
@@ -4322,8 +4361,14 @@ var FURNI_ACT={
  robot:[{t:'청소 예약하기',cd:60,d:{clean:30},msg:'로봇청소기가 방을 한 바퀴 돌았다. 청결 +30'}],
  dish:[{t:'설거지 맡기기',cd:30,d:{clean:20,mood:10},msg:'그릇이 반짝인다. 청결 +20 · 기분 +10'}],
  massage:[{t:'안마 받기',cd:30,d:{energy:40,mood:10},msg:'어깨가 풀렸다. 체력 +40 · 기분 +10'},{t:'광고 보고 전신 안마',ad:1,d:{energy:100},msg:'광고를 보는 동안 전신 안마를 받았다. 체력이 가득 찼다.'}],
- bigtv:[{t:'영화 한 편 보기',cd:40,d:{mood:45,energy:-5},msg:'거실이 극장이 됐다. 기분 +45'}]
+ bigtv:[{t:'영화 한 편 보기',cd:40,d:{mood:45,energy:-5},msg:'거실이 극장이 됐다. 기분 +45'}],
+ fridge2:[{t:'냉장고 열기',cd:60,d:{full:35},msg:'장 봐 둔 재료로 한 끼를 차렸다. 포만감 +35'}],
+ purifier:[{t:'공기청정기 켜기',cd:30,d:{mood:15,clean:10},msg:'초록불이 켜졌다. 숨쉬기가 편하다. 기분 +15'}],
+ table2:[{t:'식탁에서 밥 먹기',cd:40,d:{full:20,mood:10},msg:'식탁에 앉아 천천히 먹었다. 포만감 +20 · 기분 +10'}],
+ shelf:[{t:'책 한 권 읽기',daily:1,d:{xp:25,mood:5},msg:'오랜만에 끝까지 읽었다. 경험치 +25'}],
+ plant:[{t:'물 주기',cd:120,d:{mood:10},msg:'잎이 한 뼘 자랐다. 기분 +10'}]
 };
+FURNI_ACT.bed2=FURNI_ACT.bed;
 function actReady(key,a){
   if(!S.fcd) S.fcd={};
   if(a.daily) return S.fcd[key]===dayKey()?'내일 다시 할 수 있다.':null;
@@ -4541,6 +4586,7 @@ function movePlace(dx,dy){
 }
 function buyFurni(id){
   var it=FURNI[id]; if(!it) return;
+  if(it.mq&&!mqOk(it.mq)&&!hasFurni(id)){ toast(mqLockMsg(mqById(it.mq))); return; }
   if(S.tier<it.need){ toast(TIERS[it.need].name+'부터 놓을 수 있습니다.'); return; }
   if(id==='ramen'){
     if(!S.demo&&S.coin<it.cost){ toast('코인이 모자랍니다.'); return; }
@@ -4556,7 +4602,8 @@ function buyFurni(id){
 }
 function furniRow(id){
   var it=FURNI[id],owned=(id==='ramen')?((S.ramen||0)>0):hasFurni(id);
-  var locked=S.tier<it.need;
+  var mql=(!owned&&it.mq&&!mqOk(it.mq))?mqById(it.mq):null;
+  var locked=S.tier<it.need||!!mql;
   var b=document.createElement('button');
   b.className='item pix'+(owned?' on':'')+(locked?' off':'');
   var cv=document.createElement('canvas'); cv.width=30; cv.height=30;
@@ -4572,7 +4619,7 @@ function furniRow(id){
   var wrap=document.createElement('span'); wrap.className='iw';
   wrap.innerHTML='<span class="inm">'+it.name+(it.w?' <span class="sz">'+it.w+'×'+it.h+'</span>':'')+'</span>'+
     '<span class="ids">'+it.desc+
-    (locked?'<br>'+TIERS[it.need].name+'부터 놓을 수 있습니다':'')+
+    (mql?'<br>'+mqLockMsg(mql):locked?'<br>'+TIERS[it.need].name+'부터 놓을 수 있습니다':'')+
     (owned&&id!=='ramen'?(furniOf(id)&&furniOf(id).x==null?'<br>창고에 있습니다 · 눌러서 놓기':'<br>눌러서 자리를 옮깁니다'):'')+'</span>';
   var price=document.createElement('span'); price.className='ip';
   price.innerHTML=right+'<br><b>'+(owned&&id!=='ramen'?(furniOf(id)&&furniOf(id).x==null?'놓기':'옮기기'):'￦'+it.cost)+'</b>';
@@ -4687,6 +4734,26 @@ function drawObj(ctx,o,px,py){
       shadow(); R('#1B1826',1,0,W-2,11); R('#26406B',2,1,W-4,9); R('#3A9BC9',2,1,W-4,4);
       R('#9BDCF7',3,2,W/3,1); R('#62C85C',2,7,W-4,3); R('#FFE79B',W-12,2,6,3);
       R('#E4E0EC',1,12,W-2,4); R('#FFFDF6',1,12,W-2,1); R('#C9C3D6',W/2-6,13,12,2); break;
+    case 'fridge2':                                     /* 양문형 냉장고 */
+      shadow(); R('#9B93A8',1,0,W-2,H-2); R('#E4E6EE',2,1,W-4,H-4); R('#FFFFFF',2,1,1,H-4);
+      R('#9B93A8',(W>>1)-1,1,1,H-4); R('#6B6380',(W>>1)-4,8,1,10); R('#6B6380',(W>>1)+2,8,1,10);
+      R('#2E2740',4,5,8,5); R('#6EC8F0',5,6,6,3); R('#FFC53C',W-8,4,3,2); break;
+    case 'purifier':                                    /* 공기청정기 */
+      R('rgba(30,26,48,.22)',3,14,10,2); R('#9B93A8',3,1,10,14); R('#FFFDF6',4,2,8,12);
+      for(i=0;i<4;i++) R('#C9C3D6',5,6+i*2,6,1); R('#62C85C',7,3,2,2); break;
+    case 'bed2':                                        /* 퀸 침대: 베개 둘 */
+      shadow(); R('#4E3524',1,1,W-2,H-3); R('#6B4A31',2,1,W-4,5); R('#8A6240',2,1,W-4,1);
+      R('#FFFDF6',3,6,W-6,H-10); R('#FFFDF6',4,7,11,6); R('#E4E0EC',4,12,11,1); R('#FFFDF6',W-15,7,11,6); R('#E4E0EC',W-15,12,11,1);
+      R('#D98A8A',3,15,W-6,H-19); R('#EAA6A6',3,15,W-6,2); R('#B86A6A',3,H-5,W-6,1); break;
+    case 'table2':                                      /* 2인 식탁 */
+      shadow(); R('#6B4A31',3,11,2,4); R('#6B4A31',W-5,11,2,4); R('#A87B52',1,3,W-2,8); R('#C4966A',1,3,W-2,1);
+      R('#FFFDF6',5,5,6,4); R('#FFFDF6',W-11,5,6,4); R('#F4705A',7,6,2,2); R('#62C85C',W-9,6,2,2); break;
+    case 'shelf':                                       /* 거실 책장 */
+      shadow(); R('#6B4A31',0,0,W,H-1); R('#8A6240',1,1,W-2,H-3); R('#6B4A31',1,7,W-2,1);
+      for(i=0;i<8;i++){ R(['#F4705A','#6EC8F0','#FFC53C','#62C85C','#A87BE0','#FFF8EC'][i%6],2+i*3,2,2,5); R(['#62C85C','#FFF8EC','#F4705A','#6EC8F0'][i%4],2+i*3,9,2,4); } break;
+    case 'plant':                                       /* 큰 화분 */
+      R('rgba(30,26,48,.22)',3,14,10,2); R('#B4786A',4,10,8,5); R('#D08A77',4,10,8,1);
+      R('#327A3A',2,2,5,8); R('#46964A',5,0,6,10); R('#327A3A',9,3,5,7); R('#63B35B',6,1,3,3); break;
     default:
       shadow(); R('#8A7A64',1,1,W-2,H-2);
   }
@@ -5378,7 +5445,7 @@ MAPS.korea={name:'전국 지도',sub:'고속도로 · 어디로 갈까',w:22,h:2
   'wwwwwNNNNwwwwwwwwwwwww'],
   warps:[{x:5,y:6,to:'town',tx:1,ty:13},{x:8,y:9,to:'rest',tx:20,ty:12},
          {x:17,y:6,to:'gangneung',tx:1,ty:6,fuel:20},{x:6,y:18,to:'jeonju',tx:1,ty:5,fuel:20},{x:17,y:24,to:'busan',tx:1,ty:5,fuel:25},
-         {x:12,y:19,to:'daegu',tx:1,ty:5,fuel:20},{x:19,y:22,to:'gyeongju',tx:1,ty:5,fuel:25}],
+         {x:12,y:19,to:'daegu',tx:1,ty:5,fuel:20,mq:'wedding'},{x:19,y:22,to:'gyeongju',tx:1,ty:5,fuel:25,mq:'wedding'}],
   signs:[{x:3,y:4,w:3,t:'우리 동네'},{x:9,y:8,w:3,t:'휴게소'},{x:17,y:4,w:3,t:'강릉'},{x:3,y:16,w:3,t:'전주'},{x:17,y:25,w:3,t:'부산'},{x:13,y:18,w:3,t:'대구'},{x:18,y:23,w:3,t:'경주'}],
   spots:[],eggs:[{id:'k_view',x:16,y:9,xp:15,msg:'고갯길에서 보는 경치가 좋다. 창문을 열었다.'}]};
 /* 여행지는 도시마다 맵이 두세 개다. 첫 맵 왼쪽 주차장에 차를 세우고, 도시 안은 걸어서 남북·동서로 잇는다.
@@ -5913,6 +5980,7 @@ function checkEgg(){
   grant(e);
   toast(e.msg+(e.coin?' ￦'+e.coin:'')+(e.xp?' · 경험치 +'+e.xp:'')); }
 function openTalk(s){
+  if(s.id==='teller'&&mqDone('card')&&S.cbDay!==dayKey()){ S.cbDay=dayKey(); S.coin+=20; save(); hudRefresh(); setTimeout(function(){ sfx('coin'); toast('체크카드 캐시백 ￦20 · 실적 조건은 매달 확인'); },300); }
   var T=TALKS[s.id]; if(!T) return;
   var lines=[];
   if(T.game&&!s._skipMenu){
@@ -6850,6 +6918,8 @@ function checkWarp(){
         toast('아직 들어갈 방이 없습니다. 주 스탯을 올려 거처를 해금하세요.');
         ME.ty=Math.min(m.h-2,ME.ty+1); ME.dir=0; savePos(); drawScene(); return true; }
       if(w.to==='room'){ var rs=roomMap().spawn; enterMap('room',rs.x,rs.y); return true; }
+      var gl=((w.needCar||w.to==='korea')&&!mqOk('car'))?'고속도로는 메인 4장 「첫 차」를 마치면 열려요':(w.mq&&!mqOk(w.mq))?mqRegionLock(w.to):null;
+      if(gl){ { toast(gl); ME.ty=Math.max(0,ME.ty-1); if(!walkable(m,ME.tx,ME.ty)) ME.ty++; ME.tx=Math.max(0,ME.tx-(walkable(m,ME.tx-1,ME.ty)?1:0)); savePos(); drawScene(); return true; } }
       if(w.fuel){ var fc=Math.round(w.fuel*(S.done.indexOf('car1')>=0?0.7:1));
         if(S.coin<fc){ toast('기름값이 모자란다 · ￦'+fc+' 필요'); ME.ty=Math.min(m.h-2,ME.ty+1); savePos(); drawScene(); return true; }
         S.coin-=fc; save(); hudRefresh(); setTimeout(function(){ sfx('coin'); toast('기름값 ￦'+fc+(S.done.indexOf('car1')>=0?' · 알뜰 운전으로 30% 아낌':'')); },300); }
@@ -6861,7 +6931,7 @@ function checkWarp(){
     var E=m.edges,dir=(E.west&&ME.tx<=0)?'west':(E.east&&ME.tx>=m.w-1)?'east':(E.north&&ME.ty<=0)?'north':(E.south&&ME.ty>=m.h-1)?'south':null;
     if(dir){ var to=E[dir],nm=MAPS[to];
       if(!mapOpen(to)){
-        toast(nm.name+'은 Lv.'+MAP_LV[to]+'부터 갈 수 있습니다.');
+        toast(S.lv>=(MAP_LV[to]||1)&&to==='station'?nm.name+'은 메인 1장 「첫 취업」을 마치면 열려요.':nm.name+'은 Lv.'+MAP_LV[to]+'부터 갈 수 있습니다.');
         if(dir==='west'){ ME.tx=1; ME.dir=2; } else if(dir==='east'){ ME.tx=m.w-2; ME.dir=1; }
         else if(dir==='north'){ ME.ty=1; ME.dir=0; } else { ME.ty=m.h-2; ME.dir=3; }
         savePos(); drawScene(); return true; }
@@ -7083,7 +7153,7 @@ function drawMini(){
 var MAP_ORDER=['room','town','villa','campus','center','market','office','station','bank'];
 /* 갈 수 있는 곳이 늘어나는 것 자체가 진행이다. 퀘스트로 레벨을 올리면 오른쪽이 열린다. */
 var MAP_LV={town:1,villa:1,campus:1,center:2,market:2,office:3,station:3,bank:4};
-function mapOpen(id){ return id==='room'||S.lv>=(MAP_LV[id]||1); }
+function mapOpen(id){ if(id==='station'&&typeof mqOk==='function'&&!mqOk('job')) return false; return id==='room'||S.lv>=(MAP_LV[id]||1); }
 function mapById(id){ return id==='room'?roomMap():MAPS[id]; }
 function openTravel(){
   var el=document.getElementById('htravel'); if(!el) return;
@@ -7164,7 +7234,7 @@ function sceneTile(ev){
 var HOLD={dir:null},CARTIP=0;
 /* 한 칸씩 누르는 것만으로는 스물두 칸짜리 맵을 못 걷는다. 누르고 있으면 계속 간다. */
 function stepDir(d){
-  if(TUT) return;
+  if(TUT||MQP) return;
   if(PLACE){ return movePlace(d===2?1:d===1?-1:0,d===0?1:d===3?-1:0); }
   if(MOVE) return;
   var m=curMap(),dx=(d===2?1:d===1?-1:0),dy=(d===0?1:d===3?-1:0);
@@ -7321,9 +7391,10 @@ function renderHome(){
   document.getElementById('hxpv').textContent=S.xp+' / '+n+' XP';
   setTimeout(function(){ document.getElementById('hxp').style.width=Math.min(100,Math.round(S.xp/n*100))+'%'; },60);
   paintHero(document.getElementById('hudchar'),'idle',0,-12,-2);
-  var nx=(S.peak<TIERS.length-1)?TIERS[S.peak+1].need-S.stats.ju:null;
+  var nx=(S.peak<TIERS.length-1)?TIERS[S.peak+1].need-S.stats.ju:null,hold=nx!==null&&S.peak>=tierCap();
   document.getElementById('htier').innerHTML=TIERS[S.tier].name+
    (nx===null?' <span class="micro">· 최종 단계</span>'
+    :hold?' <span class="micro">· 자가는 메인 6장 뒤에 열림</span>'
     :nx>0?' <span class="micro">· 다음 해금까지 주 '+nx+'</span>'
     :' <span class="micro">· '+(upLeft()>0?'다음 퀘스트에서 해금':'새 거처는 내일 해금')+'</span>');
   document.getElementById('hdef').textContent=tt.def;
@@ -7441,7 +7512,7 @@ var TUT_STEPS=[
  {id:'travel',when:function(){ return S.done.length>=1&&S.tuts.indexOf('afterq')>=0; },hl:'#hmini',lines:[
    '오른쪽으로 쭉 걸어가면 학교 앞이 나와.',
    '걷기 귀찮으면 오른쪽 아래 작은 지도를 눌러. 갈 수 있는 곳이 뜨고, 누르면 바로 가.']},
- {id:'check',when:function(){ return S.done.length>=3&&!S.chk; },hl:'#tab-wiki',lines:[
+ {id:'check',when:function(){ return S.done.length>=3&&!S.chk&&(typeof mqDone!=='function'||mqDone('job')); },hl:'#tab-wiki',lines:[
    '하나 더 알려 주지. 진짜로 계약하거나 입사하거나 회사를 그만둘 날이 오면, 아래 백과를 열어 보게.',
    '맨 위에 실전 체크리스트가 있네. 전세 계약, 첫 출근, 퇴사, 연말정산, 사기 대응. 날짜를 넣으면 며칠 남았는지도 알려 주지.']},
  {id:'needs',when:function(){ needTick(); return S.energy<50||S.clean<50||S.mood<50; },hl:'#home .needs',lines:[
@@ -7958,14 +8029,15 @@ function itemRow(slot,id,mode){
   b.appendChild(mid);
   var st=document.createElement('span'); st.className='ist';
   st.innerHTML=itemStat(it)+(it.cost>0?'<br><span class="p">'+(have?'보유':'￦'+it.cost)+'</span>':'');
-  var petAway=(slot==='pet'&&it.kind&&!petHome());
+  var petAway=(slot==='pet'&&it.kind&&!petHome()),mql=(mode==='shop'&&!have)?mqShopLock(slot,id):null;
+  if(mql) mid.innerHTML+='<br><span class="idesc" style="color:var(--r2)">'+esc(mql)+'</span>';
   if(petAway) mid.innerHTML+='<br><span class="idesc" style="color:var(--r2)">'+(have?'지금은 '+petWhyNot():'키울 집이 생기면 데려올 수 있습니다')+'</span>';
   b.appendChild(st);
   if(have){ b.setAttribute('aria-pressed',S.equip[slot]===id?'true':'false');
     b.onclick=function(){ S.equip[slot]=id; sfx('pick'); ev('equip',{slot:slot,id:id}); save();
       (mode==='char')?renderChar():renderShop(); }; }
   else if(mode==='char') b.disabled=true;
-  else if(petAway){ b.disabled=true; b.classList.add('locked'); }
+  else if(petAway||mql){ b.disabled=true; b.classList.add('locked'); }
   else if(S.coin<it.cost){ b.disabled=true; b.classList.add('locked'); }
   else b.onclick=function(){ S.coin-=it.cost; S.owned.push(id); S.equip[slot]=id; sfx('coin');
     ev('buy',{slot:slot,id:id,cost:it.cost}); save(); renderShop(); };
@@ -8134,9 +8206,11 @@ function statLine(k,v,cmp){
 function gearTip(slot,id){
   var it=allItems(id),r=rarityOf(it),have=S.owned.indexOf(id)>=0,on=S.equip[slot]===id;
   var cur=allItems(S.equip[slot]),cmp=(on||!cur)?null:cur;
-  var h='<div class="ih"><div class="ithumb"></div><div><span class="inm">'+(!have&&it.special?'???':it.name)+'</span>'+
+  var mqit=/^메인 퀘스트/.test(it.from||'');
+  var h='<div class="ih"><div class="ithumb"></div><div><span class="inm">'+(!have&&it.special&&!mqit?'???':it.name)+'</span>'+
     '<span class="isub">'+r.k+' '+SLOT_NAME[slot]+'</span>'+(on?'<span class="ion">착용 중</span>':'')+'</div></div><hr>';
-  if(!have&&it.special) h+='<div class="iq">어딘가에 숨어 있다. 동네를 구석구석 돌아다녀 보자.</div>';
+  if(!have&&it.special&&mqit) h+='<div class="iq">'+esc(it.from)+' 보상. 처음 깰 때 받는다.</div>';
+  else if(!have&&it.special) h+='<div class="iq">어딘가에 숨어 있다. 동네를 구석구석 돌아다녀 보자.</div>';
   else {
     h+=statLine('공격',it.atk||0,cmp?(cmp.atk||0):null)+statLine('방어',it.def||0,cmp?(cmp.def||0):null);
     if(!it.atk&&!it.def) h+='<div class="il"><i>◆</i>능력치 없음</div>';
@@ -8216,6 +8290,7 @@ function renderShop(){
 function renderCodex(){
   /* 도감은 모으는 재미를 보는 곳이다. 바꾸는 일은 캐릭터 창에서 한다. 퀘스트 탭을 없애면서
      건물마다 남은 상담과 사건·보스 기록도 여기로 옮겼다. */
+  mqCodex();
   var cp=document.getElementById('cprog'); cp.innerHTML='';
   EGG_AREAS.forEach(function(a){
     Object.keys(MAPS).forEach(function(k){ var m=MAPS[k]; if(!(k===a[0]||k.indexOf(a[0]+'_')===0)) return;
@@ -8913,7 +8988,8 @@ document.getElementById('beback').onclick=function(){ render('home'); };
 document.getElementById('qramen').onclick=eatRamen;
 document.getElementById('epback').onclick=function(){ render('home'); };
 document.getElementById('htutor').onclick=function(){ stepTutor(); };
-document.getElementById('eeback').onclick=function(){ render('home'); };
+var MQ_OUTRO=0;
+document.getElementById('eeback').onclick=function(){ render('home'); if(MQ_OUTRO){ MQ_OUTRO=0; setTimeout(mqLeaseOutro,300); } };
 document.getElementById('reset').onclick=function(){ S=fresh(); save(); obStep=0; stopWalk(); obRender(); go('onboard'); };
 window.addEventListener('resize',function(){
   if(document.getElementById('home').classList.contains('on')){ fitScene(); drawScene(); } });
@@ -8941,7 +9017,8 @@ function demoOn(){ try{ return localStorage.getItem('nq_demo')==='1'; }catch(e){
 function applyDemo(){
   Object.keys(ITEMS).concat(Object.keys(PETS),Object.keys(MOUNTS)).forEach(function(id){ if(id!=='bosssuit'&&S.owned.indexOf(id)<0) S.owned.push(id); });
   FURNI_ORDER.forEach(function(id){ if(id==='ramen'){ S.ramen=Math.max(S.ramen||0,10); return; } if(!furniOf(id)) furniList().push({id:id,x:null,y:null}); });
-  S.peak=TIERS.length-1; if(S.tier<6) S.tier=6; S.lv=Math.max(S.lv,5); S.coin=Math.max(S.coin,5000); S.demoDone=1; S.lastTier=S.tier;
+  S.peak=TIERS.length-1; if(S.tier<6) S.tier=6; S.lv=Math.max(S.lv,5);
+  mqS().gf={job:1,lease:1,card:1,car:1,wedding:1,home:1}; S.coin=Math.max(S.coin,5000); S.demoDone=1; S.lastTier=S.tier;
   fullTick(); S.full=fullMax(); ROOMC={}; save(); }
 function renderSettings(){
   var h=document.getElementById('csettings'); h.innerHTML='';
@@ -9137,6 +9214,7 @@ function openingEnd(){
   document.removeEventListener('keydown',OPEN.insert,true);
   if(OPEN.wrap&&OPEN.wrap.parentNode) OPEN.wrap.parentNode.removeChild(OPEN.wrap);
   OPEN=null; setTimeout(function(){ if(!document.getElementById('opening')&&typeof checkTutor==='function') checkTutor(); },300);   /* 프롤로그가 떠 있으면 끝난 뒤에 */
+  setTimeout(function(){ if(typeof mqChip==='function'){ mqChip(); mqAnnounce(); } },2600);
 }
 function skipOpening(){ if(OPEN){ OPEN.done=true; openingEnd(); } }
 
@@ -9280,13 +9358,1295 @@ var ENDING=[
 ];
 function playPrologue(host,done){ S.prologue=1; save(); ev('prologue',{}); playCinema(PROLOGUE,done,host); }
 /* 최종 클리어: 보스를 모두 이기고 거처가 맨 위(84㎡ 신축)에 닿은 뒤 처음 홈으로 돌아왔을 때 */
-function endingReady(){ return !S.ending&&S.peak>=TIERS.length-1&&BOSSES.every(function(b){ return bossCleared(b.id); }); }
+function endingReady(){ return !S.ending&&S.peak>=TIERS.length-1&&mqOk('home')&&BOSSES.every(function(b){ return bossCleared(b.id); }); }
 function checkEnding(){
   if(!endingReady()||document.getElementById('opening')) return;
   S.ending=dayKey(); save(); ev('ending',{lv:S.lv});
   playCinema(ENDING,function(){ endingShareSheet(); });
 }
 
+/* ── MQ_DATA_BEGIN: tools/mq-import.mjs 가 ops/meeting-1001/ 에서 붙여 넣는다. 여기를 직접 고치지 말 것 ── */
+/* mq-scenes.js */
+/* 메인 퀘스트 컷신 배경 (개발 리드, 2026-10-01)
+   MQ_BG[이름](ctx,t,W,H). 화면은 가로 160칸, 세로 H(240~356). 사람이 서는 바닥선은 gy=H-104,
+   대사 상자는 H-92부터 덮는다. 배경은 캔버스 전체를 칠하고 사람은 그리지 않는다(엔진이 위에 세운다).
+   게임에 이미 있는 rcx · hrand · mixHex · ctext · sceneStars · TC · P · SKIN · houseCv · ridingCv · heroDesc · MOUNTS · S만 쓴다.
+   도우미 함수는 바깥에 새 전역을 만들지 않게 즉시 실행 함수 안에 둔다. */
+var MQ_BG = (function(){
+  function bands(ctx,cols,y0,y1,W){ var n=cols.length,h=(y1-y0)/n; for(var i=0;i<n;i++) rcx(ctx,cols[i],0,Math.round(y0+i*h),W,Math.ceil(h)+1); }
+  function skyDay(ctx,t,W,y1){ bands(ctx,['#7FC3E4','#9AD2F0','#B4E1F5','#CDEEFF','#DDF2FB'],0,y1,W);
+    for(var i=0;i<3;i++){ var x=Math.round((hrand(i,4,1)*W+t*(2+i))%(W+40))-24,y=10+i*16+Math.floor(hrand(i,5,1)*8);
+      rcx(ctx,'#FFFFFF',x+4,y,12,3); rcx(ctx,'#FFFFFF',x,y+3,24,4); rcx(ctx,'#E4F2FA',x+2,y+7,20,1); } }
+  /* 건물 줄. 창에 불이 켜지는 비율은 lit */
+  function skyline(ctx,t,W,base,col,win,seed,lo,hi,lit){ var x=-3;
+    while(x<W){ var w=10+Math.floor(hrand(x,seed,4)*14),h=lo+Math.floor(hrand(x,seed,5)*(hi-lo));
+      rcx(ctx,col,x,base-h,w,h);
+      if(win) for(var yy=base-h+4;yy<base-4;yy+=6) for(var xx=x+2;xx<x+w-2;xx+=4)
+        if(hrand(xx*3+seed,yy,7)<lit&&((Math.floor(t/2)+xx+yy)%11)!==0) rcx(ctx,win,xx,yy,2,3);
+      x+=w+(hrand(x,seed,6)<.3?2:0); } }
+  function planks(ctx,W,y0,H,c){ rcx(ctx,c[1],0,y0,W,H-y0); var r=0;
+    for(var y=y0;y<H;y+=6,r++){ rcx(ctx,c[0],0,y+5,W,1); rcx(ctx,c[2],0,y,W,1);
+      for(var x=(r%3)*14-20;x<W;x+=40) rcx(ctx,c[0],x,y,1,5); } }
+  function tiles(ctx,W,y0,H,a,b,s){ for(var y=y0,r=0;y<H;y+=s,r++) for(var x=0,k=0;x<W;x+=s,k++){ rcx(ctx,(r+k)%2?a:b,x,y,s,s); } }
+  function base(ctx,W,gy,c){ rcx(ctx,c,0,gy-3,W,3); rcx(ctx,'rgba(30,26,48,.25)',0,gy,W,2); }
+  function plant(ctx,x,y){ rcx(ctx,'#8A6240',x+2,y-8,10,8); rcx(ctx,'#A87B52',x+1,y-9,12,2);
+    var L=TC.leaf; rcx(ctx,L[1],x+5,y-22,4,13); rcx(ctx,L[2],x,y-19,6,4); rcx(ctx,L[2],x+8,y-24,6,4); rcx(ctx,L[3],x+2,y-15,5,3); rcx(ctx,L[3],x+7,y-17,6,3); rcx(ctx,L[4],x+9,y-24,3,1); }
+  function winCity(ctx,t,x,y,w,h,night){ rcx(ctx,'#6B6380',x-2,y-2,w+4,h+4);
+    ctx.save(); ctx.beginPath(); ctx.rect(x,y,w,h); ctx.clip();
+    if(night) bands(ctx,['#241E44','#2E2756','#3A3068'],y,y+h,x+w); else bands(ctx,['#9AD2F0','#B4E1F5','#CDEEFF'],y,y+h,x+w);
+    skyline(ctx,t,x+w,y+h,night?'#1D1934':'#9BB8CC',night?'#FFD66B':'#DDEEF7',x+7,Math.floor(h*.3),Math.floor(h*.8),.4);
+    ctx.restore();
+    rcx(ctx,'rgba(255,255,255,.35)',x+2,y+2,2,h-4); rcx(ctx,'#8C889B',x+Math.floor(w/2),y,2,h); rcx(ctx,'#B3AFC0',x-3,y+h+2,w+6,2); }
+  /* 옆모습 차 한 대, y는 바퀴 바닥 */
+  function carS(ctx,x,y,col,tag){ var d=mixHex(col,'#1B1826',.35),l=mixHex(col,'#FFFFFF',.3);
+    rcx(ctx,'rgba(20,18,30,.25)',x+1,y-1,38,2);
+    rcx(ctx,col,x,y-11,38,7); rcx(ctx,l,x,y-11,38,1); rcx(ctx,d,x,y-5,38,2);
+    rcx(ctx,col,x+8,y-18,22,7); rcx(ctx,l,x+8,y-18,22,1);
+    rcx(ctx,TC.glass[1],x+10,y-17,8,5); rcx(ctx,TC.glass[1],x+20,y-17,8,5); rcx(ctx,TC.glass[3],x+11,y-17,2,1);
+    rcx(ctx,'#FFE79B',x+36,y-10,2,2); rcx(ctx,'#F4705A',x,y-10,2,2);
+    [6,26].forEach(function(o){ rcx(ctx,'#1B1826',x+o,y-6,7,6); rcx(ctx,'#9B93A8',x+o+2,y-4,3,2); });
+    if(tag){ rcx(ctx,'#FFFDF6',x+21,y-16,6,4); rcx(ctx,'#F4705A',x+22,y-15,4,1); rcx(ctx,'#2E2740',x+22,y-13,3,1); } }
+  function glow(ctx,x,y,r,c){ var g=ctx.createRadialGradient(x,y,1,x,y,r); g.addColorStop(0,c); g.addColorStop(1,'rgba(0,0,0,0)'); ctx.fillStyle=g; ctx.fillRect(x-r,y-r,r*2,r*2); }
+  function flags(ctx,t,x0,x1,y,cols){ rcx(ctx,'#6B6380',x0,y,x1-x0,1);
+    for(var x=x0+2,i=0;x<x1-4;x+=7,i++){ var c=cols[i%cols.length],sw=Math.floor(t*4+i)%2;
+      rcx(ctx,c,x,y+1,5,2); rcx(ctx,c,x+1,y+3,3,2+sw); rcx(ctx,c,x+2,y+5+sw,1,1); } }
+  function crane(ctx,t,x,y,h,dir){ var c='#EDA523',d='#D98A16';
+    rcx(ctx,c,x,y-h,4,h); for(var k=y-h+3;k<y;k+=6) rcx(ctx,d,x,k,4,1);
+    var jl=dir>0?38:-26; rcx(ctx,c,Math.min(x,x+jl),y-h-2,Math.abs(jl)+4,3); rcx(ctx,'#453D5C',x-1,y-h-6,6,4);
+    var hx=x+(dir>0?16+Math.round(Math.sin(t*.6)*8):-14),hl=12+Math.round(Math.sin(t*.8)*4);
+    rcx(ctx,'#453D5C',hx,y-h+1,1,hl); rcx(ctx,'#9B93A8',hx-3,y-h+1+hl,7,3); }
+  /* 세로로 긴 화면(H가 크면)에서는 위쪽을 천장으로 덮어 벽이 텅 비지 않게 한다. 벽 위 끝 y를 돌려준다 */
+  function ceil(ctx,W,gy,c,lc,plain){ var ct=Math.max(0,gy-160); if(ct<=0) return 0;
+    rcx(ctx,c,0,0,W,ct); var d=mixHex(c,'#1B1826',.15),r=0;
+    if(!plain) for(var y=ct-2;y>0;y-=22,r++){ rcx(ctx,d,0,y-1,W,1);
+      for(var x=(r%2)*20;x<W;x+=40) rcx(ctx,d,x,Math.max(0,y-22),1,22);
+      if(lc&&r%2===0) [30,110].forEach(function(cx){ rcx(ctx,mixHex(c,'#1B1826',.25),cx-13,y-15,26,10); rcx(ctx,lc,cx-12,y-14,24,8); rcx(ctx,mixHex(lc,'#9B93A8',.3),cx-12,y-10,24,1); }); }
+    rcx(ctx,mixHex(c,'#FFFFFF',.3),0,ct-2,W,2); return ct; }
+  function paveFloor(ctx,W,gy,H){ rcx(ctx,TC.sw[0],0,gy,W,H-gy);
+    for(var y=gy,r=0;y<H;y+=8,r++) for(var x=(r%2)*8-8;x<W;x+=16){ rcx(ctx,TC.sw[2],x,y,15,7); rcx(ctx,TC.sw[3],x,y,15,1); } }
+
+  return {
+  /* 밤 도시. 가로등 아래 골목 */
+  night:function(ctx,t,W,H){ var gy=H-104;
+    bands(ctx,['#141026','#1B1733','#241E44','#2E2756','#3A3068'],0,gy,W); sceneStars(ctx,t,W,H,40);
+    rcx(ctx,'#FFF4C4',122,18,12,12); rcx(ctx,'#FFE79B',120,20,2,8); rcx(ctx,'#FFE79B',134,20,2,8); rcx(ctx,'#FFE79B',124,16,8,2); rcx(ctx,'#FFE79B',124,30,8,2);
+    rcx(ctx,'#1B1733',126,18,8,9);
+    skyline(ctx,t,W,gy-12,'#2A2447','#6B5E9C',1,34,80,.3);
+    skyline(ctx,t,W,gy,'#1D1934','#FFD66B',2,22,58,.35);
+    rcx(ctx,'#3F3A55',0,gy,W,H-gy); rcx(ctx,'#57517A',0,gy,W,2);
+    for(var x=0;x<W;x+=16) rcx(ctx,'#2E2740',x,gy+2,1,H-gy);
+    glow(ctx,22,gy-50,40,'rgba(255,214,107,.28)');
+    rcx(ctx,'#453D5C',20,gy-52,3,52); rcx(ctx,'#453D5C',20,gy-54,12,3); rcx(ctx,'#FFE79B',26,gy-51,6,2);
+    ctx.fillStyle='rgba(255,231,155,.10)'; for(var k=0;k<40;k++) ctx.fillRect(29-Math.round(k*.35),gy-49+k,1+Math.round(k*.7),1); },
+
+  /* 스마트폰 화면 가까이. 새 문자가 온다(글은 엔진이 대사 상자에 찍는다) */
+  phone:function(ctx,t,W,H){
+    bands(ctx,['#0B0A14','#100E1C','#161327','#1B1733'],0,H,W);
+    glow(ctx,W/2,H*.38,95,'rgba(120,180,255,.28)');
+    var sh=t<0.9?(Math.floor(t*24)%2)*2-1:0,px=34+sh,py=12,pw=92,pb=H-60,ph=pb-py;
+    if(sh){ ctx.fillStyle='#9BDCF7'; [[-6,0],[-9,4]].forEach(function(o){ ctx.fillRect(px+o[0],py+40+o[1],1,14-o[1]*2); ctx.fillRect(px+pw-1-o[0],py+40+o[1],1,14-o[1]*2); }); }
+    rcx(ctx,'#57517A',px+2,py,pw-4,ph); rcx(ctx,'#57517A',px,py+2,pw,ph-4);
+    rcx(ctx,'#1B1826',px+2,py+2,pw-4,ph-4); rcx(ctx,'#6B6380',px+2,py,pw-4,1);
+    rcx(ctx,'#2E2740',px+pw/2-8,py+5,16,2);
+    var sx=px+5,sy=py+10,sw=pw-10,sb=pb-10;
+    rcx(ctx,'#F2F0F7',sx,sy,sw,sb-sy);
+    rcx(ctx,'#E4E0EC',sx,sy,sw,11); ctext(ctx,'9:00',sx+3,sy+1,8,'#2E2740');
+    rcx(ctx,'#2E2740',sx+sw-13,sy+3,10,5); rcx(ctx,'#62C85C',sx+sw-12,sy+4,6,3); rcx(ctx,'#2E2740',sx+sw-3,sy+4,1,3);
+    rcx(ctx,'#FFFFFF',sx,sy+11,sw,16); rcx(ctx,'#D2CFDC',sx,sy+27,sw,1);
+    ctext(ctx,'<',sx+3,sy+14,8,'#6B6380');
+    rcx(ctx,'#9BDCF7',sx+12,sy+14,10,10); rcx(ctx,'#3A9BC9',sx+15,sy+16,4,4); rcx(ctx,'#3A9BC9',sx+14,sy+21,6,3);
+    rcx(ctx,'#453D5C',sx+25,sy+15,26,3); rcx(ctx,'#B9B5C6',sx+25,sy+20,34,2);
+    var nb=H-104-26,ob=nb-28,j=0;
+    if(ob-14>sy+30){ rcx(ctx,'#D2CFDC',sx+sw/2-14,ob-14,28,8); rcx(ctx,'#9F9BAD',sx+sw/2-10,ob-11,20,2); }
+    for(ob=nb-28;ob>sy+30;ob-=(j===1?38:28),j++){ if(j===1){ ob-=10; if(ob<=sy+30) break; }
+      if(j%2===0){ rcx(ctx,'#E2E0EA',sx+4,ob,54,20); rcx(ctx,'#E2E0EA',sx+2,ob+14,2,3); rcx(ctx,'#B9B5C6',sx+8,ob+5,44,2); rcx(ctx,'#B9B5C6',sx+8,ob+11,30,2); }
+      else { rcx(ctx,'#FFE79B',sx+sw-50,ob+4,46,14); rcx(ctx,'#FFE79B',sx+sw-4,ob+12,2,3); rcx(ctx,'#D9B44A',sx+sw-44,ob+9,34,2); } }
+    var k=Math.min(1,Math.max(0,(t-0.35)*5));
+    if(k>0){ var bw=Math.round(66*k),bh=Math.round(24*k);
+      rcx(ctx,'#FFFFFF',sx+4,nb,bw,bh); rcx(ctx,'#FFC53C',sx+4,nb,2,bh); rcx(ctx,'#D2CFDC',sx+4,nb+bh,bw,1);
+      if(k>=1){ rcx(ctx,'#453D5C',sx+10,nb+5,54,2); rcx(ctx,'#453D5C',sx+10,nb+11,48,2); rcx(ctx,'#453D5C',sx+10,nb+17,30,2);
+        if(Math.floor(t*2)%2===0){ rcx(ctx,'#F4705A',sx+sw-12,nb-4,8,7); rcx(ctx,'#FFFFFF',sx+sw-9,nb-3,2,3); rcx(ctx,'#FFFFFF',sx+sw-9,nb+1,2,1); } } }
+    rcx(ctx,'#FFFFFF',sx,sb-14,sw,14); rcx(ctx,'#E2E0EA',sx+4,sb-11,sw-22,8); rcx(ctx,'#FFC53C',sx+sw-15,sb-11,11,8);
+    var sk=SKIN[0]; try{ sk=heroDesc().skin||sk; }catch(e){}
+    for(var i=0;i<3;i++){ rcx(ctx,sk.b,px-4,H-118+i*9,7,7); rcx(ctx,sk.s,px-4,H-112+i*9,7,1); }
+    rcx(ctx,sk.b,px+pw-6,H-112,10,16); rcx(ctx,sk.s,px+pw-6,H-97,10,1); },
+
+  /* 사무실. 창밖 빌딩, 뒤쪽 책상 줄, 형광등 */
+  office:function(ctx,t,W,H){ var gy=H-104;
+    rcx(ctx,'#DAD6E3',0,0,W,gy); var ct=ceil(ctx,W,gy,'#B9B5C6','#FFFDF6'),wt=Math.max(ct+16,gy-128),wb=gy-38; rcx(ctx,'#C9C3D6',0,ct,W,8);
+    [14,64,114].forEach(function(x,i){ rcx(ctx,(Math.floor(t*7)%37===i)?'#E4E0EC':'#FFFDF6',x,ct+2,32,4); rcx(ctx,'#B9B5C6',x,ct+6,32,1); });
+    winCity(ctx,t,8,wt,62,wb-wt,0); winCity(ctx,t,90,wt,62,wb-wt,0);
+    rcx(ctx,'#FFFDF6',74,wt+4,12,12); rcx(ctx,'#453D5C',75,wt+5,10,10); rcx(ctx,'#FFFDF6',76,wt+6,8,8); rcx(ctx,'#2E2740',79,wt+7,1,4); rcx(ctx,'#2E2740',80,wt+10,3,1);
+    base(ctx,W,gy,'#9B93A8');
+    for(var x=4;x<W;x+=52){ rcx(ctx,'#8A6240',x,gy-22,46,3); rcx(ctx,'#A87B52',x,gy-22,46,1); rcx(ctx,'#6B4A31',x+2,gy-19,2,16); rcx(ctx,'#6B4A31',x+42,gy-19,2,16);
+      rcx(ctx,'#2E2740',x+8,gy-36,18,12); rcx(ctx,Math.floor(t*2+x)%5?'#6EC8F0':'#9BDCF7',x+9,gy-35,16,9); rcx(ctx,'#CDEEFF',x+10,gy-34,8,1); rcx(ctx,'#CDEEFF',x+10,gy-32,11,1);
+      rcx(ctx,'#2E2740',x+16,gy-24,2,2); rcx(ctx,'#FFFDF6',x+30,gy-25,9,3); rcx(ctx,'#C9C3D6',x+31,gy-26,7,1); }
+    plant(ctx,W-16,gy-1);
+    tiles(ctx,W,gy,H,'#7D8299','#8A8FA8',8); rcx(ctx,'#6B6380',0,gy,W,1); },
+
+  /* 회의실. 화면에 막대그래프, 긴 탁자, 블라인드 */
+  meeting:function(ctx,t,W,H){ var gy=H-104;
+    rcx(ctx,'#E7E0D4',0,0,W,gy); for(var x=0;x<W;x+=20) rcx(ctx,'#DDD5C6',x,0,1,gy);
+    var ct=ceil(ctx,W,gy,'#CFC6B6','#FFF8EC'),st=Math.max(ct+12,gy-116),sb=gy-46;
+    rcx(ctx,'#B9A88C',0,gy-40,W,2);
+    rcx(ctx,'#6B6380',6,st,20,sb-st+10); for(var y=st+2;y<sb+8;y+=3) rcx(ctx,y%6?'#E4E0EC':'#C9C3D6',8,y,16,2);
+    rcx(ctx,'#2E2740',34,st,112,sb-st); rcx(ctx,'#FFFDF6',36,st+2,108,sb-st-4);
+    var ch=sb-st-18,k=Math.min(1,t/1.2);
+    [.35,.55,.45,.8,.95].forEach(function(v,i){ var h=Math.round(ch*v*k); rcx(ctx,i===4?'#F4705A':'#6EC8F0',46+i*14,sb-6-h,9,h); rcx(ctx,i===4?'#FFAF9E':'#CDEEFF',46+i*14,sb-6-h,9,1); });
+    rcx(ctx,'#453D5C',42,sb-6,70,1); rcx(ctx,'#453D5C',42,st+8,1,sb-st-14);
+    rcx(ctx,'#FFC53C',120,st+10,16,16); rcx(ctx,'#F4705A',128,st+10,8,8); rcx(ctx,'#FFFDF6',120,st+30,16,2); rcx(ctx,'#C9C3D6',120,st+34,12,2);
+    rcx(ctx,'#6B6380',86,sb,8,4);
+    for(var c=10;c<W;c+=30){ rcx(ctx,'#3F3A55',c,gy-40,16,14); rcx(ctx,'#57517A',c+1,gy-39,14,2); }
+    rcx(ctx,'#6B4A31',0,gy-28,W,14); rcx(ctx,'#A87B52',0,gy-28,W,3); rcx(ctx,'#C4966A',0,gy-28,W,1); rcx(ctx,'#4E3524',0,gy-16,W,2);
+    [20,58,100,136].forEach(function(x,i){ rcx(ctx,'#FFFDF6',x,gy-29,10,2); if(i%2){ rcx(ctx,'#9BDCF7',x+13,gy-34,3,6); rcx(ctx,'#3A9BC9',x+13,gy-34,3,1); } });
+    rcx(ctx,'#4E3524',8,gy-14,4,14); rcx(ctx,'#4E3524',W-12,gy-14,4,14);
+    planks(ctx,W,gy,H,['#8A6240','#A87B52','#C4966A']); },
+
+  /* 은행 창구. 번호표 전광판, 유리 칸막이 */
+  bank:function(ctx,t,W,H){ var gy=H-104;
+    rcx(ctx,'#EFE8DA',0,0,W,gy); for(var x=0;x<W;x+=32) rcx(ctx,'#E3DAC7',x,0,16,gy);
+    var top=Math.max(ceil(ctx,W,gy,'#D6CCB8','#FFFDF6')+10,gy-120);
+    rcx(ctx,'#26406B',0,top,W,18); rcx(ctx,'#FFC53C',0,top+18,W,2);
+    rcx(ctx,'#FFC53C',8,top+3,12,12); rcx(ctx,'#D98A16',11,top+6,6,6); rcx(ctx,'#FFE79B',9,top+4,3,2);
+    ctext(ctx,'BANK',26,top+5,8,'#FFFDF6');
+    rcx(ctx,'#1B1826',96,top+2,56,14); var n=127+Math.floor(t/3);
+    ctext(ctx,('000'+n).slice(-4),124,top+5,8,Math.floor(t*3)%2?'#FF5A4A':'#FF8A6A','c');
+    var pt=top+26;
+    for(var i=0;i<3;i++){ var bx=8+i*50;
+      rcx(ctx,'#CDEEFF',bx,pt+10,44,gy-30-pt-10); rcx(ctx,'rgba(255,255,255,.6)',bx+3,pt+12,2,gy-44-pt); rcx(ctx,'#9B93A8',bx-2,pt+8,48,2);
+      rcx(ctx,'#26406B',bx+14,pt,16,8); ctext(ctx,String(i+1),bx+22,pt,8,'#FFFDF6','c'); }
+    rcx(ctx,'#A5927A',0,gy-30,W,30); rcx(ctx,'#D6C6A8',0,gy-32,W,5); rcx(ctx,'#EFE3CB',0,gy-32,W,1); rcx(ctx,'#8A7A64',0,gy-27,W,1);
+    for(var j=0;j<3;j++){ rcx(ctx,'#B9A88C',14+j*50,gy-22,32,12); rcx(ctx,'#C9B79A',14+j*50,gy-22,32,1); }
+    rcx(ctx,'#8A7A64',0,gy-2,W,2);
+    tiles(ctx,W,gy,H,'#D8D4E0','#E9E6EF',16); rcx(ctx,'#B9B5C6',0,gy,W,1); },
+
+  /* 중고차 매장 앞마당. 만국기, 값표 붙은 차 */
+  carlot:function(ctx,t,W,H){ var gy=H-104;
+    skyDay(ctx,t,W,gy);
+    rcx(ctx,'#E9E6EF',6,gy-62,148,42); rcx(ctx,'#B4E1F5',10,gy-50,140,28); for(var x=10;x<150;x+=14) rcx(ctx,'#8C889B',x,gy-50,1,28);
+    rcx(ctx,'rgba(255,255,255,.5)',14,gy-48,3,24); rcx(ctx,'#3A6FB0',6,gy-66,148,12); rcx(ctx,'#2C4668',6,gy-55,148,1);
+    ctext(ctx,'중고차',W/2,gy-65,8,'#FFFDF6','c');
+    rcx(ctx,'#9B93A8',4,gy-100,2,80); rcx(ctx,'#9B93A8',W-6,gy-100,2,80);
+    flags(ctx,t,5,W-5,gy-99,[P.r1,P.y1,P.g1,P.k3,P.v1]);
+    rcx(ctx,TC.road[1],0,gy-20,W,H-gy+20);
+    for(var i=0;i<5;i++) rcx(ctx,'#E9E4F0',-6+i*44,gy-20,2,20);
+    carS(ctx,-2,gy-2,'#F4705A',1); carS(ctx,60,gy-2,'#FFFDF6',1); carS(ctx,122,gy-2,'#3A6FB0',1);
+    rcx(ctx,'#B3AFC0',0,gy,W,2); rcx(ctx,TC.road[0],0,gy+2,W,1);
+    for(var k=0;k<24;k++) rcx(ctx,hrand(k,3,2)<.5?TC.road[0]:TC.road[2],Math.floor(hrand(k,4,2)*W),gy+4+Math.floor(hrand(k,5,2)*(H-gy-4)),1,1); },
+
+  /* 달리는 차. 언덕이 흘러가고 초록 표지판이 지나간다 */
+  road:function(ctx,t,W,H){ var gy=H-104,rt=gy-26;
+    skyDay(ctx,t,W,rt);
+    function hills(sp,col,b,amp,seed){ ctx.fillStyle=col; var off=(t*sp)%W;
+      for(var x=0;x<W+2;x+=2){ var xx=x+off,h=Math.round(amp*(0.6+0.4*Math.sin(xx/19+seed))+amp*0.3*Math.sin(xx/7+seed*2)); ctx.fillRect(x,b-h,2,h+2); } }
+    hills(8,'#8FB6A8',rt-16,26,1); hills(18,'#5E9C6E',rt-4,16,3);
+    rcx(ctx,'#46964A',0,rt-6,W,6);
+    var po=Math.floor(t*70)%24; for(var x=-24;x<W+24;x+=24){ rcx(ctx,'#9B93A8',x-po,rt-10,2,8); } rcx(ctx,'#C9C3D6',0,rt-10,W,2);
+    var sgx=Math.round(W+20-((t*40)%(W+120))); rcx(ctx,'#9B93A8',sgx+18,rt-40,2,34);
+    rcx(ctx,'#2F7A3A',sgx,rt-54,40,16); rcx(ctx,'#FFFDF6',sgx+2,rt-52,36,1); rcx(ctx,'#FFFDF6',sgx+2,rt-41,36,1); rcx(ctx,'#FFFDF6',sgx+6,rt-48,18,2); rcx(ctx,'#FFFDF6',sgx+30,rt-49,4,4);
+    rcx(ctx,'#403D4B',0,rt,W,40); rcx(ctx,'#B3AFC0',0,rt,W,2); rcx(ctx,'#B3AFC0',0,rt+38,W,2);
+    var so=Math.floor(t*120)%24; for(var x2=-24;x2<W+24;x2+=24) rcx(ctx,'#E8D9A8',x2-so,rt+19,12,2);
+    rcx(ctx,'#3B8A43',0,rt+40,W,H-rt-40); for(var k=0;k<30;k++){ var gx=(Math.floor(hrand(k,1,3)*W*2)-Math.floor(t*120))%W; if(gx<0) gx+=W; rcx(ctx,k%3?'#52A64E':'#2B6E36',gx,rt+44+Math.floor(hrand(k,2,3)*(H-rt-48)),2,1); }
+    try{ var mo=(S.equip&&MOUNTS[S.equip.mount])||{},rc=ridingCv(heroDesc(),'car',2,[1,2,3,2][Math.floor(t*8)%4],mo.kind==='car'?mo.top:undefined),bob=Math.floor(t*10)%2;
+      ctx.drawImage(rc,0,0,rc.width,rc.height,Math.round(W*.32),gy+2-rc.height*2+bob,rc.width*2,rc.height*2); }catch(e){}
+    for(var s=0;s<4;s++){ var ly=rt+8+s*8,lx=(Math.floor(hrand(s,7,1)*W)-Math.floor(t*200))%W; if(lx<0) lx+=W; rcx(ctx,'rgba(255,255,255,.35)',lx,ly,10,1); } },
+
+  /* 결혼식장. 꽃 아치, 샹들리에, 버진로드 */
+  weddinghall:function(ctx,t,W,H){ var gy=H-104,at=Math.max(24,gy-110);
+    rcx(ctx,'#F6E3E6',0,0,W,gy); for(var x=4;x<W;x+=24){ rcx(ctx,'#EFD3D8',x,0,2,gy); rcx(ctx,'#FBEEF0',x+2,0,1,gy); }
+    rcx(ctx,'#FFF8EC',40,at,80,gy-at); glow(ctx,80,at+30,60,'rgba(255,231,155,.45)');
+    for(var a=0;a<=28;a++){ var ang=Math.PI*a/28,cx=80-Math.cos(ang)*42,cy=at+30-Math.sin(ang)*26;
+      var c=[TC.fl[0],'#FFFFFF','#FFAF9E','#FFFFFF'][a%4]; rcx(ctx,TC.leaf[2],Math.round(cx)-3,Math.round(cy)-1,7,5); rcx(ctx,c,Math.round(cx)-2,Math.round(cy)-2,5,5); rcx(ctx,'#FFE79B',Math.round(cx),Math.round(cy),1,1); }
+    [34,120].forEach(function(x){ rcx(ctx,'#FFFFFF',x,at+30,6,gy-at-30); rcx(ctx,'#EFD3D8',x+5,at+30,1,gy-at-30);
+      for(var y=at+34;y<gy;y+=10){ rcx(ctx,TC.leaf[2],x-1,y,8,3); rcx(ctx,y%20?TC.fl[0]:'#FFFFFF',x+1,y-1,3,3); } });
+    var cy2=Math.max(4,at-18); rcx(ctx,'#D98A16',79,0,2,cy2); rcx(ctx,'#FFC53C',70,cy2,20,3); rcx(ctx,'#FFE79B',72,cy2+3,16,2);
+    for(var i=0;i<5;i++){ rcx(ctx,'#CDEEFF',71+i*4,cy2+5,2,3+(i%2)*2); if(Math.floor(t*4+i)%3===0) rcx(ctx,'#FFFFFF',71+i*4,cy2+5,1,1); }
+    [14,138].forEach(function(x){ rcx(ctx,'#D9C9A8',x+2,gy-24,4,24); rcx(ctx,'#EFE3CB',x-2,gy-26,12,3);
+      rcx(ctx,TC.leaf[1],x-3,gy-34,14,8); rcx(ctx,'#FFFFFF',x-2,gy-36,4,4); rcx(ctx,TC.fl[0],x+3,gy-37,4,4); rcx(ctx,'#FFAF9E',x+7,gy-35,3,3); });
+    rcx(ctx,'#F2E6DA',0,gy,W,H-gy); for(var y=gy+6;y<H;y+=10) rcx(ctx,'#E6D6C4',0,y,W,1);
+    for(var r=gy;r<H;r++){ var w=24+Math.round((r-gy)*.55); rcx(ctx,'#FFFFFF',80-w/2-2,r,w+4,1); rcx(ctx,'#D9503E',80-w/2,r,w,1); }
+    rcx(ctx,'#FFFFFF',0,gy,W,1);
+    for(var p=0;p<14;p++){ var px=Math.floor(hrand(p,1,5)*W)+Math.round(Math.sin(t*1.5+p)*4),py=Math.floor((hrand(p,2,5)*gy+t*(12+p%4*4))%gy);
+      rcx(ctx,p%3?'#FFAF9E':'#FFFFFF',px,py,2,1); } },
+
+  /* 카페. 메뉴판, 조명, 김이 오르는 커피 머신 */
+  cafe:function(ctx,t,W,H){ var gy=H-104;
+    rcx(ctx,'#F3E3CC',0,0,W,gy); var ct=ceil(ctx,W,gy,'#6B4A31',null),mt=Math.max(ct+18,gy-110);
+    for(var b=0;b<ct-4;b+=6) rcx(ctx,'#5A3D29',0,b,W,1); rcx(ctx,'#6B4A31',0,gy-40,W,40); for(var x=0;x<W;x+=8) rcx(ctx,'#5A3D29',x,gy-40,1,40); rcx(ctx,'#A87B52',0,gy-42,W,3);
+    winCity(ctx,t,8,mt+6,44,gy-mt-54,0);
+    rcx(ctx,'#4E3524',64,mt,64,40); rcx(ctx,'#2E3A33',66,mt+2,60,36);
+    ctext(ctx,'MENU',96,mt+4,8,'#FFE79B','c');
+    for(var i=0;i<3;i++){ rcx(ctx,'#E9E4F0',70,mt+16+i*7,30,2); rcx(ctx,'#FFC53C',112,mt+16+i*7,10,2); }
+    [58,92,126].forEach(function(x,i){ rcx(ctx,'#2E2740',x,ct,1,mt-4+i*3-ct); rcx(ctx,'#2E2740',x-4,mt-4+i*3,9,4); rcx(ctx,'#FFE79B',x-3,mt+i*3,7,1); glow(ctx,x,mt+2+i*3,16,'rgba(255,214,107,.35)'); });
+    rcx(ctx,'#FFFDF6',134,gy-70,22,2); for(var c=0;c<3;c++){ rcx(ctx,['#FFFDF6','#9BDCF7','#FFAF9E'][c],136+c*7,gy-76,5,6); }
+    rcx(ctx,'#C9C3D6',108,gy-60,26,18); rcx(ctx,'#9B93A8',108,gy-60,26,3); rcx(ctx,'#453D5C',114,gy-50,3,6); rcx(ctx,'#453D5C',124,gy-50,3,6);
+    for(var s=0;s<5;s++){ var sy=gy-62-((t*14+s*5)%20),sx=118+Math.round(Math.sin(t*3+s)*2); ctx.globalAlpha=1-((t*14+s*5)%20)/20; rcx(ctx,'#FFFFFF',sx,Math.round(sy),2,2); } ctx.globalAlpha=1;
+    rcx(ctx,'#8A6240',96,gy-42,64,4); rcx(ctx,'#C4966A',96,gy-42,64,1);
+    plant(ctx,4,gy-1);
+    planks(ctx,W,gy,H,['#6B4A31','#8A6240','#A87B52']); },
+
+  /* 견본주택. 현수막, 깃발, 멀리 짓는 중인 단지와 크레인 */
+  modelhouse:function(ctx,t,W,H){ var gy=H-104;
+    skyDay(ctx,t,W,gy);
+    rcx(ctx,'#B9C6D6',96,gy-118,34,100); for(var y=gy-114;y<gy-20;y+=8) rcx(ctx,'#8C9AB0',96,y,34,1); for(var x=100;x<130;x+=8) rcx(ctx,'#8C9AB0',x,gy-118,1,100);
+    rcx(ctx,'#CFCCD9',30,gy-88,26,70); for(var y2=gy-84;y2<gy-20;y2+=8) rcx(ctx,'#A9A5B8',30,y2,26,1);
+    crane(ctx,t,62,gy-40,90,1); crane(ctx,t,138,gy-40,100,-1);
+    rcx(ctx,'#FFFDF6',12,gy-52,136,52); rcx(ctx,'#E4E0EC',12,gy-52,136,2);
+    rcx(ctx,'#26406B',8,gy-66,144,16); rcx(ctx,'#FFC53C',8,gy-51,144,2);
+    ctext(ctx,'견본주택',W/2,gy-63,8,'#FFFDF6','c');
+    for(var i=0;i<4;i++){ rcx(ctx,'#7FC3E4',18+i*32,gy-44,26,28); rcx(ctx,'#B4E1F5',18+i*32,gy-44,26,6); rcx(ctx,'#6B6380',30+i*32,gy-44,2,28); }
+    rcx(ctx,'#453D5C',62,gy-30,36,30); rcx(ctx,'#9BDCF7',64,gy-28,15,28); rcx(ctx,'#9BDCF7',81,gy-28,15,28); rcx(ctx,'#FFC53C',77,gy-16,2,4); rcx(ctx,'#FFC53C',81,gy-16,2,4);
+    [2,W-6].forEach(function(x,j){ rcx(ctx,'#9B93A8',x,gy-80,2,80);
+      for(var k=0;k<3;k++){ var c=[P.r1,P.y1,P.k3][(k+j)%3],w=Math.floor(t*5+k)%2; rcx(ctx,c,j?x-8:x+2,gy-78+k*9,8,6-w); } });
+    paveFloor(ctx,W,gy,H);
+    [28,52,108,132].forEach(function(x){ rcx(ctx,'#C9A33C',x,gy+2,2,10); rcx(ctx,'#FFC53C',x-1,gy+1,4,2); }); rcx(ctx,'#F4705A',30,gy+4,22,1); rcx(ctx,'#F4705A',110,gy+4,22,1); },
+
+  /* 아파트 단지. 게임의 84㎡ 구축·신축 그림을 그대로 세운다 */
+  apartment:function(ctx,t,W,H){ var gy=H-104;
+    skyDay(ctx,t,W,gy);
+    skyline(ctx,t,W,gy-14,'#B4C8DA','#D8E6F0',3,50,90,.5);
+    try{ var a=houseCv(12),b=houseCv(14),c=houseCv(13);
+      ctx.drawImage(a,-8,gy-8-a.height); ctx.drawImage(b,W-b.width+6,gy-8-b.height); ctx.drawImage(c,Math.round(W/2-c.width/2)+2,gy-4-c.height); }catch(e){}
+    rcx(ctx,TC.g[1],0,gy-10,W,10);
+    for(var x=-4;x<W;x+=20){ var L=TC.leaf; rcx(ctx,L[0],x,gy-20,14,12); rcx(ctx,L[2],x+2,gy-22,10,8); rcx(ctx,L[3],x+3,gy-21,4,2); }
+    rcx(ctx,'#E2E0EA',0,gy-4,W,4); for(var f=0;f<W;f+=6) rcx(ctx,'#9F9BAD',f,gy-8,1,6); rcx(ctx,'#9F9BAD',0,gy-8,W,1);
+    paveFloor(ctx,W,gy,H); },
+
+  /* 거실. 창과 커튼, 소파, 스탠드, 러그 */
+  livingroom:function(ctx,t,W,H){ var gy=H-104;
+    rcx(ctx,'#FFF3E0',0,0,W,gy); for(var x=0;x<W;x+=10) rcx(ctx,'#F6E6CC',x,0,4,gy);
+    var ct=ceil(ctx,W,gy,'#F2E3C8',null,1),wt=Math.max(ct+18,gy-110); rcx(ctx,'#EAD8BA',0,ct,W,4);
+    if(ct>30){ rcx(ctx,'#FFFDF6',60,ct-10,40,6); rcx(ctx,'#FFE79B',62,ct-4,36,2); glow(ctx,80,ct,40,'rgba(255,231,155,.3)'); }
+    winCity(ctx,t,12,wt,52,gy-wt-44,1);
+    rcx(ctx,'#D9503E',6,wt-6,8,gy-wt-30); rcx(ctx,'#D9503E',62,wt-6,8,gy-wt-30); rcx(ctx,'#B93A2D',8,wt-6,2,gy-wt-30); rcx(ctx,'#B93A2D',64,wt-6,2,gy-wt-30);
+    rcx(ctx,'#8A6240',4,wt-8,68,3);
+    rcx(ctx,'#A87B52',96,wt+2,24,18); rcx(ctx,'#CDEEFF',98,wt+4,20,14); rcx(ctx,'#62C85C',98,wt+12,20,6); rcx(ctx,'#FFC53C',112,wt+6,4,4);
+    rcx(ctx,'#A87B52',126,wt+8,16,12); rcx(ctx,'#FFAF9E',128,wt+10,12,8); rcx(ctx,'#FFFDF6',131,wt+12,6,4);
+    rcx(ctx,'#453D5C',146,gy-58,1,56); rcx(ctx,'#453D5C',142,gy-2,9,2); rcx(ctx,'#FFE79B',140,gy-66,13,8); rcx(ctx,'#FFF4C4',142,gy-60,9,2);
+    glow(ctx,146,gy-58,30,'rgba(255,214,107,.35)');
+    rcx(ctx,'#3A6FB0',30,gy-34,94,14); rcx(ctx,'#4F86C8',30,gy-34,94,2); rcx(ctx,'#2C4668',30,gy-20,94,14);
+    rcx(ctx,'#3A6FB0',24,gy-28,8,22); rcx(ctx,'#3A6FB0',122,gy-28,8,22); rcx(ctx,'#4F86C8',24,gy-28,8,2); rcx(ctx,'#4F86C8',122,gy-28,8,2);
+    rcx(ctx,'#FFC53C',40,gy-30,10,8); rcx(ctx,'#FFAF9E',104,gy-30,10,8);
+    rcx(ctx,'#2C4668',34,gy-6,86,1); rcx(ctx,'#4E3524',34,gy-6,2,6); rcx(ctx,'#4E3524',118,gy-6,2,6);
+    planks(ctx,W,gy,H,['#B8996A','#D8B98A','#E6CDA2']);
+    rcx(ctx,'#F4705A',16,gy+6,128,H-gy-6); rcx(ctx,'#FFAF9E',20,gy+10,120,H-gy-14); rcx(ctx,'#F4705A',24,gy+14,112,H-gy-22);
+    for(var i=0;i<W;i+=8) rcx(ctx,'#FFFDF6',i+18,gy+5,2,1); },
+
+  /* 동네 거리. 가게 차양, 전봇대와 전깃줄, 보도와 찻길 */
+  town:function(ctx,t,W,H){ var gy=H-104;
+    skyDay(ctx,t,W,gy-40);
+    skyline(ctx,t,W,gy-40,'#B4C8DA','#D8E6F0',5,20,60,.4);
+    var sh=[{x:0,w:52,h:70,c:TC.brick[2],a:P.r1},{x:52,w:56,h:58,c:'#E9E4F0',a:P.g2},{x:108,w:52,h:76,c:TC.brick[1],a:P.k4}];
+    sh.forEach(function(b,i){ var y=gy-b.h; rcx(ctx,b.c,b.x,y,b.w,b.h); rcx(ctx,mixHex(b.c,'#1B1826',.25),b.x,y,b.w,2);
+      for(var wy=y+6;wy<gy-34;wy+=14) for(var wx=b.x+6;wx<b.x+b.w-10;wx+=14){ rcx(ctx,TC.wood[0],wx,wy,10,9); rcx(ctx,TC.glass[1],wx+1,wy+1,8,7); rcx(ctx,TC.glass[3],wx+2,wy+2,2,2); }
+      rcx(ctx,'#FFFDF6',b.x+6,gy-32,b.w-12,7); rcx(ctx,b.a,b.x+8,gy-30,b.w-30,3);
+      for(var s=0;s<b.w-4;s+=6){ rcx(ctx,s%12?'#FFFDF6':b.a,b.x+2+s,gy-24,6,6); } rcx(ctx,'rgba(30,26,48,.2)',b.x+2,gy-18,b.w-4,1);
+      rcx(ctx,TC.glass[0],b.x+8,gy-17,b.w-16,17); rcx(ctx,TC.glass[2],b.x+10,gy-15,4,8); rcx(ctx,TC.wood[1],b.x+Math.floor(b.w/2)-1,gy-17,2,17); });
+    rcx(ctx,TC.wood[1],46,gy-96,4,96); rcx(ctx,TC.wood[0],40,gy-90,16,2); rcx(ctx,'#9B93A8',48,gy-80,6,6);
+    ctx.fillStyle='#2E2740'; for(var x=0;x<W;x++){ ctx.fillRect(x,gy-89+Math.round(Math.pow((x-46)/60,2)*8),1,1); ctx.fillRect(x,gy-85+Math.round(Math.pow((x-46)/70,2)*10),1,1); }
+    var bx=(Math.floor(t*14)%(W+20))-10; if(Math.floor(t*3)%2===0){ rcx(ctx,'#453D5C',bx,gy-92+Math.round(Math.pow((bx-46)/60,2)*8)-2,3,2); }
+    paveFloor(ctx,W,gy,gy+16); rcx(ctx,TC.curb[1],0,gy+16,W,3); rcx(ctx,TC.curb[2],0,gy+16,W,1);
+    rcx(ctx,TC.road[1],0,gy+19,W,H-gy-19); for(var k=0;k<W;k+=24) rcx(ctx,'#E8D9A8',k+(Math.floor(t*8)%24)-24,gy+34,12,2); },
+
+  /* 지하철 승강장. 스크린도어 뒤로 열차가 들어와 선다 */
+  station:function(ctx,t,W,H){ var gy=H-104,top=Math.max(8,gy-112);
+    rcx(ctx,'#E4E6EE',0,0,W,gy); for(var y=0;y<gy;y+=8) rcx(ctx,'#D2D5E0',0,y,W,1); for(var x=0;x<W;x+=8) rcx(ctx,'#D8DBE6',x,0,1,gy);
+    rcx(ctx,'#2C3A5E',0,0,W,Math.max(6,top-2));
+    for(var cy=top-14;cy>0;cy-=34){ rcx(ctx,'#1C2540',0,cy-6,W,2); rcx(ctx,'#453D5C',10,cy-4,60,4); rcx(ctx,'#E9F4FF',11,cy,58,3); rcx(ctx,'#453D5C',90,cy-4,60,4); rcx(ctx,'#E9F4FF',91,cy,58,3); glow(ctx,40,cy+2,26,'rgba(233,244,255,.18)'); glow(ctx,120,cy+2,26,'rgba(233,244,255,.18)'); }
+    rcx(ctx,'#1C2540',24,top,112,18); rcx(ctx,'#3FA548',28,top+4,10,10); rcx(ctx,'#FFFFFF',31,top+7,4,4);
+    ctext(ctx,'뉴비역',86,top+5,8,'#FFFDF6','c'); ctext(ctx,'→',128,top+5,8,'#FFE79B','c');
+    rcx(ctx,'#1B1826',48,top+22,64,10); var ld=Math.floor(t*6)%12; for(var i=0;i<12;i++) if(i<=ld) rcx(ctx,'#FF9A3C',51+i*5,top+26,3,2);
+    var dt=gy-66,cyc=t%8,tx=cyc<2?Math.round((1-cyc/2)*(1-cyc/2)*-200):cyc<6?0:Math.round(((cyc-6)/2)*((cyc-6)/2)*220);
+    rcx(ctx,'#2E2740',0,dt,W,62);
+    rcx(ctx,'#C9C3D6',tx-20,dt+4,200,56); rcx(ctx,'#E4E0EC',tx-20,dt+4,200,3); rcx(ctx,'#3FA548',tx-20,dt+34,200,5);
+    for(var w=0;w<6;w++){ rcx(ctx,'#1C2540',tx-14+w*32,dt+12,20,18); rcx(ctx,'#48598A',tx-13+w*32,dt+13,6,4); }
+    rcx(ctx,'#9B93A8',0,dt-4,W,4); rcx(ctx,'#3FA548',0,dt-6,W,2);
+    for(var p=0;p<W;p+=40){ rcx(ctx,'#6B6380',p,dt,4,gy-dt); rcx(ctx,'rgba(205,238,255,.35)',p+4,dt,36,gy-dt); rcx(ctx,'rgba(255,255,255,.5)',p+8,dt+4,2,gy-dt-12);
+      rcx(ctx,'#9B93A8',p+21,dt,1,gy-dt); rcx(ctx,'#FFC53C',p+12,dt+26,18,3); }
+    rcx(ctx,'#6B6380',0,gy-4,W,4);
+    tiles(ctx,W,gy,H,'#9F9BAD','#B9B5C6',12); rcx(ctx,'#FFC53C',0,gy+2,W,5); for(var d=2;d<W;d+=4) rcx(ctx,'#D98A16',d,gy+3,2,1); }
+  };
+})();
+
+/* ch-job.js */
+/* 메인 1장 · 첫 취업 (CX 리드, 2026-09-30 작성, 기준 2026-10)
+   확인한 출처와 날짜. 접속일은 모두 2026-09-30.
+   이 세션의 네트워크는 정부 사이트(moel.go.kr, easylaw.go.kr, law.go.kr, nps.or.kr, nhis.or.kr, 4insure.or.kr)를
+   직접 열지 못했다(프록시 차단). 그래서 검색 결과에 뜬 정부 보도자료 제목과 본문 요약, 그리고 같은 내용을 옮긴
+   2차 자료로 대조했다. 출시 전에 사람이 원문을 한 번 더 연다.
+   - 2026 최저임금 시간급 10,320원, 월 환산 2,156,880원(209시간): 고용노동부 고시(2025-08-05). 대조 KDI 경제정보센터
+     https://eiec.kdi.re.kr/policy/materialView.do?num=268630 , 한국금융신문 2026-01-13. 게임의 기존 값과 같다.
+   - 수습 감액: 1년 이상 계약, 수습 시작 3개월 안, 단순노무 직종 제외일 때 최저임금의 90%까지(최저임금법 제5조,
+     시행령 제3조). 대조 노무법인 비원 https://beonelaborlaw.com/trainee-minimum-wage-90-percent/ 외.
+     90%는 1,941,192원(2,156,880 × 0.9, 직접 계산).
+   - 근로계약서 서면 작성·교부 의무(근로기준법 제17조), 필수 기재(임금, 소정근로시간, 휴일, 연차): 고용노동부 안내
+     https://www.moel.go.kr/mainpop2.do (제목 확인), 민주노총 권리찾기수첩 https://nodong.org/rights/7817460
+   - 임금명세서 교부 의무(근로기준법 제48조 제2항, 2021-11-19 시행), 서면·전자문서, 항목별 금액과 공제 내역:
+     대한치과의사협회 공지 https://www.kda.or.kr/kda/kdaNews/kdaNotice/board_read.kda?board_key=37611 , 노동OK.
+   - 연차: 1년 미만은 1개월 개근마다 1일(최대 11일), 1년 80% 이상 출근 시 15일(근로기준법 제60조). 법제처 법령해석
+     https://www.moleg.go.kr (제목 확인), 김·장 법률사무소 해설.
+   - 국민연금 9.5%(근로자 4.75%), 2026-01-01부터: 보건복지부 보도자료 https://www.mohw.go.kr/board.es?mid=a10503000000&bid=0027&list_no=1488390&act=view (제목 확인)
+   - 건강보험 7.19%(근로자 3.595%): 보건복지부 보도자료 https://www.mohw.go.kr/board.es?act=view&bid=0027&list_no=1487279&mid=a10503000000 (제목 확인)
+   - 장기요양 소득 대비 0.9448%, 건강보험료 대비 13.14%: 보건복지부 보도자료 list_no=1487817(제목 확인), 병원신문 2026.
+   - 고용보험(실업급여) 근로자 0.9%: 경향신문 2026-09-01(2027년 1.0% 인상은 정부안, 미확정이라 쓰지 않음).
+   - 4대보험 가입 내역 한 번에 조회: 4대사회보험 정보연계센터 https://www.4insure.or.kr
+   - 입금액 +2,000,270원은 월 225만 원(식대 0, 1인)을 게임의 첫 월급 계산기(calcFirstSalary)로 낸 추정치다.
+     소득세는 간이세액표 추정이라 실제와 조금 다를 수 있다(ops/meeting-0929/c4-salary.md).
+   숫자는 해마다 바뀐다. 2027년 최저임금과 보험료율이 나오면 7장면과 13장면을 고친다. */
+var MQ_JOB = {
+  id: 'job', no: 1, title: '첫 취업', sub: '합격 문자부터 첫 월급까지',
+  asof: '2026-10',
+  src: [
+    ['고용노동부 · 최저임금 고시', 'https://www.moel.go.kr'],
+    ['고용노동부 · 근로계약서', 'https://www.moel.go.kr/mainpop2.do'],
+    ['찾기쉬운 생활법령정보 · 근로계약', 'https://easylaw.go.kr'],
+    ['보건복지부 · 2026 보험료율', 'https://www.mohw.go.kr'],
+    ['국민연금공단', 'https://www.nps.or.kr'],
+    ['국민건강보험공단', 'https://www.nhis.or.kr'],
+    ['4대사회보험 정보연계센터', 'https://www.4insure.or.kr']
+  ],
+  scenes: [
+    { bg: 'phone', fx: 'flash',
+      text: ['[문자] 최종 합격을', '축하드립니다.', '월요일 9시 출근 바랍니다.'] },
+    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['허허, 합격이라고?', '축하하네. 그런데', '진짜 시험은 이제부터야.'] },
+    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['첫 달엔 종이 몇 장이', '오갈 걸세. 계약서,', '명세서. 꼭 챙기게.'] },
+    { bg: 'office', fx: 'fade', cast: [['hero', 'L'], ['officem', 'R']], who: '인사팀 과장',
+      text: ['어서 와요.', '계약서부터 쓰죠.'] },
+    { bg: 'meeting', cast: [['hero', 'L'], ['officem', 'R']],
+      doc: { t: '근로계약서', rows: [['임금', '월 250만 원'], ['근로시간', '주 40시간'], ['휴일·연차', '법에 따름'], ['수습', '3개월']], bad: [] },
+      who: '인사팀 과장', text: ['여기 서명하시면 돼요.', '사본은 나중에 드릴게요.'],
+      choice: { opts: [
+        { a: '다 읽고 한 부를 받아 간다', ok: 1,
+          note: '근로계약서는 서면으로 쓰고 한 부를 근로자에게 줘야 한다. 임금, 근로시간, 휴일, 연차가 적혔는지 본다.' },
+        { a: '나중에 준다니 서명만 한다', ok: 0,
+          note: '회사는 계약서를 내줄 의무가 있다. "나중에"는 잊히기 쉽다. 적힌 조건이 훗날 유일한 증거다.' } ] } },
+    { bg: 'meeting', cast: [['hero', 'L'], ['officem', 'R']], who: '인사팀 과장',
+      text: ['계약은 1년 이상이고,', '수습 3개월은 월급의', '90%만 드려요.'],
+      choice: { opts: [
+        { a: '최저임금보다 많은지 따진다', ok: 1,
+          note: '수습이라도 최저임금의 90% 밑으론 못 준다. 1년 이상 계약, 수습 3개월 안, 단순노무가 아닐 때만 그만큼 깎을 수 있다.' },
+        { a: '수습이면 얼마든 깎는 줄 안다', ok: 0,
+          note: '수습 감액에는 한도가 있다. 최저임금의 90%가 바닥이고, 단순노무 직종은 수습이어도 깎을 수 없다.' } ] } },
+    { bg: 'meeting',
+      doc: { t: '수습 월급 따져 보기', rows: [['2026 최저시급', '10,320원'], ['월 환산(209시간)', '2,156,880원'], ['그 90%', '1,941,192원'], ['내 수습 월급', '225만 원']], bad: [] },
+      text: ['수습 월급이 최저임금', '90%보다 많다.', '이 조건은 문제없다.'] },
+    { bg: 'office', cast: [['hero', 'L'], ['peerf', 'R']], who: '입사 동기',
+      text: ['점심 같이 먹어요!', '근데 우리 신입은', '연차가 언제 생겨요?'] },
+    { bg: 'office', cast: [['hero', 'L'], ['officem', 'R']], who: '인사팀 과장',
+      text: ['첫해엔 한 달 개근하면', '하루씩 생겨요.', '첫해 최대 11일이죠.'] },
+    { bg: 'office', cast: [['hero', 'L'], ['officem', 'R']], who: '인사팀 과장',
+      text: ['1년 동안 80% 넘게', '나오면, 다음 해엔', '15일이 생겨요.'] },
+    { bg: 'phone', fx: 'money+', amt: '+2,000,270',
+      text: ['[입금] 급여', '생각보다 적다...?'] },
+    { bg: 'office', cast: [['hero', 'C']],
+      text: ['월급은 들어왔는데', '명세서를 주는 사람이', '아무도 없다.'],
+      choice: { opts: [
+        { a: '임금명세서를 달라고 한다', ok: 1,
+          note: '회사는 월급을 줄 때 임금명세서를 서면이나 전자문서로 줘야 한다. 항목별 금액과 공제 내역이 들어간다.' },
+        { a: '통장에 찍혔으니 됐다', ok: 0,
+          note: '명세서가 없으면 무엇이 얼마나 빠졌는지 알 길이 없다. 명세서는 달라고 하기 전에 받아야 하는 서류다.' } ] } },
+    { bg: 'meeting',
+      doc: { t: '임금명세서 · 공제', rows: [['국민연금', '4.75%'], ['건강보험', '3.595%'], ['장기요양', '건보료의 13.14%'], ['고용보험', '0.9%']], bad: [] },
+      text: ['4대보험, 내 몫이', '빠진 거다. 회사도', '제 몫을 따로 낸다.'] },
+    { bg: 'office', cast: [['hero', 'L'], ['peerf', 'R']], who: '입사 동기',
+      text: ['근데 떼기만 하고', '신고를 안 하는 데도', '있대요. 진짜예요?'],
+      choice: { opts: [
+        { a: '가입 내역을 직접 조회한다', ok: 1,
+          note: '4대사회보험 정보연계센터에서 내 가입 내역을 한 번에 볼 수 있다. 입사하고 한두 달 뒤에 한 번 보면 된다.' },
+        { a: '떼 갔으면 됐겠지', ok: 0,
+          note: '월급에서 뗐다고 신고까지 됐다는 뜻은 아니다. 조회는 몇 분이면 끝난다. 내 기록은 내가 본다.' } ] } },
+    { bg: 'night', fx: 'confetti', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['허허, 첫 월급이구먼.', '계약서 한 장,', '명세서 한 장.'] },
+    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['숫자는 해마다 바뀌네.', '최저임금, 보험료율.', '해마다 한 번은 보게.'] }
+  ],
+  ends: {
+    good: ['계약서 한 장, 명세서 한 장.', '첫 월급을 제대로 받았다.'],
+    ok: ['큰 탈은 없었다.', '몇 가지는 다음 달에 챙기자.'],
+    bad: ['모르고 넘어간 것들이', '월급에서 조용히 빠져나갔다.']
+  }
+};
+
+/* ch-lease.js */
+/* 메인 2장 · 첫 전세 계약 앞뒤 컷신 (CX 리드, 2026-09-30 작성, 기준 2026-10)
+   가운데 계약 장면은 스프린트 D의 LEASE_CH를 그대로 쓴다. 여기에는 앞(intro), 뒤(outro), 그리고
+   메인 퀘스트가 생기기 전에 이미 전세 계약을 끝낸 사람에게 보여 줄 짧은 회상(recap)만 둔다.
+   선택은 없다. 숫자는 새로 쓰지 않았고, 순서와 원칙은 LEASE_CH와 그 출처(LEASE_SRC)를 따른다.
+   확인한 출처(접속 2026-09-30, 정부 사이트는 프록시 차단으로 검색 요약으로 대조):
+   - 전입신고 다음 날 0시에 대항력, 확정일자로 우선변제권: 찾기쉬운 생활법령정보 · 주택임대차 https://easylaw.go.kr
+   - 등기부등본 열람: 인터넷등기소 https://www.iros.go.kr
+   - 매매 시세: 국토교통부 실거래가 공개시스템 https://rt.molit.go.kr
+   - 전세보증금반환보증: 주택도시보증공사 https://www.khug.or.kr
+   ends는 LEASE_ENDS의 결말 번호에 맞춘다(0 보증금을 지켰다 = good, 1 아슬아슬 = ok, 2 보증금이 묶였다 = bad).
+   outro 마지막 장면 뒤에 ends의 한 줄을 할배 대사로 붙인다. */
+var MQ_LEASE_WRAP = {
+  id: 'lease', no: 2, title: '첫 전세 계약', sub: '매물 고르기부터 전입신고까지',
+  asof: '2026-10',
+  src: [
+    ['찾기쉬운 생활법령정보 · 주택임대차', 'https://easylaw.go.kr'],
+    ['인터넷등기소', 'https://www.iros.go.kr'],
+    ['국토교통부 실거래가 공개시스템', 'https://rt.molit.go.kr'],
+    ['주택도시보증공사 전세보증금반환보증', 'https://www.khug.or.kr']
+  ],
+  intro: [
+    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['원룸 전세가 열렸다고?', '허허, 큰 날이 왔구먼.'] },
+    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['월세는 매달 조금씩', '나가지만, 전세는', '한 번에 다 거는 거야.'] },
+    { bg: 'apartment', fx: 'fade', cast: [['gpa', 'C']], who: '귀인 할배',
+      text: ['보증금은 자네가 모은', '돈 거의 전부일 걸세.', '돌려받아야 끝나지.'] },
+    { bg: 'town',
+      doc: { t: '전세 계약 순서', rows: [['하나', '매물 고르기'], ['둘', '가계약'], ['셋', '삼자대면 본계약'], ['넷', '잔금과 전입신고']], bad: [] },
+      text: ['부동산, 매물 집,', '다시 부동산, 그리고', '주민센터 순서야.'] },
+    { bg: 'town', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['벽지 말고 서류를 보게.', '등기부, 실거래가.', '돈은 소유자 계좌로.'] },
+    { bg: 'town', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['중간에 나가도 되네.', '그 자리에서 이어서', '하면 돼. 가 보세.'] }
+  ],
+  outro: [
+    { bg: 'apartment', fx: 'fade', cast: [['hero', 'C']],
+      text: ['새 집 열쇠를 받았다.', '현관 비밀번호부터', '바꿨다.'] },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['허허, 도장 몇 번에', '진이 다 빠졌지?'] },
+    { bg: 'livingroom',
+      doc: { t: '이사 뒤에 둘 것', rows: [['계약서', '원본 보관'], ['확정일자', '계약서에 도장'], ['등기부', '가끔 다시 열람'], ['만기일', '달력에 적기']], bad: [] },
+      text: ['종이는 버리지 말고', '한곳에 모아 두자.'] },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['전세는 들어갈 때보다', '나올 때 돈이 돌아와야', '끝나는 계약이야.'] },
+    { bg: 'livingroom', fx: 'confetti', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['방이 좀 넓어졌으니', '이제 큰 가전도', '들일 수 있겠구먼.'] }
+  ],
+  ends: {
+    good: ['보증금이 제 발로 돌아왔네.', '그게 제일 좋은 계약이야.'],
+    ok: ['집이 버텨 줬구먼.', '다음엔 확인 몇 개만 더.'],
+    bad: ['숫자를 먼저 봤으면', '달랐을 걸세. 다음엔 꼭.']
+  },
+  /* 메인 퀘스트 전에 이미 전세 계약을 끝낸 사람에게. intro 대신 이것을 틀고 outro로 넘어간다. */
+  recap: [
+    { bg: 'livingroom', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['자네는 전세 계약을', '벌써 해 봤지?', '허허, 기억나나?'] },
+    { bg: 'town',
+      doc: { t: '그때 거친 순서', rows: [['하나', '매물 고르기'], ['둘', '가계약'], ['셋', '삼자대면 본계약'], ['넷', '잔금과 전입신고']], bad: [] },
+      text: ['서류 보고, 계좌 보고,', '특약 넣고, 그날', '전입신고까지.'] },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['다음 계약도 순서는', '똑같네. 서류부터.', '그 버릇 잊지 말게.'] }
+  ]
+};
+
+/* ch-card.js */
+/* 3장 첫 신용카드 (CS 리드, 2026-09-30 작성, 기준 2026-10)
+   확인한 출처와 날짜 (모두 2026-09-30 확인)
+   - 신용카드 발급 대상: 만 19세 이상(예외: 18세 이상 재직 증명 등), 결제능력 심사, 개인신용평점 상위 93% 이내
+     또는 장기연체가능성 1만분의 65 이하. 여신전문금융업법 시행령 제6조의7 (찾기쉬운 생활법령 신용카드 이용자,
+     금융위원회 보도자료). 월 가처분소득 금액 기준은 원문을 못 열어 쓰지 않았다.
+   - 개인신용평가 점수제(1~1000점) 전면 전환 2021-01-01 (금융위원회, 대한민국 정책브리핑).
+   - 신용조회 기록은 2011-10부터 신용평가에 반영하지 않는다 (금융위원회 개선 방안, 2차 자료 여럿이 같음).
+   - 할부 철회권·항변권: 20만 원 이상, 3개월 이상 할부, 철회는 7일 안 (할부거래법, 찾기쉬운 생활법령 신용카드 할부계약).
+   - 리볼빙 정식 이름은 일부결제금액이월약정. 이월액에 수수료가 붙고 오래 쓰면 신용평점이 떨어질 수 있다
+     (금융감독원 유의사항, 카드사 약정 설명서). 수수료율 숫자는 사람마다 달라 쓰지 않았다.
+   - 현금서비스는 단기카드대출, 카드론은 장기카드대출 (여신금융협회 공시 용어). 금리는 공시에서 확인하자로만 쓴다.
+   - 단기연체 정보: 10만 원 이상 5영업일 이상 연체면 금융회사끼리 공유 (금융위원회 2018 개인신용평가 개선,
+     2019-01 시행). 오래 밀린 연체는 갚은 뒤에도 일정 기간 기록이 활용된다. 기간 숫자는 대본에 넣지 않았다.
+   - 분실·도난: 신고한 날부터 60일 전까지 생긴 부정사용은 카드사가 책임 (여신전문금융업법 제16조).
+     비밀번호 누설, 미서명 등 회원 과실이 있으면 일부 책임 (찾기쉬운 생활법령, 금융감독원 분쟁조정 기준 보도).
+     카드사 한 곳에 신고하면 다른 카드도 일괄 신고 (여신금융협회 소비자지원센터).
+   - 신용카드 등 소득공제: 총급여 25% 초과분부터, 신용카드 15%, 체크카드·현금영수증 30%, 전통시장 40%
+     (조세특례제한법 제126조의2, 국세청). 2026-08 세제개편안은 2027년부터 대중교통 40%를 없애자고 해서
+     대본에서는 대중교통 공제율을 쓰지 않았다.
+   - 법정 최고금리 연 20% (대부업법·이자제한법 시행령, 2021-07-07 시행, 2026-09 현재 같음).
+   확인 방법 메모: 이 작업 환경에서 정부·협회 사이트(fss.or.kr, fsc.go.kr, crefia.or.kr, nts.go.kr, easylaw.go.kr,
+   law.go.kr) 직접 열람이 막혀, 공식 도메인으로 한정한 웹 검색 결과와 2차 자료를 대조했다. 통합 전 원문을 한 번 더 볼 것.
+   카드 상품 조건(카페 50%, 전월 실적 40만 원, 월 한도 5천 원)과 결제 금액은 이야기 속 가상의 값이다. */
+var MQ_CARD = {
+  id: 'card', no: 3, title: '첫 신용카드', sub: '신청서 한 장부터 연말정산까지',
+  asof: '2026-10',
+  src: [
+    ['금융감독원 파인', 'https://fine.fss.or.kr'],
+    ['금융위원회', 'https://www.fsc.go.kr'],
+    ['여신금융협회 공시', 'https://gongsi.crefia.or.kr'],
+    ['여신금융협회 소비자지원센터', 'https://customer.crefia.or.kr'],
+    ['찾기쉬운 생활법령정보 신용카드 이용자', 'https://www.easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=585&ccfNo=2&cciNo=1&cnpClsNo=1'],
+    ['한국신용정보원 크레딧포유', 'https://www.credit4u.or.kr'],
+    ['국세청 연말정산', 'https://www.nts.go.kr']
+  ],
+  scenes: [
+    { bg: 'phone', fx: 'flash',
+      text: ['[광고] 사회초년생 전용 카드', '첫해 연회비 면제! 지금 신청'] },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['허허, 전셋집 정리는 끝났나?', '이번엔 카드 차례일세.', '잘 쓰면 신용, 잘못 쓰면 빚.'] },
+    { bg: 'bank', cast: [['hero', 'L'], ['deskf', 'R']], who: '은행 창구 직원',
+      text: ['체크카드는 통장 잔액만큼,', '신용카드는 먼저 쓰고', '다음 달에 갚는 거예요.'] },
+    { bg: 'bank', cast: [['hero', 'L'], ['deskf', 'R']],
+      doc: { t: '신용카드 발급 기준', rows: [['나이', '만 19세 이상'], ['결제능력', '소득으로 심사'], ['신용평점', '상위 93% 이내']], bad: [] },
+      who: '은행 창구 직원', text: ['발급은 나이, 결제능력,', '신용평점을 보고 정해요.'] },
+    { bg: 'bank', cast: [['hero', 'L'], ['deskf', 'R']], who: '은행 창구 직원',
+      text: ['신용점수는 1~1000점이에요.', '조회만 해서는 안 떨어지고', '제때 갚은 기록이 쌓여요.'] },
+    { bg: 'bank', cast: [['hero', 'L'], ['deskf', 'R']],
+      doc: { t: '카드 신청서', rows: [['결제일', '매달 14일'], ['결제 계좌', '월급 통장'], ['일부결제금액이월약정', '□ 신청']], bad: [2] },
+      who: '은행 창구 직원', text: ['여기 체크하실 칸이', '몇 개 더 있어요.'],
+      choice: { opts: [
+        { a: '리볼빙 칸은 비워 둔다', ok: 1,
+          note: '일부결제금액이월약정이 리볼빙이다. 필요 없으면 신청하지 않는다. 가입했는지는 카드사 앱에서 확인할 수 있다.' },
+        { a: '빨리 끝내려고 다 체크한다', ok: 0,
+          note: '다 체크하면 리볼빙이 같이 걸릴 수 있다. 칸 이름이 길고 어려울수록 한 번 더 읽는다.' } ] } },
+    { bg: 'cafe', cast: [['hero', 'L'], ['peerf', 'R']], who: '회사 동기',
+      text: ['이 카드 봐, 카페 50% 할인!', '너도 이걸로 만들어.'] },
+    { bg: 'cafe', cast: [['hero', 'L'], ['peerf', 'R']],
+      doc: { t: '카드 상품설명서', rows: [['혜택', '카페 50% 할인'], ['조건', '전월 실적 40만 원'], ['할인 한도', '월 5천 원'], ['연회비', '둘째 해부터']], bad: [1, 2] },
+      text: ['작은 글씨를 읽어 보니', '조건이 줄줄이 붙어 있다.'],
+      choice: { opts: [
+        { a: '내 한 달 소비와 맞춰 본다', ok: 1,
+          note: '혜택은 전월 실적을 채워야 나오고 월 한도도 있다. 실적에서 빠지는 결제도 있으니 설명서를 보고 연회비와 견준다.' },
+        { a: '할인율이 높으니 바로 만든다', ok: 0,
+          note: '50% 할인도 월 한도가 5천 원이면 한 달 5천 원이다. 실적을 채우려고 더 쓰면 오히려 손해다.' } ] } },
+    { bg: 'town', cast: [['hero', 'L'], ['officem', 'R']], who: '매장 직원',
+      text: ['노트북이요? 지금 사시면', '3개월 무이자 돼요!', '12개월로 하셔도 되고요.'] },
+    { bg: 'town', cast: [['hero', 'L']],
+      doc: { t: '할부 알아 두기', rows: [['무이자', '정해진 개월까지만'], ['그 밖', '할부 수수료 붙음'], ['남은 할부', '그만큼 한도 묶임']], bad: [] },
+      text: ['무이자 개월을 넘기면', '할부 수수료가 붙는다.', '3개월로 나눠 샀다.'] },
+    { bg: 'town', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['20만 원 이상, 3개월 이상', '할부는 7일 안에 철회를', '요청할 수 있다네.'] },
+    { bg: 'phone', fx: 'shake',
+      text: ['[카드] 이번 달 결제 예정', '142만 원. 통장엔 110만.', '분명 조금씩 썼는데...'] },
+    { bg: 'phone', cast: [['hero', 'C']],
+      text: ['결제일은 모레다.', '어떻게 할까?'],
+      choice: { opts: [
+        { a: '비상금을 헐어 전액 낸다', ok: 1,
+          note: '결제일에 전액을 내면 이자가 없다. 모자란 달은 비상금으로 막고, 다음 달 지출을 줄여 다시 채운다.' },
+        { a: '현금서비스로 메운다', ok: 0,
+          note: '현금서비스는 단기카드대출, 카드론은 장기카드대출이다. 둘 다 이자가 높은 빚이라 신용점수에도 불리할 수 있다.' },
+        { a: '최소 금액만 내고 넘긴다', ok: 0,
+          note: '일부만 내고 나머지를 넘기면 리볼빙이다. 넘긴 돈에 수수료가 붙고 매달 다시 쌓여 원금이 잘 줄지 않는다.' } ] } },
+    { bg: 'bank', cast: [['hero', 'L'], ['deskf', 'R']],
+      doc: { t: '연체 기록', rows: [['10만 원·5영업일', '금융회사끼리 공유'], ['오래 밀리면', '갚아도 기록 남음'], ['결제일 변경', '카드사에 신청']], bad: [0, 1] },
+      who: '은행 창구 직원', text: ['작은 돈도 늦으면 연체예요.', '월급날 뒤로 결제일을', '옮겨 두면 편해요.'] },
+    { bg: 'night', cast: [['hero', 'C']], fx: 'shake',
+      text: ['회식 끝나고 집에 오니', '지갑이 없다.', '카드가 세 장 들어 있었다.'] },
+    { bg: 'night', cast: [['hero', 'C']],
+      text: ['시계는 새벽 한 시.', '어떻게 할까?'],
+      choice: { opts: [
+        { a: '바로 카드사에 분실 신고', ok: 1,
+          note: '신고한 날부터 60일 전까지 생긴 부정사용은 카드사가 책임진다. 한 곳에 신고하면 다른 카드도 함께 신고할 수 있다.' },
+        { a: '내일 가게에 가 보고 정한다', ok: 0,
+          note: '신고가 늦으면 피해가 커진다. 카드 뒷면에 서명을 안 했거나 비밀번호를 적어 뒀다면 내 책임도 생길 수 있다.' } ] } },
+    { bg: 'office', cast: [['hero', 'L'], ['peerf', 'R']],
+      doc: { t: '신용카드 등 소득공제', rows: [['시작점', '총급여 25% 초과분'], ['신용카드', '15%'], ['체크·현금영수증', '30%'], ['전통시장', '40%']], bad: [] },
+      who: '회사 동기', text: ['연말정산 카드 공제는', '25%를 넘긴 뒤부터래.', '그 뒤엔 체크카드가 유리해.'] },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배', fx: 'confetti',
+      text: ['허허, 카드는 칼 같은 걸세.', '손잡이를 쥐면 도구고,', '날을 쥐면 상처지.'] }
+  ],
+  ends: {
+    good: ['리볼빙 없이, 연체 없이.', '첫 카드로 신용을 쌓았다.'],
+    ok: ['큰 사고는 없었지만', '명세서가 가끔 무섭다.'],
+    bad: ['넘긴 카드값에 수수료가 붙고', '다음 달 명세서가 또 무거워졌다.']
+  }
+};
+
+/* ch-car.js */
+/* 메인 4장 · 첫 차 (CX 리드, 2026-09-30 작성, 기준 2026-10)
+   확인한 출처와 날짜. 접속일은 모두 2026-09-30.
+   이 세션은 정부·협회 사이트(car365.go.kr, easylaw.go.kr, crefia.or.kr, knia.or.kr, fss.or.kr, wetax.go.kr)를
+   직접 열지 못했다(프록시 차단). 검색 결과의 공식 페이지 요약과 2차 자료로 대조했다. 출시 전에 원문을 한 번 더 연다.
+   - 미끼(허위) 매물 수법과 "평균 시세와 이력 정보를 확인하라"는 국토교통부 당부: 정책브리핑
+     https://www.korea.kr/news/issueQAView.do?newsId=148710207 , 서울신문 2015-12-31, 2023-03-09.
+   - 자동차365(국토교통부·한국교통안전공단): 차량번호로 사고·저당·압류, 침수(5개 항목), 성능·상태점검 이력 조회.
+     https://www.car365.go.kr , 뉴스핌 2026-08-31.
+   - 성능·상태점검기록부를 계약 전에 고지할 의무(자동차관리법 제58조), 성능·상태점검 책임보험(2019-06부터,
+     인도일부터 30일 또는 2천km 가운데 먼저 닿는 쪽까지): 한국법제연구원 https://www.klri.re.kr/kor/publication/2206/view.do , 한국자동차진단보증협회 https://www.kaiwa.org/inspection
+   - 이전등록은 산 날부터 15일 안에: 찾기쉬운 생활법령정보 "자동차 이전등록하기"
+     https://easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=1000&ccfNo=2&cciNo=3&cnpClsNo=1 (검색 요약). 과태료 액수는 자료마다 달라 쓰지 않았다.
+   - 취득세: 비영업용 승용 7%, 경형 4%. 신고가액이 시가표준액보다 적으면 시가표준액이 기준:
+     찾기쉬운 생활법령정보 csmSeq=675(검색 요약), 서울시 차량취득세 안내 https://news.seoul.go.kr/gov/archives/200240
+   - 경차 취득세 감면(75만 원 한도)은 2027-12-31까지 연장된 한시 제도(지방세특례제한법 제67조): 더팩트·퍼블릭뉴스.
+     기한이 있어 대사에는 "감면 있음, 기한 확인"으로만 썼다.
+   - 자동차 할부 비교공시(금리, 취급수수료, 실제 연율): 여신금융협회 https://www.crefia.or.kr (금융감독원 안내 요약).
+   - 할부 이자는 직접 계산한 예시다. 1,000만 원을 36개월 원리금균등으로 빌리면 연 6% 이자 951,897원,
+     연 8% 월 313,364원(이자 1,281,092원), 연 12% 이자 1,957,152원. 금리는 가정이지 시장 금리가 아니다.
+   - 의무보험(대인배상Ⅰ, 대물배상 2천만 원 이상): 손해보험협회 소비자포털 https://consumer.knia.or.kr/m/consumer/insurance-guide/0101.do
+   - 운전자 범위 밖 사람이 낸 사고는 대인배상Ⅰ만 보상, 나머지 담보는 보상 안 함(금융감독원 분쟁조정 기준, 표준약관).
+     대물 의무 한도까지 보상되는지는 자료가 엇갈려 대사에서는 "의무 담보 일부만"으로 썼다.
+   - 가입 경력이 짧으면 보험료가 높게 산출, 운전자 범위가 넓을수록 비쌈: 보험다모아(손해보험협회·생명보험협회)
+     https://www.e-insmarket.or.kr
+   - 자동차세(비영업용 승용): 1,000cc 이하 cc당 80원, 1,600cc 이하 140원, 초과 200원, 지방교육세 30%:
+     위택스 안내를 옮긴 2차 자료 여러 곳. 998cc 경차 예시 79,840원 + 23,952원 = 103,792원(직접 계산, 차령 경감 전).
+   글에 특정 회사·브랜드 이름은 쓰지 않았다. */
+var MQ_CAR = {
+  id: 'car', no: 4, title: '첫 차', sub: '광고 한 장부터 첫 드라이브까지',
+  asof: '2026-10',
+  src: [
+    ['국토교통부 자동차365', 'https://www.car365.go.kr'],
+    ['찾기쉬운 생활법령정보 · 자동차', 'https://easylaw.go.kr'],
+    ['여신금융협회 자동차 할부 비교공시', 'https://www.crefia.or.kr'],
+    ['금융감독원 파인', 'https://fine.fss.or.kr'],
+    ['손해보험협회 소비자포털', 'https://consumer.knia.or.kr'],
+    ['보험다모아', 'https://www.e-insmarket.or.kr'],
+    ['위택스', 'https://www.wetax.go.kr']
+  ],
+  scenes: [
+    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['막차를 또 놓쳤다고?', '허허, 이제 차 얘기를', '할 때가 됐구먼.'] },
+    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['차는 사는 날보다', '타는 동안 돈이 더 드네.', '값, 세금, 보험, 기름.'] },
+    { bg: 'phone', fx: 'flash',
+      text: ['[중고차 광고]', '인기 차종, 무사고.', '시세의 절반! 오늘만.'] },
+    { bg: 'carlot', fx: 'shake', cast: [['hero', 'L'], ['officem', 'R']], who: '중고차 딜러',
+      text: ['아, 그 차요? 방금', '팔렸어요. 대신 이 차', '보세요. 더 좋아요.'],
+      choice: { opts: [
+        { a: '광고한 차가 없으면 나온다', ok: 1,
+          note: '시세보다 한참 싼 광고로 부르고, 오면 다른 차를 권하는 것이 미끼 매물의 흔한 수법이다. 그 차가 없으면 거래할 이유도 없다.' },
+        { a: '온 김에 권하는 차를 본다', ok: 0,
+          note: '미끼로 부른 곳에서 권하는 차는 대개 광고보다 조건이 나쁘다. 발을 들인 순간부터 흥정은 저쪽이 쥔다.' } ] } },
+    { bg: 'carlot', fx: 'fade', cast: [['hero', 'C']],
+      text: ['시세대로 올라온', '중고 경차를 찾았다.', '차값 1,000만 원.'] },
+    { bg: 'carlot', cast: [['hero', 'L'], ['officem', 'R']], who: '중고차 딜러',
+      doc: { t: '성능·상태점검기록부', rows: [['주행거리', '8만 km'], ['사고·교환', '없음'], ['침수', '없음'], ['점검 보증', '30일 · 2천km']], bad: [] },
+      text: ['기록부 보세요.', '사고 없고 깨끗해요.'],
+      choice: { opts: [
+        { a: '차량번호로 자동차365를 본다', ok: 1,
+          note: '기록부는 계약 전에 받는 서류다. 자동차365에서 차량번호로 사고·정비·침수 이력을 조회해 기록부와 맞는지 대조한다.' },
+        { a: '기록부에 없음이니 믿는다', ok: 0,
+          note: '기록부는 점검 한 번의 결과다. 정비·보험 수리·침수 이력은 따로 조회해야 보인다. 대조는 몇 분이면 된다.' } ] } },
+    { bg: 'phone',
+      doc: { t: '자동차365 조회', rows: [['주행거리', '기록부와 같음'], ['저당·압류', '없음'], ['침수 이력', '없음'], ['정비 이력', '앞문 교환 1회']], bad: [3] },
+      text: ['기록부에 없던', '앞문 교환이 나온다.'] },
+    { bg: 'carlot', cast: [['hero', 'L'], ['officem', 'R']], who: '나',
+      text: ['기록부와 다른 점을', '계약서 특약에', '적어 주세요.'] },
+    { bg: 'carlot', fx: 'stamp',
+      doc: { t: '매매계약서 특약', rows: [['앞문 교환', '고지받음'], ['차값', '50만 원 조정'], ['점검 보증', '30일 · 2천km'], ['이전등록', '15일 안']], bad: [] },
+      text: ['다른 점은 글로 남겼다.', '보증 기간 안에 문제가', '생기면 이 종이가 말한다.'] },
+    { bg: 'bank', cast: [['hero', 'L'], ['officem', 'R']], who: '중고차 딜러',
+      text: ['할부는 제휴사로', '해 드려요. 월 31만 원,', '36개월이면 끝나요.'],
+      choice: { opts: [
+        { a: '금리·수수료·총액을 비교한다', ok: 1,
+          note: '월 납입금은 기간을 늘리면 작아 보인다. 여신금융협회 할부 비교공시에서 금리와 수수료를 보고 총액으로 견준다.' },
+        { a: '월 납입금이 괜찮으니 한다', ok: 0,
+          note: '같은 차값이라도 금리와 기간에 따라 이자가 수십만 원에서 백만 원 넘게 달라진다. 총액을 봐야 보인다.' } ] } },
+    { bg: 'bank',
+      doc: { t: '할부 총비용 (예시)', rows: [['빌린 돈', '1,000만 원'], ['연 6% · 36개월', '이자 약 95만'], ['연 12% · 36개월', '이자 약 196만'], ['차이', '약 100만 원']], bad: [2] },
+      text: ['금리 몇 %가', '100만 원이 된다.'] },
+    { bg: 'town',
+      doc: { t: '살 때 드는 돈', rows: [['승용차 취득세', '차값의 7%'], ['경차 취득세', '4% · 감면 있음'], ['세금 기준', '신고가·시가표준 큰 쪽'], ['이전등록', '산 날부터 15일']], bad: [] },
+      text: ['차값 말고도 세금이', '붙는다. 경차 감면은', '기한이 있으니 확인하자.'] },
+    { bg: 'phone',
+      doc: { t: '자동차보험 첫 가입', rows: [['대인배상Ⅰ', '의무'], ['대물배상', '2천만 원 이상 의무'], ['운전자 범위', '나 혼자'], ['가입 경력', '처음']], bad: [] },
+      text: ['보험 비교 사이트에서', '견적을 봤다. 처음이라', '보험료가 높게 나온다.'] },
+    { bg: 'town', cast: [['hero', 'L'], ['peerm', 'R']], who: '친구',
+      text: ['차 샀다며?', '나도 한 번만', '몰아 보자!'],
+      choice: { opts: [
+        { a: '범위 밖이라 안 된다고 한다', ok: 1,
+          note: '운전자 범위 밖의 사람이 사고를 내면 의무 담보 일부만 보상되고 내가 고른 나머지 담보는 안 된다.' },
+        { a: '잠깐인데 괜찮겠지', ok: 0,
+          note: '그 잠깐에 사고가 나면 상대 차와 내 차 수리비를 보험 없이 물 수 있다. 범위는 운전할 사람을 기준으로 정한다.' } ] } },
+    { bg: 'road',
+      doc: { t: '1년 유지비 (예시)', rows: [['자동차세 998cc', '79,840원'], ['지방교육세', '자동차세의 30%'], ['보험료', '해마다 갱신'], ['기름·정비', '타는 만큼']], bad: [] },
+      text: ['세금은 배기량 따라', '매겨진다. 보험은', '해마다 다시 본다.'] },
+    { bg: 'road', fx: 'confetti',
+      text: ['고속도로 입구가', '보인다. 이제 어디든', '갈 수 있다.'] },
+    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['허허, 차 키보다', '영수증 뭉치가 더', '무겁지? 그게 차라네.'] }
+  ],
+  ends: {
+    good: ['광고, 이력, 할부, 보험.', '다 따져 보고 산 첫 차다.'],
+    ok: ['차는 잘 샀다.', '놓친 것은 다음 갱신 때.'],
+    bad: ['싸게 산 줄 알았던 차가', '다달이 돈을 달라고 한다.']
+  }
+};
+
+/* ch-wedding.js */
+/* 5장 결혼 준비 (마케팅 리드, 2026-09-30 작성, 기준 2026-10)
+   확인한 출처와 날짜 (모두 2026-09-30 확인)
+   - 공정거래위원회 소비자분쟁해결기준(예식업), 2020-09-29 개정 시행: 소비자 사정으로 해제해도
+     예식일 150일 전까지 알리면 계약금 환급. 합의·권고의 기준이다. (한국소비자원, 찾기쉬운 생활법령 예식장 이용 계약)
+   - 공정거래위원회 중요한 표시·광고사항 고시 개정, 2025-11-12 시행: 예식장·결혼준비대행업은 기본서비스와
+     선택품목 가격, 위약금·환급 기준을 누리집이나 참가격(price.go.kr), 계약서 표지에 표시. 2026-08-01부터 집중 점검.
+   - 조세특례제한법 제92조 결혼 세액공제: 2024~2026년 혼인신고분, 생애 1회, 1인 50만 원 (국세청, 기획재정부 카드뉴스).
+     2026-08-03 세제개편안은 2027년부터 재정지원 방식 전환을 제안. 그래서 "2026년 신고분까지"로만 쓴다.
+   - 신혼부부 특별공급: 입주자모집공고일 현재 혼인기간(혼인신고일 기준) 7년 이내 (청약홈, 찾기쉬운 생활법령).
+   - 주택도시기금 신혼부부 전세자금: 혼인 7년 이내 또는 3개월 안 결혼 예정자 (주택도시기금 누리집).
+     소득·한도 숫자는 자주 바뀌어 쓰지 않았다.
+   확인 방법 메모: 이 작업 환경에서 공식 사이트 직접 열람이 막혀, 공식 도메인으로 한정한 웹 검색 결과로 대조했다.
+   통합 전 한 번 더 원문을 열어 볼 것.
+   스튜디오·드레스·예식장 금액(200만 원, 280만 원 등)은 이야기 속 가상의 값이다. */
+var MQ_WEDDING = {
+  id: 'wedding', no: 5, title: '결혼 준비', sub: '식장 계약서부터 혼인신고까지',
+  asof: '2026-10',
+  src: [
+    ['공정거래위원회 소비자분쟁해결기준(예식업)', 'https://www.ftc.go.kr'],
+    ['한국소비자원', 'https://www.kca.go.kr'],
+    ['찾기쉬운 생활법령정보 결혼준비자', 'https://www.easylaw.go.kr/CSP/CnpClsMain.laf?csmSeq=1894&ccfNo=2&cciNo=3&cnpClsNo=2'],
+    ['참가격 결혼서비스 가격정보', 'https://www.price.go.kr'],
+    ['국세청 결혼 세액공제', 'https://www.nts.go.kr'],
+    ['청약홈 신혼부부 특별공급', 'https://www.applyhome.co.kr'],
+    ['주택도시기금 신혼부부 전세자금', 'https://nhuf.molit.go.kr']
+  ],
+  scenes: [
+    { bg: 'town', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['허허, 차도 뽑았겠다.', '이제 혼자 할 일이 아니라', '둘이 할 일이 생겼구먼?'] },
+    { bg: 'cafe', cast: [['hero', 'L'], ['partner', 'R']], who: '짝꿍',
+      text: ['우리 진짜 하는 거지?', '근데 뭐부터 해야 돼?'] },
+    { bg: 'cafe', cast: [['hero', 'L'], ['partner', 'R']], who: '나',
+      text: ['식장, 스드메, 신혼집...', '검색하면 광고만 잔뜩이야.'] },
+    { bg: 'weddinghall', cast: [['hero', 'L'], ['partner', 'C'], ['deskf', 'R']], who: '예식장 실장',
+      text: ['그 날짜, 딱 하나 남았어요.', '오늘 계약하시면 식대 할인!'], fx: 'flash' },
+    { bg: 'weddinghall', cast: [['hero', 'L'], ['partner', 'C'], ['deskf', 'R']],
+      doc: { t: '예식장 계약서', rows: [['계약금', '200만 원'], ['예식일', '내년 5월'], ['보증인원', '200명'], ['취소 시', '계약금 환불 불가']], bad: [3] },
+      who: '예식장 실장', text: ['여기 서명만 하시면 돼요.'],
+      choice: { opts: [
+        { a: '취소 조항부터 묻고 따진다', ok: 1, note: '분쟁해결기준에선 예식 150일 전까지 해제를 알리면 계약금 환급이 원칙이다. 조항을 먼저 읽는다.' },
+        { a: '오늘만 할인이니 바로 쓴다', ok: 0, note: '"오늘만"은 조건이 아니라 재촉이다. 날짜가 아까워도 환불 조항은 읽고 쓴다.' } ] } },
+    { bg: 'weddinghall', cast: [['hero', 'L'], ['partner', 'C'], ['deskf', 'R']], who: '짝꿍',
+      text: ['150일 전까지 알리면', '계약금은 돌려받는 게 기준이래요.', '그 줄은 고쳐 주세요.'], fx: 'stamp' },
+    { bg: 'cafe', cast: [['hero', 'L'], ['partner', 'C'], ['officem', 'R']], who: '웨딩 플래너',
+      text: ['스드메 패키지 280만 원!', '기본만 해도 충분해요~'] },
+    { bg: 'cafe', cast: [['hero', 'L'], ['partner', 'C'], ['officem', 'R']],
+      doc: { t: '스드메 견적서', rows: [['기본 패키지', '280만 원'], ['원본 사진', '별도'], ['드레스 피팅', '별도'], ['헬퍼·출장비', '별도']], bad: [1, 2, 3] },
+      who: '짝꿍', text: ['근데 이 "별도"는', '다 얼마예요?'],
+      choice: { opts: [
+        { a: '별도 항목 값을 다 받아 적는다', ok: 1, note: '결혼서비스 업체는 기본·선택품목 가격과 위약금 기준을 공개해야 한다. 참가격에서도 볼 수 있다.' },
+        { a: '기본만 하면 되겠지 하고 넘긴다', ok: 0, note: '추가금은 계약 뒤에 붙는다. 선택품목 값을 모르면 예산표는 반쪽짜리다.' } ] } },
+    { bg: 'cafe', cast: [['hero', 'L'], ['partner', 'R']], fx: 'money-', amt: '-120만 원',
+      text: ['"별도"라는 두 글자가', '이렇게 비싼 글자였다니.'] },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'R']],
+      text: ['그날 밤, 거실 바닥에 앉았다.', '예산표 한 장, 펜 두 자루.'], fx: 'fade' },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'R']], who: '짝꿍',
+      text: ['근데... 우리 돈 얘기', '제대로 해 본 적 있었나?'],
+      choice: { opts: [
+        { a: '모은 돈·빚·수입을 다 펼친다', ok: 1, note: '누가 얼마 내느냐보다 둘의 돈을 한 표에 올리는 게 먼저다. 빚도 숨기지 않는다.' },
+        { a: '관례대로 한쪽은 집, 한쪽은 혼수', ok: 0, note: '정해진 공식은 없다. 둘의 형편과 우선순위로 나눈다. "원래 그래"는 기준이 아니다.' },
+        { a: '돈 얘기는 어색하니 나중에', ok: 0, note: '말 안 한 돈은 결혼 뒤에 더 큰 얘기가 된다. 어색해도 지금 꺼내는 게 싸다.' } ] } },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'R']], who: '나',
+      text: ['사실 나, 학자금 대출이', '아직 조금 남았어.'] },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'R']], who: '짝꿍',
+      text: ['말해 줘서 고마워.', '나는 카드 할부가 좀 있어.', '같이 갚자. 표에 적어 둘게.'] },
+    { bg: 'bank', cast: [['hero', 'L'], ['partner', 'C'], ['deskf', 'R']], who: '은행 창구 직원',
+      text: ['혼인신고는 언제 하세요?', '신고 날짜가 기준인 제도가', '생각보다 많거든요.'] },
+    { bg: 'bank', cast: [['hero', 'L'], ['partner', 'C'], ['deskf', 'R']],
+      doc: { t: '혼인신고 날짜로 보는 것', rows: [['결혼 세액공제', '신고한 해 1인 50만'], ['신혼부부 특공', '신고일부터 7년'], ['신혼 전세자금', '7년 내·예정 3개월']], bad: [] },
+      who: '은행 창구 직원', text: ['세액공제는 2026년', '신고분까지예요.'],
+      choice: { opts: [
+        { a: '제도별 날짜 기준을 같이 본다', ok: 1, note: '세액공제는 신고한 해에, 특공은 신고일부터 7년을 센다. 공고마다 조건이 달라 청약홈에서 확인한다.' },
+        { a: '남들이 미루라니 일단 미룬다', ok: 0, note: '미뤄서 득인 제도도 손해인 제도도 있다. 남의 말보다 우리 계획에 맞는 날짜를 고른다.' } ] } },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'R']], who: '짝꿍',
+      text: ['신혼집 계약서엔', '우리 둘 이름 다 쓸까?'] },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'C'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['공동명의는 장단이 다 있네.', '그 얘긴 집 살 때', '다시 하세나. 허허.'] },
+    { bg: 'weddinghall', cast: [['hero', 'L'], ['partner', 'C'], ['gpa', 'R']], fx: 'confetti',
+      text: ['식장도, 스드메도, 돈 얘기도.', '둘이 같이 정했다.'] }
+  ],
+  ends: {
+    good: ['계약서는 읽고, 추가금은 적고,', '돈 얘기는 둘이 먼저 했다.'],
+    ok: ['새는 돈이 몇 군데 있었지만', '둘이 같이 메웠다.'],
+    bad: ['"별도"와 "원래 그래"가', '예산을 조금씩 갉아먹었다.']
+  }
+};
+
+/* ch-home.js */
+/* 메인 퀘스트 6장 · 첫 내 집 마련 (광고·경제 리드, 2026-09-30 작성, 2026-10 기준)
+   확인한 출처와 날짜. 정부 사이트 본문은 이 작업 환경의 네트워크가 막아 직접 열지 못했고,
+   2026-09-30에 공식 도메인으로 좁힌 웹 검색 결과의 해당 페이지 요약으로 확인했다. 통합 전에 원문을 한 번 더 열어 볼 것.
+   - 찾기쉬운 생활법령정보 「아파트 분양받기」 특별공급(생애최초·신혼부부): 생애최초는 무주택 세대구성원, 소득세 5년 이상 납부.
+     신혼부부는 입주자모집공고일 현재 혼인 7년 이내, 무주택 세대구성원, 소득 기준. (2026-09-30 확인)
+     https://easylaw.go.kr/CSP/CnpClsMainBtr.laf?popMenu=ov&csmSeq=1773&ccfNo=2&cciNo=1&cnpClsNo=2
+   - 청약홈 특별공급 안내 / 생활법령: 특별공급 당첨은 1세대 평생 1회. 특별공급끼리 겹쳐 신청하면 모두 무효. (2026-09-30 확인)
+     https://www.applyhome.co.kr/ar/ara/selectSubscrptIntroSpetialView.do
+   - 찾기쉬운 생활법령정보 「아파트 분양의 이해」: 분양대금 기본 비율 계약금 20%(청약금 포함)·중도금 60%·잔금 20%,
+     단지별로 계약금 10%인 곳도 있음. 계약 기간에 계약금을 못 내면 당첨이 취소될 수 있음. (2026-09-30 확인)
+     https://easylaw.go.kr/CSP/CnpClsMainBtr.laf?popMenu=ov&csmSeq=1773&ccfNo=1&cciNo=1&cnpClsNo=2
+   - 금융위원회 정책문답: DSR은 연소득 대비 모든 가계대출의 연간 원리금 비율. 예시 연소득 5,000만 원·연 원리금 2,000만 원이면 40%.
+     LTV는 담보(집값) 대비 대출 한도. (2026-09-30 확인) https://www.fsc.go.kr/po020201/27351
+     규제 비율(지역별 LTV 상한, DSR 한도)은 자주 바뀌어 숫자를 쓰지 않았다.
+   - 주택도시기금 내집마련 디딤돌대출: 무주택 세대주 대상, 소득·주택가격 기준과 한도가 있음. 숫자는 자주 바뀌어 쓰지 않았다.
+     https://nhuf.molit.go.kr (2026-09-30 검색 확인)
+   - 찾기쉬운 생활법령정보 「이사 · 매매를 한 경우 세금 납부하기」: 주택 유상취득 취득세 6억 원 이하 1%. (2026-09-30 확인)
+   - 정부24·위택스 취득세 안내: 취득일(잔금 지급일)부터 60일 안에 신고·납부. (2026-09-30 확인)
+     https://www.gov.kr/portal/service/serviceInfo/536000000011
+   - 행정안전부·정책브리핑: 생애최초 주택 취득세 200만 원 한도 감면, 취득가 12억 원 이하, 3년 안에 매각·증여·임대하면 추징.
+     2025-12 지방세특례제한법 개정으로 2028년 말까지 연장(2026-01 시행), 운영기준 행정안전부 고시 제2026-3호(2026-01-13).
+     인구감소지역 300만 원 한도는 대본에 쓰지 않았다. (2026-09-30 확인) https://www.korea.kr/news/policyNewsView.do?newsId=148902735
+   - 찾기쉬운 생활법령정보 「부동산 매매 · 소유권이전등기」: 잔금 뒤 60일 안에 소유권이전등기 신청, 등기를 해야 소유권 변동 효력.
+     등기사항증명서 갑구에 소유자가 적힘, 인터넷등기소에서 발급. (2026-09-30 확인)
+     https://www.easylaw.go.kr/CSP/CnpClsMain.laf?csmSeq=649&ccfNo=4&cciNo=1&cnpClsNo=1
+   - 찾기쉬운 생활법령정보 「아파트 관리 · 장기수선충당금」: 장기수선충당금은 소유자 부담. (2026-09-30 확인)
+     https://www.easylaw.go.kr/CSP/CnpClsMain.laf?csmSeq=1248&ccfNo=5&cciNo=2&cnpClsNo=2
+   - 국토교통부 K-apt 공동주택관리정보시스템: 단지 관리비 조회·비교. (2026-09-30 확인) https://www.k-apt.go.kr
+   - 위택스·정책브리핑: 재산세 과세기준일 매년 6월 1일, 주택분은 7월과 9월에 절반씩. (2026-09-30 확인) https://www.wetax.go.kr
+   분양가 4억 원, 연소득 5,000만 원 같은 금액은 계산을 보여 주는 예시다. 대사에 "예시"라고 적었다. */
+var MQ_HOME = {
+  id: 'home', no: 6, title: '첫 내 집 마련', sub: '청약 당첨부터 등기부의 내 이름까지',
+  asof: '2026-10',
+  src: [
+    ['찾기쉬운 생활법령정보 · 아파트 분양받기', 'https://easylaw.go.kr/CSP/CnpClsMainBtr.laf?popMenu=ov&csmSeq=1773&ccfNo=2&cciNo=1&cnpClsNo=2'],
+    ['청약홈 · 특별공급', 'https://www.applyhome.co.kr/ar/ara/selectSubscrptIntroSpetialView.do'],
+    ['금융위원회 · DSR 문답', 'https://www.fsc.go.kr/po020201/27351'],
+    ['주택도시기금', 'https://nhuf.molit.go.kr'],
+    ['위택스', 'https://www.wetax.go.kr'],
+    ['정책브리핑 · 생애최초 취득세 감면', 'https://www.korea.kr/news/policyNewsView.do?newsId=148902735'],
+    ['찾기쉬운 생활법령정보 · 소유권이전등기', 'https://www.easylaw.go.kr/CSP/CnpClsMain.laf?csmSeq=649&ccfNo=4&cciNo=1&cnpClsNo=1'],
+    ['K-apt 공동주택관리정보시스템', 'https://www.k-apt.go.kr']
+  ],
+  scenes: [
+    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'C'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['허허, 전세 만기가', '다가오는구먼.', '이번엔 내 집 차례일세.'] },
+    { bg: 'phone', fx: 'flash',
+      text: ['[알림] 관심 단지', '입주자모집공고가', '올라왔습니다.'] },
+    { bg: 'modelhouse', cast: [['hero', 'L'], ['partner', 'R']], who: '배우자',
+      text: ['모델하우스 사람 봐.', '우리도 넣을 수 있을까?'] },
+    { bg: 'modelhouse', cast: [['hero', 'L'], ['deskf', 'R']], who: '분양 상담사',
+      doc: { t: '특별공급 자격 (요약)', rows: [['공통', '무주택 세대구성원'], ['청약통장', '순위 요건 확인'], ['신혼부부', '혼인 7년 이내'], ['생애최초', '소득세 5년 납부']], bad: [] },
+      text: ['두 분이면 신혼부부나', '생애최초 특별공급을', '볼 수 있어요.'],
+      choice: { opts: [
+        { a: '공고로 비교해 하나만 넣는다', ok: 1, note: '특별공급 당첨은 한 세대에 평생 한 번이다. 요건과 경쟁을 공고로 비교해 가장 맞는 하나를 고른다.' },
+        { a: '둘 다 넣어 확률을 높인다', ok: 0, note: '특별공급끼리 겹쳐 신청하면 모두 무효가 될 수 있다. 한 가지만 골라 넣는다.' },
+        { a: '떨어지면 다음에 또 쓰면 된다', ok: 0, note: '특별공급은 당첨되면 그 세대의 한 번을 쓴 것이다. 아무 단지에나 쓰면 기회를 잃는다.' } ] } },
+    { bg: 'phone', fx: 'confetti',
+      text: ['[문자] 당첨을 축하드립니다.', '계약 일정을 꼭', '확인해 주세요.'] },
+    { bg: 'modelhouse', cast: [['hero', 'L'], ['deskf', 'R']], who: '분양 상담사',
+      doc: { t: '분양대금 (예시)', rows: [['분양가', '4억 원'], ['계약금 20%', '8,000만 원'], ['중도금 60%', '2억 4,000만 원'], ['잔금 20%', '8,000만 원']], bad: [] },
+      text: ['계약할 때 계약금,', '짓는 동안 중도금,', '입주할 때 잔금이에요.'],
+      choice: { opts: [
+        { a: '날짜와 금액을 달력에 적는다', ok: 1, note: '계약 기간에 계약금을 못 내면 당첨이 취소될 수 있다. 비율과 날짜는 단지마다 달라 공고로 본다.' },
+        { a: '당첨됐으니 천천히 알아본다', ok: 0, note: '당첨은 시작일 뿐이다. 계약금 날짜를 놓치면 당첨이 취소될 수 있다.' } ] } },
+    { bg: 'bank', cast: [['hero', 'L'], ['deskf', 'R']], who: '은행 창구 직원',
+      text: ['대출은 두 잣대로 봐요.', 'LTV랑 DSR이요.'] },
+    { bg: 'bank', cast: [['hero', 'L'], ['deskf', 'R']], who: '은행 창구 직원',
+      doc: { t: '대출 심사 (예시)', rows: [['LTV', '집값 대비 한도'], ['DSR', '소득 대비 원리금'], ['연소득', '5,000만 원'], ['1년 원리금', '2천만 원 · 40%']], bad: [] },
+      text: ['DSR에는 신용대출도', '같이 들어가요.'],
+      choice: { opts: [
+        { a: '모든 대출 원리금을 소득과 본다', ok: 1, note: 'DSR은 연소득 대비 모든 대출의 1년 원리금이다. 신용대출과 마이너스통장도 함께 계산한다.' },
+        { a: '집값 대비 한도만 보면 된다', ok: 0, note: 'LTV는 집값으로 정한 한도일 뿐이다. 갚을 힘은 DSR로 따로 본다. 둘 다 넘어야 대출이 나온다.' },
+        { a: '정책대출은 누구나 된다', ok: 0, note: '디딤돌 같은 정책대출은 무주택·소득·집값 기준이 있다. 주택도시기금에서 조건을 먼저 확인한다.' } ] } },
+    { bg: 'bank', cast: [['hero', 'L'], ['deskf', 'R']], who: '은행 창구 직원',
+      text: ['비율과 한도는', '자주 바뀌어요.', '신청 전에 꼭 확인해요.'] },
+    { bg: 'apartment', fx: 'money-', amt: '-8,000만 원',
+      text: ['입주 날.', '잔금을 치르고', '열쇠를 받았다.'] },
+    { bg: 'apartment', cast: [['hero', 'L'], ['partner', 'R']],
+      doc: { t: '취득세 (예시)', rows: [['취득가', '4억 원'], ['세율', '1% · 6억 이하'], ['생애최초 감면', '최대 200만 원'], ['신고 기한', '잔금일부터 60일']], bad: [] },
+      text: ['잔금을 치른 날이', '취득일이다.', '세금 시계가 돈다.'] },
+    { bg: 'apartment', cast: [['hero', 'L'], ['partner', 'R']], who: '배우자',
+      text: ['열쇠 받았으니까', '이제 우리 집 맞지?'],
+      choice: { opts: [
+        { a: '등기하고 갑구 이름을 본다', ok: 1, note: '잔금 뒤 60일 안에 소유권이전등기를 한다. 끝나면 인터넷등기소에서 갑구 소유자란에 내 이름을 본다.' },
+        { a: '열쇠를 받았으니 끝났다', ok: 0, note: '열쇠는 문만 연다. 소유권은 등기를 해야 옮겨진다. 60일 안에 신청한다.' } ] } },
+    { bg: 'livingroom', fx: 'stamp',
+      text: ['등기 완료.', '갑구 맨 아래에', '우리 이름이 올랐다.'] },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'R']],
+      text: ['생애최초로 감면받은 집.', '3년 안에 팔거나 세 주면', '감면분이 추징될 수 있다.'] },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'R']], who: '배우자',
+      doc: { t: '관리비 고지서', rows: [['공용관리비', '매달 부과'], ['장기수선충당금', '소유자 부담'], ['단지 비교', 'K-apt 조회']], bad: [] },
+      text: ['관리비 고지서 왔어.', '장기수선충당금은', '이제 우리 몫이래.'] },
+    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'R']],
+      doc: { t: '재산세', rows: [['기준일', '매년 6월 1일'], ['주택분', '7월·9월 절반씩'], ['조회·납부', '위택스']], bad: [] },
+      text: ['6월 1일에 집을 가진', '사람이 그해', '재산세를 낸다.'] },
+    { bg: 'livingroom', fx: 'confetti', cast: [['hero', 'L'], ['partner', 'C'], ['gpa', 'R']], who: '귀인 할배',
+      text: ['허허, 문패를 달았구먼.', '집은 사는 날보다', '지키는 날이 더 길다네.'] }
+  ],
+  ends: {
+    good: ['공고, 대출, 세금, 등기.', '순서대로 짚고', '내 이름으로 된 집에 들어왔다.'],
+    ok: ['집은 생겼지만', '몇 가지는 뒤늦게 알았다.'],
+    bad: ['모르고 넘긴 날짜들이', '고지서가 되어 돌아왔다.']
+  }
+};
+/* ── MQ_DATA_END ── */
+/* ══════════ 메인 퀘스트 컷신 플레이어 ══════════
+   프롤로그와 같은 오락기 화면에 배경·사람·서류·선택지를 올려 장면을 넘긴다.
+   장면 한 개: {bg, cast:[[열쇠,'L'|'C'|'R']], who, text:[..], doc:{t,rows,bad}, choice:{opts:[{a,ok,note}]}, fx, amt}
+   특수 장면: {type:'title'} 장 제목, {type:'reward'} 보상 카드, {type:'note'} 고른 뒤 해설(엔진이 넣는다).
+   글자는 누르면 다 찍히고, 다 찍힌 뒤 누르면 다음 장면. 선택지가 있으면 보기를 눌러야 넘어간다.
+   '빠르게'는 다음 선택지나 결말까지 건너뛴다. 선택은 건너뛰지 못한다. */
+NPC_TOP.partnerF={hair:{b:'#4A3628',h:'#6B5340'},hs:'long',top:'#F2E2C8',bot:'#8E7BB0',acc:'#F4B6C2'};
+NPC_TOP.partnerM={hair:{b:'#2B2733',h:'#453F54'},hs:'short',top:'#3F5F87',bot:'#3A3746',shirt:1};
+function mqCastDesc(k){
+  if(k==='hero') return heroDesc();
+  if(k==='partner'){ var av=AVATARS[S.avatar]||{}; return NPC_TOP[av.name==='여'?'partnerM':'partnerF']; }
+  return NPC_TOP[k]||NPC_TOP.peerm; }
+function mqBg(ctx,name,t,W,H){
+  var f=(typeof MQ_BG!=='undefined')&&MQ_BG[name];
+  if(f){ try{ f(ctx,t,W,H); return; }catch(e){} }
+  var gy=H-104; ctx.fillStyle='#1B1733'; ctx.fillRect(0,0,W,gy); ctx.fillStyle='#2E2740'; ctx.fillRect(0,gy,W,H-gy); }
+var MQP=null;                                                   /* 지금 재생 중인 컷신 */
+function playMQ(o){
+  if(MQP) return;
+  MOVE=null; if(typeof HOLD!=='undefined') HOLD.dir=null;
+  var host=cinemaHost(); host.wrap.classList.add('mq');
+  var sk=host.wrap.querySelector('.cskip'); sk.textContent='빠르게 ▶';
+  var ctx=host.ctx,W=host.W,H=host.H,gy=H-104;
+  var list=[{type:'title'}].concat(o.scenes.slice(o.from||0).map(function(p,k){ var q={}; for(var x in p) q[x]=p[x]; q._si=(o.from||0)+k; return q; }));
+  var st={i:0,p0:performance.now(),done:false,picked:null,opts:[],ok:o.ok||0,n:o.n||0,prevCast:null,particles:[]};
+  MQP=st;
+  function wrap(lines,max){ ctx.font='8px Galmuri11,monospace'; var out=[];
+    (lines||[]).forEach(function(line){ var words=String(line).split(' '),cur='';
+      words.forEach(function(wd){ var t2=cur?cur+' '+wd:wd;
+        if(ctx.measureText(t2).width>max&&cur){ out.push(cur); cur=wd; }
+        else if(ctx.measureText(t2).width>max){ var ch=t2.split(''),c2=''; ch.forEach(function(c){ if(ctx.measureText(c2+c).width>max){ out.push(c2); c2=c; } else c2+=c; }); cur=c2; }
+        else cur=t2; });
+      if(cur) out.push(cur); });
+    return out; }
+  function sc(){ return list[st.i]; }
+  function lines(p){ if(!p._w) p._w=wrap(p.text,W-30); return p._w; }
+  function total(p){ return lines(p).reduce(function(a,l){ return a+l.length+4; },0); }
+  function typed(p,t){ return Math.min(total(p),Math.floor(t*18)); }
+  function castPos(pos){ return pos==='L'?Math.round(W*0.27):pos==='R'?Math.round(W*0.73):Math.round(W/2); }
+  function drawCast(p,t){
+    var cast=p.cast||[],prev=st.prevCast||[];
+    cast.forEach(function(c,j){ var cx=castPos(c[1]),dir=c[1]==='L'?2:c[1]==='R'?1:0;
+      var isNew=!prev.some(function(q){ return q[0]===c[0]; }),k=isNew?Math.min(1,t/0.35):1;
+      var off=isNew?Math.round((1-k)*(c[1]==='L'?-40:c[1]==='R'?40:0)):0;
+      var talk=p.who&&((c[0]==='gpa'&&/할배|할아버지/.test(p.who))||(c[0]==='hero'&&p.who==='나'));
+      var f=talk?[0,1,0,3][Math.floor(t*4)%4]:0;
+      ctx.globalAlpha=isNew?Math.max(.2,k):1;
+      try{ sceneP(ctx,mqCastDesc(c[0]),cx-12+off,gy-30,dir,f); }catch(e){}
+      ctx.globalAlpha=1; }); }
+  function drawDoc(d){
+    var x=8,y=8,w=W-16,rows=(d.rows||[]).slice(0,4),h=16+rows.length*12;
+    ctx.fillStyle='#07060E'; ctx.fillRect(x+2,y+2,w,h);
+    ctx.fillStyle='#FFFDF6'; ctx.fillRect(x,y,w,h); ctx.fillStyle='#2E2740'; ctx.fillRect(x,y,w,12);
+    ctext(ctx,d.t||'서류',x+4,y+2,8,'#FFE79B');
+    rows.forEach(function(r,j){ var yy=y+15+j*12,bad=(d.bad||[]).indexOf(j)>=0;
+      ctext(ctx,String(r[0]),x+4,yy,8,'#6B6380'); ctext(ctx,String(r[1]),x+w-4,yy,8,bad?'#C0392B':'#2E2740','r');
+      if(j<rows.length-1){ ctx.fillStyle='#E4E0EC'; ctx.fillRect(x+3,yy+10,w-6,1); } }); }
+  function drawBox(p,t){
+    var L=lines(p),lh=12,bh=Math.max(64,L.length*lh+16),bx=8,by=H-12-bh,bw=W-16;
+    ctx.fillStyle='rgba(8,6,18,.9)'; ctx.fillRect(bx,by,bw,bh);
+    var edge=p.type==='note'?(p.ok?'#62C85C':'#F4705A'):'#57517A';
+    ctx.fillStyle=edge; ctx.fillRect(bx,by,bw,1); ctx.fillRect(bx,by+bh-1,bw,1); ctx.fillRect(bx,by,1,bh); ctx.fillRect(bx+bw-1,by,1,bh);
+    if(p.who) ctext(ctx,p.who,bx+6,by-11,8,p.type==='note'?(p.ok?'#9BE38F':'#FF9A86'):'#FFE79B',null,'#07060E');
+    var left=typed(p,t);
+    L.forEach(function(line,j){ var n=Math.max(0,Math.min(line.length,left)); left-=line.length+4;
+      if(n>0) ctext(ctx,line.slice(0,n),bx+7,by+8+j*lh,8,p.col||'#FFFDF6'); });
+    if(typed(p,t)>=total(p)&&!(p.choice&&st.picked===null)&&Math.floor(t*2.4)%2===0) ctext(ctx,'▼',bx+bw-12,by+bh-12,8,'#FFE79B');
+    return by; }
+  function drawChoices(p,top){
+    var opts=p.choice.opts,rects=[],y=top-6;
+    for(var j=opts.length-1;j>=0;j--){ var L=wrap([(j+1)+'. '+opts[j].a],W-34),h=L.length*11+8; y-=h;
+      rects.unshift({x:12,y:y,w:W-24,h:h,j:j,L:L}); y-=4; }
+    ctx.fillStyle='rgba(7,6,14,.55)'; ctx.fillRect(0,0,W,top);
+    rects.forEach(function(r){ ctx.fillStyle='#07060E'; ctx.fillRect(r.x+2,r.y+2,r.w,r.h);
+      ctx.fillStyle='#FFFDF6'; ctx.fillRect(r.x,r.y,r.w,r.h); ctx.fillStyle='#FFC53C'; ctx.fillRect(r.x,r.y,3,r.h);
+      r.L.forEach(function(l,k){ ctext(ctx,l,r.x+7,r.y+4+k*11,8,'#2E2740'); }); });
+    st.opts=rects; }
+  function drawFx(p,t){
+    var fx=p.fx;
+    if(fx==='flash'&&t<0.3){ ctx.fillStyle='rgba(255,255,255,'+(0.8*(1-t/0.3))+')'; ctx.fillRect(0,0,W,H); }
+    if(fx==='fade'&&t<0.8){ ctx.fillStyle='rgba(7,6,14,'+(1-t/0.8)+')'; ctx.fillRect(0,0,W,H); }
+    if(fx==='stamp'&&t>0.25){ var k=Math.min(1,(t-0.25)/0.15),r=Math.round(22+(1-k)*14),cx=W-40,cy=gy-70;
+      ctx.globalAlpha=0.85; ctx.strokeStyle='#D9342B'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(cx,cy,r,0,7); ctx.stroke();
+      ctext(ctx,p.amt||'계약',cx,cy-4,8,'#D9342B','c'); ctx.globalAlpha=1; }
+    if((fx==='money+'||fx==='money-')&&t>0.1){ var up=fx==='money+',yy=Math.round(gy-70-Math.min(1,t/1.2)*16);
+      ctx.font='bold 14px Galmuri14,Galmuri11,monospace'; ctx.textBaseline='top'; var s=(up?'+':'-')+(p.amt||''),w=ctx.measureText(s).width;
+      ctx.fillStyle='#07060E'; ctx.fillText(s,W/2-w/2+1,yy+1); ctx.fillStyle=up?'#62C85C':'#F4705A'; ctx.fillText(s,W/2-w/2,yy); }
+    if(fx==='confetti'){ for(var i=0;i<40;i++){ var x=(hrand(i,1,3)*W+t*20*(i%3-1))%W,y=((hrand(i,2,3)*H)+t*(30+i%20))%(H-100);
+      ctx.fillStyle=['#FFC53C','#F4705A','#62C85C','#6EC8F0','#D9B8FF'][i%5]; ctx.fillRect(Math.round(x),Math.round(y),2,2); } }
+    if(fx==='rain'){ ctx.fillStyle='rgba(155,220,247,.6)'; for(var j2=0;j2<50;j2++){ var rx=(hrand(j2,5,5)*W+t*10)%W,ry=((hrand(j2,6,6)*H)+t*140)%(H-90); ctx.fillRect(Math.round(rx),Math.round(ry),1,4); } } }
+  function drawTitle(t){
+    ctx.fillStyle='#07060E'; ctx.fillRect(0,0,W,H); sceneStars(ctx,t,W,H,40);
+    var k=Math.min(1,t/0.6),y=Math.round(H*0.28);
+    ctext(ctx,'MAIN QUEST · CHAPTER '+o.no,W/2,y-18,8,'#9B93A8','c');
+    ctx.font='bold 20px Galmuri14,Galmuri11,monospace'; ctx.textBaseline='top'; var s=o.title,w=ctx.measureText(s).width,x=Math.round(W/2-w/2);
+    ctx.globalAlpha=k; ctx.fillStyle='#1B1826'; for(var d=-2;d<=2;d++) ctx.fillText(s,x+d,y+2); ctx.fillStyle='#FFC53C'; ctx.fillText(s,x,y); ctx.globalAlpha=1;
+    if(t>0.5) ctext(ctx,o.sub||'',W/2,y+30,8,'#CDEEFF','c');
+    if(o.resume&&t>0.5) ctext(ctx,'이어서 봅니다',W/2,y+46,8,'#9B93A8','c');
+    var gw=Math.round((W-40)*Math.min(1,t/1.2)); ctx.fillStyle='#FFC53C'; ctx.fillRect(20,y+26,gw,1);
+    if(t>1&&Math.floor(t*2.2)%2===0) ctext(ctx,'눌러서 시작',W/2,H-40,8,'#FFE79B','c'); }
+  function drawReward(p,t){
+    ctx.fillStyle='#07060E'; ctx.fillRect(0,0,W,H); sceneStars(ctx,t,W,H,30);
+    ctx.font='bold 14px Galmuri14,Galmuri11,monospace'; ctx.textBaseline='top'; var s='CHAPTER CLEAR',w=ctx.measureText(s).width;
+    ctx.fillStyle='#1B1826'; ctx.fillText(s,W/2-w/2+1,23); ctx.fillStyle=(Math.floor(t*3)%2)?'#FFC53C':'#FFE79B'; ctx.fillText(s,W/2-w/2,22);
+    ctext(ctx,p.card?p.card[1]:o.no+'장 · '+o.title,W/2,44,8,'#CDEEFF','c');
+    var stars=p.grade==='good'?3:p.grade==='ok'?2:1;
+    for(var i=0;i<3;i++){ var on=i<stars&&t>0.3+i*0.2; ctx.fillStyle=on?'#FFC53C':'#3F3A55'; var sx=W/2-22+i*16; ctx.fillRect(sx,58,10,10); ctx.fillStyle=on?'#FFF4B0':'#57517A'; ctx.fillRect(sx+2,60,3,3); }
+    ctext(ctx,'선택 '+st.ok+' / '+st.n,W/2,72,8,'#9B93A8','c');
+    var yy=90; (p.rows||[]).forEach(function(r,j){ if(t<0.6+j*0.15) return;
+      ctx.fillStyle='rgba(255,253,246,.08)'; ctx.fillRect(12,yy-2,W-24,12);
+      ctext(ctx,r[0],16,yy,8,r[2]||'#FFFDF6'); if(r[1]) ctext(ctx,r[1],W-16,yy,8,'#FFE79B','r'); yy+=14; });
+    try{ sceneP(ctx,heroDesc(),W/2-12,Math.max(yy-8,H-60),0,[0,1,0,3][Math.floor(t*3)%4],1); }catch(e){}   /* 줄 아래, 작게 */
+    if(t>1.2&&Math.floor(t*2.2)%2===0) ctext(ctx,'눌러서 마치기',W/2,H-14,8,'#FFE79B','c'); }
+  function frame(now){
+    if(st.done) return;
+    var p=sc(),t=(now-st.p0)/1000;
+    ctx.setTransform(RES,0,0,RES,0,0);
+    if(p.type==='title'){ drawTitle(t); }
+    else if(p.type==='reward'){ drawReward(p,t); }
+    else {
+      var shake=(p.fx==='shake'&&t<0.5)?Math.round(Math.sin(t*60)*2):0;
+      ctx.save(); ctx.translate(shake,0);
+      mqBg(ctx,p.bg||'night',t,W,H);
+      drawCast(p,t);
+      drawFx(p,t);
+      ctx.restore();
+      if(p.doc) drawDoc(p.doc);
+      var top=drawBox(p,t);
+      st.opts=[];
+      if(p.choice&&st.picked===null&&typed(p,t)>=total(p)) drawChoices(p,top);
+      ctx.fillStyle='rgba(7,6,14,.6)'; ctx.fillRect(0,0,W,2);
+    }
+    requestAnimationFrame(frame); }
+  function go(i){
+    var prev=sc(); if(prev&&prev.cast) st.prevCast=prev.cast; else if(prev&&prev.type) st.prevCast=null;
+    st.i=i; st.p0=performance.now(); st.picked=null; st.opts=[];
+    var p=sc(); if(!p) return finish();
+    if(p.sfx) sfx(p.sfx); else if(p.fx==='stamp') setTimeout(function(){ sfx('hit'); },250); else if(p.fx==='money+') sfx('coin'); else if(p.fx==='confetti') sfx('win');
+    if(p._si!=null&&o.save) o.save(p._si,st.ok,st.n); }
+  function pick(j){
+    var p=sc(),op=p.choice.opts[j]; if(!op||st.picked!==null) return;
+    st.picked=j; st.n++; if(op.ok) st.ok++;
+    sfx(op.ok?'good':'bad');
+    if(o.onPick) try{ o.onPick(p,op,j); }catch(e){}
+    var note={type:'note',ok:!!op.ok,who:op.ok?'좋은 판단':'대가가 남는다',text:[op.note||''],bg:p.bg,cast:p.cast};
+    list.splice(st.i+1,0,note);
+    if(o.save&&p._si!=null) o.save(p._si+1,st.ok,st.n);  /* 고른 뒤에는 다음 대본 장면부터 이어 본다 */
+    go(st.i+1); }
+  function next(e){
+    if(e&&e.type==='keydown'){ if(e.metaKey||e.ctrlKey||e.altKey||e.key==='Tab') return;
+      e.stopPropagation(); e.preventDefault(); HOLD.dir=null;          /* 컷신 뒤에서 주인공이 걷지 않게 모든 키를 먹는다 */
+      if(/^[1-3]$/.test(e.key)&&st.opts.length) return pick(+e.key-1);
+      if(e.key!==' '&&e.key!=='Enter') return; }
+    if(st.done) return;
+    var p=sc(),t=(performance.now()-st.p0)/1000;
+    if(p.type==='title'){ if(t<0.4) return; sfx('tap'); return go(1); }
+    if(p.type==='reward'){ if(t<0.8) return; return finish(); }
+    if(typed(p,t)<total(p)){ st.p0-=100000; return; }
+    if(p.choice&&st.picked===null) return;                  /* 보기를 골라야 넘어간다 */
+    sfx('tap');
+    if(st.i===list.length-1&&!o.endScenes) return finish();
+    go(st.i+1); }
+  function skip(){
+    if(st.done) return;
+    var p=sc(); if(p.choice&&st.picked===null){ st.p0-=100000; return; }
+    for(var i=st.i+1;i<list.length;i++){ if(list[i].choice||list[i].type==='reward'||list[i].end) return go(i); }
+    go(list.length); }
+  function finish(){ if(st.done) return; st.done=true; MQP=null;
+    document.removeEventListener('keydown',next,true);
+    host.wrap.classList.add('out');
+    setTimeout(function(){ if(host.wrap.parentNode) host.wrap.parentNode.removeChild(host.wrap); if(o.onDone) o.onDone({ok:st.ok,n:st.n}); },500); }
+  /* 결말과 보상은 선택이 끝난 뒤에 정해지므로, 마지막 대본 장면을 지나면 o.endScenes(ok,n)로 받아 붙인다 */
+  var _go=go; go=function(i){ if(i>=list.length&&o.endScenes&&!st.ended){ st.ended=1; list=list.concat(o.endScenes(st.ok,st.n)); } return _go(i); };
+  host.wrap.addEventListener('pointerdown',function(e){
+    if(e.target.className==='cskip') return;
+    if(st.opts.length){ var r=host.cv.getBoundingClientRect(),x=(e.clientX-r.left)*W/r.width,y=(e.clientY-r.top)*H/r.height;
+      for(var i=0;i<st.opts.length;i++){ var b=st.opts[i]; if(x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h) return pick(b.j); }
+      return; }
+    next(e); });
+  sk.addEventListener('click',function(e){ e.stopPropagation(); skip(); });
+  document.addEventListener('keydown',next,true);
+  sfx('win');
+  requestAnimationFrame(frame);
+  st.o=o; st.pick=pick; st.next=next; st.skip=skip; st.list=function(){ return list; }; st.cur=function(){ return st.i; };
+  return st; }
+/* ══════════ 메인 퀘스트 ══════════
+   사회초년생이 한 번씩 꼭 겪는 여섯 가지 큰일이 게임의 큰 줄기다. 할배가 메시지 창으로 다음 장을
+   알려 주고, 시작하면 컷신으로 진행한다. 장을 깨면 보상과 함께 갈 수 있는 곳이나 살 수 있는 것이 늘어난다.
+   설계: ops/meeting-1001/(cx.md 흐름, economy.md 보상·잠금, marketing.md 문구, qa.md 위험).
+   2장(첫 전세 계약)은 스프린트 D의 전세 계약 사건을 그대로 쓰고, 앞뒤에 컷신을 붙인다.
+   진행은 S.mq에 남는다: done[id]=최고 등급, at[id]=처음 깬 날, cur·i·ok·n=보다 만 장면,
+   ann[id]=할배가 알린 날, gf=메인 퀘스트 전 저장이 이미 쓰던 잠금(장을 깬 것으로 치지는 않는다). */
+var MQ_T0=Date.now(),MQ_SAID=0;                                   /* 이번 세션 시작, 이번 세션에 알렸는지 */
+function leaseDoneAny(){ return !!(S.leaseDone&&(S.leaseDone[7]||S.leaseDone[8]))||(S.paid||0)>=7; }
+function mqDay(id){ return !(S.mq&&S.mq.at&&S.mq.at[id]===dayKey()); }   /* 앞 장을 깬 날이 오늘이 아니다: 하루 한 장 */
+var MQ_LIST=[
+ {id:'job',key:'MQ_JOB',no:1,title:'첫 취업',
+  open:function(){ return (S.done||[]).length>=3; },
+  wait:function(){ var n=3-(S.done||[]).length; return n>0?'퀘스트 '+n+'개 더':null; },
+  ann:['오늘 할 일 셋을 다 했구먼. 허허, 제법이야.','이제 큰일 하나를 같이 보세. 합격 문자부터 첫 월급까지.'],q:'메인 1장 · 첫 취업. 두세 분이면 보네.'},
+ {id:'lease',no:2,title:'첫 전세 계약',
+  open:function(){ return mqDone('job')&&(S.peak>=7||!!S.lease||leaseDoneAny()); },
+  wait:function(){ return (S.peak>=7||S.lease||leaseDoneAny())?null:'원룸 전세 해금까지 주 '+Math.max(0,TIERS[7].need-S.stats.ju); },
+  ann:['원룸 전세가 열렸네. 이번엔 이사가 아니라 계약부터야.','보증금은 자네가 모은 돈 거의 전부일 걸세. 처음부터 끝까지 같이 보지.'],q:'메인 2장 · 첫 전세 계약. 부동산으로 가 볼 텐가?'},
+ {id:'card',key:'MQ_CARD',no:3,title:'첫 신용카드',
+  open:function(){ return mqDone('lease')&&mqDay('lease')&&S.lv>=6&&mapOpen('bank'); },
+  wait:function(){ return S.lv<6?'Lv.6이 되면':!mapOpen('bank')?'은행 골목이 열리면':null; },
+  ann:['월급 들어오고 집도 생기니 카드 만들라는 연락이 오지?','한 장 만들기 전에 은행 골목에서 나랑 얘기 좀 하세.'],q:'메인 3장 · 첫 신용카드.'},
+ {id:'car',key:'MQ_CAR',no:4,title:'첫 차',
+  open:function(){ return mqDone('card')&&mqDay('card')&&S.lv>=8; },
+  wait:function(){ return S.lv<8?'Lv.8이 되면':null; },
+  ann:['막차 놓치는 날이 늘었구먼.','차는 사는 날보다 타는 동안 돈이 더 드네. 같이 보러 가세.'],q:'메인 4장 · 첫 차.'},
+ {id:'wedding',key:'MQ_WEDDING',no:5,title:'결혼 준비',
+  open:function(){ return mqDone('car')&&mqDay('car')&&S.lv>=10; },
+  wait:function(){ return S.lv<10?'Lv.10이 되면':null; },
+  ann:['허허, 요즘 통화가 길던데. 좋은 사람이 생겼구먼.','결혼 준비는 둘이 돈 얘기를 처음 꺼내는 날부터야.'],q:'메인 5장 · 결혼 준비.'},
+ {id:'home',key:'MQ_HOME',no:6,title:'첫 내 집 마련',
+  open:function(){ return mqDone('wedding')&&mqDay('wedding')&&((S.paid||0)>=8||!!(S.leaseDone&&S.leaseDone[8])); },
+  wait:function(){ return ((S.paid||0)>=8||(S.leaseDone&&S.leaseDone[8]))?null:'투룸 전세로 옮기면'; },
+  ann:['투룸 전세에서 제법 살았구먼. 이제 자네 이름 올릴 집 얘기를 하세.','평생 가장 큰 계약이야. 마지막으로 한 번 더 같이 가 보세.'],q:'메인 6장 · 첫 내 집 마련.'}
+];
+/* 장마다 보상(economy.md). 등급에 따라 good 100% · ok 60% · bad 30%. 특별 보상과 여는 것은 처음 깰 때 등급과 상관없이 */
+var MQ_REWARD={
+ job:    {xp:250,coin:250,stat:{jik:10,ui:4},       item:'mq_badge',   unlock:['역 앞 지역','상점 출근복']},
+ lease:  {xp:300,coin:300,stat:{ju:6,geum:4},       item:'mq_lease',   unlock:['대형 가전 세간']},
+ card:   {xp:320,coin:350,stat:{geum:10,sik:4},     item:'mq_card',    unlock:['카드 장비','은행 창구 캐시백']},
+ car:    {xp:380,coin:500,stat:{geum:6,ui:6},       item:'mq_shades',  unlock:['자동차 구매','고속도로와 강릉·전주·부산']},
+ wedding:{xp:420,coin:600,stat:{ui:6,geum:6,sik:4}, item:'mq_suit',    unlock:['경주·대구 가는 길','신혼 세간']},
+ home:   {xp:550,coin:800,stat:{ju:10,geum:8},      item:'mq_homepants',unlock:['자가 거처','거실 세간']}};
+var MQ_GRADE={good:1,ok:0.6,bad:0.3};
+/* 마케팅 문구(marketing.md): 부제, 클리어 카드 두 줄, 공유 문구 */
+var MQ_COPY={
+ job:{sub:'합격 문자부터 첫 월급 명세서까지',card:['1장 클리어! 첫 취업','계약서 한 부, 명세서 한 장.'],share:'뉴비 퀘스트 1장 첫 취업 깼다. 근로계약서 한 부 받는 것부터 배움. 너도 해 봐'},
+ lease:{sub:'등기부등본부터 전입신고까지',card:['2장 클리어! 첫 전세 계약','보증금은 서류가 지켜 준다.'],share:'뉴비 퀘스트 2장 첫 전세 계약 깼다. 등기부 보는 법을 게임에서 먼저 해 봄'},
+ card:{sub:'발급 권유부터 첫 결제일까지',card:['3장 클리어! 첫 신용카드','긁은 만큼 다음 달에 온다.'],share:'뉴비 퀘스트 3장 첫 신용카드 깼다. 한도랑 결제일, 이제 내가 정함'},
+ car:{sub:'견적서부터 첫 고속도로까지',card:['4장 클리어! 첫 차','차값 말고 유지비까지 셌다.'],share:'뉴비 퀘스트 4장 첫 차 깼다. 견적서 옵션 줄, 이제 그냥 안 넘김. 다음은 강릉'},
+ wedding:{sub:'식장 계약서부터 혼인신고까지',card:['5장 클리어! 결혼 준비','"별도"까지 둘이 같이 셌다.'],share:'뉴비 퀘스트 5장 결혼 준비 깼다. 식장 환불 조항, 스드메 "별도"까지 둘이 읽음'},
+ home:{sub:'청약 공고부터 잔금 날까지',card:['6장 클리어! 첫 내 집 마련','열쇠를 받았다. 우리 집이다.'],share:'뉴비 퀘스트 메인 퀘스트 완주. 첫 취업부터 내 집 마련까지, 할배가 먼저 가 본 길'}};
+MQ_LIST.forEach(function(c){ if(MQ_COPY[c.id]) c.sub=MQ_COPY[c.id].sub; });
+function mqS(){ if(!S.mq) S.mq={}; ['done','ann','gf','at'].forEach(function(k){ if(!S.mq[k]) S.mq[k]={}; }); return S.mq; }
+function mqDone(id){ return !!(S&&S.mq&&S.mq.done&&S.mq.done[id]); }
+function mqOk(id){ return !!(S&&S.mq&&((S.mq.done&&S.mq.done[id])||(S.mq.gf&&S.mq.gf[id]))); }
+function mqById(id){ return MQ_LIST.filter(function(c){ return c.id===id; })[0]||null; }
+function mqNext(){ for(var i=0;i<MQ_LIST.length;i++) if(!mqDone(MQ_LIST[i].id)) return MQ_LIST[i]; return null; }
+function mqReady(c){ return !!(c&&!mqDone(c.id)&&c.open()); }
+function mqData(c){ return c.key?window[c.key]:null; }
+function mqGrade(ok,n){ return n&&ok>=n?'good':(n&&ok*2>=n?'ok':'bad'); }
+function mqName(c){ return '메인 '+c.no+'장 「'+c.title+'」'; }
+function mqWait(c){ var i=MQ_LIST.indexOf(c),pv=MQ_LIST[i-1];
+  if(pv&&!mqDone(pv.id)) return pv.no+'장을 먼저';
+  var w=c.wait&&c.wait(); if(w) return w;
+  if(pv&&!mqDay(pv.id)) return '내일 열려요';
+  return ''; }
+function mqLeasing(){ return !!(S.lease&&S.mq&&S.mq.cur==='lease'&&!mqDone('lease')); }
+/* 할배가 알리거나 컷신을 열어도 되는 때: 홈에서 아무 창도 없을 때 */
+function mqIdle(){
+  var hs=document.getElementById('home'),tp=document.getElementById('itip');
+  return !!(S&&S.onboarded&&hs&&hs.classList.contains('on')&&!TUT&&!MQP&&!PLACE&&!MOVE&&!DRIVE&&!document.getElementById('opening')&&!(tp&&!tp.hidden)); }
+function mqStart(id){
+  var c=mqById(id); if(!c||MQP) return;
+  MOVE=null; HOLD.dir=null;
+  if(c.id==='lease') return mqLeaseStart(c);
+  var d=mqData(c); if(!d){ toast('대본을 불러오지 못했습니다.'); return; }
+  var M=mqS(),resume=(M.cur===c.id&&M.i>0&&M.i<d.scenes.length);
+  if(!resume){ M.cur=c.id; M.i=0; M.ok=0; M.n=0; }
+  save(); ev('mq_start',{id:c.id,resume:resume?1:0});
+  playMQ({no:c.no,title:c.title,sub:c.sub,scenes:d.scenes,from:resume?M.i:0,ok:resume?M.ok:0,n:resume?M.n:0,resume:resume,
+    save:function(i,ok,n){ M.cur=c.id; M.i=i; M.ok=ok; M.n=n; save(); },
+    endScenes:function(ok,n){ return mqFinish(c,d,mqGrade(ok,n)); },
+    onDone:function(){ mqAfter(c); }}); }
+/* 보상을 주고 결말 장면과 보상 카드를 돌려준다. 더 좋은 등급이면 차액만(사건·계약과 같은 규칙) */
+function mqPay(c,g){
+  var M=mqS(),R=MQ_REWARD[c.id]||{},was=M.done[c.id],first=!was,rows=[];
+  var r10=function(v){ return Math.round(v/10)*10; },st=function(v,k){ return v?Math.max(1,Math.round(v*k)):0; };
+  var k=MQ_GRADE[g],pk=first?0:MQ_GRADE[was],better=first||k>pk,gain={xp:0,coin:0,first:first};
+  if(better){
+    gain.xp=r10((R.xp||0)*k)-(first?0:r10((R.xp||0)*pk)); gain.coin=r10((R.coin||0)*k)-(first?0:r10((R.coin||0)*pk));
+    M.done[c.id]=g; if(first) M.at[c.id]=dayKey();
+    rows.push(['경험치','+'+gain.xp],['코인','₩'+gain.coin]);
+    Object.keys(R.stat||{}).forEach(function(s){ var v=st(R.stat[s],k)-(first?0:st(R.stat[s],pk)); if(v>0){ S.stats[s]=Math.min(100,(S.stats[s]||0)+v); rows.push([(THEMES[s]?THEMES[s].k:s)+' 스탯','+'+v]); } });
+    S.xp+=gain.xp; S.coin+=gain.coin; while(S.xp>=need(S.lv)){ S.xp-=need(S.lv); S.lv++; } }
+  else rows.push(['이미 더 좋은 등급','보상 없음','#9B93A8']);
+  if(first&&R.item&&allItems(R.item)&&S.owned.indexOf(R.item)<0){ S.owned.push(R.item); rows.push(['획득',allItems(R.item).name,'#9BE38F']); }
+  if(first) (R.unlock||[]).forEach(function(u){ rows.push(['열림 · '+u,'','#6EC8F0']); });
+  if(first&&c.id==='home'){ S.upN=Math.max(0,(S.upN||0)-1); var gr=tierGrow();            /* 자가 한 칸을 그날 몫과 상관없이 바로 연다 */
+    if(gr){ var mv=gr.wasTop?tierMove(S.peak):null; rows.push(['새 거처 · '+TIERS[S.peak].name,mv&&mv.ok?'입주':'','#FFE79B']); } }
+  M.cur=null; M.i=0; M.ok=0; M.n=0; M.last={id:c.id,coin:first?gain.coin:0};
+  save(); ev('mq_clear',{id:c.id,grade:g,first:first?1:0});
+  return rows; }
+function mqFinish(c,d,g,extra){
+  var rows=mqPay(c,g),ends=(extra&&extra.ends)||(d&&d.ends&&d.ends[g])||['장을 마쳤다.'],sc=(d&&d.scenes)||[],last=sc[sc.length-1]||{};
+  return [{bg:last.bg||'night',cast:(extra&&extra.cast)||[['hero','C']],who:extra&&extra.who,text:ends,end:1,fx:g==='good'?'confetti':null},
+          {type:'reward',grade:g,rows:rows.slice(0,8),card:(MQ_COPY[c.id]||{}).card,end:1}]; }
+/* 장을 마친 뒤: 열린 것, 다음 장, 공유. 처음 깬 장이면 광고로 코인을 한 번 더 받을 수 있다(economy.md, 하루 1회) */
+function mqAfter(c){
+  render('home'); hudRefresh();
+  var nx=mqNext(),cp=MQ_COPY[c.id]||{},R=MQ_REWARD[c.id]||{},M=mqS(),last=M.last&&M.last.id===c.id?M.last:null;
+  setTimeout(function(){
+    if(!mqIdle()){ toast(c.no+'장 '+c.title+' 완료'); return; }
+    var bt=[{t:'친구에게 공유하기',f:function(){ ev('mq_share',{id:c.id}); shareTextOut((cp.share||c.title)+' '+SHARE_BASE,'뉴비 퀘스트',function(m){ if(m) toast(m); }); }}];
+    if(last&&last.coin>=30){
+      if(adLeft('mq')>0) bt.unshift({t:'광고 보고 ￦'+last.coin+' 더 받기',f:function(){ adGo('mq',function(){ S.coin+=last.coin; M.last=null; M.adPend=null; save(); hudRefresh(); sfx('coin'); toast('광고 보상 ￦'+last.coin); closeTip(); }); }});
+      else { M.adPend={id:c.id,coin:last.coin}; save(); } }
+    openTip('<div class="ih"><div><span class="inm">'+esc((cp.card||[c.title])[0])+'</span><span class="isub">'+esc((cp.card||['',''])[1]||'')+'</span></div></div><hr>'+
+      (last?(R.unlock||[]).map(function(u){ return '<div class="il good"><i>◆</i>열림 · '+esc(u)+'</div>'; }).join(''):'')+
+      '<div class="il"><i>◆</i>'+(nx?'다음은 '+nx.no+'장 '+esc(nx.title)+' · '+esc(mqReady(nx)?'지도 왼쪽 위 메인 표시를 누르세요':mqWait(nx)):'메인 퀘스트를 모두 마쳤습니다')+'</div>','#FFC53C',bt);
+    sheetStack();
+    if(c.id==='home') setTimeout(function(){ if(typeof checkEnding==='function') checkEnding(); },300); },600); }
+/* ── 2장: 전세 계약 사건을 감싼다 ──
+   가. 할배 알림으로 시작: 앞 컷신 → 계약 사건을 열고 부동산 중개사 앞에 세운다.
+   나. 이사부터 시도해 계약 사건이 먼저 열림: 첫 계약 장면 앞에서 앞 컷신을 한 번 튼다(leaseShow).
+   다. 메인 퀘스트 전에 이미 전세를 해 봄: 회상 → 뒤 컷신 → 보상. 계약 보상은 이미 받았으니 장 보상만.
+   라. 보증보험 특약으로 계약을 되돌림: 장은 끝나지 않고, 부동산에서 매물을 다시 고른다. */
+function mqWrap(){ return (typeof MQ_LEASE_WRAP!=='undefined')?MQ_LEASE_WRAP:{intro:[],outro:[],recap:[],ends:{}}; }
+function mqLeaseStart(c){
+  var M=mqS(),W=mqWrap(); ev('mq_start',{id:'lease'});
+  if(leaseDoneAny()&&!S.lease){ return mqLeaseOutro(W.recap||[]); }
+  playMQ({no:c.no,title:c.title,sub:c.sub,scenes:W.intro,
+    onDone:function(){ M.cur='lease'; M.leaseIntro=1; save();
+      if(!S.lease&&S.peak>=7) leaseGate(7);
+      render('home');
+      if(S.lease){ setTimeout(function(){ if(leaseCh()&&leaseCh().place==='estate'){ S.onFoot=true; enterMap('town_estate',8,7); ME.dir=3; savePos(); drawScene(); }
+        toast(leaseCh()&&leaseCh().place==='estate'?'중개사에게 말을 걸어 매물부터 보자':'다음 장면은 '+leaseWhere()+'에서 이어집니다'); },300); } }}); }
+function mqLeaseGrade(){ var b=S.mq&&S.mq.leaseTier!=null?S.mq.leaseTier:(S.leaseBest&&S.leaseBest.any); return b===0?'good':b===1?'ok':b===2?'bad':'ok'; }
+function mqLeaseOutro(pre){
+  var c=mqById('lease'),W=mqWrap(),g=mqLeaseGrade(),replay=mqDone('lease');
+  var scenes=(pre||[]).concat(W.outro||[]);
+  var d={scenes:scenes};
+  var endLine=replay?['계약 장면은 다음에 전세로 옮길 때 다시 해 보게.']:((W.ends&&W.ends[g])||['새 열쇠를 받았다.']);
+  playMQ({no:c.no,title:c.title,sub:replay?'다시 보기':'새 열쇠',scenes:scenes,
+    endScenes:function(){ return mqFinish(c,d,g,{ends:endLine,who:'귀인 할배',cast:[['hero','L'],['gpa','R']]}); },
+    onDone:function(){ mqAfter(c); }}); }
+/* 할배의 알림. 하루 한 번(장마다), 세션마다 한 번, 홈에서 한가할 때만 */
+function mqEodPending(){ return !!(S.eodArm===dayKey()&&S.eodDay!==dayKey()&&typeof openLeft==='function'&&openLeft()===0); }
+function mqAnnounce(){
+  if(!mqIdle()||MQ_SAID||mqEodPending()) return false;
+  var M=mqS(),c=mqNext();
+  if(M.adPend&&adLeft('mq')>0&&M.adPend.day!==dayKey()&&!(c&&mqReady(c))){          /* 어제 못 받은 광고 보상 */
+    var ap=M.adPend; MQ_SAID=1;
+    talkTo({name:'귀인 할배',face:'gpa',lines:['어제 '+mqById(ap.id).no+'장 보상, 하나 덜 받았지?',{q:'광고 보고 ￦'+ap.coin+' 받기',a:['받는다','괜찮아요'],choose:function(k){
+      if(k===0){ setTimeout(function(){ endTalk(); adGo('mq',function(){ S.coin+=ap.coin; M.adPend=null; save(); hudRefresh(); sfx('coin'); toast('광고 보상 ￦'+ap.coin); }); },60); return []; }
+      M.adPend=null; save(); return ['그래, 다음에 또 보세.']; }}]}); return true; }
+  if(!mqReady(c)||M.ann[c.id]===dayKey()) return false;
+  if(c.id==='job'&&S.first===dayKey()&&Date.now()-MQ_T0<180000) return false;       /* 첫날 첫 3분은 방해하지 않는다 */
+  if(mqLeasing()) return false;                                                      /* 계약 중이면 표시만 */
+  M.ann[c.id]=dayKey(); MQ_SAID=1; save(); ev('mq_announce',{id:c.id});
+  var resume=M.cur===c.id&&M.i>0,recap=c.id==='lease'&&leaseDoneAny()&&!S.lease;
+  var lines=recap?['자네는 전세 계약을 벌써 해 봤지?','그때 얘기를 짧게 하고 넘어가세.']:c.ann;
+  talkTo({name:'귀인 할배',face:'gpa',lines:lines.concat([{q:c.q,a:[resume?'이어서 보기':recap?'지금 보기':'지금 시작','나중에'],choose:function(k){
+    if(k===0){ setTimeout(function(){ endTalk(); mqStart(c.id); },60); return []; }
+    return ['그래, 준비되면 지도 왼쪽 위 메인 표시를 누르게.'].concat(c.id==='lease'&&!recap?['이사하려고 하면 그때도 부동산에서 계약부터 하게 될 걸세.']:[]); }}])});
+  return true; }
+/* 홈 지도 왼쪽 위, 지역 이름 아래에 뜨는 메인 표시 */
+function mqChip(){
+  var el=document.getElementById('hmq'); if(!el) return;
+  var c=mqNext(),any=(S.done||[]).length>0||Object.keys((S.mq&&S.mq.done)||{}).length>0;
+  if(!S.onboarded||!c||!any){ el.hidden=true; return; }
+  var M=mqS(),ready=mqReady(c),leasing=c.id==='lease'&&mqLeasing(),txt,cls='mqchip pix',tap;
+  if(leasing){ var voided=S.lease.voided&&S.lease.ch===0&&S.lease.b===0,short=S.lease.ch===3&&S.lease.b===0&&S.coin<tierCost(S.lease.to);
+    txt='<b>메인 2장</b> 첫 전세 계약<span>'+(voided?'부동산에서 매물 다시 고르기':short?'잔금 ￦'+(tierCost(S.lease.to)-S.coin)+' 모자람':'다음은 '+esc(leaseWhere())+'에서')+'</span>'; cls+=' at';
+    tap=function(){ toast('다음 장면은 '+leaseWhere()+'에서 이어집니다.'); }; }
+  else if(ready){ txt='<b>메인 '+c.no+'장</b> '+esc(c.title)+'<span>'+(M.cur===c.id&&M.i>0?'눌러서 이어 보기':'눌러서 시작')+'</span>'; cls+=' on';
+    tap=function(){ mqStart(c.id); }; }
+  else { var w=mqWait(c); txt='<b>다음 메인</b> '+c.no+'장 '+esc(c.title)+'<span>'+esc(w)+'</span>';
+    tap=function(){ toast(w==='내일 열려요'?'오늘은 푹 쉬게. 다음 장은 내일 보세.':c.no+'장 '+c.title+' · '+w); }; }
+  el.hidden=false; el.className=cls; el.innerHTML=txt;
+  el.onclick=function(e){ e.stopPropagation(); if(MQP||TUT) return; sfx('pick'); tap(); }; }
+/* ── 메인 퀘스트가 여는 것들(economy.md) ──
+   1장: 역 앞, 출근복. 2장: 대형 가전. 3장: 법인카드·카드지갑, 은행 창구 캐시백. 4장: 자동차 구매, 고속도로.
+   5장: 경주·대구 가는 길, 신혼 세간. 6장: 자가 거처(9단계부터), 거실 세간.
+   가진 것은 그대로 쓰고, 잠금은 "사기"와 "가기"만 막는다. 메인 퀘스트 전 저장은 쓰던 길과 거처를 그대로 둔다(mqGrandfather). */
+function mqShopLock(slot,id){
+  var it=allItems(id); if(!it||!it.mq||mqOk(it.mq)) return null;
+  return mqLockMsg(mqById(it.mq)); }
+function mqLockMsg(c){ return mqName(c)+을를(c.title).slice(c.title.length)+' 마치면 살 수 있어요'; }
+function mqRegionLock(to){ return mqOk('wedding')?null:'메인 5장 「결혼 준비」를 마치면 '+(to==='daegu'?'대구':'경주')+' 가는 길이 열려요'; }
+function tierCap(){ return mqOk('home')?TIERS.length-1:Math.max(8,S.peak>=9?S.peak:8); }
+function mqGrandfather(o){
+  var own=function(id){ return (o.owned||[]).indexOf(id)>=0; },
+      trip=['car1','car2','trip1','trip2','trip3','trip4','trip5'].some(function(id){ return (o.done||[]).indexOf(id)>=0; }),
+      away=!!(o.pos&&(PARK_MAPS[o.pos.map]||o.pos.map==='korea')),road=own('car')||own('sedan')||trip||away,gf={};
+  if((o.lv||1)>=MAP_LV.station) gf.job=1;
+  if(own('card')) gf.card=1;
+  if(road){ gf.car=1; gf.wedding=1; }
+  if((o.peak||0)>=9) gf.home=1;
+  return gf; }
+/* 도감의 메인 퀘스트 목록. 끝낸 장은 다시 볼 수 있고, 더 좋은 등급을 내면 차액만 받는다 */
+var MQ_STARS={good:'★★★',ok:'★★☆',bad:'★☆☆'};
+function mqCodex(){
+  var el=document.getElementById('cmq'); if(!el) return; el.innerHTML='';
+  MQ_LIST.forEach(function(c){
+    var g=S.mq&&S.mq.done&&S.mq.done[c.id],ready=mqReady(c)&&!mqLeasing(),b=document.createElement('button');
+    b.className='item pix'+(g||ready?'':' locked'); b.style.gridTemplateColumns='1fr auto';
+    b.innerHTML='<span><span class="inm">'+c.no+'장 · '+esc(c.title)+'</span><span class="idesc">'+esc(g?c.sub:ready?'지금 시작할 수 있어요':mqWait(c)||'앞 장을 먼저 마치세요')+'</span></span>'+
+      '<span class="ist">'+(g?'<span class="d">'+MQ_STARS[g]+'</span><br><span class="idesc">다시 보기</span>':ready?'<span class="p">시작</span>':'<span class="idesc">잠김</span>')+'</span>';
+    if(g||ready) b.onclick=function(){ sfx('pick'); render('home'); setTimeout(function(){ if(g&&c.id==='lease') mqLeaseOutro(mqWrap().intro); else mqStart(c.id); },120); };
+    else b.disabled=true;
+    el.appendChild(b); }); }
 /* ══════════ 생활 이벤트 ══════════
    바깥을 걷다 보면 가끔 휴대폰이 울리거나 누가 말을 건다. 퀘스트와 달리 정답을 고르는 게 아니라
    실제로 겪을 법한 순간에 어떻게 반응하는지를 고른다. 고른 대로 돈·기분·경험치가 바로 움직이고,
@@ -10009,7 +11369,7 @@ function endingShareSheet(){
    매물은 둘이다.
    A 신축 빌라: 전세 2억, 매매 2억 5천. 전세가율 80%인 깡통전세.
    B 구축 아파트: 전세 1억, 매매 3억(근저당 채권최고액 6천만 원). 전세가율 약 33%.
-   중간에 나가도 S.lease에 장면 단위로 남아 이어서 한다. 기준일 2026-09. */
+   중간에 나가도 S.lease에 장면 단위로 남아 이어서 한다. 기준일 2026-10. */
 var LEASE_TIERS={7:1,8:1};
 var LEASE_SRC=[['인터넷등기소','https://www.iros.go.kr'],['국토교통부 실거래가 공개시스템','https://rt.molit.go.kr'],
   ['주택도시보증공사(HUG) 전세보증금반환보증','https://www.khug.or.kr'],['찾기쉬운 생활법령정보 · 주택임대차','https://easylaw.go.kr']];
@@ -10026,8 +11386,9 @@ function ldoc(title,rows,foot){
     (foot?'<div class="lf">'+foot+'</div>':'')+'</div>'; }
 function lpick(){ return S.lease&&S.lease.pick?LISTING[S.lease.pick]:null; }
 var LEASE_CH=[
- {title:'1장 · 매물 고르기',place:'estate',beats:[
+ {title:'매물 고르기',place:'estate',beats:[
   {who:'공인중개사',face:'gpa',t:'전세 매물이 두 개 나와 있어요. 새 집 좋아하시면 A, 오래 조용히 살 거면 B.',
+   card:function(){ var a=LISTING.A,b=LISTING.B; return {t:'매물 안내',rows:[['A '+a.name,'전세 '+won(a.dep)],['','준공 1년 · 풀옵션'],['B '+b.name,'전세 '+won(b.dep)],['','준공 26년 · 7층']]}; },
    doc:function(){ var a=LISTING.A,b=LISTING.B; return ldoc('매물 안내',[['A · '+a.name,a.built],['전세',won(a.dep)],['B · '+b.name,b.built],['전세',won(b.dep)]],'벽지와 옵션은 사진으로 봤다. 보증금이 안전한지는 사진에 안 나온다.'); },
    opts:[
    {a:'두 집 다 등기부등본과 실거래가부터 본다',risk:0,
@@ -10035,6 +11396,7 @@ var LEASE_CH=[
    {a:'새 집이 좋으니 A로 마음을 정한다',risk:2,
     note:'깨끗한 벽지는 보증금을 지켜 주지 않는다. 고르기 전에 숫자부터 본다.'}]},
   {who:'등기부등본 · 실거래가',face:'gpa',t:'서류를 뗐다. 갑구에는 소유자, 을구에는 근저당 같은 빚이 적혀 있다.',
+   card:function(){ var a=LISTING.A,b=LISTING.B; return {t:'등기부 · 실거래가',rows:[['A 을구 근저당','없음'],['A 전세÷매매','2억÷2억5천 '+jratio(a)+'%'],['B 을구 근저당','최고액 '+won(b.loan)],['B 전세÷매매','1억÷3억 '+jratio(b)+'%']],bad:[1]}; },
    doc:function(){ var a=LISTING.A,b=LISTING.B;
      return ldoc('A · '+a.name,[['갑구 소유자',a.owner+' · '+a.since],['을구 근저당','없음'],['매매 시세',a.price],['전세 ÷ 매매',won(a.dep)+' ÷ 2억 5천 = '+jratio(a)+'%','bad']])+
             ldoc('B · '+b.name,[['갑구 소유자',b.owner+' · '+b.since],['을구 근저당','채권최고액 '+won(b.loan)],['매매 시세',b.price],['전세 ÷ 매매',won(b.dep)+' ÷ 3억 = '+jratio(b)+'%','good']]); },
@@ -10051,8 +11413,9 @@ var LEASE_CH=[
     note:'낡은 집에 들어가는 대신 보증금의 안전을 샀다. 전세가율(매매가 대비 전세가)이 낮을수록 돌려받을 여유가 크다.'},
    {a:'A 신축 빌라로 한다',risk:2,pick:'A',
     note:'전세가율 80%인 집으로 간다. 이대로 가더라도 "보증보험 가입이 안 되면 계약을 무효로 한다"는 조건만큼은 꼭 챙겨야 한다.'}]}]},
- {title:'2장 · 가계약',place:'house',beats:[
+ {title:'가계약',place:'house',beats:[
   {who:'집주인 (문자)',face:'officem',t:function(){ var L=lpick(); return L.name+'을 직접 보고 나왔다. 집주인이 문자를 보냈다. "다른 분도 보러 온대요. 가계약금 200만 원 보내시면 잡아 둘게요."'; },
+   card:function(){ var L=lpick(); return {t:'받은 문자',rows:[['계좌','OO은행 110-***'],['예금주','박OO'],['등기부 소유자',L.owner]],bad:[1]}; },
    doc:function(){ var L=lpick(); return ldoc('받은 문자',[['계좌','OO은행 110-***-****'],['예금주','박OO','bad'],['등기부 소유자',L.owner]],'예금주가 등기부 소유자와 다르다.'); },
    opts:[
    {a:'등기부 소유자 본인 명의 계좌로 보내 달라고 한다',risk:0,
@@ -10065,12 +11428,13 @@ var LEASE_CH=[
     note:'가계약도 약속이다. 무엇에 합의했는지 문자로 남겨야 나중에 조건을 주장할 수 있다. 보증보험 조건은 돈이 적게 들어간 이때 거는 것이 가장 쉽다.'},
    {a:'"잘 부탁드립니다"만 보낸다',risk:2,
     note:'조건 없이 보낸 가계약금은 마음이 바뀌었을 때 돌려받기가 어려워진다.'}]}]},
- {title:'3장 · 삼자대면 본계약',place:'estate',beats:[
+ {title:'삼자대면 본계약',place:'estate',beats:[
   {who:'집주인',face:'officem',t:'계약하는 날. 집주인, 나, 중개사가 한 테이블에 앉았다. 집주인이 신분증을 내민다.',
+   card:function(){ var L=lpick(); return {t:'신분증 대조',rows:[['신분증 이름',L.owner],['등기부 소유자',L.owner],['주민번호 앞자리','같음'],['납세증명서','받음']]}; },
    doc:function(){ var L=lpick(); return ldoc('대조',[['신분증 이름',L.owner],['등기부 소유자',L.owner],['주민번호 앞자리','같음','good']]); },
    opts:[
    {a:'신분증과 등기부 소유자를 직접 대조한다',risk:0,
-    note:'계약 상대가 등기부 소유자 본인인지가 첫 확인이다. 대리인이 나오면 위임장과 인감증명서를 받고, 소유자와 직접 통화해 확인한다.'},
+    note:'계약 상대가 등기부 소유자 본인인지가 첫 확인이다. 대리인이면 위임장과 인감증명서를 받는다. 집주인은 밀린 세금(납세증명서)과 먼저 들어온 세입자 정보도 보여 줘야 한다.'},
    {a:'중개사가 봤을 테니 넘어간다',risk:2,
     note:'확인을 남에게 맡기면 사고가 났을 때 남는 것도 남 탓뿐이다.'}]},
   {who:'공인중개사',face:'gpa',t:'중개사가 계약서를 내민다. 사무실 벽에 중개사무소 등록증이 걸려 있다.',
@@ -10078,7 +11442,7 @@ var LEASE_CH=[
    {a:'등록증 이름과 계약서의 중개사 이름을 맞춰 보고, 공제증서를 받는다',risk:0,
     note:'개업공인중개사는 등록 여부를 조회할 수 있고, 계약할 때 중개사고에 대비한 보증(공제) 증서 사본을 내줘야 한다.'},
    {a:'계약서 내용만 읽는다',risk:1,
-    note:'중개보조원이 중개사처럼 계약을 진행하는 일도 있다. 이름 한 번 맞춰 보는 데 10초면 된다.'}]},
+    note:'중개보조원이 중개사처럼 계약을 진행하는 일도 있다. 보조원은 자기 신분을 밝혀야 한다. 이름 한 번 맞춰 보는 데 10초면 된다.'}]},
   {who:'공인중개사',face:'gpa',t:'특약 칸이 비어 있다. 무엇을 적을까?',
    opts:[
    {a:'"잔금 다음 날까지 근저당 등 새 권리를 설정하지 않는다", "보증보험·전세대출이 안 되면 계약을 무효로 하고 계약금을 돌려준다"를 넣는다',risk:0,flag:'insure',
@@ -10091,7 +11455,7 @@ var LEASE_CH=[
     note:'이체 기록이 곧 영수증이다. 현금으로 주면 준 사실부터 증명해야 한다.'},
    {a:'집주인이 원하니 현금으로 건넨다',risk:2,
     note:'현금은 흔적이 없다. 나중에 계약금을 줬다는 것부터 다퉈야 한다.'}]}]},
- {title:'4장 · 이사 당일 (오전)',place:'house',beats:[
+ {title:'이사 당일 오전',place:'house',beats:[
   {who:'공인중개사',face:'gpa',t:'잔금 날 아침. 오후에 잔금을 보내고 열쇠를 받기로 했다.',
    opts:[
    {a:'잔금을 보내기 직전에 등기부등본을 다시 뗀다',risk:0,
@@ -10104,16 +11468,16 @@ var LEASE_CH=[
     note:'전 세입자가 밀린 관리비는 내 몫이 아니다. 들어가는 날 기준으로 정산서를 받아 둔다.'},
    {a:'열쇠만 받고 짐부터 올린다',risk:1,
     note:'정산은 미루면 누가 낼지 다투게 된다. 이사 날 10분이면 끝나는 일이다.'}]}]},
- {title:'4장 · 이사 당일 (오후)',place:'hall',beats:[
+ {title:'이사 당일 오후',place:'hall',beats:[
   {who:'주민센터 직원',face:'deskf',t:'짐을 다 옮겼다. 주민센터가 아직 문을 열었다.',
    opts:[
    {a:'전입신고와 확정일자를 오늘 같이 한다',risk:0,
-    note:'전입신고와 실제 거주로 대항력이, 확정일자로 우선변제권이 생긴다. 대항력은 전입신고 다음 날 0시부터라 하루를 미루면 그 하루에 잡힌 권리가 나보다 앞선다.'},
+    note:'전입신고와 실제 거주로 대항력이, 확정일자로 우선변제권이 생긴다. 대항력은 전입신고 다음 날 0시부터다. 보증금이 6천만 원을 넘으면 계약 30일 안에 임대차 신고도 해야 하고, 신고하면 확정일자가 함께 붙는다.'},
    {a:'전입신고만 하고 확정일자는 나중에 받는다',risk:2,
     note:'확정일자가 없으면 경매 배당에서 순위를 주장할 우선변제권이 없다.'},
    {a:'피곤하니 주말에 몰아서 한다',risk:3,
     note:'그 며칠이 통째로 빈다. 전세사기가 파고드는 자리가 바로 이 틈이다.'}]},
-  {who:'주민센터 직원',face:'deskf',t:function(){ return S.lease.pick==='A'?'전세보증금반환보증을 신청했다. 보증기관에서 연락이 왔다. "주택 가격 대비 보증금이 커서 가입 요건에 맞지 않습니다."':'전세보증금반환보증(보증보험)은 어떻게 할까?'; },
+  {who:'주민센터 직원',face:'deskf',t:function(){ return S.lease.pick==='A'?'전세보증금반환보증을 신청했다. 보증기관에서 연락이 왔다. "빌라는 공시가격으로 집값을 따지는데, 그 기준으로 보면 보증금이 너무 커서 가입 요건에 맞지 않습니다."':'전세보증금반환보증(보증보험)은 어떻게 할까?'; },
    opts:[
    {a:'가입한다. 집주인이 못 돌려주면 보증기관이 대신 준다',risk:0,only:'B',
     note:'보증료는 들지만, 집주인이 보증금을 못 돌려줄 때 보증기관이 먼저 지급한다. 가입 요건과 보증료는 보증기관 공고를 확인한다.'},
@@ -10129,6 +11493,7 @@ var LEASE_ENDS=[
 /* 전세 거처로 처음 옮기려 하면 계약 사건을 연다. true면 이사를 멈춘다 */
 function leaseGate(i){
   if(!LEASE_TIERS[i]||i<=paidBase()||(S.leaseDone&&S.leaseDone[i])) return false;
+  if(S.lease&&S.lease.to<i&&!(S.leaseDone&&S.leaseDone[S.lease.to])) return true;     /* 하던 원룸 계약이 먼저 */
   if(!S.lease||S.lease.to!==i){ S.lease={to:i,ch:0,b:0,pick:null,risk:0,flags:{},picks:[]}; ev('lease_open',{to:i}); }
   return true; }
 function leaseCh(){ return S.lease?LEASE_CH[S.lease.ch]:null; }
@@ -10138,7 +11503,6 @@ function leaseHere(s){ var c=leaseCh(); return !!(c&&leasePlace(c.place)===s.pla
 var LEASE_WHERE={estate:'부동산',house:'매물 집 앞',hall:'주민센터'};
 function leaseWhere(){ var c=leaseCh(); if(!c) return ''; var p=leasePlace(c.place);
   return p==='house'&&S.lease.pick?'주택가 '+LISTING[S.lease.pick].name+(MAPS.villa?' 안':' 앞'):LEASE_WHERE[p]; }
-var LS=null;                                                   /* 지금 보고 있는 장면 */
 function leaseOpen(s){
   if(!S.lease||(s.place==='house'&&S.lease.pick&&s.pick!==S.lease.pick)){ return talkTo({name:s.name,face:s.face,lines:(s.place==='hall'?['전입신고는 이사한 날 바로 하세요. 확정일자도 같이 받을 수 있어요.']
     :s.place==='house'?(s.pick==='A'?['새 집이죠? 옵션도 다 새 거예요.','계약은 부동산 통해서 해요. 서류는 거기서 다 보여 드릴 거예요.']:['오래된 집이지만 관리는 잘했어요. 2011년부터 제 집이에요.','계약은 부동산 통해서 해요.'])
@@ -10147,44 +11511,31 @@ function leaseOpen(s){
   if(S.lease.ch===3&&S.lease.b===0){ var c=tierCost(S.lease.to);
     if(S.coin<c) return toast('잔금(입주 보증금) ￦'+c+'이 모자랍니다 · 지금 ￦'+S.coin); }
   sfx('pick'); leaseShow(); }
+/* 장면은 메인 퀘스트 컷신 플레이어로 보여 준다. 장면 하나가 선택 하나다 */
+function leaseScenes(){
+  var L=S.lease,ch=leaseCh(),p=leasePlace(ch.place);
+  var bg=p==='estate'?'meeting':p==='house'?(L.pick==='B'?'apartment':'livingroom'):'office';
+  return ch.beats.slice(L.b).map(function(b){
+    var cast=/등기부|문자/.test(b.who)?[['hero','C']]:[['hero','L'],[b.face||'gpa','R']];
+    return {bg:bg,cast:cast,who:b.who,text:[typeof b.t==='function'?b.t():b.t],doc:b.card?b.card():null,
+      choice:{opts:b.opts.filter(function(o){ return !o.only||o.only===L.pick; }).map(function(o){ return {a:o.a,ok:o.risk?0:1,note:o.note,_o:o}; })}}; }); }
+var LEASE_STEP=['매물 고르기','가계약','삼자대면 본계약','이사 당일 오전','이사 당일 오후'];
 function leaseShow(){
   var L=S.lease,ch=leaseCh(); if(!ch) return;
-  var b=ch.beats[L.b]; if(!b){ return leaseNextCh(); }
-  go('ep');
-  document.getElementById('epname').textContent='전세 계약 · '+ch.title;
-  var dy=document.getElementById('epday'); dy.textContent=TIERS[L.to].name; dy.hidden=false;
-  var r=document.getElementById('eprisk'); r.textContent='위험 '+L.risk; r.className='chip pix'+(L.risk>=5?' bad':L.risk>=2?' warn':'');
-  epSprite(document.getElementById('epspr'),b.face||'gpa',2);
-  var box=document.getElementById('epchoices'); box.innerHTML=''; box.hidden=true;
-  document.getElementById('epnote').hidden=true; document.getElementById('epnext').hidden=true;
-  document.getElementById('epwho').textContent=b.who;
-  var dc=document.getElementById('epdoc'),dh=b.doc?b.doc():'';
-  dc.innerHTML=dh; dc.hidden=!dh;
-  LS={b:b};
-  typeInto(document.getElementById('eptext'),typeof b.t==='function'?b.t():b.t,function(){ box.hidden=false; });
-  b.opts.filter(function(o){ return !o.only||o.only===L.pick; }).forEach(function(o){
-    var btn=document.createElement('button'); btn.className='choice pix';
-    btn.innerHTML='<span class="k">▶</span><span>'+o.a+'</span>';
-    btn.onclick=function(){ leasePickOpt(o,btn); };
-    box.appendChild(btn); }); }
-function leasePickOpt(o,btn){
+  if(!ch.beats[L.b]) return leaseNextCh();
+  if(L.ch===0&&L.b===0&&mqDone('job')&&!mqDone('lease')&&!(S.mq&&S.mq.leaseIntro)){      /* 메인 2장 앞 컷신을 한 번 */
+    var mc=mqById('lease'); mqS().leaseIntro=1; mqS().cur='lease'; save();
+    return playMQ({no:mc.no,title:mc.title,sub:mc.sub,scenes:mqWrap().intro,onDone:function(){ leaseShow(); }}); }
+  playMQ({no:2,title:'첫 전세 계약',sub:(L.ch+1)+'/'+LEASE_CH.length+' · '+ch.title+' · '+TIERS[L.to].name,scenes:leaseScenes(),
+    onPick:function(scn,op){ leaseApply(op._o); },
+    onDone:function(){ if(S.lease&&leaseCh()&&S.lease.b>=leaseCh().beats.length) leaseNextCh(); else render('home'); }}); }
+function leaseApply(o){
   var L=S.lease;
-  document.querySelectorAll('#epchoices .choice').forEach(function(b){ b.disabled=true; });
-  btn.classList.add(o.risk?'no':'ok');
   L.risk+=(o.risk||0); L.picks.push({a:o.a,risk:o.risk||0});
   if(o.pick) L.pick=o.pick;
   if(o.flag) L.flags[o.flag]=1;
   L.b++; save();
-  sfx(o.risk?'hit':'good');
-  ev('lease_pick',{ch:L.ch,b:L.b-1,risk:o.risk||0,pick:L.pick});
-  var r=document.getElementById('eprisk'); r.textContent='위험 '+L.risk; r.className='chip pix'+(L.risk>=5?' bad':L.risk>=2?' warn':'');
-  var n=document.getElementById('epnote');
-  n.className='explain pix '+(o.risk?'bad':'good');
-  n.innerHTML='<b>'+(o.risk?'대가가 남는다':'좋은 판단')+'</b> · '+o.note; n.hidden=false;
-  var nx=document.getElementById('epnext'); nx.hidden=false;
-  var ch=leaseCh(),last=L.b>=ch.beats.length;
-  nx.textContent=last?(L.ch+1>=LEASE_CH.length?'결말 보기':'이 장 마치기'):'다음';
-  nx.onclick=function(){ if(last) leaseNextCh(); else leaseShow(); }; }
+  ev('lease_pick',{ch:L.ch,b:L.b-1,risk:o.risk||0,pick:L.pick}); }
 /* 한 장이 끝났다. A를 골랐어도 보증보험 조건을 걸어 뒀다면, 이사 전에 가입 가능 여부를 물어본 데서
    거절이 나와 계약을 되돌린다. 조건이 없었다면 그대로 이사 날까지 간다. */
 function leaseNextCh(){
@@ -10202,7 +11553,7 @@ function leaseVoid(){
   var big=document.getElementById('eebig'); big.textContent='계약을 되돌렸다'; big.style.color=P.y2;
   var body=document.getElementById('eebody'); body.innerHTML='';
   var c=document.createElement('div'); c.className='card pix';
-  c.innerHTML='<span>잔금 전에 보증기관에 가입할 수 있는지 먼저 물었다. 답은 "가입 요건에 맞지 않습니다".</span>'+
+  c.innerHTML='<span>잔금 전에 보증기관에 가입할 수 있는지 먼저 물었다. 답은 "빌라는 공시가격으로 집값을 따져서, 보증금이 기준을 넘습니다".</span>'+
     '<span class="rc ok">✓ 가계약 문자와 계약서 특약에 "보증보험이 안 되면 계약을 무효로 한다"를 넣어 두었다</span>'+
     '<span style="display:block;margin-top:8px">특약대로 계약을 무효로 하고 가계약금과 계약금을 돌려받았다. 다시 매물을 고른다. 이번에는 숫자부터 보자.</span>';
   body.appendChild(c);
@@ -10251,11 +11602,12 @@ function leaseEnd(){
   body.appendChild(g);
   var s=document.createElement('div'); s.className='micro';
   s.innerHTML='확인처 · '+LEASE_SRC.map(function(x){ return '<a href="'+x[1]+'" target="_blank" rel="noopener">'+x[0]+'</a>'; }).join(' · ')+
-    ' · 기준일 2026-09. 보증보험 요건과 보증료는 보증기관 공고로 확인하세요. 금액은 예시입니다.';
+    ' · 기준일 2026-10. 보증보험 요건과 보증료는 보증기관 공고로 확인하세요. 금액은 예시입니다.';
   body.appendChild(s);
   document.getElementById('eeback').textContent='새 집으로';
+  if(mqDone('job')&&!mqDone('lease')){ MQ_OUTRO=1; mqS().leaseTier=tier; save(); }
   sfx(tier===0?'win':'hit'); }
-var _renderHome1=renderHome; renderHome=function(){ _renderHome1.apply(this,arguments); setTimeout(eodMaybe,1200); };
+var _renderHome1=renderHome; renderHome=function(){ _renderHome1.apply(this,arguments); setTimeout(eodMaybe,1200); mqChip(); setTimeout(mqAnnounce,2600); };
 if(S.onboarded) render('home'); else { obRender(); go('onboard'); }
 /* 딥링크: 주소 끝 #c=lease 처럼 체크리스트 id를 붙이면 그 목록을 바로 연다 (공유 문구의 링크) */
 function deepCheckId(){ var m=/[#&]c=([\w-]+)/.exec(location.hash||''); if(!m) return null;
