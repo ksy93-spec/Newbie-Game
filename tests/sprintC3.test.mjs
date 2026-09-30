@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 import url from 'node:url';
 import fs from 'node:fs';
+import { reloadSaved } from './storage.mjs';
 
 process.env.PLAYWRIGHT_BROWSERS_PATH ||= '/opt/pw-browsers';
 let chromium;
@@ -42,7 +43,7 @@ async function open({ w = 390, h = 844, boot = true } = {}) {
 }
 const sleep = (page, ms) => page.waitForTimeout(ms);
 /** file:// 저장소는 쓴 직후 바로 새로고침하면 못 읽는 일이 있어 잠깐 기다린다 */
-async function reload(page) { await sleep(page, 600); await page.reload(); await page.waitForFunction(() => window.S && window.QUESTS, null, { polling: 100 }); await sleep(page, 1200); }
+async function reload(page) { await reloadSaved(page); await sleep(page, 1200); }
 const snap = (page) => page.evaluate(() => ({ coin: S.coin, peak: S.peak, tier: S.tier, paid: S.paid, ju: S.stats.ju, bd: S.bossDone.slice(),
   scr: document.querySelector('.screen.on').id, map: ME.map, tx: ME.tx, ty: ME.ty, onFoot: S.onFoot, redec: S.redecorate }));
 
@@ -164,7 +165,11 @@ for (const [w, h] of [[390, 844], [360, 640]]) {
       return { warpY: w.y, TS, signBoard: Math.min(...rects.map((r) => r[1])), poleBottom: bottom };
     });
     assert.ok(sign.signBoard + 14 <= (sign.warpY - 2) * sign.TS, `표지판(${sign.signBoard}~)이 입구 두 칸 위에 있어야 한다`);
-    for (let i = 0; i < 8; i++) { await page.keyboard.press('ArrowLeft'); await sleep(page, 140); }
+    // 차가 한 칸 가는 동안 누른 키는 무시되니, 입구에 닿을 때까지 계속 누른다(부하가 커도 흔들리지 않게)
+    for (let i = 0; i < 30; i++) {
+      if (await page.evaluate(() => ME.map !== 'town' || !!DRIVE)) break;
+      await page.keyboard.press('ArrowLeft'); await sleep(page, 160);
+    }
     await page.waitForFunction(() => ME.map === 'rest', null, { timeout: 9000, polling: 100 });   // 달리는 화면을 지나 휴게소로
     await sleep(page, 700);
     const rest = await snap(page);

@@ -338,6 +338,11 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
   line-height:16px;padding:6px 9px;pointer-events:none;text-align:center;
   overflow-wrap:anywhere;}
 .card .rc{display:block;margin-top:8px;font-size:12px;line-height:1.6;}
+.ldoc{background:#FFFDF6;border:3px solid var(--s4);padding:8px 10px;margin-bottom:6px;font-family:var(--f-ui);font-size:12px;line-height:18px;}
+.ldoc .lt{font-weight:700;border-bottom:2px dashed var(--s1);margin-bottom:4px;padding-bottom:2px;}
+.ldoc .lr{display:flex;justify-content:space-between;gap:8px;} .ldoc .lr span{color:var(--s2);flex:none;} .ldoc .lr b{text-align:right;}
+.ldoc .lr.bad b{color:var(--r3);} .ldoc .lr.good b{color:var(--g3);}
+.ldoc .lf{margin-top:4px;font-family:var(--f-micro);font-size:11px;line-height:16px;color:var(--s2);}
 .card .rc.ok{color:var(--g3);} .card .rc.no{color:var(--r3);}
 .epname{flex:1;font-family:var(--f-ui);font-weight:700;font-size:12px;color:var(--s4);}
 .chip{background:var(--p2);border:3px solid var(--s4);padding:2px 6px;
@@ -709,6 +714,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
     </div>
     <div class="scroll" style="gap:var(--u3)">
       <div class="dlg pix"><span class="nm" id="epwho">—</span><span id="eptext">—</span></div>
+      <div id="epdoc" hidden></div>
       <div style="display:flex;flex-direction:column;gap:var(--u2)" id="epchoices"></div>
       <div id="epnote" hidden></div>
       <button class="btn btn--wide pix" id="epnext" hidden>다음</button>
@@ -2049,6 +2055,7 @@ var LASTMOVE=null;
 /* 거처를 옮긴다. 코인이 모자라면 안 옮기고 이유를 돌려준다 */
 function tierMove(i){
   var c=tierCost(i);
+  if(typeof leaseGate==='function'&&leaseGate(i)) return {ok:0,i:i,cost:c,lease:1};     /* 전세는 계약부터 */
   if(c>S.coin) return {ok:0,i:i,cost:c};
   S.coin-=c; S.tier=i; S.paid=Math.max(S.paid||0,i);
   if(c) ev('tier_deposit',{i:i,cost:c});
@@ -2200,8 +2207,21 @@ function rideHere(){
    말을 걸어야 다시 탄다. 휴게소·여행지에서 떠날 때도 차에 타서 출발한다.
    고속도로로 오갈 때는 바로 순간이동하지 않고 달리는 화면을 잠깐 보여 준다.
    그 몇 초에 운전 꿀팁을 한 줄씩 흘린다. */
+/* 가장 가까운 빈 주차 칸. 주차장이 없으면 찻길 가장자리 칸 */
+function nearestLot(m,x0,y0){
+  var best=null,bd=1e9,x,y,pass;
+  for(pass=0;pass<2&&!best;pass++) for(y=0;y<m.h;y++) for(x=0;x<m.w;x++){
+    var c=tileAt(m,x,y); if(pass===0?c!=='Q':c!=='r') continue;
+    if(warpAt(m,x,y)||spotAt(m,x,y)||(x===ME.tx&&y===ME.ty&&pass>0)) continue;
+    var d=Math.abs(x-x0)+Math.abs(y-y0); if(d<bd){ bd=d; best={x:x,y:y}; } }
+  return best; }
+function carSettle(m,id){
+  var mo=MOUNTS[S.equip.mount],q=nearestLot(m,ME.tx,ME.ty); S.onFoot=true;
+  S.park=q?{map:id,x:q.x,y:q.y,kind:mo.kind,id:S.equip.mount,dir:2}:null; }
 function parkNearDoor(prevMap,px,py){
   var mo=MOUNTS[S.equip.mount],m=MAPS[prevMap]; if(!mo||!mo.kind||!m) return;
+  if(mo.kind==='car'){ var q=nearestLot(m,px,py); S.onFoot=true;
+    S.park=q?{map:prevMap,x:q.x,y:q.y,kind:mo.kind,id:S.equip.mount,dir:2}:null; return; }
   var D=[[1,1],[-1,1],[1,2],[-1,2],[2,1],[-2,1],[0,2]],i;        /* 문 바로 앞은 나오는 자리라 비워 둔다 */
   for(i=0;i<D.length;i++){ var x=px+D[i][0],y=py+D[i][1];
     if(walkable(m,x,y,1)&&!warpAt(m,x,y)&&!spotAt(m,x,y)&&tileAt(m,x,y)!=='r'){
@@ -2217,7 +2237,9 @@ function openCarTalk(){
                :[nm+'에 탄다','그대로 둔다'];
   talkTo({name:nm,face:null,lines:[{q:park?'세워 둔 '+nm+'. 이제 떠날까?':'세워 둔 '+nm+'. 다시 탈까?',a:opts,choose:function(k){
     if(k>=(park?exits.length:1)) return ['그대로 두었다.'];
-    S.onFoot=false; S.park=null; TOPC={}; save(); sfx('good');
+    var pk=S.park; S.onFoot=false; S.park=null; TOPC={}; sfx('good');
+    if(!park&&pk&&pk.map===ME.map){ ME.tx=pk.x; ME.ty=pk.y; savePos(); }      /* 차 자리로 옮겨 앉는다 */
+    save();
     if(park){ var ex=exits[k]; setTimeout(function(){ endTalk(); takeWarp(ex); },60); return []; }
     setTimeout(function(){ drawScene(); },30);
     return [nm+'에 탔다. 부릉.']; }}]}); }
@@ -2300,8 +2322,10 @@ function parkOnArrive(id,wasRiding){
   var mo=MOUNTS[S.equip.mount];
   if(!PARK_MAPS[id]||!mo||!mo.kind||!wasRiding) return;
   var m=MAPS[id],D=[[-1,0],[1,0],[0,1],[-1,1],[1,1],[0,-1]],i;
+  var car=mo.kind==='car';
   for(i=0;i<D.length;i++){ var x=ME.tx+D[i][0],y=ME.ty+D[i][1];
-    if(walkable(m,x,y,1)&&!warpAt(m,x,y)&&!spotAt(m,x,y)){ S.park={map:id,x:x,y:y,kind:mo.kind,id:S.equip.mount,dir:D[i][0]<0?1:2}; S.onFoot=true; return; } }
+    if(walkable(m,x,y,1,'foot')&&!warpAt(m,x,y)&&!spotAt(m,x,y)&&(!car||tileAt(m,x,y)==='Q')){ S.park={map:id,x:x,y:y,kind:mo.kind,id:S.equip.mount,dir:D[i][0]<0?1:2}; S.onFoot=true; return; } }
+  if(car){ var q=nearestLot(m,ME.tx,ME.ty); if(q){ S.onFoot=true; S.park={map:id,x:q.x,y:q.y,kind:mo.kind,id:S.equip.mount,dir:2}; return; } }
   S.onFoot=true; S.park={map:id,x:ME.tx,y:ME.ty,kind:mo.kind,id:S.equip.mount,dir:2}; }
 function drawParked(ctx){
   var pk=S.park; if(!pk||pk.map!==ME.map) return;
@@ -3103,7 +3127,7 @@ function rollDay(){
   S.day=t; S.todayDone=[]; S.claimed=null; S.bonus=false;
   msCheck();
   if(S.onboarded){ var gr=tierGrow();                       /* 스탯은 됐는데 오늘 몫 때문에 미뤄진 거처 */
-    if(gr){ var mv=gr.wasTop?tierMove(S.peak):null; S.upNote={i:S.peak,ok:mv?mv.ok:0,cost:mv?mv.cost:0,stay:!gr.wasTop}; } }
+    if(gr){ var mv=gr.wasTop?tierMove(S.peak):null; S.upNote={i:S.peak,ok:mv?mv.ok:0,cost:mv?mv.cost:0,stay:!gr.wasTop,lease:mv&&mv.lease?1:0}; } }
   S.todayQ=S.onboarded?pickDaily():[];
   ev('day_start',{streak:S.streak,gap:gap,dayN:dayGap(S.first,t)+1});
   save(); return true; }
@@ -4747,7 +4771,8 @@ var TILES={
  /* 건물 안과 공원 */
  'S':{kind:'shelf'},'F':{kind:'cooler'},'K':{kind:'bookcase'},'M':{kind:'machine'},'P':{kind:'plant'},
  'L':{kind:'washer'},'A':{kind:'stall'},'w':{kind:'water'},'o':{walk:1,kind:'flower'},
- 's':{walk:1,kind:'sand'},':':{walk:1,kind:'floor'},'Z':{walk:1,kind:'bathfloor'},'U':{kind:'toilet'},'V':{kind:'tub'},'Y':{kind:'shower'},'N':{kind:'land'},'m':{kind:'mountain'},'=':{walk:1,kind:'highway'},'X':{walk:1,kind:'city'}
+ 's':{walk:1,kind:'sand'},':':{walk:1,kind:'floor'},'Z':{walk:1,kind:'bathfloor'},'U':{kind:'toilet'},'V':{kind:'tub'},'Y':{kind:'shower'},'N':{kind:'land'},'m':{kind:'mountain'},'=':{walk:1,kind:'highway'},'X':{walk:1,kind:'city'},
+ 'Q':{walk:1,kind:'park'}
 };
 var MAPS={
  town:{spawn:{x:4,y:4},name:'동네',sub:'1 · 집 앞',w:22,h:20,rows:[
@@ -4762,8 +4787,8 @@ var MAPS={
   '______________________',
   '_____b_______p________',
   '______________________',
-  'gggg____gggggg____gggg',
-  'gttg____gggggg____gttg',
+  'gggg____gggggQQQQ_gggg',
+  'gttg____gggggQQQQ_gttg',
   'rrrrrrrr------rrrrrrrr',
   'rrrrrrrr------rrrrrrrr',
   'ggoogggggggggggggooggg',
@@ -4772,6 +4797,7 @@ var MAPS={
   'gggtggggooggggggggtggg',
   'ffffffffffffffffffffff'],
   edges:{east:'campus'},
+  blds:[{x:0,y:0,w:5,h:3,s:'brick'},{x:5,y:0,w:6,h:3,s:'shop',c:'#F2E6C4',a:'#3F9F5A'},{x:11,y:0,w:6,h:3,s:'concrete'},{x:17,y:0,w:5,h:3,s:'shop',c:'#E8D0B8',a:'#3F6FB8'}],
   warps:[{x:2,y:2,to:'room',tx:2,ty:3},{x:8,y:2,to:'town_mart',tx:5,ty:6},{x:14,y:2,to:'town_hall',tx:6,ty:6},
          {x:19,y:2,to:'town_estate',tx:6,ty:8},
          {x:0,y:13,to:'rest',tx:3,ty:11,needCar:1},{x:0,y:14,to:'rest',tx:3,ty:11,needCar:1}],
@@ -4855,8 +4881,8 @@ var MAPS={
   '______b__________b____',
   '______________________',
   '______________________',
-  'gggg______gggg______gg',
-  'gttg______gttg______gg',
+  'gggg______gggQQQQQ__gg',
+  'gttg______gttQQQQQ__gg',
   'rrrrrrrr------rrrrrrrr',
   'rrrrrrrr------rrrrrrrr',
   'ggggggggAAAggggggggggg',
@@ -4933,7 +4959,8 @@ MAPS.town_hall={name:'주민센터',sub:'1 · 동네 안',w:12,h:8,interior:1,
   spots:[{x:2,y:3,kind:'desk',id:'h_move',label:'전입신고'},
          {x:5,y:3,kind:'desk',id:'h_youth',label:'청년 지원'},
          {x:9,y:3,kind:'desk',id:'h_report',label:'전월세 신고'},
-         {x:1,y:1,kind:'thing',id:'ticket1',name:'번호표 기계',xp:10}],
+         {x:1,y:1,kind:'thing',id:'ticket1',name:'번호표 기계',xp:10},
+         {x:10,y:4,kind:'lease',place:'hall',name:'전입 신고 창구 직원',face:'deskf',dir:1}],
   eggs:[{id:'th_sofa',x:10,y:6,coin:20,msg:'대기석 틈에서 동전이 나왔다.'}]};
 MAPS.town_estate={name:'부동산',sub:'1 · 동네 안',w:14,h:10,interior:1,
   tint:{fl:'#C9A97A',fl2:'#A98A5E',wl:'#F7EBD6',wl2:'#E3D2B4'},spawn:{x:6,y:8},rows:[
@@ -4951,7 +4978,8 @@ MAPS.town_estate={name:'부동산',sub:'1 · 동네 안',w:14,h:10,interior:1,
   spots:[{x:2,y:3,kind:'desk',id:'e_jeonse',label:'전세'},
          {x:6,y:3,kind:'desk',id:'e_wolse',label:'월세'},
          {x:10,y:3,kind:'desk',id:'e_maemae',label:'매매·중개'},
-         {x:12,y:5,kind:'ep',id:'jeonse-day'}],
+         {x:12,y:5,kind:'ep',id:'jeonse-day'},
+         {x:8,y:6,kind:'lease',place:'estate',name:'전세 계약 상담',face:'gpa'}],
   eggs:[{id:'te_desk',x:1,y:7,coin:25,msg:'매물 전단지 사이에서 동전을 주웠다.'}]};
 MAPS.campus_lib={name:'도서관',sub:'2 · 학교 앞 안',w:12,h:9,interior:1,
   tint:{fl:'#B99B6E',fl2:'#A5825A',wl:'#E3D2B4',wl2:'#C6B496'},spawn:{x:5,y:7},rows:[
@@ -5098,7 +5126,7 @@ MAPS.rest={name:'휴게소',sub:'고속도로 · 쉬어 가는 곳',w:22,h:16,sp
   'gggggggggg__gggggggggg',
   '__________________M_M_',
   '__________________CC__',
-  '______________________',
+  '_QQQQQQQQ_____________',
   'rrrrrrrrrrrrrrrrrrrrrr',
   'rrrrrrrrrrrrrrrrrrrrrr',
   'gggggggggggggggggggggg',
@@ -5162,8 +5190,8 @@ MAPS.korea={name:'전국 지도',sub:'고속도로 · 어디로 갈까',w:22,h:2
   spots:[],eggs:[{id:'k_view',x:16,y:9,xp:15,msg:'고갯길에서 보는 경치가 좋다. 창문을 열었다.'}]};
 MAPS.gangneung={name:'강릉 바다',sub:'여행지 · 동해',w:22,h:16,spawn:{x:1,y:3},rows:[
   'gggttgggggggggggttgggg',
-  'gHHHHHHgggggggHHHHHHgg',
-  'gHHWWHHgggggggHHWWHHgg',
+  'gHHHHHHgQQQQQgHHHHHHgg',
+  'gHHWWHHgQQQQQgHHWWHHgg',
   '______________________',
   '_CC________A______CC__',
   '______________________',
@@ -5187,8 +5215,8 @@ MAPS.gangneung={name:'강릉 바다',sub:'여행지 · 동해',w:22,h:16,spawn:{
         {id:'g_coin',x:20,y:9,coin:30,msg:'모래 속에서 동전이 반짝였다.'}]};
 MAPS.jeonju={name:'전주 한옥마을',sub:'여행지 · 전라북도',w:22,h:16,spawn:{x:2,y:4},rows:[
   'RRRRRRRgggggggRRRRRRRR',
-  'HHHHHHHgggtgggHHHHHHHH',
-  'HHHDHHHgggggggHHHWWHHH',
+  'HHHHHHHgggtQQQHHHHHHHH',
+  'HHHDHHHggggQQQHHHWWHHH',
   '______________________',
   '______________________',
   '_ooo______b_______CC__',
@@ -5227,7 +5255,7 @@ MAPS.busan={name:'부산 해운대',sub:'여행지 · 남해',w:22,h:16,spawn:{x
   'HHHHHHHHHHHHHHHHHHHHHH',
   '______________________',
   '_CC______A_______CC___',
-  '______________________',
+  '_____________QQQQ_____',
   'rrrrrrrr----rrrrrrrrrr',
   'rrrrrrrr----rrrrrrrrrr',
   'ssssssssssssssssssssss',
@@ -5297,7 +5325,7 @@ var TALKS={
  bibim:{food:'jeonju',greet:'전주 왔으면 비빔밥이지!',hi:['한옥마을 안쪽이 바깥보다 비싸요. 가격표 보고 골라요.']},
  hanbok:{hi:['한복 빌려 가세요~ 두 시간에 이만 원.','대여 전에 시간과 추가 요금 기준을 꼭 물어보세요. 늦게 오면 붙는 가게가 있어요.']},
  gukbap:{food:'busan',greet:'돼지국밥 한 그릇 하고 가이소!',hi:['부산 택시는 대부분 카드 돼요. 미터기 안 켜면 켜 달라 하이소.']},
- citizen:{hi:['해운대는 여름에 사람이 진짜 많아요.','수영은 안전요원 있는 구역에서만 해요. 깃발 색으로 입수 가능 여부를 알려 줘요.']},
+ citizen:{hi:['해운대는 여름에 사람이 진짜 많아요.','수영은 해수욕장이 문을 연 기간에, 안전요원이 지키는 구역 안에서만 해요.']},
  guide:{hi:['어, 왔어? 동네 건물마다 간판이 붙어 있지. 문 위에 느낌표가 뜬 곳에 볼일이 있다는 뜻이야.','집 얘기는 오른쪽 끝 부동산, 신고는 주민센터, 배고프면 편의점.','포만감이 떨어지면 공부가 안 돼. 먹고 다녀.']},
  friend:{hi:['야, 너도 수업 끝났어?','장학금이랑 기숙사는 학생지원센터 창구에서 물어봐. 카페 동기 테이블에 앉아 있으면 나도 거기 있을게.']},
  cafe:{food:'cafe',greet:'어서 와요. 뭐 마실래요?',hi:['어서 와요. 오늘의 커피는 아메리카노.','우리 가게 알바는 주휴수당 다 줘요. 주 15시간 넘게 일하면 원래 받는 거예요.','시급만 보지 말고, 주휴까지 합쳐서 계산해 봐요.']},
@@ -5493,17 +5521,23 @@ function tileAt(m,x,y){
 function warpAt(m,x,y){
   var r=null; (m.warps||[]).forEach(function(w){ if(w.x===x&&w.y===y) r=w; }); return r;
 }
-function walkable(m,x,y,petSelf){
+/* 차가 달릴 수 있는 칸: 찻길, 횡단보도, 주차장, 고속도로, 전국 지도의 도시 표시.
+   차를 탄 동안에는 이 칸만 지난다. 보도·풀밭·문 앞으로는 못 올라간다. */
+var DRIVE_T={'r':1,'-':1,'Q':1,'=':1,'X':1};
+/* mode: 'car'면 차로, 'foot'이면 걸어서 갈 수 있는지 본다. 없으면 지금 상태(carOn)를 따른다 */
+function walkable(m,x,y,petSelf,mode){
   var c=tileAt(m,x,y); if(c===null) return false;
   if(!petSelf&&PETW&&ME.map==='room'&&((PETW.x===x&&PETW.y===y)||(PETW.mv&&PETW.nx===x&&PETW.ny===y))&&!(x===ME.tx&&y===ME.ty)) return false;
   if(S.park&&S.park.map===ME.map&&S.park.x===x&&S.park.y===y) return false;
   if(spotAt(m,x,y)) return false;
   if(objBlocks(x,y)) return false;
-  var wp=warpAt(m,x,y);
-  if(wp) return !wp.needCar||carOn();     /* 문은 막혀 보여도 밟을 수 있어야 문이다. 고속도로 입구는 차가 있어야 */
-  if(c==='r'&&carOn()) return true;       /* 차를 타면 찻길도 간다 */
+  var wp=warpAt(m,x,y),car=mode?mode==='car':carOn();
+  if(car) return !!DRIVE_T[c]&&(!wp||!!wp.needCar||!!wp.fuel||ME.map==='korea');   /* 차로는 건물 문에 못 들어간다 */
+  if(wp) return !wp.needCar;              /* 문은 막혀 보여도 밟을 수 있어야 문이다. 고속도로 입구는 차가 있어야 */
   var t=TILES[c]; return !!(t&&t.walk);
 }
+/* 걸어서든 차로든 닿을 수 있는 칸인지(누른 자리가 목적지가 될 수 있는지) */
+function reachable(m,x,y){ return walkable(m,x,y,0,'foot')||(carOn()&&walkable(m,x,y,0,'car')); }
 function spotAt(m,x,y){
   var r=null;
   (m.spots||[]).forEach(function(s){ if(s.x===x&&s.y===y) r=s; });
@@ -5548,10 +5582,10 @@ function grassB(ctx,px,py,tx,ty,m,flowers){
   if(flowers) for(i=0;i<4;i++){ var fx=px+2+Math.floor(hrand(tx,ty,i+200)*11),fy=py+3+Math.floor(hrand(tx,ty,i+230)*9),c=TC.fl[i%4];
     rcx(ctx,TC.g[0],fx,fy+2,1,2); rcx(ctx,c,fx-1,fy,3,1); rcx(ctx,c,fx,fy-1,1,3); rcx(ctx,'#FFF4B0',fx,fy,1,1); }
   if(PAVE[up]||up==='-'){ rcx(ctx,TC.curb[1],px,py,TS,2); rcx(ctx,TC.curb[2],px,py,TS,1); rcx(ctx,TC.g[0],px,py+2,TS,1); }
-  else if(up==='r'){ rcx(ctx,TC.curb[0],px,py,TS,1); rcx(ctx,TC.g[0],px,py+1,TS,1); }
-  if(dn==='r'||PAVE[dn]||dn==='-'){ rcx(ctx,TC.curb[1],px,py+14,TS,2); rcx(ctx,TC.curb[2],px,py+14,TS,1); }
-  if(PAVE[lf]||lf==='r'){ rcx(ctx,TC.curb[1],px,py,2,TS); rcx(ctx,TC.curb[2],px,py,1,TS); rcx(ctx,TC.g[0],px+2,py,1,TS); }
-  if(PAVE[rt]||rt==='r'){ rcx(ctx,TC.curb[0],px+14,py,2,TS); rcx(ctx,TC.curb[1],px+14,py,1,TS); rcx(ctx,TC.g[1],px+13,py,1,TS); }
+  else if(up==='r'||up==='Q'){ rcx(ctx,TC.curb[0],px,py,TS,1); rcx(ctx,TC.g[0],px,py+1,TS,1); }
+  if(dn==='r'||dn==='Q'||PAVE[dn]||dn==='-'){ rcx(ctx,TC.curb[1],px,py+14,TS,2); rcx(ctx,TC.curb[2],px,py+14,TS,1); }
+  if(PAVE[lf]||lf==='r'||lf==='Q'){ rcx(ctx,TC.curb[1],px,py,2,TS); rcx(ctx,TC.curb[2],px,py,1,TS); rcx(ctx,TC.g[0],px+2,py,1,TS); }
+  if(PAVE[rt]||rt==='r'||rt==='Q'){ rcx(ctx,TC.curb[0],px+14,py,2,TS); rcx(ctx,TC.curb[1],px+14,py,1,TS); rcx(ctx,TC.g[1],px+13,py,1,TS); }
 }
 function paveB(ctx,px,py,tx,ty,m){
   var up=tileAt(m,tx,ty-1),off=(ty%2)*8,s,sy;
@@ -5563,7 +5597,7 @@ function paveB(ctx,px,py,tx,ty,m){
 }
 function roadB(ctx,px,py,tx,ty,m,cross){
   var i,up=tileAt(m,tx,ty-1),dn=tileAt(m,tx,ty+1),lf=tileAt(m,tx-1,ty),rt=tileAt(m,tx+1,ty);
-  var RD={'r':1,'-':1,'=':1};
+  var RD={'r':1,'-':1,'=':1,'Q':1};
   rcx(ctx,TC.road[1],px,py,TS,TS);
   for(i=0;i<10;i++) rcx(ctx,hrand(tx,ty,i)<.5?TC.road[0]:TC.road[2],px+Math.floor(hrand(tx,ty,i+30)*16),py+Math.floor(hrand(tx,ty,i+60)*16),1,1);
   var horiz=RD[lf]||RD[rt]||!(RD[up]||RD[dn]);
@@ -5593,11 +5627,13 @@ function waterB(ctx,px,py,tx,ty,m){
   if(!W(rt)){ rcx(ctx,TC.sand[0],px+14,py,2,TS); rcx(ctx,TC.water[0],px+13,py,1,TS); }
   if(!W(dn)){ rcx(ctx,TC.sand[0],px,py+14,TS,2); }
 }
-function roofB(ctx,px,py,tx,ty){
-  var r,s; rcx(ctx,TC.roof[2],px,py,TS,TS);
+function roofB(ctx,px,py,tx,ty,pal){
+  var r,s,RF=TC.roof; if(pal) TC.roof=pal;
+  rcx(ctx,TC.roof[2],px,py,TS,TS);
   for(r=0;r<4;r++){ var oy=py+r*4,off=(r%2)*4; rcx(ctx,TC.roof[1],px,oy+3,TS,1);
     for(s=-4;s<16;s+=8){ var sx=Math.max(0,s+off); rcx(ctx,TC.roof[3],px+sx,oy,Math.min(7,16-sx),1); if(s+off+7>=0&&s+off+7<16) rcx(ctx,TC.roof[0],px+s+off+7,oy,1,3); } }
   rcx(ctx,TC.roof[4],px,py,TS,1); rcx(ctx,TC.roof[0],px,py+14,TS,2);
+  TC.roof=RF;
 }
 function wallB(ctx,c,px,py,tx,ty,m){
   var r,s,up=tileAt(m,tx,ty-1),dn=tileAt(m,tx,ty+1);
@@ -5648,12 +5684,152 @@ function sandB(ctx,px,py,tx,ty){
   for(i=0;i<8;i++) rcx(ctx,hrand(tx,ty,i)<.5?'#D8C091':'#F6E9C8',px+Math.floor(hrand(tx,ty,i+20)*16),py+Math.floor(hrand(tx,ty,i+40)*16),hrand(tx,ty,i+60)<.3?2:1,1);
   if(hrand(tx,ty,99)<.15){ rcx(ctx,'#F4A7B9',px+6,py+7,3,2); rcx(ctx,'#FFFFFF',px+6,py+7,1,1); }
 }
+/* ══════════ 건물 외관 스타일 ══════════
+   맵의 blds에 칸 범위(x,y,w,h)와 스타일(s)을 적으면 그 안의 지붕(R)·벽(H)·창(W)·문(D)을 그 스타일로 칠한다.
+   c는 벽 색, r은 지붕 색, a는 차양 색이다. 적지 않은 건물은 원래의 붉은 기와 벽돌집으로 그린다.
+   동네마다 건물이 다 같은 벽돌이면 어디가 어디인지 간판을 읽어야만 안다. 모양으로 먼저 알아보게 한다. */
+var BSTYLE={
+ brick:{roof:'tile',wall:'brick',win:'wood',door:'wood'},                       /* 붉은 기와 벽돌집 */
+ red:{roof:'flat',wall:'brick',wc:'#A65644',win:'white',door:'metal'},           /* 붉은 벽돌 빌라 */
+ glass:{roof:'flat',wall:'glass',wc:'#5E9CC4',win:'glass',door:'glass'},         /* 유리 오피스 */
+ concrete:{roof:'flat',wall:'panel',wc:'#C9C6CF',win:'dark',door:'glass'},       /* 관공서·은행 */
+ hanok:{roof:'giwa',wall:'plaster',wc:'#F2ECDD',win:'lattice',door:'hanok'},     /* 한옥 */
+ shop:{roof:'flat',wall:'paint',wc:'#E8D8B0',win:'awning',door:'glass'},         /* 차양 달린 가게 */
+ wood:{roof:'shingle',wall:'plank',wc:'#9A6B45',win:'wood',door:'wood'},         /* 나무 외벽 카페 */
+ apt:{roof:'flat',wall:'paint',wc:'#E6DCC8',win:'balcony',door:'glass'},         /* 아파트 */
+ tile:{roof:'flat',wall:'tile',wc:'#D8D2C4',win:'white',door:'metal'},           /* 타일 외벽 구축 */
+ stone:{roof:'flat',wall:'stone',wc:'#E9E6EE',win:'dark',door:'glass'}           /* 대리석 외장 신축 */
+};
+var ROOFPAL={tile:null,flat:'#8C889B',giwa:'#454C5E',shingle:'#4F7A5A'};
+function shades(c){ return [mixHex(c,'#1E1A30',.4),mixHex(c,'#1E1A30',.2),c,mixHex(c,'#FFFFFF',.3),mixHex(c,'#FFFFFF',.55)]; }
+function bldAt(m,x,y){ var bl=m&&m.blds; if(!bl) return null;
+  for(var i=bl.length-1;i>=0;i--){ var b=bl[i]; if(x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h) return b; } return null; }
+function bstyle(m,x,y){ var b=bldAt(m,x,y); if(!b) return null;
+  if(!b._st){ var st=BSTYLE[b.s]||BSTYLE.brick,rc=b.r||ROOFPAL[st.roof];
+    b._st={roof:st.roof,wall:st.wall,win:st.win,door:st.door,wc:shades(b.c||st.wc||'#CBAE8C'),rc:rc?shades(rc):TC.roof,aw:b.a||'#E0503E'}; }
+  return b._st; }
+function sameRoof(m,a,tx,ty){ return tileAt(m,tx,ty)==='R'&&bldAt(m,tx,ty)===a; }
+function flatRoofB(ctx,px,py,tx,ty,m,pal){
+  var b=bldAt(m,tx,ty),i;
+  rcx(ctx,pal[2],px,py,TS,TS);
+  for(i=0;i<7;i++) rcx(ctx,hrand(tx,ty,i)<.5?pal[1]:pal[3],px+Math.floor(hrand(tx,ty,i+30)*16),py+Math.floor(hrand(tx,ty,i+60)*16),1,1);
+  if(!sameRoof(m,b,tx,ty-1)){ rcx(ctx,pal[4],px,py,TS,1); rcx(ctx,pal[3],px,py+1,TS,2); }
+  if(!sameRoof(m,b,tx-1,ty)){ rcx(ctx,pal[3],px,py,2,TS); rcx(ctx,pal[4],px,py,1,TS); }
+  if(!sameRoof(m,b,tx+1,ty)){ rcx(ctx,pal[1],px+14,py,2,TS); }
+  if(!sameRoof(m,b,tx,ty+1)){ rcx(ctx,pal[0],px,py+13,TS,3); rcx(ctx,pal[3],px,py+12,TS,1); }
+  var r=hrand(tx,ty,21);
+  if(r<.14){ rcx(ctx,'rgba(30,26,48,.3)',px+4,py+11,10,2); rcx(ctx,'#B9B5C6',px+3,py+4,10,8); rcx(ctx,'#E2E0EA',px+3,py+4,10,1);   /* 실외기 */
+    rcx(ctx,'#6B6380',px+5,py+6,5,5); rcx(ctx,'#9B93A8',px+7,py+6,1,5); rcx(ctx,'#9B93A8',px+5,py+8,5,1); }
+  else if(r<.2){ rcx(ctx,'rgba(30,26,48,.3)',px+3,py+12,11,2); rcx(ctx,'#5B8FB8',px+3,py+3,10,10); rcx(ctx,'#7FB0D6',px+3,py+3,10,2);   /* 물탱크 */
+    rcx(ctx,'#43648F',px+3,py+8,10,1); }
+}
+function giwaRoofB(ctx,px,py,tx,ty,m,pal){                  /* 기와: 골이 세로로 서고, 처마 끝에 막새가 줄지어 있다 */
+  var b=bldAt(m,tx,ty),i,up=sameRoof(m,b,tx,ty-1),dn=sameRoof(m,b,tx,ty+1),lf=sameRoof(m,b,tx-1,ty),rt=sameRoof(m,b,tx+1,ty);
+  rcx(ctx,pal[1],px,py,TS,TS);
+  for(i=0;i<TS;i+=4){ rcx(ctx,pal[3],px+i,py,2,TS); rcx(ctx,pal[2],px+i+2,py,1,TS); rcx(ctx,pal[0],px+i+3,py,1,TS); }
+  for(i=4;i<TS;i+=5) rcx(ctx,'rgba(20,18,30,.25)',px,py+i,TS,1);
+  if(!up){ rcx(ctx,pal[0],px,py,TS,3); rcx(ctx,'#D9DCE3',px,py+1,TS,1); }              /* 용마루 */
+  if(!dn){ rcx(ctx,pal[0],px,py+12,TS,4); for(i=0;i<TS;i+=4){ rcx(ctx,pal[4],px+i,py+13,3,2); rcx(ctx,pal[0],px+i+1,py+14,1,1); } }   /* 처마·막새 */
+  if(!lf){ rcx(ctx,pal[0],px,py,1,TS); if(!dn) rcx(ctx,pal[0],px,py+9,2,4); }
+  if(!rt){ rcx(ctx,pal[0],px+15,py,1,TS); if(!dn) rcx(ctx,pal[0],px+14,py+9,2,4); }
+}
+function roofStyled(ctx,px,py,tx,ty,m){
+  var st=bstyle(m,tx,ty);
+  if(!st||st.roof==='tile'||st.roof==='shingle') return roofB(ctx,px,py,tx,ty,st?st.rc:null);
+  if(st.roof==='giwa') return giwaRoofB(ctx,px,py,tx,ty,m,st.rc);
+  flatRoofB(ctx,px,py,tx,ty,m,st.rc); }
+/* 벽 바탕. 문과 창은 이 위에 얹는다 */
+function wallBase(ctx,st,px,py,tx,ty){
+  var P5=st.wc,r,s,i;
+  switch(st.wall){
+    case 'panel': rcx(ctx,P5[2],px,py,TS,TS); rcx(ctx,P5[1],px,py+7,TS,1); rcx(ctx,P5[3],px,py+8,TS,1);
+      rcx(ctx,P5[1],px+(tx%2?15:7),py,1,TS); if(hrand(tx,ty,2)<.4) rcx(ctx,P5[3],px+3,py+2,4,1); break;
+    case 'glass': rcx(ctx,P5[1],px,py,TS,TS);
+      for(i=0;i<TS;i+=8){ rcx(ctx,P5[0],px+i,py,1,TS); } for(i=0;i<TS;i+=5) rcx(ctx,P5[0],px,py+i,TS,1);
+      rcx(ctx,P5[3],px+((tx*5+ty*3)%12)+1,py+1,2,3); rcx(ctx,P5[4],px+((tx*5+ty*3)%12)+2,py+1,1,2);     /* 하늘이 비친다 */
+      rcx(ctx,'rgba(255,255,255,.18)',px+((tx+ty)%2?2:9),py+6,5,4); break;
+    case 'plaster': rcx(ctx,P5[2],px,py,TS,TS); rcx(ctx,P5[3],px,py+3,TS,1);
+      rcx(ctx,'#6B4A31',px,py,TS,2); rcx(ctx,'#8A6240',px,py,TS,1);                                /* 도리 */
+      if(tx%2===0){ rcx(ctx,'#6B4A31',px,py,3,TS); rcx(ctx,'#8A6240',px+1,py,1,TS); }             /* 기둥 */
+      rcx(ctx,'#9B93A8',px,py+12,TS,4); rcx(ctx,'#B3AFC0',px,py+12,TS,1);                          /* 돌 기단 */
+      rcx(ctx,'#7E7890',px+((tx%2)?5:11),py+13,1,3); break;
+    case 'paint': rcx(ctx,P5[2],px,py,TS,TS);
+      for(i=0;i<5;i++) rcx(ctx,hrand(tx,ty,i+70)<.5?P5[1]:P5[3],px+Math.floor(hrand(tx,ty,i+80)*16),py+Math.floor(hrand(tx,ty,i+90)*16),1,1);
+      rcx(ctx,P5[1],px,py+15,TS,1); break;
+    case 'plank': rcx(ctx,P5[2],px,py,TS,TS);
+      for(i=0;i<TS;i+=4){ rcx(ctx,P5[1],px+i+3,py,1,TS); rcx(ctx,P5[3],px+i,py,1,TS);
+        if(hrand(tx*4+i,ty,5)<.3) rcx(ctx,P5[0],px+i+1,py+Math.floor(hrand(tx,ty*4+i,6)*12)+2,1,1); } break;
+    case 'tile': rcx(ctx,P5[3],px,py,TS,TS);
+      for(i=0;i<TS;i+=4){ rcx(ctx,P5[1],px,py+i+3,TS,1); rcx(ctx,P5[1],px+i+((ty+i/4)%2?2:0),py+i,1,3); }
+      if(hrand(tx,ty,4)<.3) rcx(ctx,P5[2],px+4,py+4,3,3); break;
+    case 'stone': rcx(ctx,P5[3],px,py,TS,TS); rcx(ctx,P5[1],px,py+7,TS,1); rcx(ctx,P5[1],px+(ty%2?4:12),py,1,7); rcx(ctx,P5[1],px+(ty%2?10:2),py+8,1,8);
+      rcx(ctx,P5[2],px+2+Math.floor(hrand(tx,ty,3)*9),py+3,4,1); rcx(ctx,P5[2],px+5+Math.floor(hrand(tx,ty,4)*6),py+11,3,1); break;   /* 대리석 결 */
+    default: rcx(ctx,P5[2],px,py,TS,TS);                                                          /* 벽돌 */
+      for(r=0;r<4;r++){ var oy=py+r*4,off=((ty*4+r)%2)*4; rcx(ctx,P5[1],px,oy+3,TS,1);
+        for(s=-4;s<16;s+=8){ var sx=px+s+off; if(sx>=px&&sx<px+16) rcx(ctx,P5[1],sx,oy,1,3);
+          if(hrand(tx*7+s,ty*5+r,3)<.3){ var bx=Math.max(px,sx+1); rcx(ctx,P5[3],bx,oy,Math.min(6,px+16-bx),1); } } }
+  } }
+function winStyled(ctx,st,px,py,tx,ty){
+  var g=TC.glass;
+  switch(st.win){
+    case 'white': rcx(ctx,'#F4F2F8',px+2,py+2,12,11); rcx(ctx,g[1],px+3,py+3,10,9); rcx(ctx,g[0],px+3,py+9,10,3);
+      rcx(ctx,g[3],px+4,py+4,2,2); rcx(ctx,'#F4F2F8',px+8,py+3,1,9); rcx(ctx,'#C9C3D6',px+1,py+13,14,2); break;
+    case 'glass': rcx(ctx,st.wc[0],px+1,py+1,14,14); rcx(ctx,g[2],px+2,py+2,12,12); rcx(ctx,g[1],px+2,py+8,12,6);
+      rcx(ctx,g[3],px+3,py+3,3,1); rcx(ctx,g[3],px+3,py+3,1,3); rcx(ctx,'rgba(255,255,255,.35)',px+9,py+2,2,12); break;
+    case 'dark': rcx(ctx,'#3F3A55',px+2,py+2,12,12); rcx(ctx,'#46607A',px+3,py+3,10,10); rcx(ctx,'#5C7C9A',px+3,py+3,10,3);
+      rcx(ctx,'#9BC4E0',px+4,py+4,2,1); rcx(ctx,'#3F3A55',px+8,py+3,1,10); rcx(ctx,st.wc[1],px+1,py+14,14,1); break;
+    case 'lattice': rcx(ctx,'#6B4A31',px+2,py+3,12,9); rcx(ctx,'#F3EBD3',px+3,py+4,10,7);                 /* 창살에 한지 */
+      for(var i=0;i<10;i+=3) rcx(ctx,'#8A6240',px+3+i,py+4,1,7); rcx(ctx,'#8A6240',px+3,py+7,10,1); break;
+    case 'awning': rcx(ctx,g[1],px+1,py+6,14,9); rcx(ctx,g[2],px+2,py+7,4,2); rcx(ctx,'#3F3A55',px,py+15,TS,1);   /* 진열창 위 차양 */
+      rcx(ctx,[P.r1,P.y1,P.g1,P.k3][(tx+ty)%4],px+4,py+11,3,3); rcx(ctx,[P.y1,P.k3,P.r1,P.g1][(tx+ty)%4],px+9,py+10,3,4);
+      for(var j=0;j<TS;j+=4){ rcx(ctx,st.aw,px+j,py,2,5); rcx(ctx,'#FFFDF6',px+j+2,py,2,5); rcx(ctx,st.aw,px+j,py+5,2,1); }
+      rcx(ctx,'rgba(30,26,48,.2)',px,py+6,TS,1); break;
+    case 'balcony': rcx(ctx,st.wc[1],px+1,py+1,14,13); rcx(ctx,g[1],px+2,py+2,12,9); rcx(ctx,g[3],px+3,py+3,2,3);   /* 베란다 창과 난간 */
+      rcx(ctx,st.wc[1],px+8,py+2,1,9); rcx(ctx,'#E4E0EC',px,py+10,TS,1); for(var k=1;k<TS;k+=3) rcx(ctx,'#E4E0EC',px+k,py+10,1,5);
+      rcx(ctx,'#E4E0EC',px,py+14,TS,1); if(hrand(tx,ty,12)<.35){ rcx(ctx,TC.leaf[2],px+3,py+11,4,3); rcx(ctx,TC.fl[(tx+ty)%4],px+4,py+11,1,1); } break;
+    default: rcx(ctx,TC.wood[0],px+2,py+2,12,12); rcx(ctx,g[1],px+3,py+3,10,9); rcx(ctx,g[0],px+3,py+9,10,3);
+      rcx(ctx,g[2],px+4,py+4,3,3); rcx(ctx,g[3],px+4,py+4,1,2); rcx(ctx,TC.wood[1],px+8,py+3,1,9); rcx(ctx,TC.wood[1],px+3,py+7,10,1);
+      rcx(ctx,'#EFE6D6',px+1,py+13,14,2); rcx(ctx,'#CFC3AE',px+1,py+14,14,1);
+  } }
+function doorStyled(ctx,st,px,py){
+  switch(st.door){
+    case 'glass': rcx(ctx,'#6B6380',px+1,py,14,16); rcx(ctx,TC.glass[1],px+2,py+1,12,15); rcx(ctx,TC.glass[2],px+2,py+1,12,4);   /* 자동문 */
+      rcx(ctx,'#6B6380',px+7,py+1,2,15); rcx(ctx,'rgba(255,255,255,.5)',px+3,py+3,1,8); rcx(ctx,'rgba(255,255,255,.5)',px+10,py+3,1,8);
+      rcx(ctx,'#3F3A55',px+1,py+15,14,1); break;
+    case 'metal': rcx(ctx,'#57517A',px+2,py,12,16); rcx(ctx,'#9B93A8',px+3,py+1,10,15); rcx(ctx,'#B9B5C6',px+3,py+1,10,1);   /* 철문 */
+      rcx(ctx,'#6B6380',px+5,py+3,6,4); rcx(ctx,TC.glass[1],px+6,py+4,4,2); rcx(ctx,'#FFC53C',px+11,py+9,1,2); rcx(ctx,'#E2E0EA',px+6,py+11,4,1); break;
+    case 'hanok': rcx(ctx,'#4E3524',px+1,py,14,15); rcx(ctx,'#7A4E2E',px+2,py+1,12,14); rcx(ctx,'#4E3524',px+7,py+1,1,14);   /* 나무 두 짝 문 */
+      rcx(ctx,'#F3EBD3',px+3,py+2,3,5); rcx(ctx,'#F3EBD3',px+9,py+2,3,5); rcx(ctx,'#8A6240',px+4,py+2,1,5); rcx(ctx,'#8A6240',px+10,py+2,1,5);
+      rcx(ctx,'#D9A441',px+6,py+9,1,2); rcx(ctx,'#D9A441',px+9,py+9,1,2); rcx(ctx,'#B3AFC0',px,py+14,TS,2); break;
+    default: rcx(ctx,TC.brick[0],px+1,py,14,16); rcx(ctx,TC.wood[1],px+2,py+1,12,15); rcx(ctx,TC.wood[2],px+3,py+2,10,6); rcx(ctx,TC.wood[2],px+3,py+9,10,6);
+      rcx(ctx,TC.wood[3],px+3,py+2,10,1); rcx(ctx,TC.wood[3],px+3,py+9,10,1); rcx(ctx,TC.glass[1],px+5,py+3,6,3); rcx(ctx,TC.glass[2],px+5,py+3,2,1);
+      rcx(ctx,'#FFC53C',px+11,py+8,2,2); rcx(ctx,'#D98A16',px+12,py+9,1,1); rcx(ctx,TC.sw[3],px,py+15,TS,1);
+  } }
+function wallStyled(ctx,c,px,py,tx,ty,m){
+  var st=bstyle(m,tx,ty); if(!st) return wallB(ctx,c,px,py,tx,ty,m);
+  var up=tileAt(m,tx,ty-1),dn=tileAt(m,tx,ty+1);
+  wallBase(ctx,st,px,py,tx,ty);
+  if(up==='R'&&st.wall!=='plaster') rcx(ctx,'rgba(40,20,20,.28)',px,py,TS,3);
+  if(!WALLS[dn]&&c!=='D'&&st.wall!=='plaster') rcx(ctx,st.wc[0],px,py+15,TS,1);
+  if(c==='W') winStyled(ctx,st,px,py,tx,ty);
+  if(c==='D') doorStyled(ctx,st,px,py); }
+/* 주차장: 밝은 아스팔트에 흰 주차선. 가장자리 칸에는 P 표지를 칠한다 */
+function parkB(ctx,px,py,tx,ty,m){
+  var i,up=tileAt(m,tx,ty-1),lf=tileAt(m,tx-1,ty),rt=tileAt(m,tx+1,ty),dn=tileAt(m,tx,ty+1);
+  rcx(ctx,'#5A5766',px,py,TS,TS);
+  for(i=0;i<8;i++) rcx(ctx,hrand(tx,ty,i)<.5?'#4E4B5A':'#67647A',px+Math.floor(hrand(tx,ty,i+30)*16),py+Math.floor(hrand(tx,ty,i+60)*16),1,1);
+  rcx(ctx,'#E9E4F0',px,py,1,TS); if(rt!=='Q') rcx(ctx,'#E9E4F0',px+15,py,1,TS);             /* 칸 나누는 선 */
+  if(up!=='Q'&&up!=='r'&&up!=='-'){ rcx(ctx,TC.curb[1],px,py,TS,2); rcx(ctx,TC.curb[2],px,py,TS,1); }
+  if(dn!=='Q'&&dn!=='r'&&dn!=='-'){ rcx(ctx,TC.curb[0],px,py+14,TS,2); }
+  if(lf!=='Q'&&lf!=='r'&&lf!=='-'){ rcx(ctx,TC.curb[1],px,py,2,TS); }
+  if((tx+ty)%3===0){ rcx(ctx,'#3F6FB8',px+5,py+4,6,8); rcx(ctx,'#FFFDF6',px+6,py+5,1,6); rcx(ctx,'#FFFDF6',px+7,py+5,2,1); rcx(ctx,'#FFFDF6',px+9,py+6,1,2); rcx(ctx,'#FFFDF6',px+7,py+8,2,1); }
+}
 var TILE_B={
   g:function(c,x,y,a,b,m){ grassB(c,x,y,a,b,m,0); }, o:function(c,x,y,a,b,m){ grassB(c,x,y,a,b,m,1); },
   '_':function(c,x,y,a,b,m){ paveB(c,x,y,a,b,m); }, b:benchB, p:poleB, f:fenceB, t:treeB,
   r:function(c,x,y,a,b,m){ roadB(c,x,y,a,b,m,0); }, '-':function(c,x,y,a,b,m){ roadB(c,x,y,a,b,m,1); },
-  w:waterB, R:roofB, s:sandB,
-  H:function(c,x,y,a,b,m){ wallB(c,'H',x,y,a,b,m); }, W:function(c,x,y,a,b,m){ wallB(c,'W',x,y,a,b,m); }, D:function(c,x,y,a,b,m){ wallB(c,'D',x,y,a,b,m); }
+  w:waterB, R:roofStyled, s:sandB, Q:parkB,
+  H:function(c,x,y,a,b,m){ wallStyled(c,'H',x,y,a,b,m); }, W:function(c,x,y,a,b,m){ wallStyled(c,'W',x,y,a,b,m); }, D:function(c,x,y,a,b,m){ wallStyled(c,'D',x,y,a,b,m); }
 };
 
 /* ══════════ 실내 타일 (다듬은 판) ══════════
@@ -5662,9 +5838,26 @@ var TILE_B={
 function isWarm(c){ var r=hex2rgb(c); return r[0]>r[2]+18; }
 var FLOORISH={'.':1,',':1,'b':1,'Z':1};
 function wallFace(m,tx,ty){ var dn=tileAt(m,tx,ty+1); return dn!==null&&dn!=='#'&&dn!=='D'; }
+/* 실내 스타일. 맵에 floor·wall을 적으면 색(tint)은 그대로 두고 무늬를 바꾼다.
+   floor: wood 마루, tile 타일, check 체크 타일, carpet 카펫, ondol 장판, stone 돌바닥, lino 얼룩 무늬 바닥재
+   wall: paper 벽지, wains 나무 징두리, brick 노출 벽돌, wood 나무 판벽, hanji 한지 창호, tile 흰 타일, glass 통유리 */
+var FLOOR_S={
+ check:function(ctx,px,py,tx,ty,fl,f2,hi){ [0,8].forEach(function(oy,j){ [0,8].forEach(function(ox,k){ rcx(ctx,(j+k)%2?f2:fl,px+ox,py+oy,8,8); }); });
+   rcx(ctx,hi,px,py,TS,1); },
+ carpet:function(ctx,px,py,tx,ty,fl,f2,hi){ rcx(ctx,fl,px,py,TS,TS);
+   for(var i=0;i<10;i++) rcx(ctx,hrand(tx,ty,i)<.5?f2:hi,px+Math.floor(hrand(tx,ty,i+20)*16),py+Math.floor(hrand(tx,ty,i+40)*16),1,1);
+   if((tx+ty)%2===0){ rcx(ctx,mixHex(fl,f2,.5),px+6,py+6,4,4); rcx(ctx,fl,px+7,py+7,2,2); } },
+ ondol:function(ctx,px,py,tx,ty,fl,f2,hi){ rcx(ctx,fl,px,py,TS,TS); rcx(ctx,mixHex(fl,f2,.45),px,py+15,TS,1); rcx(ctx,mixHex(fl,f2,.45),px+15,py,1,TS);
+   rcx(ctx,hi,px+2,py+2,5,1); if(hrand(tx,ty,3)<.4) rcx(ctx,mixHex(fl,f2,.3),px+4+Math.floor(hrand(tx,ty,4)*8),py+6+Math.floor(hrand(tx,ty,5)*6),3,1); },
+ stone:function(ctx,px,py,tx,ty,fl,f2,hi){ rcx(ctx,fl,px,py,TS,TS); var o=(ty%2)*6;
+   rcx(ctx,f2,px,py+7,TS,1); rcx(ctx,f2,px+((o+4)%16),py,1,7); rcx(ctx,f2,px+((o+11)%16),py+8,1,8); rcx(ctx,hi,px+1,py+1,4,1); rcx(ctx,hi,px+((o+6)%12),py+9,3,1); },
+ lino:function(ctx,px,py,tx,ty,fl,f2,hi){ rcx(ctx,fl,px,py,TS,TS);
+   for(var i=0;i<12;i++) rcx(ctx,hrand(tx,ty,i)<.6?f2:hi,px+Math.floor(hrand(tx,ty,i+20)*16),py+Math.floor(hrand(tx,ty,i+40)*16),hrand(tx,ty,i+60)<.3?2:1,1); }
+};
 function floorI(ctx,px,py,tx,ty,m,T){
-  var fl=T.fl,f2=T.fl2,hi=mixHex(fl,'#FFFFFF',.14),i;
-  if(isWarm(fl)){                                           /* 마루: 4줄 널, 이음매는 엇갈린다 */
+  var fl=T.fl,f2=T.fl2,hi=mixHex(fl,'#FFFFFF',.14),i,fs=m&&m.floor;
+  if(fs&&FLOOR_S[fs]) FLOOR_S[fs](ctx,px,py,tx,ty,fl,f2,hi);
+  else if(fs==='wood'||(fs!=='tile'&&isWarm(fl))){                                           /* 마루: 4줄 널, 이음매는 엇갈린다 */
     rcx(ctx,fl,px,py,TS,TS);
     for(i=0;i<4;i++){ var oy=py+i*4,off=((ty*4+i)*7)%16; rcx(ctx,f2,px,oy+3,TS,1); rcx(ctx,hi,px,oy,TS,1);
       rcx(ctx,f2,px+off,oy,1,3); if(hrand(tx,ty*4+i,3)<.3) rcx(ctx,mixHex(fl,f2,.5),px+((off+6)%14),oy+1,2,1); }
@@ -5678,11 +5871,25 @@ function floorI(ctx,px,py,tx,ty,m,T){
   if(up==='#'||up==='K'||up==='S'||up==='F'||up==='M'){ rcx(ctx,'rgba(30,26,48,.22)',px,py,TS,3); rcx(ctx,'rgba(30,26,48,.10)',px,py+3,TS,2); }
   if(lf==='#'){ rcx(ctx,'rgba(30,26,48,.14)',px,py,2,TS); }
 }
+function wallFaceStyled(ctx,px,py,tx,ty,st,wl,w2){
+  var i;
+  if(st==='brick'){ rcx(ctx,mixHex(w2,'#8E5A4E',.5),px,py,TS,12);
+    for(i=0;i<3;i++){ var oy=py+2+i*4,off=(i%2)*4; rcx(ctx,mixHex(w2,'#5E382E',.5),px,oy+3,TS,1);
+      for(var s2=-4;s2<16;s2+=8) if(px+s2+off>=px) rcx(ctx,mixHex(w2,'#5E382E',.5),px+s2+off,oy,1,3); }
+    return; }
+  if(st==='wood'){ rcx(ctx,mixHex(w2,'#8A6240',.55),px,py,TS,12); for(i=0;i<TS;i+=4){ rcx(ctx,mixHex(w2,'#4E3524',.5),px+i+3,py+2,1,10); rcx(ctx,mixHex(wl,'#A87B52',.4),px+i,py+2,1,10); } return; }
+  if(st==='hanji'){ rcx(ctx,'#6B4A31',px,py,TS,12); rcx(ctx,'#F3EBD3',px+1,py+2,14,9);
+    for(i=1;i<TS;i+=4) rcx(ctx,'#8A6240',px+i,py+2,1,9); rcx(ctx,'#8A6240',px+1,py+6,14,1); return; }
+  if(st==='tile'){ rcx(ctx,'#F4F6F8',px,py,TS,12); for(i=0;i<TS;i+=4){ rcx(ctx,'#CBD3DE',px+i,py+2,1,10); } rcx(ctx,'#CBD3DE',px,py+6,TS,1); rcx(ctx,'#CBD3DE',px,py+10,TS,1); return; }
+  if(st==='glass'){ rcx(ctx,'#5C5866',px,py,TS,12); rcx(ctx,'#9AD2F0',px+1,py+2,14,9); rcx(ctx,'#CDEEFF',px+1,py+2,14,3);
+    rcx(ctx,'#FFFFFF',px+3+(tx%3)*3,py+3,3,1); rcx(ctx,'#5C5866',px+(tx%2?15:7),py+2,1,9); return; }
+  rcx(ctx,wl,px,py,TS,TS);
+  for(i=2;i<TS;i+=4) rcx(ctx,mixHex(wl,w2,.35),px+i,py+3,1,9);                  /* 벽지 결 */
+  if(st==='wains'){ rcx(ctx,mixHex(w2,'#8A6240',.5),px,py+7,TS,5); rcx(ctx,mixHex(w2,'#C4966A',.4),px,py+7,TS,1); } }
 function wallI(ctx,px,py,tx,ty,m,T){
   if(wallFace(m,tx,ty)){
     var wl=T.wl,w2=T.wl2,i;
-    rcx(ctx,wl,px,py,TS,TS);
-    for(i=2;i<TS;i+=4) rcx(ctx,mixHex(wl,w2,.35),px+i,py+3,1,9);          /* 벽지 결 */
+    wallFaceStyled(ctx,px,py,tx,ty,m&&m.wall,wl,w2);
     rcx(ctx,mixHex(w2,'#2E2740',.35),px,py,TS,2); rcx(ctx,mixHex(wl,'#FFFFFF',.3),px,py+2,TS,1);
     rcx(ctx,mixHex(w2,'#6E5334',.5),px,py+12,TS,4); rcx(ctx,mixHex(w2,'#FFFFFF',.2),px,py+12,TS,1);   /* 걸레받이 */
     return; }
@@ -5879,6 +6086,7 @@ function spotFace(s){
   if(s.kind==='thing') return null;
   if(s.kind==='npc') return npcKeyFor(s.who);
   if(s.kind==='boss') return bossById(s.id).face;
+  if(s.kind==='lease') return s.face;
   return null;
 }
 function spotLabel(s){
@@ -5888,6 +6096,7 @@ function spotLabel(s){
   if(s.kind==='npc') return s.who;
   if(s.kind==='boss') return bossById(s.id).name;
   if(s.kind==='review') return '복습 노트';
+  if(s.kind==='lease') return s.name;
   return epById(s.id).title;
 }
 function epById(id){ var r=EPISODES[0]; EPISODES.forEach(function(e){ if(e.id===id) r=e; }); return r; }
@@ -5899,6 +6108,7 @@ function spotMark(s){
   if(s.kind==='review') return reviewQuest()?'!':null;
   if(s.kind==='ep') return epBestOf(s.id)===0?null:'?';
   if(s.kind==='boss') return bossCleared(s.id)?null:(bossReady(bossById(s.id))?'!':'lock');
+  if(s.kind==='lease') return leaseHere(s)?'!':null;
   return null;
 }
 function spotHint(s){
@@ -5909,6 +6119,7 @@ function spotHint(s){
     return deskQuests(s.id).some(fits)?'이 창구 상담은 다 들었다':'지금 신분엔 볼일이 없는 창구'; }
   if(s.kind==='talk') return spotMark(s)?'넌센스 퀴즈 · 눌러서 말 걸기':'눌러서 말 걸기';
   if(s.kind==='thing') return '눌러서 살펴보기';
+  if(s.kind==='lease') return leaseHere(s)?'전세 계약 · '+leaseCh().title+' · 눌러서 계속':S.lease?'다음 장면은 '+leaseWhere()+'에서':'눌러서 말 걸기';
   if(s.kind==='ep') return epBestOf(s.id)===null?'눌러서 걸어 보기':'다시 걸어 보기';
   if(s.kind==='review') return reviewQuest()?'눌러서 복습하기':'복습할 문항이 없다';
   if(s.kind==='boss'){ var bb=bossById(s.id);
@@ -6025,21 +6236,22 @@ function camOf(m){
   return {x:cx,y:cy,z:z};
 }
 /* ── 길 찾기. 맵이 작으니 너비 우선이면 충분하다 ────────────────────── */
-function pathTo(m,gx,gy){
+function pathTo(m,gx,gy,mode,sx,sy){
   var key=function(x,y){ return x+','+y; };
-  var q=[{x:ME.tx,y:ME.ty}],seen={},from={};
-  seen[key(ME.tx,ME.ty)]=1;
+  if(sx==null){ sx=ME.tx; sy=ME.ty; }
+  var q=[{x:sx,y:sy}],seen={},from={};
+  seen[key(sx,sy)]=1;
   var D=[[0,1],[0,-1],[-1,0],[1,0]],i,n=0;
   while(q.length&&n<3000){
     var c=q.shift(); n++;
     if(c.x===gx&&c.y===gy){
       var path=[],k=key(gx,gy);
-      while(k!==key(ME.tx,ME.ty)){ var p=from[k]; path.unshift({x:p.x,y:p.y}); k=key(p.px,p.py); }
+      while(k!==key(sx,sy)){ var p=from[k]; path.unshift({x:p.x,y:p.y}); k=key(p.px,p.py); }
       return path;
     }
     for(i=0;i<4;i++){
       var nx=c.x+D[i][0],ny=c.y+D[i][1],kk=key(nx,ny);
-      if(seen[kk]||!walkable(m,nx,ny,1)) continue;           /* 펫은 길을 막지 않는다. 걸어가면 비킨다 */
+      if(seen[kk]||!walkable(m,nx,ny,1,mode)) continue;      /* 펫은 길을 막지 않는다. 걸어가면 비킨다 */
       /* 문은 목적지일 때만 지난다. 지나가다 딸려 들어가면 안 된다 */
       if(warpAt(m,nx,ny)&&!(nx===gx&&ny===gy)) continue;
       seen[kk]=1; from[kk]={x:nx,y:ny,px:c.x,py:c.y}; q.push({x:nx,y:ny});
@@ -6047,8 +6259,31 @@ function pathTo(m,gx,gy){
   }
   return null;
 }
+/* 차를 탄 채 찻길 밖을 누르면: 차로 갈 수 있는 주차장 가운데 (차로 가는 길 + 내려서 걷는 길)이
+   가장 짧은 곳을 골라 세우고 걸어간다. 지금 선 칸이 주차장이면 그 자리에서 내린다. */
+function carRoute(m,gx,gy){
+  var best=null,x,y;
+  for(y=0;y<m.h;y++) for(x=0;x<m.w;x++){ if(tileAt(m,x,y)!=='Q') continue;
+    var here=(x===ME.tx&&y===ME.ty),cp=here?[]:pathTo(m,x,y,'car'); if(!cp) continue;
+    var fp=(x===gx&&y===gy)?[]:pathTo(m,gx,gy,'foot',x,y); if(!fp) continue;
+    var cost=cp.length+fp.length*2;                          /* 걷는 길이 짧은 쪽을 더 친다 */
+    if(!best||cost<best.cost) best={x:x,y:y,car:cp,cost:cost}; }
+  return best; }
+/* 지금 선 칸에 차를 세우고 내린다 */
+function parkHere(){
+  var mo=MOUNTS[S.equip.mount]; if(!mo||!mo.kind) return;
+  S.park={map:ME.map,x:ME.tx,y:ME.ty,kind:mo.kind,id:S.equip.mount,dir:ME.dir===1?1:2}; S.onFoot=true; save(); }
 function goTo(gx,gy,then){
-  var m=curMap(),path=pathTo(m,gx,gy);
+  var m=curMap(),path;
+  if(carOn()&&!walkable(m,gx,gy,0,'car')){
+    var r=carRoute(m,gx,gy);
+    if(!r){ toast('차는 찻길과 주차장에서만 달린다. 세울 주차장이 안 보인다.'); if(then) then(); return false; }
+    var after=function(){ parkHere(); toast('주차장에 차를 세우고 내렸다.'); drawScene();
+      if(!(gx===ME.tx&&gy===ME.ty)) goTo(gx,gy,then); else if(then) then(); };
+    if(!r.car.length){ after(); return true; }
+    MOVE={path:r.car,pi:-1,then:after};
+    nextStep(); return true; }
+  path=pathTo(m,gx,gy);
   if(!path||!path.length){ if(then) then(); return false; }
   MOVE={path:path,pi:-1,then:then||null};
   nextStep();
@@ -6087,12 +6322,19 @@ function checkWarp(){
         ME.tx=Math.max(1,Math.min(m.w-2,ME.tx+(w.x<=0?1:w.x>=m.w-1?-1:0))); savePos(); drawScene(); return true; }
       takeWarp(w); return true; } }
   if(m.edges){
-    if(m.edges.west&&ME.tx<=0){ var wm=MAPS[m.edges.west]; enterMap(m.edges.west,wm.w-2,Math.min(wm.h-2,ME.ty)); return true; }
-    if(m.edges.east&&ME.tx>=m.w-1){
-      if(!mapOpen(m.edges.east)){
-        toast(MAPS[m.edges.east].name+'은 Lv.'+MAP_LV[m.edges.east]+'부터 갈 수 있습니다.');
-        ME.tx=m.w-2; ME.dir=1; savePos(); drawScene(); return true; }
-      var em=MAPS[m.edges.east]; enterMap(m.edges.east,1,Math.min(em.h-2,ME.ty)); return true; }
+    var E=m.edges,dir=(E.west&&ME.tx<=0)?'west':(E.east&&ME.tx>=m.w-1)?'east':(E.north&&ME.ty<=0)?'north':(E.south&&ME.ty>=m.h-1)?'south':null;
+    if(dir){ var to=E[dir],nm=MAPS[to];
+      if(!mapOpen(to)){
+        toast(nm.name+'은 Lv.'+MAP_LV[to]+'부터 갈 수 있습니다.');
+        if(dir==='west'){ ME.tx=1; ME.dir=2; } else if(dir==='east'){ ME.tx=m.w-2; ME.dir=1; }
+        else if(dir==='north'){ ME.ty=1; ME.dir=0; } else { ME.ty=m.h-2; ME.dir=3; }
+        savePos(); drawScene(); return true; }
+      /* 맵 사이의 길은 같은 줄(동서)이나 같은 칸(남북)으로 이어지게 그려 두었다 */
+      if(dir==='west') enterMap(to,nm.w-2,Math.min(nm.h-2,ME.ty));
+      else if(dir==='east') enterMap(to,1,Math.min(nm.h-2,ME.ty));
+      else if(dir==='north') enterMap(to,Math.min(nm.w-2,ME.tx),nm.h-2);
+      else enterMap(to,Math.min(nm.w-2,ME.tx),1);
+      return true; }
   }
   return false;
 }
@@ -6111,6 +6353,7 @@ function enterMap(id,tx,ty){
   var nm2=(id==='room')?null:MAPS[id];
   if(wasRiding&&(id==='room'||(nm2&&nm2.interior))) parkNearDoor(prevMap,ptx,pty);   /* 건물에 들어가면 문 앞에 세운다 */
   parkOnArrive(id,wasRiding);
+  if(carOn()&&!walkable(m,ME.tx,ME.ty,1,'car')) carSettle(m,id);     /* 차를 탄 채 보도에 내려앉았으면 주차장에 세운다 */
   if(S.onFoot&&S.park&&S.park.map!==id&&id!=='room'&&nm2&&!nm2.interior&&MAPS[S.park.map])
     setTimeout(function(){ toast(MOUNTS[S.equip.mount].name+'은(는) '+MAPS[S.park.map].name+'에 세워 두었다.'); },500);
   sfx('pick'); savePos(); drawScene(); checkEgg();
@@ -6335,6 +6578,7 @@ function triggerSpot(s){
   if(s.kind==='talk') return openTalk(s);
   if(s.kind==='thing') return openThing(s);
   if(s.kind==='ep') return epStart(epById(s.id));
+  if(s.kind==='lease') return leaseOpen(s);
   if(s.kind==='review'){ var rq=reviewQuest(); if(rq) return startQuest(rq);
     var up=(S.review||[]).filter(function(r){ return !r.done; });
     return toast(up.length?'다음 복습은 내일 · '+up.length+'문항 대기 중':'아직 복습할 문항이 없습니다.'); }
@@ -6370,7 +6614,7 @@ function sceneTile(ev){
   var sy=(ev.clientY-r.top)*(SH/r.height)/cam.z+cam.y;
   return {x:Math.floor(sx/TS),y:Math.floor(sy/TS)};
 }
-var HOLD={dir:null};
+var HOLD={dir:null},CARTIP=0;
 /* 한 칸씩 누르는 것만으로는 스물두 칸짜리 맵을 못 걷는다. 누르고 있으면 계속 간다. */
 function stepDir(d){
   if(TUT) return;
@@ -6380,9 +6624,15 @@ function stepDir(d){
   ME.dir=d;
   var nx=ME.tx+dx,ny=ME.ty+dy;
   if(carAt(nx,ny)){ savePos(); drawScene(); return openCarTalk(); }
+  var E=m.edges||{};
   if(!walkable(m,nx,ny,1)||!petNudge(nx,ny)){
     /* 가장자리를 향해 한 발 더 디디면 다음 맵이다 */
-    if(m.edges&&((m.edges.west&&nx<0)||(m.edges.east&&nx>=m.w))){ ME.tx=Math.max(0,Math.min(m.w-1,nx)); checkWarp(); return; }
+    if((E.west&&nx<0)||(E.east&&nx>=m.w)){ ME.tx=Math.max(0,Math.min(m.w-1,nx)); checkWarp(); return; }
+    if((E.north&&ny<0)||(E.south&&ny>=m.h)){ ME.ty=Math.max(0,Math.min(m.h-1,ny)); checkWarp(); return; }
+    /* 차를 탄 채 보도 쪽으로 가려 하면: 주차장이면 내려서 걷고, 아니면 막는다 */
+    if(carOn()&&walkable(m,nx,ny,1,'foot')){
+      if(tileAt(m,ME.tx,ME.ty)==='Q'){ parkHere(); toast('주차장에 차를 세우고 내렸다.'); MOVE={path:[{x:nx,y:ny}],pi:-1,then:null}; nextStep(); return; }
+      if(Date.now()-CARTIP>4000){ CARTIP=Date.now(); toast('차는 찻길과 주차장에서만 달린다. 주차장(P)에 세우고 걷자.'); } }
     savePos(); drawScene(); return; }
   MOVE={path:[{x:nx,y:ny}],pi:-1,then:null};
   nextStep();
@@ -6438,7 +6688,7 @@ function bindScene(){
       if(Math.abs(t.x-ME.tx)+Math.abs(t.y-ME.ty)<=1) return openCarTalk();
       var cn=adjacentTo(m,{x:t.x,y:t.y}); if(!cn) return toast('가까이 갈 수 없습니다.');
       return goTo(cn.x,cn.y,function(){ drawScene(); openCarTalk(); }); }
-    if(!walkable(m,t.x,t.y)){
+    if(!reachable(m,t.x,t.y)){
       var ch=tileAt(m,t.x,t.y);
       var wq=warpAt(m,t.x,t.y);
       if(wq&&wq.needCar) toast(S.park&&S.park.map===ME.map?'세워 둔 차에 먼저 타자.':S.owned.indexOf('car')>=0||S.owned.indexOf('sedan')>=0?'캐릭터 창에서 자동차를 타면 고속도로로 갈 수 있다.':'고속도로는 자동차가 있어야 탈 수 있다. 상점에서 탈것을 알아보자.');
@@ -6455,9 +6705,12 @@ function faceSpot(s){
 }
 function adjacentTo(m,s){
   var D=[[0,1],[0,-1],[-1,0],[1,0]],best=null,bd=1e9,i;
+  var car=carOn();
   for(i=0;i<4;i++){ var x=s.x+D[i][0],y=s.y+D[i][1];
-    if(!walkable(m,x,y)) continue;
-    if(!pathTo(m,x,y)&&!(x===ME.tx&&y===ME.ty)) continue;
+    if(!(car?reachable(m,x,y):walkable(m,x,y))) continue;
+    if(!(x===ME.tx&&y===ME.ty)){
+      if(car&&!walkable(m,x,y,0,'car')){ if(!carRoute(m,x,y)) continue; }      /* 차는 주차장에 세우고 걸어간다 */
+      else if(!pathTo(m,x,y)) continue; }
     var d=Math.abs(x-ME.tx)+Math.abs(y-ME.ty);
     if(d<bd){ bd=d; best={x:x,y:y}; } }
   return best;
@@ -6997,6 +7250,7 @@ function epStep(){
   var box=document.getElementById('epchoices'); box.innerHTML=''; box.hidden=true;
   document.getElementById('epnote').hidden=true;
   document.getElementById('epnext').hidden=true;
+  document.getElementById('epdoc').hidden=true;
   document.getElementById('epwho').textContent=b.who||EP.e.npc;
   typeInto(document.getElementById('eptext'),b.t,function(){ box.hidden=false; });
   b.opts.forEach(function(o){
@@ -7069,6 +7323,7 @@ function epEnd(){
   s.innerHTML='확인처 \u00B7 <a href="'+e.src[1]+'" target="_blank" rel="noopener">'+e.src[0]+'</a>'+
     ' \u00B7 제도는 바뀝니다. 실제 결정 전에 원문을 확인하세요.';
   body.appendChild(s);
+  document.getElementById('eeback').textContent='돌아가기';
   go('epend');
   sfx(tier===0?'win':'hit');
 }
@@ -7369,7 +7624,8 @@ function houseTip(i){
   openTip.thumb=houseThumb(i,52);
   var bt=[];
   if(open&&!here) bt.push({t:dep?(S.coin>=dep?'￦'+dep+' 내고 여기서 살기':'보증금 ￦'+dep+' 모자람'):'여기서 살기',off:!!dep&&S.coin<dep,
-    f:function(){ var mv=tierMove(i); if(!mv.ok){ toast('보증금 ￦'+mv.cost+'이 모자랍니다.'); return; }
+    f:function(){ var mv=tierMove(i); if(!mv.ok){ if(mv.lease){ save(); closeTip(); render('home'); setTimeout(function(){ enterMap('town_estate',6,8); toast('전세는 계약부터 · 중개사에게 말을 걸어 보자'); },80); return; }
+        toast('보증금 ￦'+mv.cost+'이 모자랍니다.'); return; }
       save(); closeTip(); toast(tr.name+'(으)로 옮겼습니다.'+(mv.cost?' 보증금 ￦'+mv.cost:'')); renderChar(); }});
   openTip(h,open?'#FFC53C':'#6B6380',bt); }
 function furniTip(id){
@@ -7967,6 +8223,7 @@ function finish(failed){
     t2.textContent=TIERS[S.peak].name+' · 방어 '+TIERS[S.peak].def; up.appendChild(t2);
     if(LASTMOVE&&LASTMOVE.i===S.peak){ var t3=document.createElement('span'); t3.className='micro';
       t3.textContent=LASTMOVE.ok?(LASTMOVE.cost?'입주 보증금 ￦'+LASTMOVE.cost+'을 내고 옮겼습니다':'보증금 없이 옮겼습니다')
+        :LASTMOVE.lease?'전세 계약을 먼저 합니다. 동네 부동산에서 매물 고르기부터 시작하세요.'
         :'입주 보증금 ￦'+LASTMOVE.cost+'이 모자라 아직 못 옮겼습니다. 코인을 모아 캐릭터 탭의 거처에서 옮기세요.';
       up.appendChild(t3); }
   } else up.hidden=true;
@@ -8065,7 +8322,7 @@ function bossEnd(win){
     if(S.bossDone.indexOf(B.id)<0) S.bossDone.push(B.id);
     S.coin+=200; S.stats[B.stat]=Math.min(100,S.stats[B.stat]+15);
     var gb=tierGrow();
-    if(gb&&gb.wasTop){ var mv=tierMove(S.peak); BOSSMOVE=mv; if(!mv.ok) setTimeout(function(){ toast('입주 보증금 ￦'+mv.cost+'이 모자라 아직 못 옮겼습니다'); },900); } }
+    if(gb&&gb.wasTop){ var mv=tierMove(S.peak); BOSSMOVE=mv; if(!mv.ok) setTimeout(function(){ toast(mv.lease?'전세 계약부터 · 동네 부동산으로 가자':'입주 보증금 ￦'+mv.cost+'이 모자라 아직 못 옮겼습니다'); },900); } }
   else { S.peak=Math.max(0,S.peak-1); if(S.tier>S.peak) S.tier=S.peak; }   /* 내려가는 것은 보증금을 다시 받지 않는다. S.paid 는 그대로 */
   S.fightId=null;
   save();
@@ -8209,7 +8466,7 @@ window.__shiftDay=function(n){ TESTSHIFT+=n*DAYMS; rollDay(); render('home'); re
 function upNoteShow(){
   var n=S.upNote; if(!n) return; S.upNote=null; save();
   setTimeout(function(){ toast('새 거처 해금 · '+TIERS[n.i].name+(n.stay?' · 캐릭터 탭에서 옮길 수 있어요'
-    :n.ok?(n.cost?' · 입주 보증금 ￦'+n.cost:''):' · 보증금 ￦'+n.cost+'이 모자라 아직 못 옮겼어요')); },3600); }
+    :n.ok?(n.cost?' · 입주 보증금 ￦'+n.cost:''):n.lease?' · 부동산에서 전세 계약부터 해요':' · 보증금 ￦'+n.cost+'이 모자라 아직 못 옮겼어요')); },3600); }
 var _renderHomeB=renderHome; renderHome=function(){ _renderHomeB.apply(this,arguments); todayBtn(); todayAuto(); upNoteShow(); };
 S=load();
 if(!S.first) S.first=dayKey();
@@ -9197,6 +9454,258 @@ function endingShareSheet(){
     '<div class="il good"><i>◆</i>"그 사람의 귀인이 되어 주게."</div>'+
     '<div class="il"><i>◆</i>막 상경한 친구에게 링크를 보내 보세요.</div>','#FFC53C',
     [{t:'친구에게 링크 보내기',f:shareEnding}]); sheetStack(); }
+/* ══════════ 전세 계약 사건 ══════════
+   전세 거처(원룸 전세·투룸 전세)로 처음 옮길 때는 바로 이사하지 않는다. 부동산에서 매물을 고르고,
+   가계약금을 넣고, 임대인·임차인·중개사가 한자리에 앉아 본계약을 쓰고, 이사 당일 잔금과 전입신고까지
+   마쳐야 새 집에 들어간다. 장면은 실제로 그 일을 보는 곳에서 이어진다(부동산 → 매물 → 부동산 → 주민센터).
+   매물은 둘이다.
+   A 신축 빌라: 전세 2억, 매매 2억 5천. 전세가율 80%인 깡통전세.
+   B 구축 아파트: 전세 1억, 매매 3억(근저당 채권최고액 6천만 원). 전세가율 약 33%.
+   중간에 나가도 S.lease에 장면 단위로 남아 이어서 한다. 기준일 2026-09. */
+var LEASE_TIERS={7:1,8:1};
+var LEASE_SRC=[['인터넷등기소','https://www.iros.go.kr'],['국토교통부 실거래가 공개시스템','https://rt.molit.go.kr'],
+  ['주택도시보증공사(HUG) 전세보증금반환보증','https://www.khug.or.kr'],['찾기쉬운 생활법령정보 · 주택임대차','https://easylaw.go.kr']];
+var LISTING={
+ A:{name:'신축 빌라',tag:'A',dep:20000,sale:25000,loan:0,built:'준공 1년 · 풀옵션',owner:'김OO',since:'올해 3월 (건설사에서 이전)',
+    price:'분양가 2억 5천 · 같은 동네 비교 실거래 거의 없음',pitch:'새 집이라 하자 없어요. 이 가격에 이런 집 없어요.'},
+ B:{name:'구축 아파트',tag:'B',dep:10000,sale:30000,loan:6000,built:'준공 26년 · 7층',owner:'이OO',since:'2011년부터',
+    price:'같은 단지 최근 실거래 2억 9천 ~ 3억 1천',pitch:'오래됐지만 관리가 잘 되는 단지예요.'}};
+function won(man){ var e=Math.floor(man/10000),r=man%10000; return (e?e+'억':'')+(r?(e?' ':'')+(r%1000===0?(r/1000)+'천':r.toLocaleString()+'만'):'')+' 원'; }
+function jratio(L){ return Math.round(L.dep/L.sale*100); }
+function ldoc(title,rows,foot){
+  return '<div class="ldoc pix"><div class="lt">'+title+'</div>'+rows.map(function(r){
+    return '<div class="lr'+(r[2]?' '+r[2]:'')+'"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>'; }).join('')+
+    (foot?'<div class="lf">'+foot+'</div>':'')+'</div>'; }
+function lpick(){ return S.lease&&S.lease.pick?LISTING[S.lease.pick]:null; }
+var LEASE_CH=[
+ {title:'1장 · 매물 고르기',place:'estate',beats:[
+  {who:'공인중개사',face:'gpa',t:'전세 매물이 두 개 나와 있어요. 새 집 좋아하시면 A, 오래 조용히 살 거면 B.',
+   doc:function(){ var a=LISTING.A,b=LISTING.B; return ldoc('매물 안내',[['A · '+a.name,a.built],['전세',won(a.dep)],['B · '+b.name,b.built],['전세',won(b.dep)]],'벽지와 옵션은 사진으로 봤다. 보증금이 안전한지는 사진에 안 나온다.'); },
+   opts:[
+   {a:'두 집 다 등기부등본과 실거래가부터 본다',risk:0,
+    note:'보증금이 안전한지는 집 상태가 아니라 서류로 본다. 등기부등본은 인터넷등기소에서 누구나 뗄 수 있고, 매매 시세는 국토교통부 실거래가 공개시스템에서 본다.'},
+   {a:'새 집이 좋으니 A로 마음을 정한다',risk:2,
+    note:'깨끗한 벽지는 보증금을 지켜 주지 않는다. 고르기 전에 숫자부터 본다.'}]},
+  {who:'등기부등본 · 실거래가',face:'gpa',t:'서류를 뗐다. 갑구에는 소유자, 을구에는 근저당 같은 빚이 적혀 있다.',
+   doc:function(){ var a=LISTING.A,b=LISTING.B;
+     return ldoc('A · '+a.name,[['갑구 소유자',a.owner+' · '+a.since],['을구 근저당','없음'],['매매 시세',a.price],['전세 ÷ 매매',won(a.dep)+' ÷ 2억 5천 = '+jratio(a)+'%','bad']])+
+            ldoc('B · '+b.name,[['갑구 소유자',b.owner+' · '+b.since],['을구 근저당','채권최고액 '+won(b.loan)],['매매 시세',b.price],['전세 ÷ 매매',won(b.dep)+' ÷ 3억 = '+jratio(b)+'%','good']]); },
+   opts:[
+   {a:'B. 근저당 6천에 보증금 1억을 더해도 1억 6천, 집값 3억의 절반 남짓이다',risk:0,
+    note:'경매로 넘어가면 낙찰가에서 앞선 권리부터 가져간다. 선순위 채권과 내 보증금을 더해 집값과 비교한다. B는 집값이 꽤 떨어져도 보증금이 남는다.'},
+   {a:'A. 근저당이 하나도 없으니 A가 안전하다',risk:3,
+    note:'근저당이 없어도 전세 2억이 매매 2억 5천의 80%다. 집값이 20%만 내리거나, 경매 낙찰가가 시세의 80%에 그치면 보증금을 다 돌려받기 어렵다. 이런 집을 깡통전세라고 부른다.'},
+   {a:'A. 전세가가 높으니 그만큼 좋은 집이다',risk:3,
+    note:'전세가가 매매가에 붙어 있으면 집주인이 보증금으로 집값을 거의 다 치른 셈이다. 집값이 흔들리면 그 손해는 세입자 보증금에서 먼저 난다.'}]},
+  {who:'공인중개사',face:'gpa',t:'그래서, 어느 집으로 하실래요?',
+   opts:[
+   {a:'B 구축 아파트로 한다',risk:0,pick:'B',
+    note:'낡은 집에 들어가는 대신 보증금의 안전을 샀다. 전세가율(매매가 대비 전세가)이 낮을수록 돌려받을 여유가 크다.'},
+   {a:'A 신축 빌라로 한다',risk:2,pick:'A',
+    note:'전세가율 80%인 집으로 간다. 이대로 가더라도 "보증보험 가입이 안 되면 계약을 무효로 한다"는 조건만큼은 꼭 챙겨야 한다.'}]}]},
+ {title:'2장 · 가계약',place:'house',beats:[
+  {who:'집주인 (문자)',face:'officem',t:function(){ var L=lpick(); return L.name+'을 직접 보고 나왔다. 집주인이 문자를 보냈다. "다른 분도 보러 온대요. 가계약금 200만 원 보내시면 잡아 둘게요."'; },
+   doc:function(){ var L=lpick(); return ldoc('받은 문자',[['계좌','OO은행 110-***-****'],['예금주','박OO','bad'],['등기부 소유자',L.owner]],'예금주가 등기부 소유자와 다르다.'); },
+   opts:[
+   {a:'등기부 소유자 본인 명의 계좌로 보내 달라고 한다',risk:0,
+    note:'가계약금·계약금·잔금은 등기부에 적힌 소유자 명의 계좌로 보낸다. 다른 사람 계좌로 보낸 돈은 소유자에게 줬다고 주장하기 어렵다.'},
+   {a:'놓칠까 봐 그 계좌로 바로 보낸다',risk:3,
+    note:'누구 계좌인지 모르고 보낸 돈은 돌려받을 상대부터 불분명해진다. "급하다"는 말은 조건이 아니라 압박이다.'}]},
+  {who:'집주인 (문자)',face:'officem',t:'소유자 명의 계좌로 가계약금을 보냈다. 답장으로 무엇을 남길까?',
+   opts:[
+   {a:'금액·계약일·잔금일과 "보증보험 가입이 안 되면 계약을 무효로 하고 돈을 돌려준다"를 문자로 받는다',risk:0,flag:'insure',
+    note:'가계약도 약속이다. 무엇에 합의했는지 문자로 남겨야 나중에 조건을 주장할 수 있다. 보증보험 조건은 돈이 적게 들어간 이때 거는 것이 가장 쉽다.'},
+   {a:'"잘 부탁드립니다"만 보낸다',risk:2,
+    note:'조건 없이 보낸 가계약금은 마음이 바뀌었을 때 돌려받기가 어려워진다.'}]}]},
+ {title:'3장 · 삼자대면 본계약',place:'estate',beats:[
+  {who:'집주인',face:'officem',t:'계약하는 날. 집주인, 나, 중개사가 한 테이블에 앉았다. 집주인이 신분증을 내민다.',
+   doc:function(){ var L=lpick(); return ldoc('대조',[['신분증 이름',L.owner],['등기부 소유자',L.owner],['주민번호 앞자리','같음','good']]); },
+   opts:[
+   {a:'신분증과 등기부 소유자를 직접 대조한다',risk:0,
+    note:'계약 상대가 등기부 소유자 본인인지가 첫 확인이다. 대리인이 나오면 위임장과 인감증명서를 받고, 소유자와 직접 통화해 확인한다.'},
+   {a:'중개사가 봤을 테니 넘어간다',risk:2,
+    note:'확인을 남에게 맡기면 사고가 났을 때 남는 것도 남 탓뿐이다.'}]},
+  {who:'공인중개사',face:'gpa',t:'중개사가 계약서를 내민다. 사무실 벽에 중개사무소 등록증이 걸려 있다.',
+   opts:[
+   {a:'등록증 이름과 계약서의 중개사 이름을 맞춰 보고, 공제증서를 받는다',risk:0,
+    note:'개업공인중개사는 등록 여부를 조회할 수 있고, 계약할 때 중개사고에 대비한 보증(공제) 증서 사본을 내줘야 한다.'},
+   {a:'계약서 내용만 읽는다',risk:1,
+    note:'중개보조원이 중개사처럼 계약을 진행하는 일도 있다. 이름 한 번 맞춰 보는 데 10초면 된다.'}]},
+  {who:'공인중개사',face:'gpa',t:'특약 칸이 비어 있다. 무엇을 적을까?',
+   opts:[
+   {a:'"잔금 다음 날까지 근저당 등 새 권리를 설정하지 않는다", "보증보험·전세대출이 안 되면 계약을 무효로 하고 계약금을 돌려준다"를 넣는다',risk:0,flag:'insure',
+    note:'대항력은 전입신고 다음 날 0시에 생긴다. 그 사이에 잡힌 근저당은 나보다 앞선다. 특약으로 그 틈을 막고, 보증보험이 안 되면 빠져나올 문도 만든다.'},
+   {a:'표준계약서 그대로 도장을 찍는다',risk:2,
+    note:'표준계약서는 최소한이다. 이 집에만 있는 위험은 특약에만 적힌다.'}]},
+  {who:'집주인',face:'officem',t:function(){ var L=lpick(); return '계약금 10%, '+won(L.dep/10)+'을 보낼 차례다.'; },
+   opts:[
+   {a:'소유자 명의 계좌로 이체하고, 계약서 끝에 받은 금액을 적어 받는다',risk:0,
+    note:'이체 기록이 곧 영수증이다. 현금으로 주면 준 사실부터 증명해야 한다.'},
+   {a:'집주인이 원하니 현금으로 건넨다',risk:2,
+    note:'현금은 흔적이 없다. 나중에 계약금을 줬다는 것부터 다퉈야 한다.'}]}]},
+ {title:'4장 · 이사 당일 (오전)',place:'house',beats:[
+  {who:'공인중개사',face:'gpa',t:'잔금 날 아침. 오후에 잔금을 보내고 열쇠를 받기로 했다.',
+   opts:[
+   {a:'잔금을 보내기 직전에 등기부등본을 다시 뗀다',risk:0,
+    note:'계약일 이후에 근저당이 새로 잡혔는지는 잔금 직전에만 확인할 수 있다. 보내고 나면 되돌릴 방법이 없다.'},
+   {a:'계약할 때 봤으니 그대로 보낸다',risk:3,
+    note:'등기는 계약 다음 날에도 바뀐다. 확인은 돈이 나가기 전에만 의미가 있다.'}]},
+  {who:'집주인',face:'officem',t:'잔금을 보냈다. 집주인이 열쇠를 건넨다.',
+   opts:[
+   {a:'관리비·공과금 정산 내역을 받고 현관 비밀번호를 바꾼다',risk:0,
+    note:'전 세입자가 밀린 관리비는 내 몫이 아니다. 들어가는 날 기준으로 정산서를 받아 둔다.'},
+   {a:'열쇠만 받고 짐부터 올린다',risk:1,
+    note:'정산은 미루면 누가 낼지 다투게 된다. 이사 날 10분이면 끝나는 일이다.'}]}]},
+ {title:'4장 · 이사 당일 (오후)',place:'hall',beats:[
+  {who:'주민센터 직원',face:'deskf',t:'짐을 다 옮겼다. 주민센터가 아직 문을 열었다.',
+   opts:[
+   {a:'전입신고와 확정일자를 오늘 같이 한다',risk:0,
+    note:'전입신고와 실제 거주로 대항력이, 확정일자로 우선변제권이 생긴다. 대항력은 전입신고 다음 날 0시부터라 하루를 미루면 그 하루에 잡힌 권리가 나보다 앞선다.'},
+   {a:'전입신고만 하고 확정일자는 나중에 받는다',risk:2,
+    note:'확정일자가 없으면 경매 배당에서 순위를 주장할 우선변제권이 없다.'},
+   {a:'피곤하니 주말에 몰아서 한다',risk:3,
+    note:'그 며칠이 통째로 빈다. 전세사기가 파고드는 자리가 바로 이 틈이다.'}]},
+  {who:'주민센터 직원',face:'deskf',t:function(){ return S.lease.pick==='A'?'전세보증금반환보증을 신청했다. 보증기관에서 연락이 왔다. "주택 가격 대비 보증금이 커서 가입 요건에 맞지 않습니다."':'전세보증금반환보증(보증보험)은 어떻게 할까?'; },
+   opts:[
+   {a:'가입한다. 집주인이 못 돌려주면 보증기관이 대신 준다',risk:0,only:'B',
+    note:'보증료는 들지만, 집주인이 보증금을 못 돌려줄 때 보증기관이 먼저 지급한다. 가입 요건과 보증료는 보증기관 공고를 확인한다.'},
+   {a:'보증금이 적으니 안 한다',risk:1,only:'B',
+    note:'안전한 집이라도 사고는 난다. 보증료와 보증금 규모를 놓고 스스로 정할 일이지만, 확인은 해 보고 정한다.'},
+   {a:'어쩔 수 없다. 이대로 산다',risk:3,only:'A',
+    note:'보증보험이 안 되는 집은 대개 보증금이 집값에 비해 크다는 뜻이다. 계약 전에 이 조건을 걸어 두지 않으면 여기서 빠져나올 문이 없다.'}]}]}
+];
+var LEASE_ENDS=[
+ {big:'보증금을 지켰다',t:'2년 뒤 계약이 끝났다. 새 세입자를 기다릴 필요도 없이 보증금 1억이 그대로 돌아왔다.',xp:220,coin:200,stat:10},
+ {big:'아슬아슬하게 넘겼다',t:'집은 안전했지만, 빠뜨린 확인 몇 개 때문에 2년 내내 마음을 졸였다. 안전한 집을 고른 것이 살렸다.',xp:120,coin:100,stat:6},
+ {big:'보증금이 묶였다',t:'2년 뒤 집값이 2억 2천으로 내렸다. 집주인은 새 세입자를 못 구해 보증금을 못 돌려줬고, 집은 경매로 넘어갔다.',xp:60,coin:30,stat:2}];
+/* 전세 거처로 처음 옮기려 하면 계약 사건을 연다. true면 이사를 멈춘다 */
+function leaseGate(i){
+  if(!LEASE_TIERS[i]||i<=paidBase()||(S.leaseDone&&S.leaseDone[i])) return false;
+  if(!S.lease||S.lease.to!==i){ S.lease={to:i,ch:0,b:0,pick:null,risk:0,flags:{},picks:[]}; ev('lease_open',{to:i}); }
+  return true; }
+function leaseCh(){ return S.lease?LEASE_CH[S.lease.ch]:null; }
+/* 장면이 벌어지는 곳. 주택가 맵이 없으면 매물 장면도 부동산에서 한다 */
+function leasePlace(p){ return (p==='house'&&!MAPS.villa)?'estate':p; }
+function leaseHere(s){ var c=leaseCh(); return !!(c&&leasePlace(c.place)===s.place); }
+var LEASE_WHERE={estate:'부동산',house:'매물 집 앞',hall:'주민센터'};
+function leaseWhere(){ var c=leaseCh(); if(!c) return ''; var p=leasePlace(c.place);
+  return p==='house'&&S.lease.pick?LISTING[S.lease.pick].name+' 앞':LEASE_WHERE[p]; }
+var LS=null;                                                   /* 지금 보고 있는 장면 */
+function leaseOpen(s){
+  if(!S.lease){ return talkTo({name:s.name,face:s.face,lines:(s.place==='hall'?['전입신고는 이사한 날 바로 하세요. 확정일자도 같이 받을 수 있어요.']
+    :['전세 매물은 서류부터 보여 드려요. 등기부등본, 실거래가, 건축물대장.','전세 거처가 열리면 계약하러 오세요. 한 번은 처음부터 끝까지 같이 해 봐요.'])}); }
+  if(!leaseHere(s)){ return toast('다음 장면은 '+leaseWhere()+'에서 이어집니다.'); }
+  if(S.lease.ch===3&&S.lease.b===0){ var c=tierCost(S.lease.to);
+    if(S.coin<c) return toast('잔금(입주 보증금) ￦'+c+'이 모자랍니다 · 지금 ￦'+S.coin); }
+  sfx('pick'); leaseShow(); }
+function leaseShow(){
+  var L=S.lease,ch=leaseCh(); if(!ch) return;
+  var b=ch.beats[L.b]; if(!b){ return leaseNextCh(); }
+  go('ep');
+  document.getElementById('epname').textContent='전세 계약 · '+ch.title;
+  var dy=document.getElementById('epday'); dy.textContent=TIERS[L.to].name; dy.hidden=false;
+  var r=document.getElementById('eprisk'); r.textContent='위험 '+L.risk; r.className='chip pix'+(L.risk>=5?' bad':L.risk>=2?' warn':'');
+  epSprite(document.getElementById('epspr'),b.face||'gpa',2);
+  var box=document.getElementById('epchoices'); box.innerHTML=''; box.hidden=true;
+  document.getElementById('epnote').hidden=true; document.getElementById('epnext').hidden=true;
+  document.getElementById('epwho').textContent=b.who;
+  var dc=document.getElementById('epdoc'),dh=b.doc?b.doc():'';
+  dc.innerHTML=dh; dc.hidden=!dh;
+  LS={b:b};
+  typeInto(document.getElementById('eptext'),typeof b.t==='function'?b.t():b.t,function(){ box.hidden=false; });
+  b.opts.filter(function(o){ return !o.only||o.only===L.pick; }).forEach(function(o){
+    var btn=document.createElement('button'); btn.className='choice pix';
+    btn.innerHTML='<span class="k">▶</span><span>'+o.a+'</span>';
+    btn.onclick=function(){ leasePickOpt(o,btn); };
+    box.appendChild(btn); }); }
+function leasePickOpt(o,btn){
+  var L=S.lease;
+  document.querySelectorAll('#epchoices .choice').forEach(function(b){ b.disabled=true; });
+  btn.classList.add(o.risk?'no':'ok');
+  L.risk+=(o.risk||0); L.picks.push({a:o.a,risk:o.risk||0});
+  if(o.pick) L.pick=o.pick;
+  if(o.flag) L.flags[o.flag]=1;
+  L.b++; save();
+  sfx(o.risk?'hit':'good');
+  ev('lease_pick',{ch:L.ch,b:L.b-1,risk:o.risk||0,pick:L.pick});
+  var r=document.getElementById('eprisk'); r.textContent='위험 '+L.risk; r.className='chip pix'+(L.risk>=5?' bad':L.risk>=2?' warn':'');
+  var n=document.getElementById('epnote');
+  n.className='explain pix '+(o.risk?'bad':'good');
+  n.innerHTML='<b>'+(o.risk?'대가가 남는다':'좋은 판단')+'</b> · '+o.note; n.hidden=false;
+  var nx=document.getElementById('epnext'); nx.hidden=false;
+  var ch=leaseCh(),last=L.b>=ch.beats.length;
+  nx.textContent=last?(L.ch+1>=LEASE_CH.length?'결말 보기':'이 장 마치기'):'다음';
+  nx.onclick=function(){ if(last) leaseNextCh(); else leaseShow(); }; }
+/* 한 장이 끝났다. A를 골랐어도 보증보험 조건을 걸어 뒀다면, 이사 전에 가입 가능 여부를 물어본 데서
+   거절이 나와 계약을 되돌린다. 조건이 없었다면 그대로 이사 날까지 간다. */
+function leaseNextCh(){
+  var L=S.lease;
+  if(L.ch===2&&L.pick==='A'&&L.flags.insure){ return leaseVoid(); }
+  L.ch++; L.b=0; save();
+  if(L.ch>=LEASE_CH.length) return leaseEnd();
+  var nc=leaseCh(); render('home');
+  setTimeout(function(){ toast(nc.title+' · '+leaseWhere()+'에서 이어집니다'); },500); }
+function leaseVoid(){
+  var L=S.lease; ev('lease_void',{to:L.to});
+  S.lease={to:L.to,ch:0,b:0,pick:null,risk:0,flags:{},picks:[],voided:(L.voided||0)+1}; save();
+  go('epend');
+  paintHero(document.getElementById('eechar'),'idle',0);
+  var big=document.getElementById('eebig'); big.textContent='계약을 되돌렸다'; big.style.color=P.y2;
+  var body=document.getElementById('eebody'); body.innerHTML='';
+  var c=document.createElement('div'); c.className='card pix';
+  c.innerHTML='<span>잔금 전에 보증기관에 가입할 수 있는지 먼저 물었다. 답은 "가입 요건에 맞지 않습니다".</span>'+
+    '<span class="rc ok">✓ 가계약 문자와 계약서 특약에 "보증보험이 안 되면 계약을 무효로 한다"를 넣어 두었다</span>'+
+    '<span style="display:block;margin-top:8px">특약대로 계약을 무효로 하고 가계약금과 계약금을 돌려받았다. 다시 매물을 고른다. 이번에는 숫자부터 보자.</span>';
+  body.appendChild(c);
+  body.appendChild(leaseCalc());
+  document.getElementById('eeback').textContent='부동산으로 돌아가기';
+  sfx('good'); }
+/* 깡통전세 계산. 숫자는 예시다 */
+function leaseCalc(){
+  var d=document.createElement('div'); d.className='card pix';
+  d.innerHTML='<span class="lbold">A 신축 빌라를 계산해 보면 (예시)</span>'+
+    ldoc('경매로 넘어가면',[['집값이 내렸을 때 시세','2억 2천만 원'],['낙찰가 (시세의 80% 가정)','1억 7,600만 원'],['내 보증금','2억 원'],['못 받는 돈 (경매 비용 빼기 전)','2,400만 원 이상','bad']],
+      '전세가율 80%면 집값이 조금만 내려도 보증금이 깎인다. B를 같은 식으로 계산하면 시세 3억의 80%인 2억 4천에서 근저당 6천을 먼저 빼도 1억 8천이 남아 보증금 1억을 다 받는다.');
+  return d; }
+function leaseEnd(){
+  var L=S.lease,tier=L.pick==='A'?2:L.risk<=1?0:L.risk<=4?1:2,end=LEASE_ENDS[tier];
+  ev('lease_end',{to:L.to,pick:L.pick,risk:L.risk,tier:tier});
+  if(!S.leaseBest) S.leaseBest={};
+  var was=S.leaseBest.any,better=(was==null||tier<was),gain={xp:0,coin:0,stat:0};
+  if(better){ var prev=(was==null)?{xp:0,coin:0,stat:0}:LEASE_ENDS[was];
+    gain={xp:Math.max(0,end.xp-prev.xp),coin:Math.max(0,end.coin-prev.coin),stat:Math.max(0,end.stat-prev.stat)};
+    S.leaseBest.any=tier; S.xp+=gain.xp; S.coin+=gain.coin; while(S.xp>=need(S.lv)){ S.xp-=need(S.lv); S.lv++; }
+    S.stats.ju=Math.min(100,S.stats.ju+gain.stat); }
+  if(!S.leaseDone) S.leaseDone={};
+  S.leaseDone[L.to]=1;
+  var from=S.tier,mv=tierMove(L.to),picks=L.picks,pick=L.pick,risk=L.risk;
+  S.lease=null; save();
+  go('epend');
+  paintHero(document.getElementById('eechar'),tier===0?'cheer':'idle',0);
+  var big=document.getElementById('eebig'); big.textContent=end.big; big.style.color=tier===0?P.g3:tier===1?P.y2:P.r2;
+  var body=document.getElementById('eebody'); body.innerHTML='';
+  var good=picks.filter(function(o){ return !o.risk; }),bad=picks.filter(function(o){ return o.risk; }).sort(function(a,b){ return b.risk-a.risk; });
+  var c=document.createElement('div'); c.className='card pix';
+  c.innerHTML='<span>'+end.t+'</span>'+
+    (good.length?'<span class="rc ok">'+good.map(function(o){ return '✓ '+o.a; }).join('<br>')+'</span>':'')+
+    (bad.length?'<span class="rc no">'+bad.map(function(o){ return '✗ '+o.a; }).join('<br>')+'</span>':'')+
+    '<span class="micro" style="display:block;margin-top:8px">'+LISTING[pick].name+' · 전세가율 '+jratio(LISTING[pick])+'% · 위험 '+risk+'</span>';
+  body.appendChild(c);
+  if(pick==='A') body.appendChild(leaseCalc());
+  var mvc=document.createElement('div'); mvc.className='card pix';
+  mvc.innerHTML='<span class="lbold">'+(mv.ok?TIERS[from].name+' → '+TIERS[L.to].name+' 이사 완료':'아직 못 옮겼다')+'</span>'+
+    '<span class="micro" style="display:block;margin-top:4px">'+(mv.ok?(mv.cost?'입주 보증금 ￦'+mv.cost+'을 냈어요':'보증금 없이 옮겼어요'):'입주 보증금 ￦'+mv.cost+'이 모자랍니다. 캐릭터 탭의 거처에서 옮기세요.')+'</span>';
+  body.appendChild(mvc);
+  var g=document.createElement('div'); g.className='card pix';
+  g.innerHTML=better?'<span class="lbold">+'+gain.xp+' XP · ￦'+gain.coin+' · 주 +'+gain.stat+'</span>'
+    :'<span class="lbold">이번 계약은 보상이 없습니다</span><span class="micro" style="display:block;margin-top:4px">이미 「'+LEASE_ENDS[was].big+'」까지 가 봤습니다.</span>';
+  body.appendChild(g);
+  var s=document.createElement('div'); s.className='micro';
+  s.innerHTML='확인처 · '+LEASE_SRC.map(function(x){ return '<a href="'+x[1]+'" target="_blank" rel="noopener">'+x[0]+'</a>'; }).join(' · ')+
+    ' · 기준일 2026-09. 보증보험 요건과 보증료는 보증기관 공고로 확인하세요. 금액은 예시입니다.';
+  body.appendChild(s);
+  document.getElementById('eeback').textContent='새 집으로';
+  sfx(tier===0?'win':'hit'); }
 var _renderHome1=renderHome; renderHome=function(){ _renderHome1.apply(this,arguments); setTimeout(eodMaybe,1200); };
 if(S.onboarded) render('home'); else { obRender(); go('onboard'); }
 /* 딥링크: 주소 끝 #c=lease 처럼 체크리스트 id를 붙이면 그 목록을 바로 연다 (공유 문구의 링크) */
