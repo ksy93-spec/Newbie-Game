@@ -355,6 +355,11 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
   line-height:16px;padding:6px 9px;pointer-events:none;text-align:center;
   overflow-wrap:anywhere;}
 .card .rc{display:block;margin-top:8px;font-size:12px;line-height:1.6;}
+.ldoc{background:#FFFDF6;border:3px solid var(--s4);padding:8px 10px;margin-bottom:6px;font-family:var(--f-ui);font-size:12px;line-height:18px;}
+.ldoc .lt{font-weight:700;border-bottom:2px dashed var(--s1);margin-bottom:4px;padding-bottom:2px;}
+.ldoc .lr{display:flex;justify-content:space-between;gap:8px;} .ldoc .lr span{color:var(--s2);flex:none;} .ldoc .lr b{text-align:right;}
+.ldoc .lr.bad b{color:var(--r3);} .ldoc .lr.good b{color:var(--g3);}
+.ldoc .lf{margin-top:4px;font-family:var(--f-micro);font-size:11px;line-height:16px;color:var(--s2);}
 .card .rc.ok{color:var(--g3);} .card .rc.no{color:var(--r3);}
 .epname{flex:1;font-family:var(--f-ui);font-weight:700;font-size:12px;color:var(--s4);}
 .chip{background:var(--p2);border:3px solid var(--s4);padding:2px 6px;
@@ -726,6 +731,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
     </div>
     <div class="scroll" style="gap:var(--u3)">
       <div class="dlg pix"><span class="nm" id="epwho">—</span><span id="eptext">—</span></div>
+      <div id="epdoc" hidden></div>
       <div style="display:flex;flex-direction:column;gap:var(--u2)" id="epchoices"></div>
       <div id="epnote" hidden></div>
       <button class="btn btn--wide pix" id="epnext" hidden>다음</button>
@@ -2066,6 +2072,7 @@ var LASTMOVE=null;
 /* 거처를 옮긴다. 코인이 모자라면 안 옮기고 이유를 돌려준다 */
 function tierMove(i){
   var c=tierCost(i);
+  if(typeof leaseGate==='function'&&leaseGate(i)) return {ok:0,i:i,cost:c,lease:1};     /* 전세는 계약부터 */
   if(c>S.coin) return {ok:0,i:i,cost:c};
   S.coin-=c; S.tier=i; S.paid=Math.max(S.paid||0,i);
   if(c) ev('tier_deposit',{i:i,cost:c});
@@ -2204,7 +2211,7 @@ function perkList(){
 function perkSum(k){ var n=0; perkList().forEach(function(p){ n+=p[k]||0; }); return n; }
 /* 탈것은 동네 길과 전국 지도에서만 탄다. 건물 안과 내 방은 물론이고, 휴게소와 여행지에 닿으면
    세워 두고 걷는다. 세운 자리에 차(또는 자전거)가 그대로 서 있다. */
-var PARK_MAPS={rest:1,gangneung:1,jeonju:1,busan:1};
+var PARK_MAPS={rest:1,gangneung:1,gangneung_ojuk:1,gangneung_cafe:1,jeonju:1,jeonju_inn:1,jeonju_market:1,busan:1,busan_gamcheon:1,busan_jagalchi:1,gyeongju:1,gyeongju_tomb:1,gyeongju_inn:1,daegu:1,daegu_market:1,daegu_kim:1};
 function rideHere(){
   var mo=MOUNTS[S.equip.mount]; if(!mo||!mo.kind||!ME) return false;
   if(S.park&&S.park.id&&S.park.id!==S.equip.mount){ S.park=null; S.onFoot=false; }   /* 탈것을 바꾸면 세워 둔 것은 정리 */
@@ -2217,8 +2224,21 @@ function rideHere(){
    말을 걸어야 다시 탄다. 휴게소·여행지에서 떠날 때도 차에 타서 출발한다.
    고속도로로 오갈 때는 바로 순간이동하지 않고 달리는 화면을 잠깐 보여 준다.
    그 몇 초에 운전 꿀팁을 한 줄씩 흘린다. */
+/* 가장 가까운 빈 주차 칸. 주차장이 없으면 찻길 가장자리 칸 */
+function nearestLot(m,x0,y0){
+  var best=null,bd=1e9,x,y,pass;
+  for(pass=0;pass<2&&!best;pass++) for(y=0;y<m.h;y++) for(x=0;x<m.w;x++){
+    var c=tileAt(m,x,y); if(pass===0?c!=='Q':c!=='r') continue;
+    if(warpAt(m,x,y)||spotAt(m,x,y)||(x===ME.tx&&y===ME.ty&&pass>0)) continue;
+    var d=Math.abs(x-x0)+Math.abs(y-y0); if(d<bd){ bd=d; best={x:x,y:y}; } }
+  return best; }
+function carSettle(m,id){
+  var mo=MOUNTS[S.equip.mount],q=nearestLot(m,ME.tx,ME.ty); S.onFoot=true;
+  S.park=q?{map:id,x:q.x,y:q.y,kind:mo.kind,id:S.equip.mount,dir:2}:null; }
 function parkNearDoor(prevMap,px,py){
   var mo=MOUNTS[S.equip.mount],m=MAPS[prevMap]; if(!mo||!mo.kind||!m) return;
+  if(mo.kind==='car'){ var q=nearestLot(m,px,py); S.onFoot=true;
+    S.park=q?{map:prevMap,x:q.x,y:q.y,kind:mo.kind,id:S.equip.mount,dir:2}:null; return; }
   var D=[[1,1],[-1,1],[1,2],[-1,2],[2,1],[-2,1],[0,2]],i;        /* 문 바로 앞은 나오는 자리라 비워 둔다 */
   for(i=0;i<D.length;i++){ var x=px+D[i][0],y=py+D[i][1];
     if(walkable(m,x,y,1)&&!warpAt(m,x,y)&&!spotAt(m,x,y)&&tileAt(m,x,y)!=='r'){
@@ -2234,7 +2254,9 @@ function openCarTalk(){
                :[nm+'에 탄다','그대로 둔다'];
   talkTo({name:nm,face:null,lines:[{q:park?'세워 둔 '+nm+'. 이제 떠날까?':'세워 둔 '+nm+'. 다시 탈까?',a:opts,choose:function(k){
     if(k>=(park?exits.length:1)) return ['그대로 두었다.'];
-    S.onFoot=false; S.park=null; TOPC={}; save(); sfx('good');
+    var pk=S.park; S.onFoot=false; S.park=null; TOPC={}; sfx('good');
+    if(!park&&pk&&pk.map===ME.map){ ME.tx=pk.x; ME.ty=pk.y; savePos(); }      /* 차 자리로 옮겨 앉는다 */
+    save();
     if(park){ var ex=exits[k]; setTimeout(function(){ endTalk(); takeWarp(ex); },60); return []; }
     setTimeout(function(){ drawScene(); },30);
     return [nm+'에 탔다. 부릉.']; }}]}); }
@@ -2317,8 +2339,10 @@ function parkOnArrive(id,wasRiding){
   var mo=MOUNTS[S.equip.mount];
   if(!PARK_MAPS[id]||!mo||!mo.kind||!wasRiding) return;
   var m=MAPS[id],D=[[-1,0],[1,0],[0,1],[-1,1],[1,1],[0,-1]],i;
+  var car=mo.kind==='car';
   for(i=0;i<D.length;i++){ var x=ME.tx+D[i][0],y=ME.ty+D[i][1];
-    if(walkable(m,x,y,1)&&!warpAt(m,x,y)&&!spotAt(m,x,y)){ S.park={map:id,x:x,y:y,kind:mo.kind,id:S.equip.mount,dir:D[i][0]<0?1:2}; S.onFoot=true; return; } }
+    if(walkable(m,x,y,1,'foot')&&!warpAt(m,x,y)&&!spotAt(m,x,y)&&(!car||tileAt(m,x,y)==='Q')){ S.park={map:id,x:x,y:y,kind:mo.kind,id:S.equip.mount,dir:D[i][0]<0?1:2}; S.onFoot=true; return; } }
+  if(car){ var q=nearestLot(m,ME.tx,ME.ty); if(q){ S.onFoot=true; S.park={map:id,x:q.x,y:q.y,kind:mo.kind,id:S.equip.mount,dir:2}; return; } }
   S.onFoot=true; S.park={map:id,x:ME.tx,y:ME.ty,kind:mo.kind,id:S.equip.mount,dir:2}; }
 function drawParked(ctx){
   var pk=S.park; if(!pk||pk.map!==ME.map) return;
@@ -2381,7 +2405,14 @@ var FOODS={
  rest:[{n:'호두과자',cost:25,full:25},{n:'휴게소 우동',cost:45,full:50},{n:'통감자',cost:30,full:30}],
  gangneung:[{n:'초당순두부',cost:60,full:60},{n:'커피 한 잔',cost:20,full:8}],
  jeonju:[{n:'비빔밥',cost:60,full:60},{n:'길거리 초코파이',cost:20,full:15}],
- busan:[{n:'돼지국밥',cost:55,full:60},{n:'씨앗호떡',cost:20,full:18}]
+ busan:[{n:'돼지국밥',cost:55,full:60},{n:'씨앗호떡',cost:20,full:18}],
+ market:[{n:'손칼국수',cost:45,full:55},{n:'찹쌀도넛',cost:15,full:15},{n:'시장 떡볶이',cost:25,full:30}],
+ gncafe:[{n:'핸드드립 커피',cost:25,full:8},{n:'커피콩빵',cost:20,full:15}],
+ jmarket:[{n:'닭꼬치',cost:25,full:25},{n:'떡갈비 주먹밥',cost:35,full:40}],
+ jagalchi:[{n:'물회',cost:50,full:50},{n:'어묵 한 꼬치',cost:15,full:15}],
+ gyeongju:[{n:'경주빵',cost:20,full:18},{n:'찰보리빵',cost:20,full:18}],
+ daegu:[{n:'납작만두',cost:25,full:25},{n:'막창 1인분',cost:60,full:55}],
+ seomun:[{n:'칼국수',cost:40,full:50},{n:'납작만두',cost:25,full:25}]
 };
 function foodMenuLine(id,after){
   var menu=FOODS[id]||[];
@@ -3120,7 +3151,7 @@ function rollDay(){
   S.day=t; S.todayDone=[]; S.claimed=null; S.bonus=false;
   msCheck();
   if(S.onboarded){ var gr=tierGrow();                       /* 스탯은 됐는데 오늘 몫 때문에 미뤄진 거처 */
-    if(gr){ var mv=gr.wasTop?tierMove(S.peak):null; S.upNote={i:S.peak,ok:mv?mv.ok:0,cost:mv?mv.cost:0,stay:!gr.wasTop}; } }
+    if(gr){ var mv=gr.wasTop?tierMove(S.peak):null; S.upNote={i:S.peak,ok:mv?mv.ok:0,cost:mv?mv.cost:0,stay:!gr.wasTop,lease:mv&&mv.lease?1:0}; } }
   S.todayQ=S.onboarded?pickDaily():[];
   ev('day_start',{streak:S.streak,gap:gap,dayN:dayGap(S.first,t)+1});
   save(); return true; }
@@ -4764,7 +4795,8 @@ var TILES={
  /* 건물 안과 공원 */
  'S':{kind:'shelf'},'F':{kind:'cooler'},'K':{kind:'bookcase'},'M':{kind:'machine'},'P':{kind:'plant'},
  'L':{kind:'washer'},'A':{kind:'stall'},'w':{kind:'water'},'o':{walk:1,kind:'flower'},
- 's':{walk:1,kind:'sand'},':':{walk:1,kind:'floor'},'Z':{walk:1,kind:'bathfloor'},'U':{kind:'toilet'},'V':{kind:'tub'},'Y':{kind:'shower'},'N':{kind:'land'},'m':{kind:'mountain'},'=':{walk:1,kind:'highway'},'X':{walk:1,kind:'city'}
+ 's':{walk:1,kind:'sand'},':':{walk:1,kind:'floor'},'Z':{walk:1,kind:'bathfloor'},'U':{kind:'toilet'},'V':{kind:'tub'},'Y':{kind:'shower'},'N':{kind:'land'},'m':{kind:'mountain'},'=':{walk:1,kind:'highway'},'X':{walk:1,kind:'city'},
+ 'Q':{walk:1,kind:'park'},'O':{kind:'tomb'}
 };
 var MAPS={
  town:{spawn:{x:4,y:4},name:'동네',sub:'1 · 집 앞',w:22,h:20,rows:[
@@ -4779,16 +4811,17 @@ var MAPS={
   '______________________',
   '_____b_______p________',
   '______________________',
-  'gggg____gggggg____gggg',
-  'gttg____gggggg____gttg',
+  'gggg____gggggQQQQ_gggg',
+  'gttg____gggggQQQQ_gtgg',
   'rrrrrrrr------rrrrrrrr',
   'rrrrrrrr------rrrrrrrr',
-  'ggoogggggggggggggooggg',
-  'ggtgggwwwwggggggbgtggg',
-  'goooggwwwwgggggggggoog',
-  'gggtggggooggggggggtggg',
-  'ffffffffffffffffffffff'],
-  edges:{east:'campus'},
+  'ggooggggggggggggg_rrgg',
+  'ggtgggwwwwggggggb_rrgg',
+  'goooggwwwwggggggg_rrgo',
+  'gggtggggoogggggtg_rrgt',
+  'fffffffffffffffff_rrff'],
+  edges:{east:'campus',south:'villa'},
+  blds:[{x:0,y:0,w:5,h:3,s:'brick'},{x:5,y:0,w:6,h:3,s:'shop',c:'#F2E6C4',a:'#3F9F5A'},{x:11,y:0,w:6,h:3,s:'concrete'},{x:17,y:0,w:5,h:3,s:'shop',c:'#E8D0B8',a:'#3F6FB8'}],
   warps:[{x:2,y:2,to:'room',tx:2,ty:3},{x:8,y:2,to:'town_mart',tx:5,ty:6},{x:14,y:2,to:'town_hall',tx:6,ty:6},
          {x:19,y:2,to:'town_estate',tx:6,ty:8},
          {x:0,y:13,to:'rest',tx:3,ty:11,needCar:1},{x:0,y:14,to:'rest',tx:3,ty:11,needCar:1}],
@@ -4797,37 +4830,39 @@ var MAPS={
          {x:3,y:3,kind:'shelf',name:'내 짐가방',look:'bag'},
          {x:1,y:12,kind:'thing',id:'icsign',name:'고속도로 안내판',look:'sign'},
          {x:12,y:16,kind:'talk',id:'gma',name:'산책하는 할머니',face:'gma',dir:1},
-         {x:14,y:15,kind:'thing',id:'townsign',name:'동네 게시판',look:'sign'}],
+         {x:14,y:15,kind:'thing',id:'townsign',name:'동네 게시판',look:'sign'},
+         {x:16,y:17,kind:'thing',id:'tovilla',name:'주택가 방향 안내판',look:'sign'}],
   eggs:[{id:'t_bush',x:2,y:18,coin:25,msg:'풀숲에서 누가 흘린 동전을 주웠다.'},
-        {id:'t_clover',x:20,y:17,xp:15,msg:'네잎클로버를 찾았다. 오늘은 운이 좋을지도.'}]},
+        {id:'t_clover',x:14,y:18,xp:15,msg:'네잎클로버를 찾았다. 오늘은 운이 좋을지도.'}]},
 
  campus:{spawn:{x:2,y:6},name:'학교 앞',sub:'2 · 알바와 학자금',w:22,h:20,rows:[
-  'gggggggggggggggggggggg',
-  'gRRRRRRRggggggRRRRRRRg',
-  'gHWWHWWHggttggHWWHWWHg',
-  'gHHHDHDHggttggHHHDHHHg',
+  'tggggggggggggggggggggt',
+  'tRRRRRRRggggggRRRRRRRt',
+  'tHWWHWWHggttggHWWHWWHt',
+  'tHHHDHDHggttggHHHDHHHt',
   '______________________',
   '______________________',
-  '_t_______p_________t__',
+  '___t_____p_________t__',
   '______________________',
   '______________________',
   '____b____________b____',
   '______________________',
-  'gggggggggggggggggggggg',
-  'gtggggttgggggttggggtgg',
-  'ggggAAAggggggggAAAgggg',
-  'ggfgggggggggggggggfggg',
+  'ggAAA___gggggQQQQ_AAgg',
+  'ggtgg___gggggQQQQ_gggt',
+  'rrrrrrrr------rrrrrrrr',
+  'rrrrrrrr------rrrrrrrr',
   'gggg______________gggg',
   'ggtg_gggggggggggg_gggg',
   'gggg______________gggg',
   'gggtgggggggggggggtgggg',
   'ffffffffffffffffffffff'],
   edges:{west:'town',east:'center'},
+  blds:[{x:1,y:1,w:7,h:3,s:'brick',c:'#C0785E',r:'#56708F'},{x:14,y:1,w:7,h:3,s:'wood'}],
   warps:[{x:4,y:3,to:'campus_lib',tx:5,ty:7},{x:6,y:3,to:'campus_help',tx:5,ty:7},{x:17,y:3,to:'campus_cafe',tx:4,ty:6}],
   signs:[{x:1,y:2,w:3,t:'도서관'},{x:5,y:2,w:3,t:'학생지원'},{x:16,y:2,w:3,t:'카페'}],
   spots:[{x:11,y:7,kind:'talk',id:'friend',name:'동기',face:'peerm'},
-         {x:5,y:14,kind:'talk',id:'club',name:'게임 동아리 부장',face:'girl'},
-         {x:10,y:14,kind:'thing',id:'fieldsign',name:'운동장 안내판',look:'sign'}],
+         {x:5,y:16,kind:'talk',id:'club',name:'게임 동아리 부장',face:'girl'},
+         {x:10,y:16,kind:'thing',id:'fieldsign',name:'운동장 안내판',look:'sign'}],
   eggs:[{id:'c_field',x:20,y:17,coin:30,msg:'운동장 구석에서 천 원짜리 한 장을 주웠다.'},
         {id:'c_notes',x:1,y:15,xp:20,msg:'누가 버린 필기 노트를 훑어봤다. 은근히 도움이 된다.'}]},
 
@@ -4837,43 +4872,45 @@ var MAPS={
   'HHHHHHHHDDHHHHHHDHHHHH',
   '______________________',
   '______________________',
-  '_t_________________t__',
+  '__t________________t__',
   '______________________',
   '_____b_________b______',
   '______________________',
   '__________p___________',
   '______________________',
-  'gggggggggggggggggggggg',
-  'ggtgggggggttgggggggtgg',
-  'gggggggggggggggggggggg',
-  'gggggwwwwwgggggooggggg',
-  'ggggwwwwwwwggggbgggggg',
-  'ggtggwwwwwggggggtggggg',
-  'gggggggggggggooggggggg',
-  'gggtgggggggggggggtgggg',
-  'ffffffffffffffffffffff'],
-  edges:{west:'campus',east:'office'},
+  'ggtg____gggggQQQQ_gtgg',
+  'gggg____gggggQQQQ_gggg',
+  'rrrrrrrr------rrrrrrrr',
+  'rrrrrrrr------rrrrrrrr',
+  'ggggwwwwwgggggggg_rrgg',
+  'ggtwwwwwwwggbgggg_rrgt',
+  'gggwwwwwggggoogtg_rrgg',
+  'ggtgggggggtgggggg_rrgg',
+  'fffffffffffffffff_rrff'],
+  edges:{west:'campus',east:'office',south:'market'},
+  blds:[{x:0,y:0,w:13,h:3,s:'concrete',c:'#D6D2DC'},{x:13,y:0,w:9,h:3,s:'concrete',c:'#C4D2E0'}],
   warps:[{x:8,y:2,to:'center_lobby',tx:6,ty:7},{x:9,y:2,to:'center_lobby',tx:7,ty:7},{x:16,y:2,to:'center_nhis',tx:6,ty:6}],
   signs:[{x:7,y:1,w:4,t:'고용센터'},{x:15,y:1,w:3,t:'공단'}],
   spots:[
-         {x:16,y:15,kind:'talk',id:'gpa2',name:'벤치의 할아버지',face:'gpa',dir:1}],
-  eggs:[{id:'ce_bench',x:20,y:14,coin:20,msg:'벤치 밑에서 동전을 주웠다.'},
+         {x:16,y:18,kind:'thing',id:'tomarket',name:'시장 방향 안내판',look:'sign'},
+         {x:13,y:16,kind:'talk',id:'gpa2',name:'벤치의 할아버지',face:'gpa',dir:1}],
+  eggs:[{id:'ce_bench',x:15,y:18,coin:20,msg:'벤치 밑에서 동전을 주웠다.'},
         {id:'ce_pond',x:11,y:17,xp:20,msg:'연못에 비친 얼굴이 제법 어른스럽다. 괜히 뿌듯하다.'}]},
 
  office:{spawn:{x:3,y:4},name:'회사 앞',sub:'4 · 첫 출근 이후',w:22,h:20,rows:[
-  'RRRRRRRRRRRRRRRRRRRRRR',
-  'HWWWWHHHHWWWWWHHHWWWWH',
-  'HWWWWHHDDWWWWWHHHHHHHH',
+  'RRRRRRRRRRRRRRRRRRRR_t',
+  'HWWWWHHHHWWWWWHHHWWW_t',
+  'HWWWWHHDDWWWWWHHHHHH_t',
   '______________________',
   '______________________',
-  '_t_______p_________t__',
+  '__t______p_________t__',
   '______________________',
   '______________________',
   '______b__________b____',
   '______________________',
   '______________________',
-  'gggg______gggg______gg',
-  'gttg______gttg______gg',
+  'gggg______gggQQQQQ__gg',
+  'ggtg______gttQQQQQ__gg',
   'rrrrrrrr------rrrrrrrr',
   'rrrrrrrr------rrrrrrrr',
   'ggggggggAAAggggggggggg',
@@ -4881,10 +4918,12 @@ var MAPS={
   'gggggggggggggggggggggg',
   'gggtgggggggggggggtgggg',
   'ffffffffffffffffffffff'],
-  edges:{west:'center',east:'bank'},
+  edges:{west:'center',east:'bank',north:'station'},
+  blds:[{x:0,y:0,w:14,h:3,s:'glass'},{x:14,y:0,w:6,h:3,s:'concrete',c:'#BDB8C8'}],
   warps:[{x:7,y:2,to:'office_lobby',tx:6,ty:7},{x:8,y:2,to:'office_lobby',tx:7,ty:7}],
   signs:[{x:6,y:1,w:4,t:'회사'}],
   spots:[
+         {x:19,y:3,kind:'thing',id:'tostation',name:'역 방향 안내판',look:'sign'},
          {x:9,y:16,kind:'talk',id:'truck',name:'푸드트럭 사장',face:'peerm'}],
   eggs:[{id:'o_truck',x:19,y:17,coin:25,msg:'푸드트럭 앞에서 거스름돈을 주웠다. 사장님이 가지래.'}]},
 
@@ -4894,35 +4933,36 @@ var MAPS={
   'HHHHDHHHHHHHHDHHHHHHHH',
   '______________________',
   '______________________',
-  '_t____________________',
+  '__t___________________',
   '______________________',
   '_________b____________',
   '______________________',
   '____________p_________',
   '______________________',
-  'ffffffffff__ffffffffff',
-  'gggggggggggggggggggggg',
+  'ggggg____ggggQQQQ_gggg',
+  'ggtgg____ggggQQQQ_ggtg',
+  'rrrrrrrr------rrrrrrrr',
+  'rrrrrrrr------rrrrrrrr',
   'gggAAAgggAAAgggAAAgggg',
   'gggggggggggggggggggggg',
-  'gggggggggggggggggggggg',
   'ggtggggggtggggggtggggg',
-  'gggggggggggggggggggggg',
   'gggtgggggggggggggtgggg',
   'ffffffffffffffffffffff'],
   edges:{west:'office'},
+  blds:[{x:0,y:0,w:9,h:3,s:'stone',c:'#E4E0EA'},{x:9,y:0,w:13,h:3,s:'shop',c:'#D8ECF6',a:'#3F6FB8'}],
   warps:[{x:4,y:2,to:'bank_branch',tx:4,ty:6},{x:13,y:2,to:'bank_laundry',tx:4,ty:5}],
   signs:[{x:3,y:1,w:3,t:'은행'},{x:12,y:1,w:3,t:'세탁소'}],
   spots:[{x:16,y:5,kind:'boss',id:'jeonse'},
          {x:18,y:7,kind:'boss',id:'mlm'},
          {x:20,y:4,kind:'boss',id:'fp'},
-         {x:10,y:14,kind:'talk',id:'flea',name:'벼룩시장 상인',face:'peerf'}],
+         {x:10,y:16,kind:'talk',id:'flea',name:'벼룩시장 상인',face:'peerf'}],
   eggs:[{id:'b_flea',x:20,y:16,coin:35,msg:'벼룩시장 좌판 밑에서 동전을 주웠다.'},
         {id:'b_alley',x:1,y:18,xp:20,msg:'골목 끝 낙서: "보증금은 등기부부터". 누군가 크게 당했나 보다.'}]}
 };
 /* ── 건물 안 ──────────────────────────────────────────────────────────
    문이 달린 건물은 들어갈 수 있다. 안에는 퀘스트 대신 동네 사람의 잔소리, 넌센스 퀴즈,
    구석에 떨어진 동전이 있다. 걸어서 찾는 재미가 없으면 넓은 지도는 그냥 빈 땅이다. */
-MAPS.town_mart={name:'편의점',sub:'1 · 동네 안',w:11,h:8,interior:1,
+MAPS.town_mart={floor:'check',wall:'paper',name:'편의점',sub:'1 · 동네 안',w:11,h:8,interior:1,
   tint:{fl:'#E8E4F0',fl2:'#D2CCE0',wl:'#9BDCF7',wl2:'#6EC8F0'},spawn:{x:5,y:6},rows:[
   '###########',
   '#SSS.FFF.F#',
@@ -4936,7 +4976,7 @@ MAPS.town_mart={name:'편의점',sub:'1 · 동네 안',w:11,h:8,interior:1,
   spots:[{x:2,y:5,kind:'talk',id:'mart',name:'편의점 알바생',face:'peerf'},
          {x:8,y:5,kind:'desk',id:'m_table',label:'먹는 자리'}],
   eggs:[{id:'tm_coin',x:9,y:6,coin:30,msg:'냉장고 밑에 굴러간 동전을 꺼냈다.'}]};
-MAPS.town_hall={name:'주민센터',sub:'1 · 동네 안',w:12,h:8,interior:1,
+MAPS.town_hall={floor:'lino',wall:'wains',name:'주민센터',sub:'1 · 동네 안',w:12,h:8,interior:1,
   tint:{fl:'#D9D2C2',fl2:'#C2BAA8',wl:'#F2EAD8',wl2:'#D8CDB4'},spawn:{x:6,y:6},rows:[
   '############',
   '#MKK..KK.P.#',
@@ -4950,9 +4990,10 @@ MAPS.town_hall={name:'주민센터',sub:'1 · 동네 안',w:12,h:8,interior:1,
   spots:[{x:2,y:3,kind:'desk',id:'h_move',label:'전입신고'},
          {x:5,y:3,kind:'desk',id:'h_youth',label:'청년 지원'},
          {x:9,y:3,kind:'desk',id:'h_report',label:'전월세 신고'},
-         {x:1,y:1,kind:'thing',id:'ticket1',name:'번호표 기계',xp:10}],
+         {x:1,y:1,kind:'thing',id:'ticket1',name:'번호표 기계',xp:10},
+         {x:10,y:4,kind:'lease',place:'hall',name:'전입 신고 창구 직원',face:'deskf',dir:1}],
   eggs:[{id:'th_sofa',x:10,y:6,coin:20,msg:'대기석 틈에서 동전이 나왔다.'}]};
-MAPS.town_estate={name:'부동산',sub:'1 · 동네 안',w:14,h:10,interior:1,
+MAPS.town_estate={floor:'wood',wall:'wains',name:'부동산',sub:'1 · 동네 안',w:14,h:10,interior:1,
   tint:{fl:'#C9A97A',fl2:'#A98A5E',wl:'#F7EBD6',wl2:'#E3D2B4'},spawn:{x:6,y:8},rows:[
   '##############',
   '#KK.P....P.KK#',
@@ -4968,9 +5009,10 @@ MAPS.town_estate={name:'부동산',sub:'1 · 동네 안',w:14,h:10,interior:1,
   spots:[{x:2,y:3,kind:'desk',id:'e_jeonse',label:'전세'},
          {x:6,y:3,kind:'desk',id:'e_wolse',label:'월세'},
          {x:10,y:3,kind:'desk',id:'e_maemae',label:'매매·중개'},
-         {x:12,y:5,kind:'ep',id:'jeonse-day'}],
+         {x:12,y:5,kind:'ep',id:'jeonse-day'},
+         {x:8,y:6,kind:'lease',place:'estate',name:'전세 계약 상담',face:'gpa'}],
   eggs:[{id:'te_desk',x:1,y:7,coin:25,msg:'매물 전단지 사이에서 동전을 주웠다.'}]};
-MAPS.campus_lib={name:'도서관',sub:'2 · 학교 앞 안',w:12,h:9,interior:1,
+MAPS.campus_lib={floor:'wood',wall:'wood',name:'도서관',sub:'2 · 학교 앞 안',w:12,h:9,interior:1,
   tint:{fl:'#B99B6E',fl2:'#A5825A',wl:'#E3D2B4',wl2:'#C6B496'},spawn:{x:5,y:7},rows:[
   '############',
   '#KKKK.KKKK.#',
@@ -4984,7 +5026,7 @@ MAPS.campus_lib={name:'도서관',sub:'2 · 학교 앞 안',w:12,h:9,interior:1,
   warps:[{x:5,y:8,to:'campus',tx:4,ty:4}],
   spots:[{x:6,y:6,kind:'talk',id:'lib',name:'도서관 사서',face:'deskf',dir:1}],
   eggs:[{id:'cl_book',x:1,y:7,xp:30,msg:'먼지 쌓인 "사회초년생 생존기"를 끝까지 읽었다.'}]};
-MAPS.campus_help={name:'학생지원센터',sub:'2 · 학교 앞 안',w:12,h:9,interior:1,
+MAPS.campus_help={floor:'carpet',wall:'paper',name:'학생지원센터',sub:'2 · 학교 앞 안',w:12,h:9,interior:1,
   tint:{fl:'#CFCADA',fl2:'#BAB4C6',wl:'#E8F4E4',wl2:'#C9DCC3'},spawn:{x:5,y:7},rows:[
   '############',
   '#KK..P...KK#',
@@ -4999,7 +5041,7 @@ MAPS.campus_help={name:'학생지원센터',sub:'2 · 학교 앞 안',w:12,h:9,i
   spots:[{x:2,y:3,kind:'desk',id:'u_loan',label:'장학·대출'},
          {x:7,y:3,kind:'desk',id:'u_dorm',label:'기숙사·자취'}],
   eggs:[{id:'ch_flyer',x:10,y:5,xp:15,msg:'게시판 전단을 읽었다. "근로장학생 모집 · 도서관 · 학과 사무실"'}]};
-MAPS.campus_cafe={name:'카페',sub:'2 · 학교 앞 안',w:12,h:8,interior:1,
+MAPS.campus_cafe={floor:'wood',wall:'brick',name:'카페',sub:'2 · 학교 앞 안',w:12,h:8,interior:1,
   tint:{fl:'#8A6A44',fl2:'#6E5334',wl:'#F7EBD6',wl2:'#E3D2B4'},spawn:{x:4,y:6},rows:[
   '############',
   '#CCCM...PPP#',
@@ -5016,7 +5058,7 @@ MAPS.campus_cafe={name:'카페',sub:'2 · 학교 앞 안',w:12,h:8,interior:1,
          {x:4,y:1,kind:'thing',id:'coffee',name:'커피 머신'},
          {x:9,y:5,kind:'ep',id:'first-job'}],
   eggs:[{id:'cc_coupon',x:10,y:6,coin:25,msg:'테이블 밑에서 도장이 다 찍힌 쿠폰을 주웠다.'}]};
-MAPS.center_lobby={name:'고용센터',sub:'3 · 고용센터 앞 안',w:14,h:9,interior:1,
+MAPS.center_lobby={floor:'lino',wall:'paper',name:'고용센터',sub:'3 · 고용센터 앞 안',w:14,h:9,interior:1,
   tint:{fl:'#CFCADA',fl2:'#BAB4C6',wl:'#E8E4F0',wl2:'#C9C3D6'},spawn:{x:6,y:7},rows:[
   '##############',
   '#KK.M....KK.P#',
@@ -5036,7 +5078,7 @@ MAPS.center_lobby={name:'고용센터',sub:'3 · 고용센터 앞 안',w:14,h:9,
          {x:4,y:1,kind:'thing',id:'ticket2',name:'번호표 기계',xp:10},
          {x:8,y:6,kind:'ep',id:'job-hunt'}],
   eggs:[{id:'cel_memo',x:1,y:6,xp:25,msg:'누가 두고 간 이력서 첨삭 메모를 읽었다. 배울 게 많다.'}]};
-MAPS.center_nhis={name:'공단',sub:'3 · 고용센터 앞 안',w:12,h:8,interior:1,
+MAPS.center_nhis={floor:'lino',wall:'wains',name:'공단',sub:'3 · 고용센터 앞 안',w:12,h:8,interior:1,
   tint:{fl:'#D9D2C2',fl2:'#C2BAA8',wl:'#E4EEF7',wl2:'#C3D3E3'},spawn:{x:6,y:6},rows:[
   '############',
   '#KK..P..KK.#',
@@ -5050,7 +5092,7 @@ MAPS.center_nhis={name:'공단',sub:'3 · 고용센터 앞 안',w:12,h:8,interio
   spots:[{x:2,y:3,kind:'desk',id:'n_health',label:'건강보험'},
          {x:7,y:3,kind:'desk',id:'n_pension',label:'국민연금'}],
   eggs:[{id:'cn_pamph',x:10,y:6,xp:15,msg:'"지역가입자 보험료 조정 신청" 안내문을 읽었다.'}]};
-MAPS.office_lobby={name:'회사',sub:'4 · 회사 앞 안',w:14,h:9,interior:1,
+MAPS.office_lobby={floor:'stone',wall:'glass',name:'회사',sub:'4 · 회사 앞 안',w:14,h:9,interior:1,
   tint:{fl:'#9B93A8',fl2:'#837C94',wl:'#DDD8CC',wl2:'#C9C3B4'},spawn:{x:6,y:7},rows:[
   '##############',
   '#P.KK....KK.P#',
@@ -5068,7 +5110,7 @@ MAPS.office_lobby={name:'회사',sub:'4 · 회사 앞 안',w:14,h:9,interior:1,
          {x:4,y:6,kind:'talk',id:'guard',name:'경비 아저씨',face:'gpa',dir:2},
          {x:11,y:4,kind:'ep',id:'first-pay'}],
   eggs:[{id:'ol_ramen',x:12,y:6,ramen:1,msg:'탕비실에서 컵라면 하나를 챙겼다. (라면 +1)'}]};
-MAPS.bank_branch={name:'은행',sub:'5 · 은행 골목 안',w:12,h:8,interior:1,
+MAPS.bank_branch={floor:'stone',wall:'wains',name:'은행',sub:'5 · 은행 골목 안',w:12,h:8,interior:1,
   tint:{fl:'#E3D2B4',fl2:'#C9B79A',wl:'#FFF8EC',wl2:'#E3C08A'},spawn:{x:4,y:6},rows:[
   '############',
   '#MM.KK..KKP#',
@@ -5086,7 +5128,7 @@ MAPS.bank_branch={name:'은행',sub:'5 · 은행 골목 안',w:12,h:8,interior:1
          {x:1,y:1,kind:'thing',id:'atm1',name:'ATM'},
          {x:2,y:1,kind:'thing',id:'atm2',name:'ATM',xp:20}],
   eggs:[{id:'bb_coin',x:10,y:6,coin:30,msg:'대기석 아래에서 동전을 주웠다.'}]};
-MAPS.bank_laundry={name:'세탁소',sub:'5 · 은행 골목 안',w:9,h:7,interior:1,
+MAPS.bank_laundry={floor:'tile',wall:'tile',name:'세탁소',sub:'5 · 은행 골목 안',w:9,h:7,interior:1,
   tint:{fl:'#CDEEFF',fl2:'#9BDCF7',wl:'#FFFDF6',wl2:'#C9C3D6'},spawn:{x:4,y:5},rows:[
   '#########',
   '#LLLL.KK#',
@@ -5100,9 +5142,169 @@ MAPS.bank_laundry={name:'세탁소',sub:'5 · 은행 골목 안',w:9,h:7,interio
          {x:1,y:1,kind:'thing',id:'coinwash',name:'코인 세탁기',act:{t:'빨래하기',cost:10,cd:0,d:{clean:50},msg:'코인 세탁을 했다. 청결 +50'}},
          {x:6,y:1,kind:'thing',id:'lost',name:'분실물함',item:'catmug'}],
   eggs:[{id:'bl_floor',x:7,y:4,coin:20,msg:'건조기 옆 바닥에서 동전을 주웠다.'}]};
+/* ── 생활권 남북 ────────────────────────────────────────────────────
+   옆으로만 이어지던 다섯 맵에 남북 갈래를 붙였다. 동네 남쪽은 주택가(전세 매물 두 집이 여기 있다),
+   고용센터 남쪽은 전통시장, 회사 북쪽은 역 앞. 차는 찻길을 따라 내려가고, 사람은 옆 보도로 걷는다. */
+MAPS.villa={name:'주택가',sub:'1 · 동네 남쪽',w:22,h:20,spawn:{x:17,y:1},rows:['fffffffffffffffff_rr_f',
+  'gggggtggggggggggg_rr_g',
+  'gRRRRRRRgRRRRRRRg_rr_g',
+  'gHWWHWWHgHWWWWWHg_rr_g',
+  'gHWWHWWHgHWWWWWHg_rr_g',
+  'gHWWHWWHgHWWWWWHg_rr_g',
+  'gHHHDHHHgHHHDHHHg_rr_g',
+  '__________________rr__',
+  'QQQQrrrrrr--rrrrrrrr__',
+  'QQQQrrrrrr--rrrrrrrr__',
+  '______________________',
+  'gRRRRRRRRgg_ssssss_gtg',
+  'gHWWHHWWHgg_ssssss_ggg',
+  'gHHHHHHHHgg_ssbbss_gog',
+  'gg_______gg________ggg',
+  'ggtggggtgggggtggggtggg',
+  'goooggggggggggoooggggg',
+  'gggggtggggggggggggtggg',
+  'ggtgggggggggtggggggggg',
+  'ffffffffffffffffffffff'],
+  edges:{north:'town'},
+  blds:[{x:1,y:2,w:7,h:5,s:'stone'},{x:9,y:2,w:7,h:5,s:'apt',c:'#E6D6B8'},{x:1,y:11,w:8,h:3,s:'red'}],
+  warps:[{x:4,y:6,to:'villa_new',tx:4,ty:6},{x:12,y:6,to:'villa_old',tx:5,ty:7}],
+  signs:[{x:2,y:3,w:5,t:'신축 빌라 A'},{x:10,y:3,w:5,t:'구축 아파트 B'}],
+  spots:[{x:2,y:7,kind:'thing',id:'bunyang',name:'분양 현수막',look:'sign'},
+         {x:15,y:7,kind:'thing',id:'aptboard',name:'아파트 게시판',look:'sign'},
+         {x:14,y:13,kind:'talk',id:'villanb',name:'놀이터의 이웃',face:'peerf',dir:1}],
+  eggs:[{id:'v_sand',x:13,y:11,coin:25,msg:'모래밭에서 동전을 찾았다. 아이들이 흘렸나 보다.'},
+        {id:'v_flyer',x:1,y:17,xp:20,msg:'"전세사기 예방 체크리스트" 전단을 주웠다. 등기부·실거래가·보증보험, 세 줄이다.'}]};
+MAPS.villa_new={name:'신축 빌라 A',sub:'1 · 주택가 안',w:10,h:8,interior:1,floor:'stone',wall:'paper',
+  tint:{fl:'#E4E2EA',fl2:'#C9C6D2',wl:'#FFFFFF',wl2:'#E4E2EA'},spawn:{x:4,y:6},rows:['##########',
+  '#CCF...P.#',
+  '#........#',
+  '#........#',
+  '#,,,,....#',
+  '#,,,,....#',
+  '#........#',
+  '####D#####'],
+  warps:[{x:4,y:7,to:'villa',tx:4,ty:7}],
+  spots:[{x:6,y:3,kind:'lease',place:'house',pick:'A',name:'신축 빌라 집주인',face:'officem',dir:1},
+         {x:7,y:1,kind:'thing',id:'fullopt',name:'옵션 안내문',look:'sign'}],
+  eggs:[{id:'vn_tag',x:8,y:6,xp:15,msg:'새 가구에 붙은 가격표를 봤다. 집값보다 옵션 자랑이 먼저인 집이다.'}]};
+MAPS.villa_old={name:'구축 아파트 B',sub:'1 · 주택가 안',w:12,h:9,interior:1,floor:'ondol',wall:'wains',
+  tint:{fl:'#D9C08A',fl2:'#BFA46C',wl:'#EFE6D2',wl2:'#D6C8AA'},spawn:{x:5,y:7},rows:['############',
+  '#CCCLF...KK#',
+  '#..........#',
+  '#..........#',
+  '#,,,,......#',
+  '#,,,,......#',
+  '#..........#',
+  '#P........P#',
+  '#####D######'],
+  warps:[{x:5,y:8,to:'villa',tx:12,ty:7}],
+  spots:[{x:7,y:3,kind:'lease',place:'house',pick:'B',name:'구축 아파트 집주인',face:'gma',dir:1},
+         {x:4,y:1,kind:'thing',id:'boiler',name:'오래된 보일러'}],
+  eggs:[{id:'vo_coin',x:10,y:6,coin:25,msg:'장판 틈에서 오래된 동전이 나왔다.'}]};
+MAPS.market={name:'전통시장',sub:'3 · 고용센터 남쪽',w:22,h:20,spawn:{x:17,y:1},rows:['RRRRRRRRRRRRRRRRt_rrgg',
+  'HWWHHWWHHWWHHWWHg_rrgg',
+  'HHHHHDHHHHHHHHHHg_rrgg',
+  '__________________rr__',
+  '_AA__AA__AA__AA___rr__',
+  '__________________rr__',
+  'RRRRRRRRRRRRRRRR__rrgg',
+  'HWWHHWWHHWWHHWWH__rrgg',
+  'HHHHHHHHHHDHHHHH__rrgg',
+  '__________________rr__',
+  '__AAA__AAA__AAA___rr__',
+  '__________________rr__',
+  'gtggggggQQQQQQQQQQrrgg',
+  'ggggggggQQQQQQQQQQrrgg',
+  'ggtgggggggggtggggggtgg',
+  'goooggggtggggoooggggtg',
+  'gggggggggggggggggggggg',
+  'ggtggggtggggggggtggggg',
+  'gggggggggggggggggggggg',
+  'ffffffffffffffffffffff'],
+  edges:{north:'center'},
+  blds:[{x:0,y:0,w:4,h:3,s:'shop',c:'#F2D6C4',a:'#E0503E'},{x:4,y:0,w:4,h:3,s:'shop',c:'#D6E6F2',a:'#3F6FB8'},{x:8,y:0,w:4,h:3,s:'shop',c:'#F2ECC4',a:'#3F9F5A'},{x:12,y:0,w:4,h:3,s:'shop',c:'#E8D8F0',a:'#8A5AB0'},
+        {x:0,y:6,w:4,h:3,s:'shop',c:'#F4E4C8',a:'#D98A16'},{x:4,y:6,w:4,h:3,s:'tile',c:'#E4D4C8'},{x:8,y:6,w:4,h:3,s:'shop',c:'#F2DCC8',a:'#A84A3A'},{x:12,y:6,w:4,h:3,s:'shop',c:'#DDEEDD',a:'#E0503E'}],
+  warps:[{x:5,y:2,to:'market_fish',tx:4,ty:5},{x:10,y:8,to:'market_food',tx:5,ty:6}],
+  signs:[{x:0,y:0,w:4,t:'반찬'},{x:4,y:0,w:4,t:'수산물'},{x:8,y:0,w:4,t:'과일'},{x:12,y:0,w:4,t:'잡화'},
+         {x:0,y:6,w:4,t:'떡집'},{x:4,y:6,w:4,t:'정육점'},{x:8,y:6,w:4,t:'칼국수'},{x:12,y:6,w:4,t:'분식'}],
+  spots:[{x:3,y:3,kind:'talk',id:'vendor',name:'반찬가게 사장',face:'gma'},
+         {x:15,y:4,kind:'thing',id:'origin',name:'원산지 표시판',look:'sign'},
+         {x:6,y:9,kind:'thing',id:'meatprice',name:'정육점 가격표',look:'sign'},
+         {x:13,y:11,kind:'talk',id:'shopper',name:'장 보는 대학생',face:'peerm',dir:1}],
+  eggs:[{id:'mk_coin',x:0,y:11,coin:30,msg:'좌판 밑으로 굴러간 동전을 주웠다.'},
+        {id:'mk_rice',x:2,y:15,xp:20,msg:'떡집 사장님이 갓 나온 떡을 한 조각 줬다. 따뜻하다.'}]};
+MAPS.market_fish={name:'수산물 가게',sub:'3 · 전통시장 안',w:10,h:7,interior:1,floor:'tile',wall:'tile',
+  tint:{fl:'#CFE4EE',fl2:'#A9C8D8',wl:'#F4F8FA',wl2:'#C9DCE6'},spawn:{x:4,y:5},rows:['##########',
+  '#CCCC..FF#',
+  '#........#',
+  '#..M.....#',
+  '#........#',
+  '#P.......#',
+  '####D#####'],
+  warps:[{x:4,y:6,to:'market',tx:5,ty:3}],
+  spots:[{x:2,y:1,kind:'talk',id:'fish',name:'수산물 가게 사장',face:'peerm',behind:1},
+         {x:3,y:3,kind:'thing',id:'scale',name:'가게 저울',xp:15}],
+  eggs:[{id:'mf_shell',x:8,y:4,xp:15,msg:'얼음 위 조개를 구경했다. 원산지 팻말이 꽂혀 있다.'}]};
+MAPS.market_food={name:'칼국숫집',sub:'3 · 전통시장 안',w:12,h:8,interior:1,floor:'check',wall:'tile',
+  tint:{fl:'#E8DCC8',fl2:'#C9B79A',wl:'#FFF8EC',wl2:'#E3D2B4'},spawn:{x:5,y:6},rows:['############',
+  '#CCCC..FF.P#',
+  '#..........#',
+  '#.T..T..T..#',
+  '#..........#',
+  '#.T..T..T..#',
+  '#..........#',
+  '#####D######'],
+  warps:[{x:5,y:7,to:'market',tx:10,ty:9}],
+  spots:[{x:2,y:1,kind:'talk',id:'noodle',name:'칼국숫집 사장',face:'gpa',behind:1},
+         {x:8,y:4,kind:'talk',id:'marketcust',name:'점심 먹는 상인',face:'peerf',dir:1}],
+  eggs:[{id:'mfd_coin',x:10,y:6,coin:20,msg:'의자 밑에서 동전을 주웠다.'}]};
+MAPS.station={name:'역 앞',sub:'4 · 회사 북쪽',w:22,h:20,spawn:{x:20,y:18},rows:['ggRRRRRRRRRRRRRRRRgtgg',
+  'ggRRRRRRRRRRRRRRRRgggg',
+  'ggHWWWWWWWWWWWWWWHgggg',
+  'ggHWWWWWWWWWWWWWWHgggg',
+  'ggHHHHHHHDDHHHHHHHgggg',
+  '______________________',
+  '__t___________p___t___',
+  '______________________',
+  '___b______b______b____',
+  '______________________',
+  'QQQQQQ____________gg__',
+  'QQQQQQ__p_______p_gg__',
+  'rrrrrrrr--rrrrrrrrgg__',
+  'rrrrrrrr--rrrrrrrrgg__',
+  'gtggggggggggggggtggg__',
+  'ggggoooggggtgggggggg__',
+  'ggggggggggggggggggtg__',
+  'ggtgggggtggggggtgggg__',
+  'gggggggggggggggggggg__',
+  'ffffffffffffffffffff__'],
+  edges:{south:'office'},
+  blds:[{x:2,y:0,w:16,h:5,s:'glass',c:'#6FA8CC'}],
+  warps:[{x:9,y:4,to:'station_hall',tx:6,ty:7},{x:10,y:4,to:'station_hall',tx:7,ty:7}],
+  signs:[{x:6,y:1,w:8,t:'뉴비역 · 지하철'}],
+  spots:[{x:12,y:10,kind:'thing',id:'busmap',name:'버스 노선도',look:'sign'},
+         {x:5,y:7,kind:'talk',id:'commuter',name:'출근하는 직장인',face:'officem',dir:2},
+         {x:16,y:15,kind:'talk',id:'busker',name:'버스킹하는 청년',face:'boy'}],
+  eggs:[{id:'st_card',x:0,y:9,xp:20,msg:'바닥에 떨어진 교통카드를 역무원에게 맡겼다. 착한 일을 했다.'},
+        {id:'st_coin',x:1,y:18,coin:25,msg:'화단 옆에서 동전을 주웠다.'}]};
+MAPS.station_hall={name:'역 대합실',sub:'4 · 역 앞 안',w:14,h:9,interior:1,floor:'lino',wall:'glass',
+  tint:{fl:'#D4D0DC',fl2:'#B4AEC0',wl:'#E8F0F6',wl2:'#C3D3E3'},spawn:{x:6,y:7},rows:['##############',
+  '#MM..C..C..MM#',
+  '#............#',
+  '#.MM.MM.MM.MM#',
+  '#............#',
+  '#.bb..bb..bb.#',
+  '#............#',
+  '#P..........P#',
+  '######DD######'],
+  warps:[{x:6,y:8,to:'station',tx:9,ty:5},{x:7,y:8,to:'station',tx:10,ty:5}],
+  spots:[{x:5,y:1,kind:'talk',id:'staff',name:'역무원',face:'officem',behind:1},
+         {x:8,y:1,kind:'thing',id:'lostbox',name:'유실물 센터 안내'},
+         {x:1,y:1,kind:'thing',id:'ticketm',name:'교통카드 충전기',xp:10}],
+  eggs:[{id:'sh_coin',x:12,y:6,coin:20,msg:'의자 밑에서 동전을 주웠다.'}]};
 /* ── 전국 여행 ─────────────────────────────────────────────────────────
    자동차가 있으면 동네 왼쪽 찻길로 고속도로에 오른다. 휴게소를 지나면 전국 지도가 펼쳐지고,
-   고속도로를 따라 강릉·전주·부산으로 간다. 도착할 때마다 기름값이 든다. */
+   고속도로를 따라 강릉·전주·부산·대구·경주로 간다. 도착할 때마다 기름값이 든다. */
 MAPS.rest={name:'휴게소',sub:'고속도로 · 쉬어 가는 곳',w:22,h:16,spawn:{x:3,y:11},rows:[
   'RRRRRRRRRRRRRRRRRRRRRR',
   'HWWHHWWHHWWHHWWHHWWHHH',
@@ -5115,11 +5317,12 @@ MAPS.rest={name:'휴게소',sub:'고속도로 · 쉬어 가는 곳',w:22,h:16,sp
   'gggggggggg__gggggggggg',
   '__________________M_M_',
   '__________________CC__',
-  '______________________',
+  '_QQQQQQQQ_____________',
   'rrrrrrrrrrrrrrrrrrrrrr',
   'rrrrrrrrrrrrrrrrrrrrrr',
   'gggggggggggggggggggggg',
   'ffffffffffffffffffffff'],
+  blds:[{x:0,y:0,w:22,h:3,s:'shop',c:'#F0E4CC',a:'#E0503E'}],
   warps:[{x:5,y:2,to:'rest_hall',tx:5,ty:6},{x:6,y:2,to:'rest_hall',tx:6,ty:6},
          {x:0,y:12,to:'town',tx:1,ty:13,needCar:1},{x:0,y:13,to:'town',tx:1,ty:13,needCar:1},
          {x:21,y:12,to:'korea',tx:8,ty:11,needCar:1},{x:21,y:13,to:'korea',tx:8,ty:11,needCar:1}],
@@ -5130,7 +5333,7 @@ MAPS.rest={name:'휴게소',sub:'고속도로 · 쉬어 가는 곳',w:22,h:16,sp
          {x:20,y:11,kind:'thing',id:'hwsign',name:'고속도로 안내판',look:'sign'}],
   eggs:[{id:'r_coin',x:20,y:3,coin:25,msg:'주차선 옆에서 동전을 주웠다.'},
         {id:'r_map',x:1,y:11,xp:20,msg:'구겨진 전국 도로 지도를 펴 봤다. 어디든 갈 수 있을 것 같다.'}]};
-MAPS.rest_hall={name:'휴게소 식당가',sub:'고속도로 · 휴게소 안',w:12,h:8,interior:1,
+MAPS.rest_hall={floor:'check',wall:'tile',name:'휴게소 식당가',sub:'고속도로 · 휴게소 안',w:12,h:8,interior:1,
   tint:{fl:'#E3D2B4',fl2:'#C9B79A',wl:'#FFF8EC',wl2:'#E3C08A'},spawn:{x:5,y:6},rows:[
   '############',
   '#CCC..CCC.P#',
@@ -5164,69 +5367,362 @@ MAPS.korea={name:'전국 지도',sub:'고속도로 · 어디로 갈까',w:22,h:2
   'wwwwNNNN=NNNmNmNNNNNww',
   'wwwwNNNN=NNNNmNNNNNNww',
   'wwwNNNX==NNNNNNNNNNNww',
-  'wwwNNNNN=NNmNNNNNNNNww',
-  'wwwNNNNN=NNNmNNNNNNNww',
-  'wwwNNNNN=NNNNNNNNNNNww',
-  'wwwwNNNN==========NNww',
+  'wwwNNNNN=NNmXNNNNNNNww',
+  'wwwNNNNN=NNN=NNNNNNNww',
+  'wwwNNNNN=NNN=NNNNNNNww',
+  'wwwwNNNN===========Xww',
   'wwwwNNNNNNNNNNNNN=NNww',
   'wwwwNNNNNNNNNNNNNXNNww',
   'wwwwwNNNNNNNNNNNNNNwww',
   'wwwwwwNNNNNNNNNNNwwwww',
   'wwwwwNNNNwwwwwwwwwwwww'],
   warps:[{x:5,y:6,to:'town',tx:1,ty:13},{x:8,y:9,to:'rest',tx:20,ty:12},
-         {x:17,y:6,to:'gangneung',tx:1,ty:3,fuel:20},{x:6,y:18,to:'jeonju',tx:1,ty:4,fuel:20},{x:17,y:24,to:'busan',tx:1,ty:3,fuel:25}],
-  signs:[{x:3,y:4,w:3,t:'우리 동네'},{x:9,y:8,w:3,t:'휴게소'},{x:17,y:4,w:3,t:'강릉'},{x:3,y:16,w:3,t:'전주'},{x:17,y:25,w:3,t:'부산'}],
+         {x:17,y:6,to:'gangneung',tx:1,ty:6,fuel:20},{x:6,y:18,to:'jeonju',tx:1,ty:5,fuel:20},{x:17,y:24,to:'busan',tx:1,ty:5,fuel:25},
+         {x:12,y:19,to:'daegu',tx:1,ty:5,fuel:20},{x:19,y:22,to:'gyeongju',tx:1,ty:5,fuel:25}],
+  signs:[{x:3,y:4,w:3,t:'우리 동네'},{x:9,y:8,w:3,t:'휴게소'},{x:17,y:4,w:3,t:'강릉'},{x:3,y:16,w:3,t:'전주'},{x:17,y:25,w:3,t:'부산'},{x:13,y:18,w:3,t:'대구'},{x:18,y:23,w:3,t:'경주'}],
   spots:[],eggs:[{id:'k_view',x:16,y:9,xp:15,msg:'고갯길에서 보는 경치가 좋다. 창문을 열었다.'}]};
-MAPS.gangneung={name:'강릉 바다',sub:'여행지 · 동해',w:22,h:16,spawn:{x:1,y:3},rows:[
-  'gggttgggggggggggttgggg',
-  'gHHHHHHgggggggHHHHHHgg',
-  'gHHWWHHgggggggHHWWHHgg',
-  '______________________',
-  '_CC________A______CC__',
-  '______________________',
+/* 여행지는 도시마다 맵이 두세 개다. 첫 맵 왼쪽 주차장에 차를 세우고, 도시 안은 걸어서 남북·동서로 잇는다.
+   D3 조사(ops/meeting-0930/d3-travel.md)의 장소와 팁을 썼다. 요금·시간은 바뀌니 "게시된 것을 확인하자" 쪽으로 쓴다.
+   night가 붙은 맵(야시장, 동궁과 월지)은 밤빛을 덧칠한다. */
+MAPS.gangneung={name:'강릉 안목해변',sub:'여행지 · 강릉',w:22,h:16,spawn:{x:5,y:6},rows:['tgggggtggg__gggtgggggt',
+  'gRRRRRRRgg__gRRRRRRRRg',
+  'gHWWHWWHgg__gHWWHHWWHg',
+  'gHHHDHHHgg__gHHHHHHHHg',
+  'rrrr__________________',
+  'rrrr_CC_______A_____CC',
+  'QQQQ__________________',
+  'QQQQssssssssssssssssss',
+  'sssssssssssssssssCssss',
   'ssssssssssssssssssssss',
-  'ssssssssssssssssCsssss',
   'ssssssssssssssssssssss',
-  'ssssssssssssssssssssss',
-  'wwwwwwwwwwwwwwwwwwwwww',
   'wwwwwwwwwwwwwwwwwwwwww',
   'wwwwwwwwwwwwwwwwwwwwww',
   'wwwwwwwwwwwwwwwwwwwwww',
   'wwwwwwwwwwwwwwwwwwwwww',
   'wwwwwwwwwwwwwwwwwwwwww'],
-  warps:[{x:0,y:3,to:'korea',tx:16,ty:7},{x:0,y:4,to:'korea',tx:16,ty:7},{x:0,y:5,to:'korea',tx:16,ty:7}],
-  signs:[{x:1,y:1,w:6,t:'관광안내소'},{x:14,y:1,w:6,t:'초당순두부'}],
-  spots:[{x:2,y:4,kind:'desk',id:'g_info',label:'관광안내소',face:'deskf'},
-         {x:18,y:4,kind:'talk',id:'tofu',name:'순두부집 사장',face:'gma',behind:1},
-         {x:11,y:4,kind:'thing',id:'parasol',name:'파라솔 대여'},
-         {x:16,y:7,kind:'desk',id:'g_guard',label:'안전요원',face:'boy'}],
-  eggs:[{id:'g_shell',x:5,y:8,xp:20,msg:'예쁜 조개껍데기를 주웠다. 주머니에 넣었다.'},
-        {id:'g_coin',x:20,y:9,coin:30,msg:'모래 속에서 동전이 반짝였다.'}]};
-MAPS.jeonju={name:'전주 한옥마을',sub:'여행지 · 전라북도',w:22,h:16,spawn:{x:2,y:4},rows:[
-  'RRRRRRRgggggggRRRRRRRR',
-  'HHHHHHHgggtgggHHHHHHHH',
-  'HHHDHHHgggggggHHHWWHHH',
-  '______________________',
-  '______________________',
-  '_ooo______b_______CC__',
-  '______________________',
+  edges:{north:'gangneung_ojuk'},
+  blds:[{x:1,y:1,w:7,h:3,s:'wood',c:'#8A5A3A',r:'#3E6A56'},{x:13,y:1,w:8,h:3,s:'shop',c:'#F2ECDD',a:'#3F6FB8'}],
+  warps:[{x:0,y:4,to:'korea',tx:16,ty:7,needCar:1},{x:0,y:5,to:'korea',tx:16,ty:7,needCar:1},{x:4,y:3,to:'gangneung_cafe',tx:4,ty:6}],
+  signs:[{x:1,y:1,w:7,t:'커피거리 카페'},{x:13,y:1,w:8,t:'초당순두부'}],
+  spots:[{x:5,y:5,kind:'desk',id:'g_info',label:'관광안내소',face:'deskf'},
+         {x:20,y:5,kind:'talk',id:'tofu',name:'순두부집 사장',face:'gma',behind:1},
+         {x:14,y:5,kind:'thing',id:'parasol',name:'파라솔 대여'},
+         {x:10,y:6,kind:'thing',id:'beachopen',name:'해수욕장 안내판',look:'sign'},
+         {x:17,y:8,kind:'desk',id:'g_guard',label:'안전요원',face:'boy'}],
+  eggs:[{id:'g_shell',x:5,y:9,xp:20,msg:'예쁜 조개껍데기를 주웠다. 주머니에 넣었다.'},
+        {id:'g_coin',x:20,y:10,coin:30,msg:'모래 속에서 동전이 반짝였다.'}]};
+MAPS.gangneung_ojuk={name:'오죽헌',sub:'여행지 · 강릉',w:22,h:16,spawn:{x:10,y:14},rows:['tttttttttttttttttttttt',
+  'tgggRRRRRRRRRRRRRRgggt',
+  'tgggHWWHWWHHWWHWWHgggt',
+  'tgggHHHHHHHHHHHHHHgggt',
+  'tggg______________gggt',
+  'tgtg__oo______oo__gtgt',
+  'tggg______________gggt',
+  'tgtgggggg____ggggggtgt',
+  'tggggtggg____gggtggggt',
+  'tgttggggg____ggggttggt',
+  'tggggggg______gggggggt',
+  'tgggbggg______gggbgggt',
+  'tggggggg______gggggggt',
+  'tgtggggg______ggggggtt',
+  'tggggggg______gggggggt',
+  'tttttttttt__tttttttttt'],
+  edges:{south:'gangneung'},
+  blds:[{x:4,y:1,w:14,h:3,s:'hanok'}],
+  signs:[{x:8,y:1,w:6,t:'오죽헌'}],
+  spots:[{x:8,y:6,kind:'thing',id:'ojuksign',name:'오죽헌 안내판',look:'sign'},
+         {x:15,y:6,kind:'talk',id:'docent',name:'문화관광해설사',face:'gma',dir:1},
+         {x:3,y:9,kind:'thing',id:'bamboo',name:'검은 대나무',xp:15}],
+  eggs:[{id:'go_ink',x:18,y:12,xp:20,msg:'붓글씨 체험장에서 이름을 써 봤다. 삐뚤빼뚤하다.'},
+        {id:'go_coin',x:1,y:4,coin:25,msg:'담장 아래에서 동전을 주웠다.'}]};
+MAPS.gangneung_cafe={name:'바다 보이는 카페',sub:'여행지 · 강릉 안',w:12,h:8,interior:1,floor:'wood',wall:'glass',
+  tint:{fl:'#B98E62',fl2:'#9A7248',wl:'#F2E6D2',wl2:'#D8C6A6'},spawn:{x:4,y:6},rows:['############',
+  '#CCCM..PPP.#',
+  '#..........#',
+  '#.T..T..T..#',
+  '#..........#',
+  '#.T..T.....#',
+  '#..........#',
+  '####D#######'],
+  warps:[{x:4,y:7,to:'gangneung',tx:4,ty:4}],
+  spots:[{x:2,y:1,kind:'talk',id:'barista',name:'바리스타',face:'peerf',behind:1},
+         {x:9,y:5,kind:'talk',id:'cafeguest',name:'창가 손님',face:'peerm',dir:1}],
+  eggs:[{id:'gc_bean',x:10,y:6,xp:15,msg:'바닥에 떨어진 원두 한 알. 향이 진하다.'}]};
+MAPS.jeonju={name:'전주 한옥마을',sub:'여행지 · 전주',w:22,h:16,spawn:{x:4,y:5},rows:['RRRRRRRgggtgggRRRRRRRR',
+  'HHWWHHHgggggggHHHWWHHH',
+  'HHHDHHHgggggggHHHHHHHH',
+  'rrr___________________',
+  'rrr___________________',
+  'QQQ_ooo___b_______CC__',
+  'QQQ___________________',
   'gggggg__________gggggg',
   'gtgggg__________ggggtg',
   'gggggg__________gggggg',
   '______________________',
   '___A____________A_____',
   '______________________',
-  'gggggggggggggggggggggg',
-  'ggtggggggtggggggtggggg',
-  'ffffffffffffffffffffff'],
-  warps:[{x:0,y:3,to:'korea',tx:7,ty:18},{x:0,y:4,to:'korea',tx:7,ty:18},{x:3,y:2,to:'jeonju_inn',tx:4,ty:5}],
-  signs:[{x:1,y:1,w:5,t:'게스트하우스'},{x:15,y:1,w:5,t:'비빔밥'}],
+  'gggggggggg__gggggggggg',
+  'ggtggggggt__tggggtgggg',
+  'ffffffffff__ffffffffff'],
+  edges:{south:'jeonju_market'},
+  blds:[{x:0,y:0,w:7,h:3,s:'hanok'},{x:14,y:0,w:8,h:3,s:'hanok',c:'#EFE6D2'}],
+  warps:[{x:0,y:3,to:'korea',tx:7,ty:18,needCar:1},{x:0,y:4,to:'korea',tx:7,ty:18,needCar:1},{x:3,y:2,to:'jeonju_inn',tx:4,ty:5}],
+  signs:[{x:0,y:1,w:5,t:'게스트하우스'},{x:15,y:1,w:5,t:'비빔밥'}],
   spots:[{x:18,y:5,kind:'talk',id:'bibim',name:'비빔밥집 사장',face:'gpa',behind:1},
          {x:8,y:9,kind:'talk',id:'hanbok',name:'한복 대여점 직원',face:'girl'},
+         {x:12,y:5,kind:'thing',id:'gyeonggi',name:'경기전 안내판',look:'sign'},
          {x:3,y:11,kind:'thing',id:'stall1',name:'기념품 좌판'}],
   eggs:[{id:'j_leaf',x:20,y:12,xp:20,msg:'기와 담장 아래 은행잎을 주웠다. 가을이다.'},
         {id:'j_coin',x:1,y:10,coin:30,msg:'돌담 틈에서 동전을 찾았다.'}]};
-MAPS.jeonju_inn={name:'게스트하우스',sub:'여행지 · 전주 안',w:10,h:7,interior:1,
+MAPS.jeonju_market={name:'남부시장 야시장',sub:'여행지 · 전주',w:22,h:16,night:1,spawn:{x:10,y:1},rows:['tttttttttt__tttttttttt',
+  'RRRRRRRRR____RRRRRRRRR',
+  'HWWHWWHWH____HWWHWWHWH',
+  'HHHHHHHHH____HHHHHHHHH',
+  '______________________',
+  '_AA_AA_AA_AA_AA_AA_AA_',
+  '______________________',
+  '_AA_AA_AA____AA_AA_AA_',
+  '______________________',
+  '__p_______p_______p___',
+  'gggggggggggggggggggggg',
+  'ggtgggggtggggggtgggtgg',
+  'gggggggggggggggggggggg',
+  'gtggggtgggggtggggggtgg',
+  'gggggggggggggggggggggg',
+  'ffffffffffffffffffffff'],
+  edges:{north:'jeonju'},
+  blds:[{x:0,y:1,w:9,h:3,s:'tile',c:'#E4D8C4'},{x:13,y:1,w:9,h:3,s:'tile',c:'#D8E0E4'}],
+  signs:[{x:1,y:1,w:7,t:'남부시장'},{x:14,y:1,w:7,t:'청년몰'}],
+  spots:[{x:9,y:6,kind:'talk',id:'nightvendor',name:'야시장 판매대',face:'peerm'},
+         {x:4,y:8,kind:'thing',id:'nightsign',name:'야시장 안내판',look:'sign'},
+         {x:16,y:8,kind:'talk',id:'yatour',name:'야시장 구경꾼',face:'peerf',dir:1}],
+  eggs:[{id:'jm_coin',x:20,y:4,coin:25,msg:'판매대 아래서 동전을 주웠다.'},
+        {id:'jm_lamp',x:1,y:12,xp:20,msg:'시장 지붕 아래 불빛이 예쁘다. 사진을 한 장 찍었다.'}]};
+MAPS.busan={name:'부산 해운대',sub:'여행지 · 부산',w:22,h:16,spawn:{x:4,y:4},rows:['RRRRRRRRRR__RRRRRRRRRR',
+  'HWWHHWWHHW__WWHHWWHHWH',
+  'HHHHHHHHHH__HHHHHHHHHH',
+  '______________________',
+  '_CC______A_______CC___',
+  'QQQQ__________________',
+  'rrrrrrrr----rrrrrrrrrr',
+  'rrrrrrrr----rrrrrrrrrr',
+  'ssssssssssssssssssssss',
+  'ssssssssssssssssssssss',
+  'ssssssssssssssssssssss',
+  'wwwwwwwwwwwwwwwwwwwwww',
+  'wwwwwwwwwwwwwwwwwwwwww',
+  'wwwwwwwwwwwwwwwwwwwwww',
+  'wwwwwwwwwwwwwwwwwwwwww',
+  'wwwwwwwwwwwwwwwwwwwwww'],
+  edges:{north:'busan_gamcheon',east:'busan_jagalchi'},
+  blds:[{x:0,y:0,w:10,h:3,s:'glass',c:'#7FA8C8'},{x:12,y:0,w:10,h:3,s:'shop',c:'#F2E6D2',a:'#E0503E'}],
+  warps:[{x:0,y:6,to:'korea',tx:17,ty:23,needCar:1},{x:0,y:7,to:'korea',tx:17,ty:23,needCar:1}],
+  signs:[{x:1,y:1,w:4,t:'렌터카'},{x:15,y:1,w:5,t:'돼지국밥'}],
+  spots:[{x:2,y:4,kind:'desk',id:'b_rent',label:'렌터카',face:'officem'},
+         {x:18,y:4,kind:'talk',id:'gukbap',name:'국밥집 사장',face:'gpa',behind:1},
+         {x:9,y:4,kind:'thing',id:'pojang',name:'포장마차 메뉴판'},
+         {x:14,y:9,kind:'talk',id:'citizen',name:'해운대 주민',face:'peerm'}],
+  eggs:[{id:'bu_coin',x:20,y:10,coin:35,msg:'모래사장에서 동전을 주웠다.'},
+        {id:'bu_view',x:3,y:9,xp:20,msg:'파도 소리를 들으며 한참 앉아 있었다. 마음이 좀 가벼워졌다.'}]};
+MAPS.busan_gamcheon={name:'감천문화마을',sub:'여행지 · 부산',w:22,h:16,spawn:{x:10,y:14},rows:['tttttttttt__tttttttttt',
+  'gRRRgRRRgg__gRRRgRRRgg',
+  'gHWHgHWHgg__gHWHgHWHgg',
+  '______________________',
+  'gRRRgRRRgg__gRRRgRRRgg',
+  'gHWHgHWHgg__gHWHgHWHgg',
+  '______________________',
+  'gRRRgRRRgg__gRRRgRRRgg',
+  'gHWHgHWHgg__gHWHgHWHgg',
+  '______________________',
+  'gRRRgRRRgg__gRRRgRRRgg',
+  'gHWHgHWHgg__gHWHgHWHgg',
+  '______________________',
+  'gtgggtgggg__ggggtgggtg',
+  'ggggtggggg__gggggggtgg',
+  'tttttttttt__tttttttttt'],
+  edges:{south:'busan'},
+  blds:[{x:1,y:1,w:3,h:2,s:'paint',c:'#F4B6C2',r:'#5B7FB0'},
+        {x:5,y:1,w:3,h:2,s:'paint',c:'#B6D8F4',r:'#D9644F'},
+        {x:13,y:1,w:3,h:2,s:'paint',c:'#F4E2A6',r:'#4F9A6A'},
+        {x:17,y:1,w:3,h:2,s:'paint',c:'#BEE8C8',r:'#8A6AB0'},
+        {x:1,y:4,w:3,h:2,s:'paint',c:'#D8C4F0',r:'#5B7FB0'},
+        {x:5,y:4,w:3,h:2,s:'paint',c:'#F6CBA6',r:'#D9644F'},
+        {x:13,y:4,w:3,h:2,s:'paint',c:'#A6E0E0',r:'#4F9A6A'},
+        {x:17,y:4,w:3,h:2,s:'paint',c:'#F0B8A0',r:'#8A6AB0'},
+        {x:1,y:7,w:3,h:2,s:'paint',c:'#F4B6C2',r:'#5B7FB0'},
+        {x:5,y:7,w:3,h:2,s:'paint',c:'#B6D8F4',r:'#D9644F'},
+        {x:13,y:7,w:3,h:2,s:'paint',c:'#F4E2A6',r:'#4F9A6A'},
+        {x:17,y:7,w:3,h:2,s:'paint',c:'#BEE8C8',r:'#8A6AB0'},
+        {x:1,y:10,w:3,h:2,s:'paint',c:'#D8C4F0',r:'#5B7FB0'},
+        {x:5,y:10,w:3,h:2,s:'paint',c:'#F6CBA6',r:'#D9644F'},
+        {x:13,y:10,w:3,h:2,s:'paint',c:'#A6E0E0',r:'#4F9A6A'},
+        {x:17,y:10,w:3,h:2,s:'paint',c:'#F0B8A0',r:'#8A6AB0'}],
+  spots:[{x:9,y:12,kind:'thing',id:'quietsign',name:'주민 생활 공간 안내',look:'sign'},
+         {x:15,y:6,kind:'talk',id:'gcresident',name:'마을 주민',face:'gma',dir:1},
+         {x:4,y:9,kind:'thing',id:'prince',name:'어린 왕자 조형물',xp:15}],
+  eggs:[{id:'gc_stamp',x:21,y:3,xp:20,msg:'골목 스탬프를 하나 찍었다. 지도 한 칸이 찼다.'},
+        {id:'gc_coin',x:0,y:12,coin:25,msg:'계단참에서 동전을 주웠다.'}]};
+MAPS.busan_jagalchi={name:'자갈치시장',sub:'여행지 · 부산',w:22,h:16,spawn:{x:1,y:3},rows:['RRRRRRRRRRRRRRRRRRRRRR',
+  'HWWHWWHWWHWWHWWHWWHWWH',
+  'HHHHHHHHHHHHHHHHHHHHHH',
+  '______________________',
+  '__AAA_AAA_AAA_AAA_AAA_',
+  '__________________QQQQ',
+  'rrrrrrrr----rrrrrrrrrr',
+  'rrrrrrrr----rrrrrrrrrr',
+  'ssss__________________',
+  'sssswwwwwwwwwwwwwwwwww',
+  'sssswwwwwwwwwwwwwwwwww',
+  'wwwwwwwwwwwwwwwwwwwwww',
+  'wwwwwwwwwwwwwwwwwwwwww',
+  'wwwwwwwwwwwwwwwwwwwwww',
+  'wwwwwwwwwwwwwwwwwwwwww',
+  'wwwwwwwwwwwwwwwwwwwwww'],
+  edges:{west:'busan'},
+  blds:[{x:0,y:0,w:22,h:3,s:'tile',c:'#D4DCE4'}],
+  signs:[{x:7,y:1,w:8,t:'자갈치시장'}],
+  spots:[{x:6,y:5,kind:'talk',id:'jgfish',name:'자갈치 상인',face:'gma'},
+         {x:11,y:5,kind:'thing',id:'scale2',name:'시장 저울',xp:15},
+         {x:16,y:3,kind:'thing',id:'origin2',name:'원산지 팻말',look:'sign'},
+         {x:20,y:8,kind:'talk',id:'jghoe',name:'회센터 사장',face:'peerm',dir:1}],
+  eggs:[{id:'jg_gull',x:16,y:8,xp:20,msg:'갈매기가 새우깡을 노린다. 주머니를 여몄다.'},
+        {id:'jg_coin',x:0,y:8,coin:30,msg:'부두 난간 아래 동전을 주웠다.'}]};
+MAPS.gyeongju={name:'경주 황리단길',sub:'여행지 · 경주',w:22,h:16,spawn:{x:4,y:5},rows:['RRRRRRRRRR__RRRRRRRRRR',
+  'HWWHHWWHHW__WHHWWHHWWH',
+  'HHHHDHHHHH__HHHHHHHHHH',
+  'rrr___________________',
+  'rrr___________________',
+  'QQQ__A____b____A___CC_',
+  'QQQ___________________',
+  'gggggggggggggggggggggg',
+  'gRRRRRRgggtgggRRRRRRRg',
+  'gHWWHWHgggggggHWHWWHHg',
+  'gHHHHHHgggggggHHHHHHHg',
+  '______________________',
+  '__t__________b______t_',
+  '______________________',
+  'gggtggggggtggggggtgggg',
+  'ffffffffffffffffffffff'],
+  edges:{north:'gyeongju_tomb'},
+  blds:[{x:0,y:0,w:10,h:3,s:'hanok'},{x:12,y:0,w:10,h:3,s:'hanok',c:'#EDE3CC'},{x:1,y:8,w:6,h:3,s:'hanok'},{x:14,y:8,w:7,h:3,s:'hanok',c:'#EDE3CC'}],
+  warps:[{x:0,y:3,to:'korea',tx:18,ty:22,needCar:1},{x:0,y:4,to:'korea',tx:18,ty:22,needCar:1},{x:4,y:2,to:'gyeongju_inn',tx:4,ty:5}],
+  signs:[{x:0,y:1,w:5,t:'한옥 스테이'},{x:14,y:1,w:6,t:'황리단길 카페'},{x:18,y:4,w:3,t:'경주빵'}],
+  spots:[{x:19,y:5,kind:'talk',id:'jbread',name:'경주빵 가게 사장',face:'gpa',behind:1},
+         {x:8,y:6,kind:'thing',id:'bulguksa',name:'불국사 가는 버스 안내',look:'sign'},
+         {x:12,y:12,kind:'talk',id:'gjtourist',name:'여행 온 대학생',face:'peerf'}],
+  eggs:[{id:'gj_tile',x:21,y:13,xp:20,msg:'깨진 기와 조각을 봤다. 천 년 전 것일까? 제자리에 두었다.'},
+        {id:'gj_coin',x:0,y:11,coin:30,msg:'골목 모퉁이에서 동전을 주웠다.'}]};
+MAPS.gyeongju_tomb={name:'대릉원·첨성대',sub:'여행지 · 경주',w:22,h:16,night:1,spawn:{x:10,y:14},rows:['tttttttttttttttttttttt',
+  'tggOOOgggggggggwwwwwgt',
+  'tgOOOOOggg_ggggwwwwwgt',
+  'tggOOOgggg_gggwwwwwwwt',
+  'tgggggggg___gggwwwwwgt',
+  'tggggg______gggggggggt',
+  'tOOOgg_ggg_gggg______t',
+  'tOOOOg_ggg_ggggg_gggtt',
+  'tOOOgg_ggg______gggggt',
+  'tggggg_ggggggggg_OOOgt',
+  'tgg_____________OOOOOt',
+  'tgg_gggggg__ggggg_OOOt',
+  'tgg_gggggg__gggggggggt',
+  'tgg________________ggt',
+  'tggggggggg__gggggtgggt',
+  'tttttttttt__tttttttttt'],
+  edges:{south:'gyeongju'},
+  spots:[{x:12,y:7,kind:'thing',id:'cheomseong',name:'첨성대',look:'tower'},
+         {x:7,y:5,kind:'thing',id:'daereung',name:'대릉원 안내판',look:'sign'},
+         {x:16,y:5,kind:'thing',id:'donggung',name:'동궁과 월지 안내판',look:'sign'},
+         {x:13,y:10,kind:'talk',id:'gjguide',name:'야경 해설사',face:'gpa'}],
+  eggs:[{id:'gt_star',x:4,y:13,xp:25,msg:'밤하늘에 별이 보인다. 첨성대에서 별을 보던 사람들을 떠올렸다.'},
+        {id:'gt_coin',x:20,y:6,coin:25,msg:'연못가 벤치 옆에서 동전을 주웠다.'}]};
+MAPS.gyeongju_inn={name:'한옥 스테이',sub:'여행지 · 경주 안',w:10,h:7,interior:1,floor:'ondol',wall:'hanji',
+  tint:{fl:'#D9BE94',fl2:'#B99B6E',wl:'#F7EBD6',wl2:'#E3D2B4'},spawn:{x:4,y:5},rows:['##########',
+  '#KK.CC..P#',
+  '#........#',
+  '#.B...B..#',
+  '#........#',
+  '#P......P#',
+  '####D#####'],
+  warps:[{x:4,y:6,to:'gyeongju',tx:4,ty:3}],
+  spots:[{x:4,y:1,kind:'talk',id:'stayhost',name:'한옥 스테이 주인',face:'gma',behind:1}],
+  eggs:[{id:'gi_tea',x:8,y:4,xp:15,msg:'주인이 내준 차를 마셨다. 몸이 따뜻해졌다.'}]};
+MAPS.daegu={name:'대구 동성로',sub:'여행지 · 대구',w:22,h:16,spawn:{x:4,y:5},rows:['RRRRRRRRRR__RRRRRRRRRR',
+  'HWWWWHHWWW__WWWHHWWWWH',
+  'HHHHHHHHHH__HHHHHHHHHH',
+  'rrr___________________',
+  'rrr_______p______p____',
+  'QQQ__CC__________b____',
+  'QQQ___________________',
+  'gggg____gggggg____gggg',
+  'gtgg____gtggtg____ggtg',
+  '______________________',
+  '_t____A______A______t_',
+  '______________________',
+  'gRRRRRRRRg__gRRRRRRRRg',
+  'gHWWHHWWHg__gHWWHHWWHg',
+  'gHHHHHHHHg__gHHHHHHHHg',
+  'tttttttttt__tttttttttt'],
+  edges:{north:'daegu_market',south:'daegu_kim'},
+  blds:[{x:0,y:0,w:10,h:3,s:'glass',c:'#6F98C0'},{x:12,y:0,w:10,h:3,s:'shop',c:'#F0D8E4',a:'#C04A7A'},
+        {x:1,y:12,w:8,h:3,s:'shop',c:'#E4ECD0',a:'#3F9F5A'},{x:13,y:12,w:8,h:3,s:'concrete',c:'#D8D4E4'}],
+  warps:[{x:0,y:3,to:'korea',tx:12,ty:20,needCar:1},{x:0,y:4,to:'korea',tx:12,ty:20,needCar:1}],
+  signs:[{x:2,y:1,w:6,t:'동성로'},{x:13,y:1,w:8,t:'옷가게 거리'},{x:4,y:4,w:4,t:'분식'}],
+  spots:[{x:5,y:5,kind:'talk',id:'napjak',name:'분식집 사장',face:'gma',behind:1},
+         {x:15,y:10,kind:'talk',id:'dgstudent',name:'동성로 대학생',face:'peerm'},
+         {x:10,y:6,kind:'thing',id:'dgsign',name:'동성로 안내판',look:'sign'}],
+  eggs:[{id:'dg_coin',x:21,y:9,coin:30,msg:'가게 앞 화분 옆에서 동전을 주웠다.'},
+        {id:'dg_ticket',x:0,y:11,xp:20,msg:'버스킹 공연 전단을 받았다. 오늘 저녁이다.'}]};
+MAPS.daegu_market={name:'서문시장 야시장',sub:'여행지 · 대구',w:22,h:16,night:1,spawn:{x:10,y:14},rows:['tttttttttttttttttttttt',
+  'RRRRRRRRR____RRRRRRRRR',
+  'HWWHWWHWH____HWWHWWHWH',
+  'HHHHHHHHH____HHHHHHHHH',
+  '______________________',
+  '_AA_AA_AA_AA_AA_AA_AA_',
+  '______________________',
+  '_AA_AA_AA____AA_AA_AA_',
+  '______________________',
+  '__p_______p_______p___',
+  'gggggggggggggggggggggg',
+  'ggtggggggggggggggggtgg',
+  'gggggggggggggggggggggg',
+  'gtggggtgggggtggggggtgg',
+  'gggggggggg__gggggggggg',
+  'ffffffffff__ffffffffff'],
+  edges:{south:'daegu'},
+  blds:[{x:0,y:1,w:9,h:3,s:'tile',c:'#E8DCC8'},{x:13,y:1,w:9,h:3,s:'tile',c:'#DCE4E8'}],
+  signs:[{x:1,y:1,w:7,t:'서문시장'},{x:14,y:1,w:7,t:'야시장'}],
+  spots:[{x:9,y:6,kind:'talk',id:'smvendor',name:'야시장 판매대',face:'peerm'},
+         {x:4,y:8,kind:'thing',id:'smsign',name:'야시장 안내판',look:'sign'},
+         {x:16,y:8,kind:'talk',id:'smauntie',name:'칼국수 골목 이모',face:'gma',dir:1}],
+  eggs:[{id:'sm_coin',x:20,y:4,coin:25,msg:'판매대 아래서 동전을 주웠다.'},
+        {id:'sm_cloth',x:1,y:12,xp:20,msg:'원단 가게 앞에서 천 조각을 구경했다. 서문시장은 원래 옷감 시장으로 유명했다.'}]};
+MAPS.daegu_kim={name:'김광석 다시그리기길',sub:'여행지 · 대구',w:22,h:12,spawn:{x:10,y:1},rows:['tttttttttt__tttttttttt',
+  'RRRRRRRRRR__RRRRRRRRRR',
+  'HHHHHHHHHH__HHHHHHHHHH',
+  'HHHHHHHHHH__HHHHHHHHHH',
+  '______________________',
+  '__b_______p_______b___',
+  '______________________',
+  'RRRRRRRRRRRRRRRRRRRRRR',
+  'HHHHHHHHHHHHHHHHHHHHHH',
+  'HHHHHHHHHHHHHHHHHHHHHH',
+  'gggtggggggggtgggggggtg',
+  'ffffffffffffffffffffff'],
+  edges:{north:'daegu'},
+  blds:[{x:0,y:1,w:5,h:3,s:'paint',c:'#F4E2A6'},
+        {x:5,y:1,w:5,h:3,s:'paint',c:'#B6D8F4'},
+        {x:12,y:1,w:5,h:3,s:'paint',c:'#F4B6C2'},
+        {x:17,y:1,w:5,h:3,s:'paint',c:'#BEE8C8'},
+        {x:0,y:7,w:6,h:3,s:'paint',c:'#D8C4F0'},
+        {x:6,y:7,w:6,h:3,s:'paint',c:'#F6CBA6'},
+        {x:11,y:7,w:6,h:3,s:'paint',c:'#A6E0E0'},
+        {x:16,y:7,w:6,h:3,s:'paint',c:'#F0B8A0'}],
+  spots:[{x:4,y:6,kind:'thing',id:'mural1',name:'벽화',look:'sign'},
+         {x:15,y:4,kind:'thing',id:'mural2',name:'벽화',look:'sign'},
+         {x:13,y:6,kind:'talk',id:'kimresident',name:'골목 주민',face:'gpa',dir:1}],
+  eggs:[{id:'dk_pick',x:21,y:5,xp:20,msg:'누가 떨어뜨린 기타 피크를 주웠다.'},
+        {id:'dk_coin',x:0,y:6,coin:25,msg:'벽화 아래에서 동전을 주웠다.'}]};
+MAPS.jeonju_inn={floor:'ondol',wall:'hanji',name:'게스트하우스',sub:'여행지 · 전주 안',w:10,h:7,interior:1,
   tint:{fl:'#C9A97A',fl2:'#A98A5E',wl:'#F7EBD6',wl2:'#E3D2B4'},spawn:{x:4,y:5},rows:[
   '##########',
   '#KK.CC..P#',
@@ -5238,31 +5734,6 @@ MAPS.jeonju_inn={name:'게스트하우스',sub:'여행지 · 전주 안',w:10,h:
   warps:[{x:4,y:6,to:'jeonju',tx:3,ty:3}],
   spots:[{x:4,y:1,kind:'desk',id:'j_inn',label:'게스트하우스',face:'peerf'}],
   eggs:[{id:'ji_key',x:8,y:4,coin:20,msg:'침대 밑에서 전 손님이 흘린 동전을 찾았다.'}]};
-MAPS.busan={name:'부산 해운대',sub:'여행지 · 남해',w:22,h:16,spawn:{x:1,y:3},rows:[
-  'RRRRRRRRRRRRRRRRRRRRRR',
-  'HWWHHWWHHWWHHWWHHWWHHH',
-  'HHHHHHHHHHHHHHHHHHHHHH',
-  '______________________',
-  '_CC______A_______CC___',
-  '______________________',
-  'rrrrrrrr----rrrrrrrrrr',
-  'rrrrrrrr----rrrrrrrrrr',
-  'ssssssssssssssssssssss',
-  'ssssssssssssssssssssss',
-  'ssssssssssssssssssssss',
-  'wwwwwwwwwwwwwwwwwwwwww',
-  'wwwwwwwwwwwwwwwwwwwwww',
-  'wwwwwwwwwwwwwwwwwwwwww',
-  'wwwwwwwwwwwwwwwwwwwwww',
-  'wwwwwwwwwwwwwwwwwwwwww'],
-  warps:[{x:0,y:3,to:'korea',tx:17,ty:23},{x:0,y:4,to:'korea',tx:17,ty:23},{x:0,y:5,to:'korea',tx:17,ty:23}],
-  signs:[{x:1,y:1,w:4,t:'렌터카'},{x:15,y:1,w:5,t:'돼지국밥'}],
-  spots:[{x:2,y:4,kind:'desk',id:'b_rent',label:'렌터카',face:'officem'},
-         {x:18,y:4,kind:'talk',id:'gukbap',name:'국밥집 사장',face:'gpa',behind:1},
-         {x:9,y:4,kind:'thing',id:'pojang',name:'포장마차 메뉴판'},
-         {x:14,y:9,kind:'talk',id:'citizen',name:'해운대 주민',face:'peerm'}],
-  eggs:[{id:'bu_coin',x:20,y:10,coin:35,msg:'모래사장에서 동전을 주웠다.'},
-        {id:'bu_view',x:3,y:9,xp:20,msg:'파도 소리를 들으며 한참 앉아 있었다. 마음이 좀 가벼워졌다.'}]};
 /* 퀘스트는 길바닥이 아니라 그 일을 보는 곳의 창구에서 받는다. 전세는 부동산 전세 창구, 실업급여는
    고용센터 실업급여 창구. 어디로 가야 하는지가 곧 배울 거리다. */
 var QPLACE={car1:'r_gas',car2:'r_truck',trip1:'g_info',trip2:'g_guard',trip3:'j_inn',trip4:'b_rent',ju1:'e_jeonse',ju3:'e_wolse',ju5:'e_maemae',ju2:'h_move',ju4:'h_report',sik1:'m_table',sik2:'m_table',
@@ -5314,7 +5785,7 @@ var TALKS={
  bibim:{food:'jeonju',greet:'전주 왔으면 비빔밥이지!',hi:['한옥마을 안쪽이 바깥보다 비싸요. 가격표 보고 골라요.']},
  hanbok:{hi:['한복 빌려 가세요~ 두 시간에 이만 원.','대여 전에 시간과 추가 요금 기준을 꼭 물어보세요. 늦게 오면 붙는 가게가 있어요.']},
  gukbap:{food:'busan',greet:'돼지국밥 한 그릇 하고 가이소!',hi:['부산 택시는 대부분 카드 돼요. 미터기 안 켜면 켜 달라 하이소.']},
- citizen:{hi:['해운대는 여름에 사람이 진짜 많아요.','수영은 안전요원 있는 구역에서만 해요. 깃발 색으로 입수 가능 여부를 알려 줘요.']},
+ citizen:{hi:['해운대는 여름에 사람이 진짜 많아요.','수영은 해수욕장이 문을 연 기간에, 안전요원이 지키는 구역 안에서만 해요.']},
  guide:{hi:['어, 왔어? 동네 건물마다 간판이 붙어 있지. 문 위에 느낌표가 뜬 곳에 볼일이 있다는 뜻이야.','집 얘기는 오른쪽 끝 부동산, 신고는 주민센터, 배고프면 편의점.','포만감이 떨어지면 공부가 안 돼. 먹고 다녀.']},
  friend:{hi:['야, 너도 수업 끝났어?','장학금이랑 기숙사는 학생지원센터 창구에서 물어봐. 카페 동기 테이블에 앉아 있으면 나도 거기 있을게.']},
  cafe:{food:'cafe',greet:'어서 와요. 뭐 마실래요?',hi:['어서 와요. 오늘의 커피는 아메리카노.','우리 가게 알바는 주휴수당 다 줘요. 주 15시간 넘게 일하면 원래 받는 거예요.','시급만 보지 말고, 주휴까지 합쳐서 계산해 봐요.']},
@@ -5324,6 +5795,32 @@ var TALKS={
  club:{game:1,prize:'goldstamp',greet:'게임 동아리 부스야! 도장 찍기 한 판 할래?',hi:['동아리 들어올래? 회비는 한 학기 2만 원!','학자금 대출은 한국장학재단에서 알아봐. 이자 없는 것도 있어.','아, 그리고 교내 근로장학도 있어. 도서관이나 학과 사무실 일.']},
  gpa2:{hi:['연못 좋지? 나도 젊을 땐 바빠서 이런 데를 몰랐어.','월급 받으면 반은 먼저 떼어 놓고 나머지로 살아. 거꾸로 하면 안 모여.']},
  truck:{food:'truck',greet:'오늘은 떡볶이랑 어묵! 뭐 줄까?',hi:['오늘은 떡볶이랑 어묵! 점심 한 끼 오천 원.','점심값만 아껴도 한 달에 십만 원은 모여. 도시락 싸는 날을 정해 봐.']},
+ villanb:{hi:['이 동네는 새로 지은 빌라가 많아요.','"입주금 0원, 이사비 지원" 현수막 붙은 집은 꼭 매매가랑 전세가를 같이 봐요. 전세가가 집값에 붙어 있는 집이 많거든요.']},
+ vendor:{hi:['반찬 사 가요, 떨이 해 줄게!','우리 시장은 카드도 되고 원산지도 다 붙여 놨어. 연말정산 때 전통시장에서 카드 쓴 건 공제율이 더 높대.']},
+ shopper:{hi:['자취하면 마트보다 시장이 쌀 때가 많아요. 떨이 시간엔 더 싸고요.','근데 가격표 없는 집은 먼저 물어보고 사요. 원산지 팻말도 보고.']},
+ fish:{hi:['어서 와요, 오늘 고등어 좋아요.','저울은 손님 앞에서 0부터 달아 드려요. 다른 데서도 영점부터 보세요.']},
+ noodle:{food:'market',greet:'칼국수 한 그릇 하고 가요!',hi:['손칼국수 한 그릇에 반찬은 셀프.']},
+ marketcust:{hi:['여기서 30년 장사했어요.','요즘 젊은 사람들은 원산지 표시 꼼꼼히 보더라. 좋은 습관이야.']},
+ commuter:{hi:['아침마다 이 역에서 지하철 타요.','대중교통을 자주 타면 K-패스(모두의 카드) 환급을 꼭 신청해요. 청년은 환급률이 더 높아요.']},
+ busker:{hi:['퇴근길에 한 곡 듣고 가요.','역 앞 버스킹은 구청에 신청하고 하는 거예요. 저도 허가받았어요.']},
+ staff:{hi:['어디 가세요? 노선도는 저쪽에 있어요.','지하철에 물건 두고 내리면 유실물 센터나 경찰청 LOST112에서 찾아보세요.','교통비 환급은 K-패스 카드로 쓰고 누리집에서 회원가입까지 해야 받을 수 있어요.']},
+ docent:{hi:['오죽헌 뒤뜰의 까만 대나무를 오죽이라고 해요. 이름이 거기서 왔어요.','매월 마지막 수요일, 문화가 있는 날엔 관람료가 반값이에요. 여행 날짜를 맞춰 보면 좋죠.']},
+ barista:{food:'gncafe',greet:'바다 보면서 한 잔 하세요.',hi:['안목 커피거리는 해변 바로 앞이라 창가 자리가 먼저 차요.','가격은 카운터 위 메뉴판에 다 적혀 있어요.']},
+ cafeguest:{hi:['숙소는 환불 규정부터 봤어요.','성수기엔 이용일이 가까워질수록 떼는 돈이 커지더라고요. 예약할 때 캡처해 두는 게 좋아요.']},
+ nightvendor:{food:'jmarket',greet:'야시장 왔으면 하나씩 맛봐요!',hi:['판매대마다 가격표 붙어 있어요. 없으면 물어보고 사요.']},
+ yatour:{hi:['야시장은 금·토요일에만 열어요. 평일에 오면 조용해요.','운영 시간이 철마다 달라서 전주시 공지를 보고 왔어요.']},
+ gcresident:{hi:['어서 와요. 골목 사진은 괜찮은데 창문 안은 찍지 말아 줘요.','밤늦게 떠들면 다들 잠을 못 자요. 여기 진짜 사람 사는 동네예요.']},
+ jgfish:{hi:['싱싱한 거 골라 봐요!','저울은 바늘이 0에 있는지부터 보는 거 맞아요. 봉지에 물 채워서 다는 집은 피하고.']},
+ jghoe:{food:'jagalchi',greet:'회 한 접시 하고 가요!',hi:['회는 무게로 파는 곳이 많아요. 몇 g인지, 손질비나 상차림비가 따로인지 먼저 물어봐요.']},
+ jbread:{food:'gyeongju',greet:'갓 구운 경주빵 있어요!',hi:['선물용 상자는 개수랑 가격을 보고 골라요. 상자마다 달라요.']},
+ gjtourist:{hi:['황리단길은 입장료가 없어요. 대신 카페 줄이 길어요.','대릉원은 들어가는 건 무료인데, 천마총 안은 관람료가 따로 있어요.']},
+ gjguide:{hi:['동궁과 월지는 해 지고 가야 예뻐요.','근데 매표가 21시 30분에 끝나요. 늦게 오면 문 앞에서 돌아가요.']},
+ stayhost:{hi:['한옥은 방음이 약해요. 밤엔 조용히 부탁해요.','예약 취소는 환불 규정부터 보세요. 소비자분쟁해결기준에선 성수기에 이용일이 가까울수록 떼는 돈이 커져요. 권고 기준이라 업체 규정도 같이 봐야 하고요.']},
+ napjak:{food:'daegu',greet:'납작만두 한 접시 줄까?',hi:['대구 10미 들어 봤어? 납작만두도 그중 하나야.','막창도 대구 10미야. 연탄불에 구워 먹지.']},
+ dgstudent:{hi:['동성로는 대구 한가운데예요. 옷가게, 분식집 다 여기 있어요.','택시 탈 땐 차 번호랑 영수증 챙겨요. 요금이 이상하면 시청에 신고할 때 필요해요.']},
+ smvendor:{food:'seomun',greet:'야시장 먹거리 골라 봐요!',hi:['2026년 서문 야시장은 3월부터 12월까지 금·토·일에 열어요.']},
+ smauntie:{hi:['칼국수 골목은 낮에 와도 맛있어.','가격은 벽에 다 붙어 있어. 붙어 있는 집이 마음 편하지.']},
+ kimresident:{hi:['여기도 사람 사는 골목이에요. 밤엔 조용히 부탁해요.','벽화 앞 줄이 길면 사진은 한두 장만 찍고 비켜 줘요.']},
  flea:{hi:['구경만 해도 돼요~','중고거래는 직접 만나서 하거나 안전결제로 해요. 돈부터 보내라는 사람은 거의 사기예요.','택배 거래면 송장 번호 확인하고, 가짜 결제 링크 조심하고요.']}
 };
 var THINGS={
@@ -5332,6 +5829,36 @@ var THINGS={
  parasol:['[파라솔 대여]','"1일 이용료는 안내소 게시 금액만 받습니다."','가격표가 붙어 있는지 먼저 보자. 없으면 안내소에 물어본다.'],
  stall1:['[기념품 좌판]','"전부 만 원"이라고 적혀 있는데, 어떤 건 가격표가 없다.','가격표 없는 물건은 계산 전에 먼저 물어보자.'],
  pojang:['[포장마차 메뉴판]','꼼장어 · 어묵 · 떡볶이','가격이 적혀 있다. 이런 집이 마음 편하다.'],
+bunyang:['[분양 현수막]','"신축 빌라 전세 입주 · 입주금 0원 · 이사비 지원!"','이사비까지 준다는 집일수록 전세가와 매매가를 나란히 놓고 본다.'],
+ aptboard:['[아파트 게시판]','"관리비 내역은 공동주택관리정보시스템(K-apt)에서 볼 수 있습니다."','관리비에 무엇이 들었는지 계약 전에 물어보자.'],
+ fullopt:['[옵션 안내문]','에어컨 · 세탁기 · 냉장고 · 인덕션 풀옵션!','옵션이 좋다고 보증금이 안전해지지는 않는다.'],
+ boiler:['오래된 보일러다. "2019년 교체" 스티커가 붙어 있다.','살다가 보일러 같은 큰 설비가 고장 나면 고쳐 줄 책임은 대개 집주인에게 있다. 특약으로 적어 두면 더 확실하다.'],
+ origin:['[원산지 표시판]','배추 국내산 · 고춧가루 국내산 · 조기 중국산','팻말이 없으면 물어본다. 원산지를 속인 건 신고할 수 있다.'],
+ meatprice:['[정육점 가격표]','한우 등심 100g · 돼지 앞다리 100g','무게 단위(100g)를 확인하고, 저울 눈금이 0에서 시작하는지 본다.'],
+ scale:['가게 저울 눈금이 0을 가리킨다.','수산시장에서는 저울을 먼저 0으로 맞추고, 봉지에 물을 채워 무게를 늘리는 "물치기"를 조심하라고 한다. 경험치 +15'],
+ busmap:['[버스 노선도]','막차 시간은 정류장마다 다르다. 앱보다 여기 적힌 시간이 정확할 때도 있다.'],
+ lostbox:['[유실물 센터 안내]','"잃어버린 물건은 경찰청 유실물 통합포털 LOST112에서도 찾을 수 있습니다."'],
+ ticketm:['교통카드를 충전했다.','충전하면서 이번 달 교통비를 계산해 봤다. 경험치 +10'],
+ tovilla:['[안내판]','↓ 주택가 · 빌라촌','찻길 옆 보도를 따라 아래로 내려가면 된다.'],
+ tomarket:['[안내판]','↓ 전통시장','찻길 옆 보도를 따라 아래로 내려가면 시장 입구다.'],
+ tostation:['[안내판]','↑ 뉴비역 · 이 골목으로','회사 건물 옆 골목으로 올라가면 역 앞 광장이다.'],
+ beachopen:['[해수욕장 안내판]','"2026년 안목해변 개장 7월 10일 ~ 8월 23일 · 경포는 7월 4일부터"','수영은 개장 기간에, 안전요원이 지키는 구역 안에서만.'],
+ ojuksign:['[오죽헌 안내판]','신사임당과 율곡 이이가 태어난 집.','관람료 어른 3,000원 · 65세 이상 무료 · 매월 마지막 수요일 반값. 요금은 매표소 게시를 확인하자.'],
+ bamboo:['줄기가 까만 대나무, 오죽이다.','"오죽헌"이라는 이름이 여기서 왔다. 경험치 +15'],
+ gyeonggi:['[경기전 안내판]','조선 태조의 어진(초상화)을 모신 곳.','관람료 어른 3,000원 · 매월 마지막 수요일 무료. 한옥마을 자체는 입장료가 없다.'],
+ nightsign:['[야시장 안내]','"매주 금·토요일 · 운영 시간은 계절마다 다릅니다"','이동 판매대 40여 곳이 250m 남짓한 통로에 늘어선다.'],
+ quietsign:['[주민 생활 공간입니다]','"조용히 둘러봐 주세요. 집 안이 보이는 사진과 드론 촬영은 삼가 주세요."','안내센터는 3~10월 09:00~18:00, 11~2월 09:00~17:00.'],
+ prince:['어린 왕자와 사막여우가 마을을 내려다보는 조형물.','줄 서서 사진을 한 장 찍었다. 경험치 +15'],
+ scale2:['시장 저울. 바늘이 0에 있는지부터 봤다.','무게를 부풀려 재는 "저울치기"를 조심하자. 경험치 +15'],
+ origin2:['[원산지 팻말]','고등어 국내산 · 오징어 원양산 · 새우 수입산','원산지를 속인 건 관세청 125로 신고할 수 있다.'],
+ bulguksa:['[불국사 가는 버스 안내]','불국사·석굴암은 2023년 5월 4일부터 문화재 관람료를 받지 않는다.','버스 시간표는 정류장 게시를 확인하자.'],
+ cheomseong:['[첨성대]','신라 때 쌓은 돌 관측대. 해가 지면 조명이 켜진다.','관람은 무료다.'],
+ daereung:['[대릉원 안내]','대릉원 입장 무료 · 천마총 관람료 어른 3,000원','큰 무덤들이 언덕처럼 솟아 있다.'],
+ donggung:['[동궁과 월지 안내]','관람 09:00~22:00 · 매표 21:30 마감 · 어른 3,000원','야경 보러 마감 직전에 가면 못 들어갈 수 있다.'],
+ dgsign:['[동성로 안내]','↑ 서문시장 야시장 · ↓ 김광석 다시그리기길','가게마다 가격표를 먼저 보자.'],
+ smsign:['[서문시장 야시장 안내]','3~12월 · 금·토 19:00~23:30 · 일 19:00~22:30 (2026년)','운영 요일과 시간은 해마다 바뀌니 공지를 확인하자.'],
+ mural1:['기타를 든 가수가 웃고 있는 벽화.','골목 전체가 한 사람의 노래로 이어진다.'],
+ mural2:['"다시 그리기" 글씨가 적힌 벽화.','사진 찍는 사람이 많다. 조용히 한 장 찍었다.'],
  icsign:['[고속도로 안내판]','← 고속도로 IC · 자동차만 진입 가능','차가 있으면 찻길을 따라 왼쪽 끝으로 가면 된다.'],
  townsign:['[동네 게시판]','"확정일자는 주민센터에서. 전입신고와 같이 하세요."','"잃어버린 고양이를 찾습니다. 이름: 보증금"'],
  fieldsign:['[운동장 안내판]','밤 10시 이후 출입 금지. 반려견은 목줄 필수.'],
@@ -5349,8 +5876,8 @@ function eggList(){ var out=[];
     (m.spots||[]).forEach(function(s){ if(s.kind==='thing'&&(s.xp||s.coin||s.item)) out.push({id:'th_'+s.id,area:a});
       if(s.kind==='talk'&&TALKS[s.id]&&TALKS[s.id].prize) out.push({id:'qz_'+s.id,area:a}); }); });
   return out; }
-var EGG_AREAS=[['town','동네'],['campus','학교 앞'],['center','고용센터 앞'],['office','회사 앞'],['bank','은행 골목'],['rest','휴게소'],['korea','전국 지도'],['gangneung','강릉'],['jeonju','전주'],['busan','부산']];
-var TRAVEL={rest:1,korea:1,gangneung:1,jeonju:1,busan:1};
+var EGG_AREAS=[['town','동네'],['villa','주택가'],['campus','학교 앞'],['center','고용센터 앞'],['market','전통시장'],['office','회사 앞'],['station','역 앞'],['bank','은행 골목'],['rest','휴게소'],['korea','전국 지도'],['gangneung','강릉'],['jeonju','전주'],['busan','부산'],['gyeongju','경주'],['daegu','대구']];
+var TRAVEL={rest:1,korea:1,gangneung:1,jeonju:1,busan:1,gyeongju:1,daegu:1};
 function eggFound(id){ return !!(S.eggs&&S.eggs[id]); }
 function markEgg(id){ if(!S.eggs) S.eggs={}; S.eggs[id]=1; }
 /* 보상 지급. 퀘스트 밖에서 경험치가 들어와도 레벨은 오른다. */
@@ -5510,17 +6037,23 @@ function tileAt(m,x,y){
 function warpAt(m,x,y){
   var r=null; (m.warps||[]).forEach(function(w){ if(w.x===x&&w.y===y) r=w; }); return r;
 }
-function walkable(m,x,y,petSelf){
+/* 차가 달릴 수 있는 칸: 찻길, 횡단보도, 주차장, 고속도로, 전국 지도의 도시 표시.
+   차를 탄 동안에는 이 칸만 지난다. 보도·풀밭·문 앞으로는 못 올라간다. */
+var DRIVE_T={'r':1,'-':1,'Q':1,'=':1,'X':1};
+/* mode: 'car'면 차로, 'foot'이면 걸어서 갈 수 있는지 본다. 없으면 지금 상태(carOn)를 따른다 */
+function walkable(m,x,y,petSelf,mode){
   var c=tileAt(m,x,y); if(c===null) return false;
   if(!petSelf&&PETW&&ME.map==='room'&&((PETW.x===x&&PETW.y===y)||(PETW.mv&&PETW.nx===x&&PETW.ny===y))&&!(x===ME.tx&&y===ME.ty)) return false;
   if(S.park&&S.park.map===ME.map&&S.park.x===x&&S.park.y===y) return false;
   if(spotAt(m,x,y)) return false;
   if(objBlocks(x,y)) return false;
-  var wp=warpAt(m,x,y);
-  if(wp) return !wp.needCar||carOn();     /* 문은 막혀 보여도 밟을 수 있어야 문이다. 고속도로 입구는 차가 있어야 */
-  if(c==='r'&&carOn()) return true;       /* 차를 타면 찻길도 간다 */
+  var wp=warpAt(m,x,y),car=mode?mode==='car':carOn();
+  if(car) return !!DRIVE_T[c]&&(!wp||!!wp.needCar||!!wp.fuel||ME.map==='korea');   /* 차로는 건물 문에 못 들어간다 */
+  if(wp) return !wp.needCar;              /* 문은 막혀 보여도 밟을 수 있어야 문이다. 고속도로 입구는 차가 있어야 */
   var t=TILES[c]; return !!(t&&t.walk);
 }
+/* 걸어서든 차로든 닿을 수 있는 칸인지(누른 자리가 목적지가 될 수 있는지) */
+function reachable(m,x,y){ return walkable(m,x,y,0,'foot')||(carOn()&&walkable(m,x,y,0,'car')); }
 function spotAt(m,x,y){
   var r=null;
   (m.spots||[]).forEach(function(s){ if(s.x===x&&s.y===y) r=s; });
@@ -5565,10 +6098,10 @@ function grassB(ctx,px,py,tx,ty,m,flowers){
   if(flowers) for(i=0;i<4;i++){ var fx=px+2+Math.floor(hrand(tx,ty,i+200)*11),fy=py+3+Math.floor(hrand(tx,ty,i+230)*9),c=TC.fl[i%4];
     rcx(ctx,TC.g[0],fx,fy+2,1,2); rcx(ctx,c,fx-1,fy,3,1); rcx(ctx,c,fx,fy-1,1,3); rcx(ctx,'#FFF4B0',fx,fy,1,1); }
   if(PAVE[up]||up==='-'){ rcx(ctx,TC.curb[1],px,py,TS,2); rcx(ctx,TC.curb[2],px,py,TS,1); rcx(ctx,TC.g[0],px,py+2,TS,1); }
-  else if(up==='r'){ rcx(ctx,TC.curb[0],px,py,TS,1); rcx(ctx,TC.g[0],px,py+1,TS,1); }
-  if(dn==='r'||PAVE[dn]||dn==='-'){ rcx(ctx,TC.curb[1],px,py+14,TS,2); rcx(ctx,TC.curb[2],px,py+14,TS,1); }
-  if(PAVE[lf]||lf==='r'){ rcx(ctx,TC.curb[1],px,py,2,TS); rcx(ctx,TC.curb[2],px,py,1,TS); rcx(ctx,TC.g[0],px+2,py,1,TS); }
-  if(PAVE[rt]||rt==='r'){ rcx(ctx,TC.curb[0],px+14,py,2,TS); rcx(ctx,TC.curb[1],px+14,py,1,TS); rcx(ctx,TC.g[1],px+13,py,1,TS); }
+  else if(up==='r'||up==='Q'){ rcx(ctx,TC.curb[0],px,py,TS,1); rcx(ctx,TC.g[0],px,py+1,TS,1); }
+  if(dn==='r'||dn==='Q'||PAVE[dn]||dn==='-'){ rcx(ctx,TC.curb[1],px,py+14,TS,2); rcx(ctx,TC.curb[2],px,py+14,TS,1); }
+  if(PAVE[lf]||lf==='r'||lf==='Q'){ rcx(ctx,TC.curb[1],px,py,2,TS); rcx(ctx,TC.curb[2],px,py,1,TS); rcx(ctx,TC.g[0],px+2,py,1,TS); }
+  if(PAVE[rt]||rt==='r'||rt==='Q'){ rcx(ctx,TC.curb[0],px+14,py,2,TS); rcx(ctx,TC.curb[1],px+14,py,1,TS); rcx(ctx,TC.g[1],px+13,py,1,TS); }
 }
 function paveB(ctx,px,py,tx,ty,m){
   var up=tileAt(m,tx,ty-1),off=(ty%2)*8,s,sy;
@@ -5580,7 +6113,7 @@ function paveB(ctx,px,py,tx,ty,m){
 }
 function roadB(ctx,px,py,tx,ty,m,cross){
   var i,up=tileAt(m,tx,ty-1),dn=tileAt(m,tx,ty+1),lf=tileAt(m,tx-1,ty),rt=tileAt(m,tx+1,ty);
-  var RD={'r':1,'-':1,'=':1};
+  var RD={'r':1,'-':1,'=':1,'Q':1};
   rcx(ctx,TC.road[1],px,py,TS,TS);
   for(i=0;i<10;i++) rcx(ctx,hrand(tx,ty,i)<.5?TC.road[0]:TC.road[2],px+Math.floor(hrand(tx,ty,i+30)*16),py+Math.floor(hrand(tx,ty,i+60)*16),1,1);
   var horiz=RD[lf]||RD[rt]||!(RD[up]||RD[dn]);
@@ -5610,11 +6143,13 @@ function waterB(ctx,px,py,tx,ty,m){
   if(!W(rt)){ rcx(ctx,TC.sand[0],px+14,py,2,TS); rcx(ctx,TC.water[0],px+13,py,1,TS); }
   if(!W(dn)){ rcx(ctx,TC.sand[0],px,py+14,TS,2); }
 }
-function roofB(ctx,px,py,tx,ty){
-  var r,s; rcx(ctx,TC.roof[2],px,py,TS,TS);
+function roofB(ctx,px,py,tx,ty,pal){
+  var r,s,RF=TC.roof; if(pal) TC.roof=pal;
+  rcx(ctx,TC.roof[2],px,py,TS,TS);
   for(r=0;r<4;r++){ var oy=py+r*4,off=(r%2)*4; rcx(ctx,TC.roof[1],px,oy+3,TS,1);
     for(s=-4;s<16;s+=8){ var sx=Math.max(0,s+off); rcx(ctx,TC.roof[3],px+sx,oy,Math.min(7,16-sx),1); if(s+off+7>=0&&s+off+7<16) rcx(ctx,TC.roof[0],px+s+off+7,oy,1,3); } }
   rcx(ctx,TC.roof[4],px,py,TS,1); rcx(ctx,TC.roof[0],px,py+14,TS,2);
+  TC.roof=RF;
 }
 function wallB(ctx,c,px,py,tx,ty,m){
   var r,s,up=tileAt(m,tx,ty-1),dn=tileAt(m,tx,ty+1);
@@ -5665,12 +6200,164 @@ function sandB(ctx,px,py,tx,ty){
   for(i=0;i<8;i++) rcx(ctx,hrand(tx,ty,i)<.5?'#D8C091':'#F6E9C8',px+Math.floor(hrand(tx,ty,i+20)*16),py+Math.floor(hrand(tx,ty,i+40)*16),hrand(tx,ty,i+60)<.3?2:1,1);
   if(hrand(tx,ty,99)<.15){ rcx(ctx,'#F4A7B9',px+6,py+7,3,2); rcx(ctx,'#FFFFFF',px+6,py+7,1,1); }
 }
+/* ══════════ 건물 외관 스타일 ══════════
+   맵의 blds에 칸 범위(x,y,w,h)와 스타일(s)을 적으면 그 안의 지붕(R)·벽(H)·창(W)·문(D)을 그 스타일로 칠한다.
+   c는 벽 색, r은 지붕 색, a는 차양 색이다. 적지 않은 건물은 원래의 붉은 기와 벽돌집으로 그린다.
+   동네마다 건물이 다 같은 벽돌이면 어디가 어디인지 간판을 읽어야만 안다. 모양으로 먼저 알아보게 한다. */
+var BSTYLE={
+ brick:{roof:'tile',wall:'brick',win:'wood',door:'wood'},                       /* 붉은 기와 벽돌집 */
+ red:{roof:'flat',wall:'brick',wc:'#A65644',win:'white',door:'metal'},           /* 붉은 벽돌 빌라 */
+ glass:{roof:'flat',wall:'glass',wc:'#5E9CC4',win:'glass',door:'glass'},         /* 유리 오피스 */
+ concrete:{roof:'flat',wall:'panel',wc:'#C9C6CF',win:'dark',door:'glass'},       /* 관공서·은행 */
+ hanok:{roof:'giwa',wall:'plaster',wc:'#F2ECDD',win:'lattice',door:'hanok'},     /* 한옥 */
+ shop:{roof:'flat',wall:'paint',wc:'#E8D8B0',win:'awning',door:'glass'},         /* 차양 달린 가게 */
+ wood:{roof:'shingle',wall:'plank',wc:'#9A6B45',win:'wood',door:'wood'},         /* 나무 외벽 카페 */
+ apt:{roof:'flat',wall:'paint',wc:'#E6DCC8',win:'balcony',door:'glass'},         /* 아파트 */
+ tile:{roof:'flat',wall:'tile',wc:'#D8D2C4',win:'white',door:'metal'},           /* 타일 외벽 구축 */
+ stone:{roof:'flat',wall:'stone',wc:'#E9E6EE',win:'dark',door:'glass'}           /* 대리석 외장 신축 */
+};
+var ROOFPAL={tile:null,flat:'#8C889B',giwa:'#454C5E',shingle:'#4F7A5A'};
+function shades(c){ return [mixHex(c,'#1E1A30',.4),mixHex(c,'#1E1A30',.2),c,mixHex(c,'#FFFFFF',.3),mixHex(c,'#FFFFFF',.55)]; }
+function bldAt(m,x,y){ var bl=m&&m.blds; if(!bl) return null;
+  for(var i=bl.length-1;i>=0;i--){ var b=bl[i]; if(x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h) return b; } return null; }
+function bstyle(m,x,y){ var b=bldAt(m,x,y); if(!b) return null;
+  if(!b._st){ var st=BSTYLE[b.s]||BSTYLE.brick,rc=b.r||ROOFPAL[st.roof];
+    b._st={roof:st.roof,wall:st.wall,win:st.win,door:st.door,wc:shades(b.c||st.wc||'#CBAE8C'),rc:rc?shades(rc):TC.roof,aw:b.a||'#E0503E'}; }
+  return b._st; }
+function sameRoof(m,a,tx,ty){ return tileAt(m,tx,ty)==='R'&&bldAt(m,tx,ty)===a; }
+function flatRoofB(ctx,px,py,tx,ty,m,pal){
+  var b=bldAt(m,tx,ty),i;
+  rcx(ctx,pal[2],px,py,TS,TS);
+  for(i=0;i<7;i++) rcx(ctx,hrand(tx,ty,i)<.5?pal[1]:pal[3],px+Math.floor(hrand(tx,ty,i+30)*16),py+Math.floor(hrand(tx,ty,i+60)*16),1,1);
+  if(!sameRoof(m,b,tx,ty-1)){ rcx(ctx,pal[4],px,py,TS,1); rcx(ctx,pal[3],px,py+1,TS,2); }
+  if(!sameRoof(m,b,tx-1,ty)){ rcx(ctx,pal[3],px,py,2,TS); rcx(ctx,pal[4],px,py,1,TS); }
+  if(!sameRoof(m,b,tx+1,ty)){ rcx(ctx,pal[1],px+14,py,2,TS); }
+  if(!sameRoof(m,b,tx,ty+1)){ rcx(ctx,pal[0],px,py+13,TS,3); rcx(ctx,pal[3],px,py+12,TS,1); }
+  var r=hrand(tx,ty,21);
+  if(r<.14){ rcx(ctx,'rgba(30,26,48,.3)',px+4,py+11,10,2); rcx(ctx,'#B9B5C6',px+3,py+4,10,8); rcx(ctx,'#E2E0EA',px+3,py+4,10,1);   /* 실외기 */
+    rcx(ctx,'#6B6380',px+5,py+6,5,5); rcx(ctx,'#9B93A8',px+7,py+6,1,5); rcx(ctx,'#9B93A8',px+5,py+8,5,1); }
+  else if(r<.2){ rcx(ctx,'rgba(30,26,48,.3)',px+3,py+12,11,2); rcx(ctx,'#5B8FB8',px+3,py+3,10,10); rcx(ctx,'#7FB0D6',px+3,py+3,10,2);   /* 물탱크 */
+    rcx(ctx,'#43648F',px+3,py+8,10,1); }
+}
+function giwaRoofB(ctx,px,py,tx,ty,m,pal){                  /* 기와: 골이 세로로 서고, 처마 끝에 막새가 줄지어 있다 */
+  var b=bldAt(m,tx,ty),i,up=sameRoof(m,b,tx,ty-1),dn=sameRoof(m,b,tx,ty+1),lf=sameRoof(m,b,tx-1,ty),rt=sameRoof(m,b,tx+1,ty);
+  rcx(ctx,pal[1],px,py,TS,TS);
+  for(i=0;i<TS;i+=4){ rcx(ctx,pal[3],px+i,py,2,TS); rcx(ctx,pal[2],px+i+2,py,1,TS); rcx(ctx,pal[0],px+i+3,py,1,TS); }
+  for(i=4;i<TS;i+=5) rcx(ctx,'rgba(20,18,30,.25)',px,py+i,TS,1);
+  if(!up){ rcx(ctx,pal[0],px,py,TS,3); rcx(ctx,'#D9DCE3',px,py+1,TS,1); }              /* 용마루 */
+  if(!dn){ rcx(ctx,pal[0],px,py+12,TS,4); for(i=0;i<TS;i+=4){ rcx(ctx,pal[4],px+i,py+13,3,2); rcx(ctx,pal[0],px+i+1,py+14,1,1); } }   /* 처마·막새 */
+  if(!lf){ rcx(ctx,pal[0],px,py,1,TS); if(!dn) rcx(ctx,pal[0],px,py+9,2,4); }
+  if(!rt){ rcx(ctx,pal[0],px+15,py,1,TS); if(!dn) rcx(ctx,pal[0],px+14,py+9,2,4); }
+}
+function roofStyled(ctx,px,py,tx,ty,m){
+  var st=bstyle(m,tx,ty);
+  if(!st||st.roof==='tile'||st.roof==='shingle') return roofB(ctx,px,py,tx,ty,st?st.rc:null);
+  if(st.roof==='giwa') return giwaRoofB(ctx,px,py,tx,ty,m,st.rc);
+  flatRoofB(ctx,px,py,tx,ty,m,st.rc); }
+/* 벽 바탕. 문과 창은 이 위에 얹는다 */
+function wallBase(ctx,st,px,py,tx,ty){
+  var P5=st.wc,r,s,i;
+  switch(st.wall){
+    case 'panel': rcx(ctx,P5[2],px,py,TS,TS); rcx(ctx,P5[1],px,py+7,TS,1); rcx(ctx,P5[3],px,py+8,TS,1);
+      rcx(ctx,P5[1],px+(tx%2?15:7),py,1,TS); if(hrand(tx,ty,2)<.4) rcx(ctx,P5[3],px+3,py+2,4,1); break;
+    case 'glass': rcx(ctx,P5[1],px,py,TS,TS);
+      for(i=0;i<TS;i+=8){ rcx(ctx,P5[0],px+i,py,1,TS); } for(i=0;i<TS;i+=5) rcx(ctx,P5[0],px,py+i,TS,1);
+      rcx(ctx,P5[3],px+((tx*5+ty*3)%12)+1,py+1,2,3); rcx(ctx,P5[4],px+((tx*5+ty*3)%12)+2,py+1,1,2);     /* 하늘이 비친다 */
+      rcx(ctx,'rgba(255,255,255,.18)',px+((tx+ty)%2?2:9),py+6,5,4); break;
+    case 'plaster': rcx(ctx,P5[2],px,py,TS,TS); rcx(ctx,P5[3],px,py+3,TS,1);
+      rcx(ctx,'#6B4A31',px,py,TS,2); rcx(ctx,'#8A6240',px,py,TS,1);                                /* 도리 */
+      if(tx%2===0){ rcx(ctx,'#6B4A31',px,py,3,TS); rcx(ctx,'#8A6240',px+1,py,1,TS); }             /* 기둥 */
+      rcx(ctx,'#9B93A8',px,py+12,TS,4); rcx(ctx,'#B3AFC0',px,py+12,TS,1);                          /* 돌 기단 */
+      rcx(ctx,'#7E7890',px+((tx%2)?5:11),py+13,1,3); break;
+    case 'paint': rcx(ctx,P5[2],px,py,TS,TS);
+      for(i=0;i<5;i++) rcx(ctx,hrand(tx,ty,i+70)<.5?P5[1]:P5[3],px+Math.floor(hrand(tx,ty,i+80)*16),py+Math.floor(hrand(tx,ty,i+90)*16),1,1);
+      rcx(ctx,P5[1],px,py+15,TS,1); break;
+    case 'plank': rcx(ctx,P5[2],px,py,TS,TS);
+      for(i=0;i<TS;i+=4){ rcx(ctx,P5[1],px+i+3,py,1,TS); rcx(ctx,P5[3],px+i,py,1,TS);
+        if(hrand(tx*4+i,ty,5)<.3) rcx(ctx,P5[0],px+i+1,py+Math.floor(hrand(tx,ty*4+i,6)*12)+2,1,1); } break;
+    case 'tile': rcx(ctx,P5[3],px,py,TS,TS);
+      for(i=0;i<TS;i+=4){ rcx(ctx,P5[1],px,py+i+3,TS,1); rcx(ctx,P5[1],px+i+((ty+i/4)%2?2:0),py+i,1,3); }
+      if(hrand(tx,ty,4)<.3) rcx(ctx,P5[2],px+4,py+4,3,3); break;
+    case 'stone': rcx(ctx,P5[3],px,py,TS,TS); rcx(ctx,P5[1],px,py+7,TS,1); rcx(ctx,P5[1],px+(ty%2?4:12),py,1,7); rcx(ctx,P5[1],px+(ty%2?10:2),py+8,1,8);
+      rcx(ctx,P5[2],px+2+Math.floor(hrand(tx,ty,3)*9),py+3,4,1); rcx(ctx,P5[2],px+5+Math.floor(hrand(tx,ty,4)*6),py+11,3,1); break;   /* 대리석 결 */
+    default: rcx(ctx,P5[2],px,py,TS,TS);                                                          /* 벽돌 */
+      for(r=0;r<4;r++){ var oy=py+r*4,off=((ty*4+r)%2)*4; rcx(ctx,P5[1],px,oy+3,TS,1);
+        for(s=-4;s<16;s+=8){ var sx=px+s+off; if(sx>=px&&sx<px+16) rcx(ctx,P5[1],sx,oy,1,3);
+          if(hrand(tx*7+s,ty*5+r,3)<.3){ var bx=Math.max(px,sx+1); rcx(ctx,P5[3],bx,oy,Math.min(6,px+16-bx),1); } } }
+  } }
+function winStyled(ctx,st,px,py,tx,ty){
+  var g=TC.glass;
+  switch(st.win){
+    case 'white': rcx(ctx,'#F4F2F8',px+2,py+2,12,11); rcx(ctx,g[1],px+3,py+3,10,9); rcx(ctx,g[0],px+3,py+9,10,3);
+      rcx(ctx,g[3],px+4,py+4,2,2); rcx(ctx,'#F4F2F8',px+8,py+3,1,9); rcx(ctx,'#C9C3D6',px+1,py+13,14,2); break;
+    case 'glass': rcx(ctx,st.wc[0],px+1,py+1,14,14); rcx(ctx,g[2],px+2,py+2,12,12); rcx(ctx,g[1],px+2,py+8,12,6);
+      rcx(ctx,g[3],px+3,py+3,3,1); rcx(ctx,g[3],px+3,py+3,1,3); rcx(ctx,'rgba(255,255,255,.35)',px+9,py+2,2,12); break;
+    case 'dark': rcx(ctx,'#3F3A55',px+2,py+2,12,12); rcx(ctx,'#46607A',px+3,py+3,10,10); rcx(ctx,'#5C7C9A',px+3,py+3,10,3);
+      rcx(ctx,'#9BC4E0',px+4,py+4,2,1); rcx(ctx,'#3F3A55',px+8,py+3,1,10); rcx(ctx,st.wc[1],px+1,py+14,14,1); break;
+    case 'lattice': rcx(ctx,'#6B4A31',px+2,py+3,12,9); rcx(ctx,'#F3EBD3',px+3,py+4,10,7);                 /* 창살에 한지 */
+      for(var i=0;i<10;i+=3) rcx(ctx,'#8A6240',px+3+i,py+4,1,7); rcx(ctx,'#8A6240',px+3,py+7,10,1); break;
+    case 'awning': rcx(ctx,g[1],px+1,py+6,14,9); rcx(ctx,g[2],px+2,py+7,4,2); rcx(ctx,'#3F3A55',px,py+15,TS,1);   /* 진열창 위 차양 */
+      rcx(ctx,[P.r1,P.y1,P.g1,P.k3][(tx+ty)%4],px+4,py+11,3,3); rcx(ctx,[P.y1,P.k3,P.r1,P.g1][(tx+ty)%4],px+9,py+10,3,4);
+      for(var j=0;j<TS;j+=4){ rcx(ctx,st.aw,px+j,py,2,5); rcx(ctx,'#FFFDF6',px+j+2,py,2,5); rcx(ctx,st.aw,px+j,py+5,2,1); }
+      rcx(ctx,'rgba(30,26,48,.2)',px,py+6,TS,1); break;
+    case 'balcony': rcx(ctx,st.wc[1],px+1,py+1,14,13); rcx(ctx,g[1],px+2,py+2,12,9); rcx(ctx,g[3],px+3,py+3,2,3);   /* 베란다 창과 난간 */
+      rcx(ctx,st.wc[1],px+8,py+2,1,9); rcx(ctx,'#E4E0EC',px,py+10,TS,1); for(var k=1;k<TS;k+=3) rcx(ctx,'#E4E0EC',px+k,py+10,1,5);
+      rcx(ctx,'#E4E0EC',px,py+14,TS,1); if(hrand(tx,ty,12)<.35){ rcx(ctx,TC.leaf[2],px+3,py+11,4,3); rcx(ctx,TC.fl[(tx+ty)%4],px+4,py+11,1,1); } break;
+    default: rcx(ctx,TC.wood[0],px+2,py+2,12,12); rcx(ctx,g[1],px+3,py+3,10,9); rcx(ctx,g[0],px+3,py+9,10,3);
+      rcx(ctx,g[2],px+4,py+4,3,3); rcx(ctx,g[3],px+4,py+4,1,2); rcx(ctx,TC.wood[1],px+8,py+3,1,9); rcx(ctx,TC.wood[1],px+3,py+7,10,1);
+      rcx(ctx,'#EFE6D6',px+1,py+13,14,2); rcx(ctx,'#CFC3AE',px+1,py+14,14,1);
+  } }
+function doorStyled(ctx,st,px,py){
+  switch(st.door){
+    case 'glass': rcx(ctx,'#6B6380',px+1,py,14,16); rcx(ctx,TC.glass[1],px+2,py+1,12,15); rcx(ctx,TC.glass[2],px+2,py+1,12,4);   /* 자동문 */
+      rcx(ctx,'#6B6380',px+7,py+1,2,15); rcx(ctx,'rgba(255,255,255,.5)',px+3,py+3,1,8); rcx(ctx,'rgba(255,255,255,.5)',px+10,py+3,1,8);
+      rcx(ctx,'#3F3A55',px+1,py+15,14,1); break;
+    case 'metal': rcx(ctx,'#57517A',px+2,py,12,16); rcx(ctx,'#9B93A8',px+3,py+1,10,15); rcx(ctx,'#B9B5C6',px+3,py+1,10,1);   /* 철문 */
+      rcx(ctx,'#6B6380',px+5,py+3,6,4); rcx(ctx,TC.glass[1],px+6,py+4,4,2); rcx(ctx,'#FFC53C',px+11,py+9,1,2); rcx(ctx,'#E2E0EA',px+6,py+11,4,1); break;
+    case 'hanok': rcx(ctx,'#4E3524',px+1,py,14,15); rcx(ctx,'#7A4E2E',px+2,py+1,12,14); rcx(ctx,'#4E3524',px+7,py+1,1,14);   /* 나무 두 짝 문 */
+      rcx(ctx,'#F3EBD3',px+3,py+2,3,5); rcx(ctx,'#F3EBD3',px+9,py+2,3,5); rcx(ctx,'#8A6240',px+4,py+2,1,5); rcx(ctx,'#8A6240',px+10,py+2,1,5);
+      rcx(ctx,'#D9A441',px+6,py+9,1,2); rcx(ctx,'#D9A441',px+9,py+9,1,2); rcx(ctx,'#B3AFC0',px,py+14,TS,2); break;
+    default: rcx(ctx,TC.brick[0],px+1,py,14,16); rcx(ctx,TC.wood[1],px+2,py+1,12,15); rcx(ctx,TC.wood[2],px+3,py+2,10,6); rcx(ctx,TC.wood[2],px+3,py+9,10,6);
+      rcx(ctx,TC.wood[3],px+3,py+2,10,1); rcx(ctx,TC.wood[3],px+3,py+9,10,1); rcx(ctx,TC.glass[1],px+5,py+3,6,3); rcx(ctx,TC.glass[2],px+5,py+3,2,1);
+      rcx(ctx,'#FFC53C',px+11,py+8,2,2); rcx(ctx,'#D98A16',px+12,py+9,1,1); rcx(ctx,TC.sw[3],px,py+15,TS,1);
+  } }
+function wallStyled(ctx,c,px,py,tx,ty,m){
+  var st=bstyle(m,tx,ty); if(!st) return wallB(ctx,c,px,py,tx,ty,m);
+  var up=tileAt(m,tx,ty-1),dn=tileAt(m,tx,ty+1);
+  wallBase(ctx,st,px,py,tx,ty);
+  if(up==='R'&&st.wall!=='plaster') rcx(ctx,'rgba(40,20,20,.28)',px,py,TS,3);
+  if(!WALLS[dn]&&c!=='D'&&st.wall!=='plaster') rcx(ctx,st.wc[0],px,py+15,TS,1);
+  if(c==='W') winStyled(ctx,st,px,py,tx,ty);
+  if(c==='D') doorStyled(ctx,st,px,py); }
+/* 주차장: 밝은 아스팔트에 흰 주차선. 가장자리 칸에는 P 표지를 칠한다 */
+function parkB(ctx,px,py,tx,ty,m){
+  var i,up=tileAt(m,tx,ty-1),lf=tileAt(m,tx-1,ty),rt=tileAt(m,tx+1,ty),dn=tileAt(m,tx,ty+1);
+  rcx(ctx,'#5A5766',px,py,TS,TS);
+  for(i=0;i<8;i++) rcx(ctx,hrand(tx,ty,i)<.5?'#4E4B5A':'#67647A',px+Math.floor(hrand(tx,ty,i+30)*16),py+Math.floor(hrand(tx,ty,i+60)*16),1,1);
+  rcx(ctx,'#E9E4F0',px,py,1,TS); if(rt!=='Q') rcx(ctx,'#E9E4F0',px+15,py,1,TS);             /* 칸 나누는 선 */
+  if(up!=='Q'&&up!=='r'&&up!=='-'){ rcx(ctx,TC.curb[1],px,py,TS,2); rcx(ctx,TC.curb[2],px,py,TS,1); }
+  if(dn!=='Q'&&dn!=='r'&&dn!=='-'){ rcx(ctx,TC.curb[0],px,py+14,TS,2); }
+  if(lf!=='Q'&&lf!=='r'&&lf!=='-'){ rcx(ctx,TC.curb[1],px,py,2,TS); }
+  if((tx+ty)%3===0){ rcx(ctx,'#3F6FB8',px+5,py+4,6,8); rcx(ctx,'#FFFDF6',px+6,py+5,1,6); rcx(ctx,'#FFFDF6',px+7,py+5,2,1); rcx(ctx,'#FFFDF6',px+9,py+6,1,2); rcx(ctx,'#FFFDF6',px+7,py+8,2,1); }
+}
+/* 고분: 풀 덮인 둥근 언덕. 위는 밝고 아래로 갈수록 어두워지며, 끝 칸은 둥글게 깎는다 */
+function tombB(ctx,px,py,tx,ty,m){
+  grassB(ctx,px,py,tx,ty,m,0);
+  var O=function(x,y){ return tileAt(m,x,y)==='O'; },up=O(tx,ty-1),dn=O(tx,ty+1),lf=O(tx-1,ty),rt=O(tx+1,ty),i,yy;
+  var t0=ty,t1=ty; while(O(tx,t0-1)) t0--; while(O(tx,t1+1)) t1++;       /* 이 열에서 언덕의 위·아래 끝 */
+  var top=t0*TS+2,h=(t1+1)*TS-1-top;
+  var x0=px+(lf?0:3),x1=px+TS-(rt?0:3);
+  for(yy=Math.max(py,top);yy<Math.min(py+TS,top+h);yy++){ var k=(yy-top)/h,c=k<.18?TC.g[4]:k<.5?TC.g[3]:k<.85?TC.g[2]:TC.g[1];
+    var ins=(!up&&yy<py+4)?(4-(yy-py)):(!dn&&yy>py+TS-4)?(yy-(py+TS-4)):0;          /* 위·아래 끝은 둥글게 */
+    rcx(ctx,c,x0+(lf?0:ins),yy,(x1-x0)-(lf?0:ins)-(rt?0:ins),1); }
+  if(!dn) rcx(ctx,'rgba(20,40,20,.35)',x0+2,py+TS-1,x1-x0-4,1);
+  for(i=0;i<4;i++) rcx(ctx,TC.g[4],x0+Math.floor(hrand(tx,ty,i+40)*(x1-x0-1)),py+Math.floor(hrand(tx,ty,i+60)*14),1,1); }
 var TILE_B={
   g:function(c,x,y,a,b,m){ grassB(c,x,y,a,b,m,0); }, o:function(c,x,y,a,b,m){ grassB(c,x,y,a,b,m,1); },
   '_':function(c,x,y,a,b,m){ paveB(c,x,y,a,b,m); }, b:benchB, p:poleB, f:fenceB, t:treeB,
   r:function(c,x,y,a,b,m){ roadB(c,x,y,a,b,m,0); }, '-':function(c,x,y,a,b,m){ roadB(c,x,y,a,b,m,1); },
-  w:waterB, R:roofB, s:sandB,
-  H:function(c,x,y,a,b,m){ wallB(c,'H',x,y,a,b,m); }, W:function(c,x,y,a,b,m){ wallB(c,'W',x,y,a,b,m); }, D:function(c,x,y,a,b,m){ wallB(c,'D',x,y,a,b,m); }
+  w:waterB, R:roofStyled, s:sandB, Q:parkB, O:tombB,
+  H:function(c,x,y,a,b,m){ wallStyled(c,'H',x,y,a,b,m); }, W:function(c,x,y,a,b,m){ wallStyled(c,'W',x,y,a,b,m); }, D:function(c,x,y,a,b,m){ wallStyled(c,'D',x,y,a,b,m); }
 };
 
 /* ══════════ 실내 타일 (다듬은 판) ══════════
@@ -5679,9 +6366,26 @@ var TILE_B={
 function isWarm(c){ var r=hex2rgb(c); return r[0]>r[2]+18; }
 var FLOORISH={'.':1,',':1,'b':1,'Z':1};
 function wallFace(m,tx,ty){ var dn=tileAt(m,tx,ty+1); return dn!==null&&dn!=='#'&&dn!=='D'; }
+/* 실내 스타일. 맵에 floor·wall을 적으면 색(tint)은 그대로 두고 무늬를 바꾼다.
+   floor: wood 마루, tile 타일, check 체크 타일, carpet 카펫, ondol 장판, stone 돌바닥, lino 얼룩 무늬 바닥재
+   wall: paper 벽지, wains 나무 징두리, brick 노출 벽돌, wood 나무 판벽, hanji 한지 창호, tile 흰 타일, glass 통유리 */
+var FLOOR_S={
+ check:function(ctx,px,py,tx,ty,fl,f2,hi){ [0,8].forEach(function(oy,j){ [0,8].forEach(function(ox,k){ rcx(ctx,(j+k)%2?f2:fl,px+ox,py+oy,8,8); }); });
+   rcx(ctx,hi,px,py,TS,1); },
+ carpet:function(ctx,px,py,tx,ty,fl,f2,hi){ rcx(ctx,fl,px,py,TS,TS);
+   for(var i=0;i<10;i++) rcx(ctx,hrand(tx,ty,i)<.5?f2:hi,px+Math.floor(hrand(tx,ty,i+20)*16),py+Math.floor(hrand(tx,ty,i+40)*16),1,1);
+   if((tx+ty)%2===0){ rcx(ctx,mixHex(fl,f2,.5),px+6,py+6,4,4); rcx(ctx,fl,px+7,py+7,2,2); } },
+ ondol:function(ctx,px,py,tx,ty,fl,f2,hi){ rcx(ctx,fl,px,py,TS,TS); rcx(ctx,mixHex(fl,f2,.45),px,py+15,TS,1); rcx(ctx,mixHex(fl,f2,.45),px+15,py,1,TS);
+   rcx(ctx,hi,px+2,py+2,5,1); if(hrand(tx,ty,3)<.4) rcx(ctx,mixHex(fl,f2,.3),px+4+Math.floor(hrand(tx,ty,4)*8),py+6+Math.floor(hrand(tx,ty,5)*6),3,1); },
+ stone:function(ctx,px,py,tx,ty,fl,f2,hi){ rcx(ctx,fl,px,py,TS,TS); var o=(ty%2)*6;
+   rcx(ctx,f2,px,py+7,TS,1); rcx(ctx,f2,px+((o+4)%16),py,1,7); rcx(ctx,f2,px+((o+11)%16),py+8,1,8); rcx(ctx,hi,px+1,py+1,4,1); rcx(ctx,hi,px+((o+6)%12),py+9,3,1); },
+ lino:function(ctx,px,py,tx,ty,fl,f2,hi){ rcx(ctx,fl,px,py,TS,TS);
+   for(var i=0;i<12;i++) rcx(ctx,hrand(tx,ty,i)<.6?f2:hi,px+Math.floor(hrand(tx,ty,i+20)*16),py+Math.floor(hrand(tx,ty,i+40)*16),hrand(tx,ty,i+60)<.3?2:1,1); }
+};
 function floorI(ctx,px,py,tx,ty,m,T){
-  var fl=T.fl,f2=T.fl2,hi=mixHex(fl,'#FFFFFF',.14),i;
-  if(isWarm(fl)){                                           /* 마루: 4줄 널, 이음매는 엇갈린다 */
+  var fl=T.fl,f2=T.fl2,hi=mixHex(fl,'#FFFFFF',.14),i,fs=m&&m.floor;
+  if(fs&&FLOOR_S[fs]) FLOOR_S[fs](ctx,px,py,tx,ty,fl,f2,hi);
+  else if(fs==='wood'||(fs!=='tile'&&isWarm(fl))){                                           /* 마루: 4줄 널, 이음매는 엇갈린다 */
     rcx(ctx,fl,px,py,TS,TS);
     for(i=0;i<4;i++){ var oy=py+i*4,off=((ty*4+i)*7)%16; rcx(ctx,f2,px,oy+3,TS,1); rcx(ctx,hi,px,oy,TS,1);
       rcx(ctx,f2,px+off,oy,1,3); if(hrand(tx,ty*4+i,3)<.3) rcx(ctx,mixHex(fl,f2,.5),px+((off+6)%14),oy+1,2,1); }
@@ -5695,11 +6399,25 @@ function floorI(ctx,px,py,tx,ty,m,T){
   if(up==='#'||up==='K'||up==='S'||up==='F'||up==='M'){ rcx(ctx,'rgba(30,26,48,.22)',px,py,TS,3); rcx(ctx,'rgba(30,26,48,.10)',px,py+3,TS,2); }
   if(lf==='#'){ rcx(ctx,'rgba(30,26,48,.14)',px,py,2,TS); }
 }
+function wallFaceStyled(ctx,px,py,tx,ty,st,wl,w2){
+  var i;
+  if(st==='brick'){ rcx(ctx,mixHex(w2,'#8E5A4E',.5),px,py,TS,12);
+    for(i=0;i<3;i++){ var oy=py+2+i*4,off=(i%2)*4; rcx(ctx,mixHex(w2,'#5E382E',.5),px,oy+3,TS,1);
+      for(var s2=-4;s2<16;s2+=8) if(px+s2+off>=px) rcx(ctx,mixHex(w2,'#5E382E',.5),px+s2+off,oy,1,3); }
+    return; }
+  if(st==='wood'){ rcx(ctx,mixHex(w2,'#8A6240',.55),px,py,TS,12); for(i=0;i<TS;i+=4){ rcx(ctx,mixHex(w2,'#4E3524',.5),px+i+3,py+2,1,10); rcx(ctx,mixHex(wl,'#A87B52',.4),px+i,py+2,1,10); } return; }
+  if(st==='hanji'){ rcx(ctx,'#6B4A31',px,py,TS,12); rcx(ctx,'#F3EBD3',px+1,py+2,14,9);
+    for(i=1;i<TS;i+=4) rcx(ctx,'#8A6240',px+i,py+2,1,9); rcx(ctx,'#8A6240',px+1,py+6,14,1); return; }
+  if(st==='tile'){ rcx(ctx,'#F4F6F8',px,py,TS,12); for(i=0;i<TS;i+=4){ rcx(ctx,'#CBD3DE',px+i,py+2,1,10); } rcx(ctx,'#CBD3DE',px,py+6,TS,1); rcx(ctx,'#CBD3DE',px,py+10,TS,1); return; }
+  if(st==='glass'){ rcx(ctx,'#5C5866',px,py,TS,12); rcx(ctx,'#9AD2F0',px+1,py+2,14,9); rcx(ctx,'#CDEEFF',px+1,py+2,14,3);
+    rcx(ctx,'#FFFFFF',px+3+(tx%3)*3,py+3,3,1); rcx(ctx,'#5C5866',px+(tx%2?15:7),py+2,1,9); return; }
+  rcx(ctx,wl,px,py,TS,TS);
+  for(i=2;i<TS;i+=4) rcx(ctx,mixHex(wl,w2,.35),px+i,py+3,1,9);                  /* 벽지 결 */
+  if(st==='wains'){ rcx(ctx,mixHex(w2,'#8A6240',.5),px,py+7,TS,5); rcx(ctx,mixHex(w2,'#C4966A',.4),px,py+7,TS,1); } }
 function wallI(ctx,px,py,tx,ty,m,T){
   if(wallFace(m,tx,ty)){
     var wl=T.wl,w2=T.wl2,i;
-    rcx(ctx,wl,px,py,TS,TS);
-    for(i=2;i<TS;i+=4) rcx(ctx,mixHex(wl,w2,.35),px+i,py+3,1,9);          /* 벽지 결 */
+    wallFaceStyled(ctx,px,py,tx,ty,m&&m.wall,wl,w2);
     rcx(ctx,mixHex(w2,'#2E2740',.35),px,py,TS,2); rcx(ctx,mixHex(wl,'#FFFFFF',.3),px,py+2,TS,1);
     rcx(ctx,mixHex(w2,'#6E5334',.5),px,py+12,TS,4); rcx(ctx,mixHex(w2,'#FFFFFF',.2),px,py+12,TS,1);   /* 걸레받이 */
     return; }
@@ -5896,6 +6614,7 @@ function spotFace(s){
   if(s.kind==='thing') return null;
   if(s.kind==='npc') return npcKeyFor(s.who);
   if(s.kind==='boss') return bossById(s.id).face;
+  if(s.kind==='lease') return s.face;
   return null;
 }
 function spotLabel(s){
@@ -5905,6 +6624,7 @@ function spotLabel(s){
   if(s.kind==='npc') return s.who;
   if(s.kind==='boss') return bossById(s.id).name;
   if(s.kind==='review') return '복습 노트';
+  if(s.kind==='lease') return s.name;
   return epById(s.id).title;
 }
 function epById(id){ var r=EPISODES[0]; EPISODES.forEach(function(e){ if(e.id===id) r=e; }); return r; }
@@ -5916,6 +6636,7 @@ function spotMark(s){
   if(s.kind==='review') return reviewQuest()?'!':null;
   if(s.kind==='ep') return epBestOf(s.id)===0?null:'?';
   if(s.kind==='boss') return bossCleared(s.id)?null:(bossReady(bossById(s.id))?'!':'lock');
+  if(s.kind==='lease') return leaseHere(s)?'!':null;
   return null;
 }
 function spotHint(s){
@@ -5926,6 +6647,7 @@ function spotHint(s){
     return deskQuests(s.id).some(fits)?'이 창구 상담은 다 들었다':'지금 신분엔 볼일이 없는 창구'; }
   if(s.kind==='talk') return spotMark(s)?'넌센스 퀴즈 · 눌러서 말 걸기':'눌러서 말 걸기';
   if(s.kind==='thing') return '눌러서 살펴보기';
+  if(s.kind==='lease') return leaseHere(s)?'전세 계약 · '+leaseCh().title+' · 눌러서 계속':S.lease?'다음 장면은 '+leaseWhere()+'에서':'눌러서 말 걸기';
   if(s.kind==='ep') return epBestOf(s.id)===null?'눌러서 걸어 보기':'다시 걸어 보기';
   if(s.kind==='review') return reviewQuest()?'눌러서 복습하기':'복습할 문항이 없다';
   if(s.kind==='boss'){ var bb=bossById(s.id);
@@ -5994,7 +6716,15 @@ function drawSpot(ctx,s,px,py){
       rcx(ctx,['#A87BE0','#FFF8EC','#F4705A','#6EC8F0','#FFC53C'][bi],px+3+bi*2,py+3,1,5); }
     rcx(ctx,P.p0,px+4,py+10,8,4); rcx(ctx,P.s2,px+5,py+11,6,1);
     return; }
-  if(s.kind==='thing'){ if(s.look==='sign'){                  /* 안내판 */
+  if(s.kind==='thing'){ if(s.look==='tower'){                 /* 첨성대: 아래가 불룩한 돌탑, 위에 井자 머리 */
+      rcx(ctx,'rgba(30,26,48,.3)',px-3,py+13,TS+6,3);
+      var rows2=[[4,6],[4,7],[3,8],[3,9],[2,10],[2,11],[1,12],[1,13],[0,14],[0,15],[0,16]];
+      for(var ti=0;ti<22;ti++){ var rr2=rows2[Math.min(rows2.length-1,Math.floor(ti/2))],w2=rr2[1]+ (ti>16?2:0),x2=px+8-Math.floor(w2/2),y2=py-8+ti;
+        rcx(ctx,ti%2?'#B9AE98':'#D6CCB4',x2,y2,w2,1); }
+      rcx(ctx,'#3F3A55',px+6,py+1,4,4);                                  /* 가운데 창 */
+      rcx(ctx,'#D6CCB4',px+2,py-11,12,2); rcx(ctx,'#B9AE98',px+4,py-13,2,5); rcx(ctx,'#B9AE98',px+10,py-13,2,5);
+      rcx(ctx,'#E8D9A8',px+2,py-13,12,1); return; }
+    if(s.look==='sign'){                  /* 안내판 */
       rcx(ctx,'#6E5334',px+7,py+6,2,10); rcx(ctx,P.s4,px+1,py-4,14,11); rcx(ctx,'#E3D2B4',px+2,py-3,12,9);
       rcx(ctx,P.s2,px+4,py-1,8,1); rcx(ctx,P.s2,px+4,py+2,6,1); }
     return; }
@@ -6042,21 +6772,22 @@ function camOf(m){
   return {x:cx,y:cy,z:z};
 }
 /* ── 길 찾기. 맵이 작으니 너비 우선이면 충분하다 ────────────────────── */
-function pathTo(m,gx,gy){
+function pathTo(m,gx,gy,mode,sx,sy){
   var key=function(x,y){ return x+','+y; };
-  var q=[{x:ME.tx,y:ME.ty}],seen={},from={};
-  seen[key(ME.tx,ME.ty)]=1;
+  if(sx==null){ sx=ME.tx; sy=ME.ty; }
+  var q=[{x:sx,y:sy}],seen={},from={};
+  seen[key(sx,sy)]=1;
   var D=[[0,1],[0,-1],[-1,0],[1,0]],i,n=0;
   while(q.length&&n<3000){
     var c=q.shift(); n++;
     if(c.x===gx&&c.y===gy){
       var path=[],k=key(gx,gy);
-      while(k!==key(ME.tx,ME.ty)){ var p=from[k]; path.unshift({x:p.x,y:p.y}); k=key(p.px,p.py); }
+      while(k!==key(sx,sy)){ var p=from[k]; path.unshift({x:p.x,y:p.y}); k=key(p.px,p.py); }
       return path;
     }
     for(i=0;i<4;i++){
       var nx=c.x+D[i][0],ny=c.y+D[i][1],kk=key(nx,ny);
-      if(seen[kk]||!walkable(m,nx,ny,1)) continue;           /* 펫은 길을 막지 않는다. 걸어가면 비킨다 */
+      if(seen[kk]||!walkable(m,nx,ny,1,mode)) continue;      /* 펫은 길을 막지 않는다. 걸어가면 비킨다 */
       /* 문은 목적지일 때만 지난다. 지나가다 딸려 들어가면 안 된다 */
       if(warpAt(m,nx,ny)&&!(nx===gx&&ny===gy)) continue;
       seen[kk]=1; from[kk]={x:nx,y:ny,px:c.x,py:c.y}; q.push({x:nx,y:ny});
@@ -6064,8 +6795,31 @@ function pathTo(m,gx,gy){
   }
   return null;
 }
+/* 차를 탄 채 찻길 밖을 누르면: 차로 갈 수 있는 주차장 가운데 (차로 가는 길 + 내려서 걷는 길)이
+   가장 짧은 곳을 골라 세우고 걸어간다. 지금 선 칸이 주차장이면 그 자리에서 내린다. */
+function carRoute(m,gx,gy){
+  var best=null,x,y;
+  for(y=0;y<m.h;y++) for(x=0;x<m.w;x++){ if(tileAt(m,x,y)!=='Q') continue;
+    var here=(x===ME.tx&&y===ME.ty),cp=here?[]:pathTo(m,x,y,'car'); if(!cp) continue;
+    var fp=(x===gx&&y===gy)?[]:pathTo(m,gx,gy,'foot',x,y); if(!fp) continue;
+    var cost=cp.length+fp.length*2;                          /* 걷는 길이 짧은 쪽을 더 친다 */
+    if(!best||cost<best.cost) best={x:x,y:y,car:cp,cost:cost}; }
+  return best; }
+/* 지금 선 칸에 차를 세우고 내린다 */
+function parkHere(){
+  var mo=MOUNTS[S.equip.mount]; if(!mo||!mo.kind) return;
+  S.park={map:ME.map,x:ME.tx,y:ME.ty,kind:mo.kind,id:S.equip.mount,dir:ME.dir===1?1:2}; S.onFoot=true; save(); }
 function goTo(gx,gy,then){
-  var m=curMap(),path=pathTo(m,gx,gy);
+  var m=curMap(),path;
+  if(carOn()&&!walkable(m,gx,gy,0,'car')){
+    var r=carRoute(m,gx,gy);
+    if(!r){ toast('차는 찻길과 주차장에서만 달린다. 세울 주차장이 안 보인다.'); if(then) then(); return false; }
+    var after=function(){ parkHere(); toast('주차장에 차를 세우고 내렸다.'); drawScene();
+      if(!(gx===ME.tx&&gy===ME.ty)) goTo(gx,gy,then); else if(then) then(); };
+    if(!r.car.length){ after(); return true; }
+    MOVE={path:r.car,pi:-1,then:after};
+    nextStep(); return true; }
+  path=pathTo(m,gx,gy);
   if(!path||!path.length){ if(then) then(); return false; }
   MOVE={path:path,pi:-1,then:then||null};
   nextStep();
@@ -6104,12 +6858,19 @@ function checkWarp(){
         ME.tx=Math.max(1,Math.min(m.w-2,ME.tx+(w.x<=0?1:w.x>=m.w-1?-1:0))); savePos(); drawScene(); return true; }
       takeWarp(w); return true; } }
   if(m.edges){
-    if(m.edges.west&&ME.tx<=0){ var wm=MAPS[m.edges.west]; enterMap(m.edges.west,wm.w-2,Math.min(wm.h-2,ME.ty)); return true; }
-    if(m.edges.east&&ME.tx>=m.w-1){
-      if(!mapOpen(m.edges.east)){
-        toast(MAPS[m.edges.east].name+'은 Lv.'+MAP_LV[m.edges.east]+'부터 갈 수 있습니다.');
-        ME.tx=m.w-2; ME.dir=1; savePos(); drawScene(); return true; }
-      var em=MAPS[m.edges.east]; enterMap(m.edges.east,1,Math.min(em.h-2,ME.ty)); return true; }
+    var E=m.edges,dir=(E.west&&ME.tx<=0)?'west':(E.east&&ME.tx>=m.w-1)?'east':(E.north&&ME.ty<=0)?'north':(E.south&&ME.ty>=m.h-1)?'south':null;
+    if(dir){ var to=E[dir],nm=MAPS[to];
+      if(!mapOpen(to)){
+        toast(nm.name+'은 Lv.'+MAP_LV[to]+'부터 갈 수 있습니다.');
+        if(dir==='west'){ ME.tx=1; ME.dir=2; } else if(dir==='east'){ ME.tx=m.w-2; ME.dir=1; }
+        else if(dir==='north'){ ME.ty=1; ME.dir=0; } else { ME.ty=m.h-2; ME.dir=3; }
+        savePos(); drawScene(); return true; }
+      /* 맵 사이의 길은 같은 줄(동서)이나 같은 칸(남북)으로 이어지게 그려 두었다 */
+      if(dir==='west') enterMap(to,nm.w-2,Math.min(nm.h-2,ME.ty));
+      else if(dir==='east') enterMap(to,1,Math.min(nm.h-2,ME.ty));
+      else if(dir==='north') enterMap(to,Math.min(nm.w-2,ME.tx),nm.h-2);
+      else enterMap(to,Math.min(nm.w-2,ME.tx),1);
+      return true; }
   }
   return false;
 }
@@ -6128,6 +6889,7 @@ function enterMap(id,tx,ty){
   var nm2=(id==='room')?null:MAPS[id];
   if(wasRiding&&(id==='room'||(nm2&&nm2.interior))) parkNearDoor(prevMap,ptx,pty);   /* 건물에 들어가면 문 앞에 세운다 */
   parkOnArrive(id,wasRiding);
+  if(carOn()&&!walkable(m,ME.tx,ME.ty,1,'car')) carSettle(m,id);     /* 차를 탄 채 보도에 내려앉았으면 주차장에 세운다 */
   if(S.onFoot&&S.park&&S.park.map!==id&&id!=='room'&&nm2&&!nm2.interior&&MAPS[S.park.map])
     setTimeout(function(){ toast(MOUNTS[S.equip.mount].name+'은(는) '+MAPS[S.park.map].name+'에 세워 두었다.'); },500);
   sfx('pick'); savePos(); drawScene(); checkEgg();
@@ -6188,6 +6950,7 @@ function drawScene(){
   if(pw) cast.push({y:pw.fy*TS,draw:function(){ drawPet(ctx,pw); }});
   cast.sort(function(a,b){ return a.y-b.y; });
   cast.forEach(function(c){ c.draw(); });
+  if(m.night) drawNight(ctx,m,x0,x1,y0,y1);
   (m.spots||[]).forEach(function(s){
     var mk=spotMark(s),cx2=s.x*TS+TS/2,top=s.y*TS-(s.kind==='ep'||s.kind==='review'?6:(s.kind==='desk'||s.behind)?28:16);
     if(mk==='lock') drawLock(ctx,cx2,top);
@@ -6220,6 +6983,16 @@ function drawScene(){
   if(zt) zt.hidden=!!ns||!!PLACE;                      /* 한 자리에 둘이 겹치지 않게 */
   var ft=document.getElementById('hfoot'); if(ft&&PLACE) ft.hidden=true;
 }
+/* 야시장·야경 맵: 푸른 밤빛을 덮고, 판매대와 가로등 둘레만 노랗게 밝힌다 */
+function drawNight(ctx,m,x0,x1,y0,y1){
+  rcx(ctx,'rgba(18,20,58,.42)',x0*TS,y0*TS,(x1-x0+1)*TS,(y1-y0+1)*TS+TS*4);
+  var x,y,f=(TICK>>2)%2;
+  for(y=y0;y<=y1;y++) for(x=x0;x<=x1;x++){ var c=tileAt(m,x,y);
+    if(c==='A'||c==='p'){ var cx=x*TS+8,cy=y*TS+(c==='p'?0:6);
+      ctx.fillStyle='rgba(255,214,120,.16)'; ctx.beginPath(); ctx.arc(cx,cy,c==='p'?20:14+f,0,7); ctx.fill();
+      ctx.fillStyle='rgba(255,236,170,.22)'; ctx.beginPath(); ctx.arc(cx,cy,c==='p'?9:7,0,7); ctx.fill(); }
+    else if(c==='w'&&hrand(x,y,77)<.2){ rcx(ctx,'rgba(255,220,140,.35)',x*TS+3+((TICK>>3)+x)%9,y*TS+8,4,1); } }
+  (m.spots||[]).forEach(function(s2){ if(s2.look==='tower'){ ctx.fillStyle='rgba(255,210,110,.22)'; ctx.beginPath(); ctx.arc(s2.x*TS+8,s2.y*TS,22,0,7); ctx.fill(); } }); }
 /* ── 집에 사는 펫 ── 방 안을 제멋대로 한 칸씩 돌아다닌다. 문 칸과 내가 선 칸은 피한다. */
 var PETW=null;
 var PET_SAY={dog:'가 꼬리를 흔든다.',bird:'가 어깨에 앉았다 날아간다.',turtle:'가 고개를 쏙 내민다.'};
@@ -6307,9 +7080,9 @@ function drawMini(){
   x.fillStyle='#FFFDF6'; x.fillRect(ME.tx*s,ME.ty*s,s,s);
 }
 /* 옆으로만 걸어서 다섯 맵을 오가는 건 길다. 지도를 열어 바로 건너뛴다. */
-var MAP_ORDER=['room','town','campus','center','office','bank'];
+var MAP_ORDER=['room','town','villa','campus','center','market','office','station','bank'];
 /* 갈 수 있는 곳이 늘어나는 것 자체가 진행이다. 퀘스트로 레벨을 올리면 오른쪽이 열린다. */
-var MAP_LV={town:1,campus:1,center:2,office:3,bank:4};
+var MAP_LV={town:1,villa:1,campus:1,center:2,market:2,office:3,station:3,bank:4};
 function mapOpen(id){ return id==='room'||S.lv>=(MAP_LV[id]||1); }
 function mapById(id){ return id==='room'?roomMap():MAPS[id]; }
 function openTravel(){
@@ -6352,6 +7125,7 @@ function triggerSpot(s){
   if(s.kind==='talk') return openTalk(s);
   if(s.kind==='thing') return openThing(s);
   if(s.kind==='ep') return epStart(epById(s.id));
+  if(s.kind==='lease') return leaseOpen(s);
   if(s.kind==='review'){ var rq=reviewQuest(); if(rq) return startQuest(rq);
     var up=(S.review||[]).filter(function(r){ return !r.done; });
     return toast(up.length?'다음 복습은 내일 · '+up.length+'문항 대기 중':'아직 복습할 문항이 없습니다.'); }
@@ -6387,7 +7161,7 @@ function sceneTile(ev){
   var sy=(ev.clientY-r.top)*(SH/r.height)/cam.z+cam.y;
   return {x:Math.floor(sx/TS),y:Math.floor(sy/TS)};
 }
-var HOLD={dir:null};
+var HOLD={dir:null},CARTIP=0;
 /* 한 칸씩 누르는 것만으로는 스물두 칸짜리 맵을 못 걷는다. 누르고 있으면 계속 간다. */
 function stepDir(d){
   if(TUT) return;
@@ -6397,9 +7171,15 @@ function stepDir(d){
   ME.dir=d;
   var nx=ME.tx+dx,ny=ME.ty+dy;
   if(carAt(nx,ny)){ savePos(); drawScene(); return openCarTalk(); }
+  var E=m.edges||{};
   if(!walkable(m,nx,ny,1)||!petNudge(nx,ny)){
     /* 가장자리를 향해 한 발 더 디디면 다음 맵이다 */
-    if(m.edges&&((m.edges.west&&nx<0)||(m.edges.east&&nx>=m.w))){ ME.tx=Math.max(0,Math.min(m.w-1,nx)); checkWarp(); return; }
+    if((E.west&&nx<0)||(E.east&&nx>=m.w)){ ME.tx=Math.max(0,Math.min(m.w-1,nx)); checkWarp(); return; }
+    if((E.north&&ny<0)||(E.south&&ny>=m.h)){ ME.ty=Math.max(0,Math.min(m.h-1,ny)); checkWarp(); return; }
+    /* 차를 탄 채 보도 쪽으로 가려 하면: 주차장이면 내려서 걷고, 아니면 막는다 */
+    if(carOn()&&walkable(m,nx,ny,1,'foot')){
+      if(tileAt(m,ME.tx,ME.ty)==='Q'){ parkHere(); toast('주차장에 차를 세우고 내렸다.'); MOVE={path:[{x:nx,y:ny}],pi:-1,then:null}; nextStep(); return; }
+      if(Date.now()-CARTIP>4000){ CARTIP=Date.now(); toast('차는 찻길과 주차장에서만 달린다. 주차장(P)에 세우고 걷자.'); } }
     savePos(); drawScene(); return; }
   MOVE={path:[{x:nx,y:ny}],pi:-1,then:null};
   nextStep();
@@ -6455,7 +7235,7 @@ function bindScene(){
       if(Math.abs(t.x-ME.tx)+Math.abs(t.y-ME.ty)<=1) return openCarTalk();
       var cn=adjacentTo(m,{x:t.x,y:t.y}); if(!cn) return toast('가까이 갈 수 없습니다.');
       return goTo(cn.x,cn.y,function(){ drawScene(); openCarTalk(); }); }
-    if(!walkable(m,t.x,t.y)){
+    if(!reachable(m,t.x,t.y)){
       var ch=tileAt(m,t.x,t.y);
       var wq=warpAt(m,t.x,t.y);
       if(wq&&wq.needCar) toast(S.park&&S.park.map===ME.map?'세워 둔 차에 먼저 타자.':S.owned.indexOf('car')>=0||S.owned.indexOf('sedan')>=0?'캐릭터 창에서 자동차를 타면 고속도로로 갈 수 있다.':'고속도로는 자동차가 있어야 탈 수 있다. 상점에서 탈것을 알아보자.');
@@ -6472,9 +7252,12 @@ function faceSpot(s){
 }
 function adjacentTo(m,s){
   var D=[[0,1],[0,-1],[-1,0],[1,0]],best=null,bd=1e9,i;
+  var car=carOn();
   for(i=0;i<4;i++){ var x=s.x+D[i][0],y=s.y+D[i][1];
-    if(!walkable(m,x,y)) continue;
-    if(!pathTo(m,x,y)&&!(x===ME.tx&&y===ME.ty)) continue;
+    if(!(car?reachable(m,x,y):walkable(m,x,y))) continue;
+    if(!(x===ME.tx&&y===ME.ty)){
+      if(car&&!walkable(m,x,y,0,'car')){ if(!carRoute(m,x,y)) continue; }      /* 차는 주차장에 세우고 걸어간다 */
+      else if(!pathTo(m,x,y)) continue; }
     var d=Math.abs(x-ME.tx)+Math.abs(y-ME.ty);
     if(d<bd){ bd=d; best={x:x,y:y}; } }
   return best;
@@ -6689,7 +7472,8 @@ var TUT_STEPS=[
    '이제 동물을 키울 수 있는 집이네.',
    '상점에서 펫을 데려오면 방 안을 돌아다녀. 찜질방이나 고시원으로 옮기면 맡겨 둬야 하니 참고해.']},
  {id:'car',when:function(){ return S.owned.indexOf('car')>=0; },lines:[
-   '차를 샀구나! 차를 타면 찻길로도 다닐 수 있어.',
+   '차를 샀구나! 차는 찻길과 주차장으로만 다녀. 보도 쪽을 누르면 가까운 주차장(P)에 세우고 걸어가.',
+   '다시 타려면 세워 둔 차를 눌러. 차 자리로 가서 타게 돼.',
    '동네 왼쪽 끝 찻길로 나가면 고속도로야. 휴게소에 들렀다가 전국 어디든 가 봐. 기름값은 들지만.']},
  {id:'boss',when:function(){ return BOSSES.some(function(b){ return bossReady(b)&&!bossCleared(b.id); }); },lines:[
    '은행 골목에 네가 붙어 볼 만한 상대가 나타났어. 자물쇠가 풀린 사람을 찾아 봐.',
@@ -7014,6 +7798,7 @@ function epStep(){
   var box=document.getElementById('epchoices'); box.innerHTML=''; box.hidden=true;
   document.getElementById('epnote').hidden=true;
   document.getElementById('epnext').hidden=true;
+  document.getElementById('epdoc').hidden=true;
   document.getElementById('epwho').textContent=b.who||EP.e.npc;
   typeInto(document.getElementById('eptext'),b.t,function(){ box.hidden=false; });
   b.opts.forEach(function(o){
@@ -7086,6 +7871,7 @@ function epEnd(){
   s.innerHTML='확인처 \u00B7 <a href="'+e.src[1]+'" target="_blank" rel="noopener">'+e.src[0]+'</a>'+
     ' \u00B7 제도는 바뀝니다. 실제 결정 전에 원문을 확인하세요.';
   body.appendChild(s);
+  document.getElementById('eeback').textContent='돌아가기';
   go('epend');
   sfx(tier===0?'win':'hit');
 }
@@ -7386,7 +8172,8 @@ function houseTip(i){
   openTip.thumb=houseThumb(i,52);
   var bt=[];
   if(open&&!here) bt.push({t:dep?(S.coin>=dep?'￦'+dep+' 내고 여기서 살기':'보증금 ￦'+dep+' 모자람'):'여기서 살기',off:!!dep&&S.coin<dep,
-    f:function(){ var mv=tierMove(i); if(!mv.ok){ toast('보증금 ￦'+mv.cost+'이 모자랍니다.'); return; }
+    f:function(){ var mv=tierMove(i); if(!mv.ok){ if(mv.lease){ save(); closeTip(); render('home'); setTimeout(function(){ enterMap('town_estate',6,8); toast('전세는 계약부터 · 중개사에게 말을 걸어 보자'); },80); return; }
+        toast('보증금 ￦'+mv.cost+'이 모자랍니다.'); return; }
       save(); closeTip(); toast(tr.name+'(으)로 옮겼습니다.'+(mv.cost?' 보증금 ￦'+mv.cost:'')); renderChar(); }});
   openTip(h,open?'#FFC53C':'#6B6380',bt); }
 function furniTip(id){
@@ -7984,6 +8771,7 @@ function finish(failed){
     t2.textContent=TIERS[S.peak].name+' · 방어 '+TIERS[S.peak].def; up.appendChild(t2);
     if(LASTMOVE&&LASTMOVE.i===S.peak){ var t3=document.createElement('span'); t3.className='micro';
       t3.textContent=LASTMOVE.ok?(LASTMOVE.cost?'입주 보증금 ￦'+LASTMOVE.cost+'을 내고 옮겼습니다':'보증금 없이 옮겼습니다')
+        :LASTMOVE.lease?'전세 계약을 먼저 합니다. 동네 부동산에서 매물 고르기부터 시작하세요.'
         :'입주 보증금 ￦'+LASTMOVE.cost+'이 모자라 아직 못 옮겼습니다. 코인을 모아 캐릭터 탭의 거처에서 옮기세요.';
       up.appendChild(t3); }
   } else up.hidden=true;
@@ -8082,7 +8870,7 @@ function bossEnd(win){
     if(S.bossDone.indexOf(B.id)<0) S.bossDone.push(B.id);
     S.coin+=200; S.stats[B.stat]=Math.min(100,S.stats[B.stat]+15);
     var gb=tierGrow();
-    if(gb&&gb.wasTop){ var mv=tierMove(S.peak); BOSSMOVE=mv; if(!mv.ok) setTimeout(function(){ toast('입주 보증금 ￦'+mv.cost+'이 모자라 아직 못 옮겼습니다'); },900); } }
+    if(gb&&gb.wasTop){ var mv=tierMove(S.peak); BOSSMOVE=mv; if(!mv.ok) setTimeout(function(){ toast(mv.lease?'전세 계약부터 · 동네 부동산으로 가자':'입주 보증금 ￦'+mv.cost+'이 모자라 아직 못 옮겼습니다'); },900); } }
   else { S.peak=Math.max(0,S.peak-1); if(S.tier>S.peak) S.tier=S.peak; }   /* 내려가는 것은 보증금을 다시 받지 않는다. S.paid 는 그대로 */
   S.fightId=null;
   save();
@@ -8226,7 +9014,7 @@ window.__shiftDay=function(n){ TESTSHIFT+=n*DAYMS; rollDay(); render('home'); re
 function upNoteShow(){
   var n=S.upNote; if(!n) return; S.upNote=null; save();
   setTimeout(function(){ toast('새 거처 해금 · '+TIERS[n.i].name+(n.stay?' · 캐릭터 탭에서 옮길 수 있어요'
-    :n.ok?(n.cost?' · 입주 보증금 ￦'+n.cost:''):' · 보증금 ￦'+n.cost+'이 모자라 아직 못 옮겼어요')); },3600); }
+    :n.ok?(n.cost?' · 입주 보증금 ￦'+n.cost:''):n.lease?' · 부동산에서 전세 계약부터 해요':' · 보증금 ￦'+n.cost+'이 모자라 아직 못 옮겼어요')); },3600); }
 var _renderHomeB=renderHome; renderHome=function(){ _renderHomeB.apply(this,arguments); todayBtn(); todayAuto(); upNoteShow(); };
 S=load();
 if(!S.first) S.first=dayKey();
@@ -9214,6 +10002,259 @@ function endingShareSheet(){
     '<div class="il good"><i>◆</i>"그 사람의 귀인이 되어 주게."</div>'+
     '<div class="il"><i>◆</i>막 상경한 친구에게 링크를 보내 보세요.</div>','#FFC53C',
     [{t:'친구에게 링크 보내기',f:shareEnding}]); sheetStack(); }
+/* ══════════ 전세 계약 사건 ══════════
+   전세 거처(원룸 전세·투룸 전세)로 처음 옮길 때는 바로 이사하지 않는다. 부동산에서 매물을 고르고,
+   가계약금을 넣고, 임대인·임차인·중개사가 한자리에 앉아 본계약을 쓰고, 이사 당일 잔금과 전입신고까지
+   마쳐야 새 집에 들어간다. 장면은 실제로 그 일을 보는 곳에서 이어진다(부동산 → 매물 → 부동산 → 주민센터).
+   매물은 둘이다.
+   A 신축 빌라: 전세 2억, 매매 2억 5천. 전세가율 80%인 깡통전세.
+   B 구축 아파트: 전세 1억, 매매 3억(근저당 채권최고액 6천만 원). 전세가율 약 33%.
+   중간에 나가도 S.lease에 장면 단위로 남아 이어서 한다. 기준일 2026-09. */
+var LEASE_TIERS={7:1,8:1};
+var LEASE_SRC=[['인터넷등기소','https://www.iros.go.kr'],['국토교통부 실거래가 공개시스템','https://rt.molit.go.kr'],
+  ['주택도시보증공사(HUG) 전세보증금반환보증','https://www.khug.or.kr'],['찾기쉬운 생활법령정보 · 주택임대차','https://easylaw.go.kr']];
+var LISTING={
+ A:{name:'신축 빌라',tag:'A',dep:20000,sale:25000,loan:0,built:'준공 1년 · 풀옵션',owner:'김OO',since:'올해 3월 (건설사에서 이전)',
+    price:'분양가 2억 5천 · 같은 동네 비교 실거래 거의 없음',pitch:'새 집이라 하자 없어요. 이 가격에 이런 집 없어요.'},
+ B:{name:'구축 아파트',tag:'B',dep:10000,sale:30000,loan:6000,built:'준공 26년 · 7층',owner:'이OO',since:'2011년부터',
+    price:'같은 단지 최근 실거래 2억 9천 ~ 3억 1천',pitch:'오래됐지만 관리가 잘 되는 단지예요.'}};
+function won(man){ var e=Math.floor(man/10000),r=man%10000; return (e?e+'억':'')+(r?(e?' ':'')+(r%1000===0?(r/1000)+'천':r.toLocaleString()+'만'):'')+' 원'; }
+function jratio(L){ return Math.round(L.dep/L.sale*100); }
+function ldoc(title,rows,foot){
+  return '<div class="ldoc pix"><div class="lt">'+title+'</div>'+rows.map(function(r){
+    return '<div class="lr'+(r[2]?' '+r[2]:'')+'"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>'; }).join('')+
+    (foot?'<div class="lf">'+foot+'</div>':'')+'</div>'; }
+function lpick(){ return S.lease&&S.lease.pick?LISTING[S.lease.pick]:null; }
+var LEASE_CH=[
+ {title:'1장 · 매물 고르기',place:'estate',beats:[
+  {who:'공인중개사',face:'gpa',t:'전세 매물이 두 개 나와 있어요. 새 집 좋아하시면 A, 오래 조용히 살 거면 B.',
+   doc:function(){ var a=LISTING.A,b=LISTING.B; return ldoc('매물 안내',[['A · '+a.name,a.built],['전세',won(a.dep)],['B · '+b.name,b.built],['전세',won(b.dep)]],'벽지와 옵션은 사진으로 봤다. 보증금이 안전한지는 사진에 안 나온다.'); },
+   opts:[
+   {a:'두 집 다 등기부등본과 실거래가부터 본다',risk:0,
+    note:'보증금이 안전한지는 집 상태가 아니라 서류로 본다. 등기부등본은 인터넷등기소에서 누구나 뗄 수 있고, 매매 시세는 국토교통부 실거래가 공개시스템에서 본다.'},
+   {a:'새 집이 좋으니 A로 마음을 정한다',risk:2,
+    note:'깨끗한 벽지는 보증금을 지켜 주지 않는다. 고르기 전에 숫자부터 본다.'}]},
+  {who:'등기부등본 · 실거래가',face:'gpa',t:'서류를 뗐다. 갑구에는 소유자, 을구에는 근저당 같은 빚이 적혀 있다.',
+   doc:function(){ var a=LISTING.A,b=LISTING.B;
+     return ldoc('A · '+a.name,[['갑구 소유자',a.owner+' · '+a.since],['을구 근저당','없음'],['매매 시세',a.price],['전세 ÷ 매매',won(a.dep)+' ÷ 2억 5천 = '+jratio(a)+'%','bad']])+
+            ldoc('B · '+b.name,[['갑구 소유자',b.owner+' · '+b.since],['을구 근저당','채권최고액 '+won(b.loan)],['매매 시세',b.price],['전세 ÷ 매매',won(b.dep)+' ÷ 3억 = '+jratio(b)+'%','good']]); },
+   opts:[
+   {a:'B. 근저당 6천에 보증금 1억을 더해도 1억 6천, 집값 3억의 절반 남짓이다',risk:0,
+    note:'경매로 넘어가면 낙찰가에서 앞선 권리부터 가져간다. 선순위 채권과 내 보증금을 더해 집값과 비교한다. B는 집값이 꽤 떨어져도 보증금이 남는다.'},
+   {a:'A. 근저당이 하나도 없으니 A가 안전하다',risk:3,
+    note:'근저당이 없어도 전세 2억이 매매 2억 5천의 80%다. 집값이 20%만 내리거나, 경매 낙찰가가 시세의 80%에 그치면 보증금을 다 돌려받기 어렵다. 이런 집을 깡통전세라고 부른다.'},
+   {a:'A. 전세가가 높으니 그만큼 좋은 집이다',risk:3,
+    note:'전세가가 매매가에 붙어 있으면 집주인이 보증금으로 집값을 거의 다 치른 셈이다. 집값이 흔들리면 그 손해는 세입자 보증금에서 먼저 난다.'}]},
+  {who:'공인중개사',face:'gpa',t:'그래서, 어느 집으로 하실래요?',
+   opts:[
+   {a:'B 구축 아파트로 한다',risk:0,pick:'B',
+    note:'낡은 집에 들어가는 대신 보증금의 안전을 샀다. 전세가율(매매가 대비 전세가)이 낮을수록 돌려받을 여유가 크다.'},
+   {a:'A 신축 빌라로 한다',risk:2,pick:'A',
+    note:'전세가율 80%인 집으로 간다. 이대로 가더라도 "보증보험 가입이 안 되면 계약을 무효로 한다"는 조건만큼은 꼭 챙겨야 한다.'}]}]},
+ {title:'2장 · 가계약',place:'house',beats:[
+  {who:'집주인 (문자)',face:'officem',t:function(){ var L=lpick(); return L.name+'을 직접 보고 나왔다. 집주인이 문자를 보냈다. "다른 분도 보러 온대요. 가계약금 200만 원 보내시면 잡아 둘게요."'; },
+   doc:function(){ var L=lpick(); return ldoc('받은 문자',[['계좌','OO은행 110-***-****'],['예금주','박OO','bad'],['등기부 소유자',L.owner]],'예금주가 등기부 소유자와 다르다.'); },
+   opts:[
+   {a:'등기부 소유자 본인 명의 계좌로 보내 달라고 한다',risk:0,
+    note:'가계약금·계약금·잔금은 등기부에 적힌 소유자 명의 계좌로 보낸다. 다른 사람 계좌로 보낸 돈은 소유자에게 줬다고 주장하기 어렵다.'},
+   {a:'놓칠까 봐 그 계좌로 바로 보낸다',risk:3,
+    note:'누구 계좌인지 모르고 보낸 돈은 돌려받을 상대부터 불분명해진다. "급하다"는 말은 조건이 아니라 압박이다.'}]},
+  {who:'집주인 (문자)',face:'officem',t:'소유자 명의 계좌로 가계약금을 보냈다. 답장으로 무엇을 남길까?',
+   opts:[
+   {a:'금액·계약일·잔금일과 "보증보험 가입이 안 되면 계약을 무효로 하고 돈을 돌려준다"를 문자로 받는다',risk:0,flag:'insure',
+    note:'가계약도 약속이다. 무엇에 합의했는지 문자로 남겨야 나중에 조건을 주장할 수 있다. 보증보험 조건은 돈이 적게 들어간 이때 거는 것이 가장 쉽다.'},
+   {a:'"잘 부탁드립니다"만 보낸다',risk:2,
+    note:'조건 없이 보낸 가계약금은 마음이 바뀌었을 때 돌려받기가 어려워진다.'}]}]},
+ {title:'3장 · 삼자대면 본계약',place:'estate',beats:[
+  {who:'집주인',face:'officem',t:'계약하는 날. 집주인, 나, 중개사가 한 테이블에 앉았다. 집주인이 신분증을 내민다.',
+   doc:function(){ var L=lpick(); return ldoc('대조',[['신분증 이름',L.owner],['등기부 소유자',L.owner],['주민번호 앞자리','같음','good']]); },
+   opts:[
+   {a:'신분증과 등기부 소유자를 직접 대조한다',risk:0,
+    note:'계약 상대가 등기부 소유자 본인인지가 첫 확인이다. 대리인이 나오면 위임장과 인감증명서를 받고, 소유자와 직접 통화해 확인한다.'},
+   {a:'중개사가 봤을 테니 넘어간다',risk:2,
+    note:'확인을 남에게 맡기면 사고가 났을 때 남는 것도 남 탓뿐이다.'}]},
+  {who:'공인중개사',face:'gpa',t:'중개사가 계약서를 내민다. 사무실 벽에 중개사무소 등록증이 걸려 있다.',
+   opts:[
+   {a:'등록증 이름과 계약서의 중개사 이름을 맞춰 보고, 공제증서를 받는다',risk:0,
+    note:'개업공인중개사는 등록 여부를 조회할 수 있고, 계약할 때 중개사고에 대비한 보증(공제) 증서 사본을 내줘야 한다.'},
+   {a:'계약서 내용만 읽는다',risk:1,
+    note:'중개보조원이 중개사처럼 계약을 진행하는 일도 있다. 이름 한 번 맞춰 보는 데 10초면 된다.'}]},
+  {who:'공인중개사',face:'gpa',t:'특약 칸이 비어 있다. 무엇을 적을까?',
+   opts:[
+   {a:'"잔금 다음 날까지 근저당 등 새 권리를 설정하지 않는다", "보증보험·전세대출이 안 되면 계약을 무효로 하고 계약금을 돌려준다"를 넣는다',risk:0,flag:'insure',
+    note:'대항력은 전입신고 다음 날 0시에 생긴다. 그 사이에 잡힌 근저당은 나보다 앞선다. 특약으로 그 틈을 막고, 보증보험이 안 되면 빠져나올 문도 만든다.'},
+   {a:'표준계약서 그대로 도장을 찍는다',risk:2,
+    note:'표준계약서는 최소한이다. 이 집에만 있는 위험은 특약에만 적힌다.'}]},
+  {who:'집주인',face:'officem',t:function(){ var L=lpick(); return '계약금 10%, '+won(L.dep/10)+'을 보낼 차례다.'; },
+   opts:[
+   {a:'소유자 명의 계좌로 이체하고, 계약서 끝에 받은 금액을 적어 받는다',risk:0,
+    note:'이체 기록이 곧 영수증이다. 현금으로 주면 준 사실부터 증명해야 한다.'},
+   {a:'집주인이 원하니 현금으로 건넨다',risk:2,
+    note:'현금은 흔적이 없다. 나중에 계약금을 줬다는 것부터 다퉈야 한다.'}]}]},
+ {title:'4장 · 이사 당일 (오전)',place:'house',beats:[
+  {who:'공인중개사',face:'gpa',t:'잔금 날 아침. 오후에 잔금을 보내고 열쇠를 받기로 했다.',
+   opts:[
+   {a:'잔금을 보내기 직전에 등기부등본을 다시 뗀다',risk:0,
+    note:'계약일 이후에 근저당이 새로 잡혔는지는 잔금 직전에만 확인할 수 있다. 보내고 나면 되돌릴 방법이 없다.'},
+   {a:'계약할 때 봤으니 그대로 보낸다',risk:3,
+    note:'등기는 계약 다음 날에도 바뀐다. 확인은 돈이 나가기 전에만 의미가 있다.'}]},
+  {who:'집주인',face:'officem',t:'잔금을 보냈다. 집주인이 열쇠를 건넨다.',
+   opts:[
+   {a:'관리비·공과금 정산 내역을 받고 현관 비밀번호를 바꾼다',risk:0,
+    note:'전 세입자가 밀린 관리비는 내 몫이 아니다. 들어가는 날 기준으로 정산서를 받아 둔다.'},
+   {a:'열쇠만 받고 짐부터 올린다',risk:1,
+    note:'정산은 미루면 누가 낼지 다투게 된다. 이사 날 10분이면 끝나는 일이다.'}]}]},
+ {title:'4장 · 이사 당일 (오후)',place:'hall',beats:[
+  {who:'주민센터 직원',face:'deskf',t:'짐을 다 옮겼다. 주민센터가 아직 문을 열었다.',
+   opts:[
+   {a:'전입신고와 확정일자를 오늘 같이 한다',risk:0,
+    note:'전입신고와 실제 거주로 대항력이, 확정일자로 우선변제권이 생긴다. 대항력은 전입신고 다음 날 0시부터라 하루를 미루면 그 하루에 잡힌 권리가 나보다 앞선다.'},
+   {a:'전입신고만 하고 확정일자는 나중에 받는다',risk:2,
+    note:'확정일자가 없으면 경매 배당에서 순위를 주장할 우선변제권이 없다.'},
+   {a:'피곤하니 주말에 몰아서 한다',risk:3,
+    note:'그 며칠이 통째로 빈다. 전세사기가 파고드는 자리가 바로 이 틈이다.'}]},
+  {who:'주민센터 직원',face:'deskf',t:function(){ return S.lease.pick==='A'?'전세보증금반환보증을 신청했다. 보증기관에서 연락이 왔다. "주택 가격 대비 보증금이 커서 가입 요건에 맞지 않습니다."':'전세보증금반환보증(보증보험)은 어떻게 할까?'; },
+   opts:[
+   {a:'가입한다. 집주인이 못 돌려주면 보증기관이 대신 준다',risk:0,only:'B',
+    note:'보증료는 들지만, 집주인이 보증금을 못 돌려줄 때 보증기관이 먼저 지급한다. 가입 요건과 보증료는 보증기관 공고를 확인한다.'},
+   {a:'보증금이 적으니 안 한다',risk:1,only:'B',
+    note:'안전한 집이라도 사고는 난다. 보증료와 보증금 규모를 놓고 스스로 정할 일이지만, 확인은 해 보고 정한다.'},
+   {a:'어쩔 수 없다. 이대로 산다',risk:3,only:'A',
+    note:'보증보험이 안 되는 집은 대개 보증금이 집값에 비해 크다는 뜻이다. 계약 전에 이 조건을 걸어 두지 않으면 여기서 빠져나올 문이 없다.'}]}]}
+];
+var LEASE_ENDS=[
+ {big:'보증금을 지켰다',t:'2년 뒤 계약이 끝났다. 새 세입자를 기다릴 필요도 없이 보증금 1억이 그대로 돌아왔다.',xp:220,coin:200,stat:10},
+ {big:'아슬아슬하게 넘겼다',t:'집은 안전했지만, 빠뜨린 확인 몇 개 때문에 2년 내내 마음을 졸였다. 안전한 집을 고른 것이 살렸다.',xp:120,coin:100,stat:6},
+ {big:'보증금이 묶였다',t:'2년 뒤 집값이 2억 2천으로 내렸다. 집주인은 새 세입자를 못 구해 보증금을 못 돌려줬고, 집은 경매로 넘어갔다.',xp:60,coin:30,stat:2}];
+/* 전세 거처로 처음 옮기려 하면 계약 사건을 연다. true면 이사를 멈춘다 */
+function leaseGate(i){
+  if(!LEASE_TIERS[i]||i<=paidBase()||(S.leaseDone&&S.leaseDone[i])) return false;
+  if(!S.lease||S.lease.to!==i){ S.lease={to:i,ch:0,b:0,pick:null,risk:0,flags:{},picks:[]}; ev('lease_open',{to:i}); }
+  return true; }
+function leaseCh(){ return S.lease?LEASE_CH[S.lease.ch]:null; }
+/* 장면이 벌어지는 곳. 주택가 맵이 없으면 매물 장면도 부동산에서 한다 */
+function leasePlace(p){ return (p==='house'&&!MAPS.villa)?'estate':p; }
+function leaseHere(s){ var c=leaseCh(); return !!(c&&leasePlace(c.place)===s.place&&(!s.pick||s.pick===S.lease.pick)); }
+var LEASE_WHERE={estate:'부동산',house:'매물 집 앞',hall:'주민센터'};
+function leaseWhere(){ var c=leaseCh(); if(!c) return ''; var p=leasePlace(c.place);
+  return p==='house'&&S.lease.pick?'주택가 '+LISTING[S.lease.pick].name+(MAPS.villa?' 안':' 앞'):LEASE_WHERE[p]; }
+var LS=null;                                                   /* 지금 보고 있는 장면 */
+function leaseOpen(s){
+  if(!S.lease||(s.place==='house'&&S.lease.pick&&s.pick!==S.lease.pick)){ return talkTo({name:s.name,face:s.face,lines:(s.place==='hall'?['전입신고는 이사한 날 바로 하세요. 확정일자도 같이 받을 수 있어요.']
+    :s.place==='house'?(s.pick==='A'?['새 집이죠? 옵션도 다 새 거예요.','계약은 부동산 통해서 해요. 서류는 거기서 다 보여 드릴 거예요.']:['오래된 집이지만 관리는 잘했어요. 2011년부터 제 집이에요.','계약은 부동산 통해서 해요.'])
+    :['전세 매물은 서류부터 보여 드려요. 등기부등본, 실거래가, 건축물대장.','전세 거처가 열리면 계약하러 오세요. 한 번은 처음부터 끝까지 같이 해 봐요.'])}); }
+  if(!leaseHere(s)){ return toast('다음 장면은 '+leaseWhere()+'에서 이어집니다.'); }
+  if(S.lease.ch===3&&S.lease.b===0){ var c=tierCost(S.lease.to);
+    if(S.coin<c) return toast('잔금(입주 보증금) ￦'+c+'이 모자랍니다 · 지금 ￦'+S.coin); }
+  sfx('pick'); leaseShow(); }
+function leaseShow(){
+  var L=S.lease,ch=leaseCh(); if(!ch) return;
+  var b=ch.beats[L.b]; if(!b){ return leaseNextCh(); }
+  go('ep');
+  document.getElementById('epname').textContent='전세 계약 · '+ch.title;
+  var dy=document.getElementById('epday'); dy.textContent=TIERS[L.to].name; dy.hidden=false;
+  var r=document.getElementById('eprisk'); r.textContent='위험 '+L.risk; r.className='chip pix'+(L.risk>=5?' bad':L.risk>=2?' warn':'');
+  epSprite(document.getElementById('epspr'),b.face||'gpa',2);
+  var box=document.getElementById('epchoices'); box.innerHTML=''; box.hidden=true;
+  document.getElementById('epnote').hidden=true; document.getElementById('epnext').hidden=true;
+  document.getElementById('epwho').textContent=b.who;
+  var dc=document.getElementById('epdoc'),dh=b.doc?b.doc():'';
+  dc.innerHTML=dh; dc.hidden=!dh;
+  LS={b:b};
+  typeInto(document.getElementById('eptext'),typeof b.t==='function'?b.t():b.t,function(){ box.hidden=false; });
+  b.opts.filter(function(o){ return !o.only||o.only===L.pick; }).forEach(function(o){
+    var btn=document.createElement('button'); btn.className='choice pix';
+    btn.innerHTML='<span class="k">▶</span><span>'+o.a+'</span>';
+    btn.onclick=function(){ leasePickOpt(o,btn); };
+    box.appendChild(btn); }); }
+function leasePickOpt(o,btn){
+  var L=S.lease;
+  document.querySelectorAll('#epchoices .choice').forEach(function(b){ b.disabled=true; });
+  btn.classList.add(o.risk?'no':'ok');
+  L.risk+=(o.risk||0); L.picks.push({a:o.a,risk:o.risk||0});
+  if(o.pick) L.pick=o.pick;
+  if(o.flag) L.flags[o.flag]=1;
+  L.b++; save();
+  sfx(o.risk?'hit':'good');
+  ev('lease_pick',{ch:L.ch,b:L.b-1,risk:o.risk||0,pick:L.pick});
+  var r=document.getElementById('eprisk'); r.textContent='위험 '+L.risk; r.className='chip pix'+(L.risk>=5?' bad':L.risk>=2?' warn':'');
+  var n=document.getElementById('epnote');
+  n.className='explain pix '+(o.risk?'bad':'good');
+  n.innerHTML='<b>'+(o.risk?'대가가 남는다':'좋은 판단')+'</b> · '+o.note; n.hidden=false;
+  var nx=document.getElementById('epnext'); nx.hidden=false;
+  var ch=leaseCh(),last=L.b>=ch.beats.length;
+  nx.textContent=last?(L.ch+1>=LEASE_CH.length?'결말 보기':'이 장 마치기'):'다음';
+  nx.onclick=function(){ if(last) leaseNextCh(); else leaseShow(); }; }
+/* 한 장이 끝났다. A를 골랐어도 보증보험 조건을 걸어 뒀다면, 이사 전에 가입 가능 여부를 물어본 데서
+   거절이 나와 계약을 되돌린다. 조건이 없었다면 그대로 이사 날까지 간다. */
+function leaseNextCh(){
+  var L=S.lease;
+  if(L.ch===2&&L.pick==='A'&&L.flags.insure){ return leaseVoid(); }
+  L.ch++; L.b=0; save();
+  if(L.ch>=LEASE_CH.length) return leaseEnd();
+  var nc=leaseCh(); render('home');
+  setTimeout(function(){ toast(nc.title+' · '+leaseWhere()+'에서 이어집니다'); },500); }
+function leaseVoid(){
+  var L=S.lease; ev('lease_void',{to:L.to});
+  S.lease={to:L.to,ch:0,b:0,pick:null,risk:0,flags:{},picks:[],voided:(L.voided||0)+1}; save();
+  go('epend');
+  paintHero(document.getElementById('eechar'),'idle',0);
+  var big=document.getElementById('eebig'); big.textContent='계약을 되돌렸다'; big.style.color=P.y2;
+  var body=document.getElementById('eebody'); body.innerHTML='';
+  var c=document.createElement('div'); c.className='card pix';
+  c.innerHTML='<span>잔금 전에 보증기관에 가입할 수 있는지 먼저 물었다. 답은 "가입 요건에 맞지 않습니다".</span>'+
+    '<span class="rc ok">✓ 가계약 문자와 계약서 특약에 "보증보험이 안 되면 계약을 무효로 한다"를 넣어 두었다</span>'+
+    '<span style="display:block;margin-top:8px">특약대로 계약을 무효로 하고 가계약금과 계약금을 돌려받았다. 다시 매물을 고른다. 이번에는 숫자부터 보자.</span>';
+  body.appendChild(c);
+  body.appendChild(leaseCalc());
+  document.getElementById('eeback').textContent='부동산으로 돌아가기';
+  sfx('good'); }
+/* 깡통전세 계산. 숫자는 예시다 */
+function leaseCalc(){
+  var d=document.createElement('div'); d.className='card pix';
+  d.innerHTML='<span class="lbold">A 신축 빌라를 계산해 보면 (예시)</span>'+
+    ldoc('경매로 넘어가면',[['집값이 내렸을 때 시세','2억 2천만 원'],['낙찰가 (시세의 80% 가정)','1억 7,600만 원'],['내 보증금','2억 원'],['못 받는 돈 (경매 비용 빼기 전)','2,400만 원 이상','bad']],
+      '전세가율 80%면 집값이 조금만 내려도 보증금이 깎인다. B를 같은 식으로 계산하면 시세 3억의 80%인 2억 4천에서 근저당 6천을 먼저 빼도 1억 8천이 남아 보증금 1억을 다 받는다.');
+  return d; }
+function leaseEnd(){
+  var L=S.lease,tier=L.pick==='A'?2:L.risk<=1?0:L.risk<=4?1:2,end=LEASE_ENDS[tier];
+  ev('lease_end',{to:L.to,pick:L.pick,risk:L.risk,tier:tier});
+  if(!S.leaseBest) S.leaseBest={};
+  var was=S.leaseBest.any,better=(was==null||tier<was),gain={xp:0,coin:0,stat:0};
+  if(better){ var prev=(was==null)?{xp:0,coin:0,stat:0}:LEASE_ENDS[was];
+    gain={xp:Math.max(0,end.xp-prev.xp),coin:Math.max(0,end.coin-prev.coin),stat:Math.max(0,end.stat-prev.stat)};
+    S.leaseBest.any=tier; S.xp+=gain.xp; S.coin+=gain.coin; while(S.xp>=need(S.lv)){ S.xp-=need(S.lv); S.lv++; }
+    S.stats.ju=Math.min(100,S.stats.ju+gain.stat); }
+  if(!S.leaseDone) S.leaseDone={};
+  S.leaseDone[L.to]=1;
+  var from=S.tier,mv=tierMove(L.to),picks=L.picks,pick=L.pick,risk=L.risk;
+  S.lease=null; save();
+  go('epend');
+  paintHero(document.getElementById('eechar'),tier===0?'cheer':'idle',0);
+  var big=document.getElementById('eebig'); big.textContent=end.big; big.style.color=tier===0?P.g3:tier===1?P.y2:P.r2;
+  var body=document.getElementById('eebody'); body.innerHTML='';
+  var good=picks.filter(function(o){ return !o.risk; }),bad=picks.filter(function(o){ return o.risk; }).sort(function(a,b){ return b.risk-a.risk; });
+  var c=document.createElement('div'); c.className='card pix';
+  c.innerHTML='<span>'+end.t+'</span>'+
+    (good.length?'<span class="rc ok">'+good.map(function(o){ return '✓ '+o.a; }).join('<br>')+'</span>':'')+
+    (bad.length?'<span class="rc no">'+bad.map(function(o){ return '✗ '+o.a; }).join('<br>')+'</span>':'')+
+    '<span class="micro" style="display:block;margin-top:8px">'+LISTING[pick].name+' · 전세가율 '+jratio(LISTING[pick])+'% · 위험 '+risk+'</span>';
+  body.appendChild(c);
+  if(pick==='A') body.appendChild(leaseCalc());
+  var mvc=document.createElement('div'); mvc.className='card pix';
+  mvc.innerHTML='<span class="lbold">'+(mv.ok?TIERS[from].name+' → '+TIERS[L.to].name+' 이사 완료':'아직 못 옮겼다')+'</span>'+
+    '<span class="micro" style="display:block;margin-top:4px">'+(mv.ok?(mv.cost?'입주 보증금 ￦'+mv.cost+'을 냈어요':'보증금 없이 옮겼어요'):'입주 보증금 ￦'+mv.cost+'이 모자랍니다. 캐릭터 탭의 거처에서 옮기세요.')+'</span>';
+  body.appendChild(mvc);
+  var g=document.createElement('div'); g.className='card pix';
+  g.innerHTML=better?'<span class="lbold">+'+gain.xp+' XP · ￦'+gain.coin+' · 주 +'+gain.stat+'</span>'
+    :'<span class="lbold">이번 계약은 보상이 없습니다</span><span class="micro" style="display:block;margin-top:4px">이미 「'+LEASE_ENDS[was].big+'」까지 가 봤습니다.</span>';
+  body.appendChild(g);
+  var s=document.createElement('div'); s.className='micro';
+  s.innerHTML='확인처 · '+LEASE_SRC.map(function(x){ return '<a href="'+x[1]+'" target="_blank" rel="noopener">'+x[0]+'</a>'; }).join(' · ')+
+    ' · 기준일 2026-09. 보증보험 요건과 보증료는 보증기관 공고로 확인하세요. 금액은 예시입니다.';
+  body.appendChild(s);
+  document.getElementById('eeback').textContent='새 집으로';
+  sfx(tier===0?'win':'hit'); }
 var _renderHome1=renderHome; renderHome=function(){ _renderHome1.apply(this,arguments); setTimeout(eodMaybe,1200); };
 if(S.onboarded) render('home'); else { obRender(); go('onboard'); }
 /* 딥링크: 주소 끝 #c=lease 처럼 체크리스트 id를 붙이면 그 목록을 바로 연다 (공유 문구의 링크) */
