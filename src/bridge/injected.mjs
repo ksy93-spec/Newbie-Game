@@ -129,6 +129,7 @@ var SCREEN_BACK = { quest: 'qback', ep: 'epback', check: 'chkback', codex: 'cbac
   result: 'rback', bossend: 'beback', epend: 'eeback' };
 var TAB_SCREENS = { wiki: 1, char: 1, shop: 1, quests: 1 };
 function nqBack() {
+  if (window.MQP && typeof window.MQP.skip === 'function') { window.MQP.skip(); return true; }   /* 메인 퀘스트 컷신: 다음 선택까지 넘긴다 */
   if (document.getElementById('opening')) return false;          /* 오락실 타이틀 */
   if (visible('mg')) return clickId('mgquit');                   /* 도장 미니게임 */
   if (visible('itip')) {                                         /* 물건·장비 자세히 보기 */

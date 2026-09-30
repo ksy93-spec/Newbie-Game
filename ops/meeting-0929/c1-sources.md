@@ -22,7 +22,7 @@
 | ev_overtime | 5인 이상 사업장은 연장근로에 통상임금의 50%를 가산해 준다(1.5배). 연장근로는 1주 12시간 한도(근로기준법 제53조, 제56조) | https://www.law.go.kr/lsInfoP.do?lsiSeq=122686 | 근로기준법 요약(나무위키)에서 50%, 12시간 확인. 1차 미열람. 5인 미만은 아직 다르다는 점은 한국일보(2026-04-30)와 한국경제(2025-08-10)로 확인 |
 | ev_annualleave | 입사 1년 미만은 1개월 개근마다 연차 1일. 5인 이상 사업장 기준 (근로기준법 제60조) | https://www.law.go.kr/lsInfoP.do?lsiSeq=122686 | 나무위키 요약과 게임 체크리스트(leave 항목)가 일치. 5인 미만 연차 미적용은 한국경제 로드맵 기사(2027년 상반기 확대 예정)로 확인 |
 | ev_noinsalba | 산재보험은 알바·단시간 포함 모든 근로자 대상. 월 60시간 이상이면 건강보험·국민연금 가입 대상. 상담은 고용노동부 1350 | https://www.moel.go.kr , https://www.4insure.or.kr | 샤플(shoplworks) 기준 정리로 60시간 확인, 로톡 글에서 1350 확인. 1차 미열람. 초단시간 예외가 있어 팁은 "월 60시간 이상"으로만 씀 |
-| ev_cankun | 전세가가 매매가에 가까우면 경매 시 보증금 회수가 어렵다. 실거래가·근저당·보증보험 가입 가능 여부 확인 | https://easylaw.go.kr , https://www.hug.or.kr | 게임 체크리스트(lease 항목 price, sum, hugok)와 일치. 수치 없음 |
+| ev_cankun | 전세가가 매매가에 가까우면 경매 시 보증금 회수가 어렵다. 실거래가·근저당·보증보험 가입 가능 여부 확인 | https://easylaw.go.kr , https://www.khug.or.kr | 게임 체크리스트(lease 항목 price, sum, hugok)와 일치. 수치 없음 |
 | ev_usedcar | 성능·상태점검기록부를 받고 자동차365에서 차량 이력을 조회한다 | https://www.car365.go.kr | 나무위키 중고차 문서에서 자동차365와 점검기록부 확인. 1차 미열람 |
 | ev_familysmish | 가족 사칭 문자는 보이스피싱. 송금했으면 112나 은행에 지급정지 요청, 스미싱 신고는 118 | https://www.fss.or.kr , https://www.kisa.or.kr | 기존 이벤트(ev_prosecutor, ev_smish)의 112·118 문구와 동일. 1차 재확인 못함 |
 | ev_subscription | 주택청약 월 납입 인정 한도는 25만원(2024년 9월부터 10만원에서 상향). 청년 주택드림 청약통장이라는 청년 전용 상품이 있다 | https://m.myhome.go.kr/hws/mbl/cont/selectYouthPolicyYouthPassbookView.do | 토스뱅크 글에서 25만원·2024년 9월 확인, 마이홈 페이지 제목으로 상품명 확인. 가입 나이·소득 기준은 팁에서 뺌 |

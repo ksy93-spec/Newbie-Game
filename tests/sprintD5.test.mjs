@@ -30,6 +30,7 @@ async function open() {
     S.tut = 1; S.tuts = ['intro', 'afterq', 'travel', 'check', 'needs', 'hungry', 'doors', 'room', 'gear', 'lv2', 'ep', 'pet', 'car', 'boss'];
     S.evDay = dayKey(); S.evN = 99;
     if (S.owned.indexOf('car') < 0) S.owned.push('car'); S.equip.mount = 'car'; S.onFoot = false; S.park = null;
+    S.mq = { done: { job: 'good', lease: 'good', card: 'good', car: 'good', wedding: 'good' }, ann: {} };   // 경주·대구는 메인 5장 뒤에 열린다
     S.todayQ = pickDaily(); save(); render('home');
   });
   return { ctx, page, logs };

@@ -153,7 +153,8 @@ for (const [w, h] of [[390, 844], [360, 640]]) {
   test(`4. 고속도로 왕복 (${w}x${h}): 입구 표지판이 길을 가리지 않고, 휴게소에서 차에 다시 타 돌아온다`, async () => {
     const { ctx, page, logs } = await open({ w, h });
     await page.evaluate(() => { S.lv = 10; S.coin = 500; if (S.owned.indexOf('car') < 0) S.owned.push('car');
-      S.equip.mount = 'car'; S.onFoot = false; S.park = null; S.full = 100; save(); enterMap('town', 5, 13); drawScene(); });
+      S.equip.mount = 'car'; S.onFoot = false; S.park = null; S.full = 100; S.mq.gf.car = 1;   // 고속도로는 메인 4장이 연다
+      save(); enterMap('town', 5, 13); drawScene(); });
     await sleep(page, 400);
     // 표지판은 차 탄 주인공이 지나는 줄(입구 행과 그 위 한 행)보다 위에 서야 한다
     const sign = await page.evaluate(() => {

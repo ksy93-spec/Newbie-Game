@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 import url from 'node:url';
 import { reloadSaved } from './storage.mjs';
+import { playCine, cineScene } from './cine.mjs';
 
 process.env.PLAYWRIGHT_BROWSERS_PATH ||= '/opt/pw-browsers';
 const { chromium } = await import('playwright');
@@ -51,18 +52,10 @@ async function approach(page) {
   });
   await sleep(page, 200);
   await page.keyboard.press(' ');
-  await page.waitForFunction(() => document.getElementById('ep').classList.contains('on'), null, { timeout: 5000, polling: 100 });
+  await page.waitForFunction(() => !!window.MQP, null, { timeout: 5000, polling: 100 });
 }
 /** 한 장을 고른 보기 번호대로 끝낸다 */
-async function playChapter(page, picks) {
-  for (const k of picks) {
-    await page.waitForSelector('#epchoices:not([hidden]) .choice:not([disabled])', { timeout: 8000 });
-    await page.locator('#epchoices .choice').nth(k).click();
-    await page.waitForSelector('#epnext:not([hidden])');
-    await page.click('#epnext');
-    await sleep(page, 150);
-  }
-}
+const playChapter = (page, picks) => playCine(page, picks);
 
 test('1. 전세 거처로 옮기려 하면 이사 대신 계약 사건이 열리고, 부동산에 표시가 뜬다', async () => {
   const { ctx, page, logs } = await open();
@@ -86,26 +79,26 @@ test('2. 안전한 구축을 고르고 순서대로 확인하면: 네 장면 끝
   const c0 = await page.evaluate(() => S.coin);
   const cost = await page.evaluate(() => tierCost(7));
   await approach(page);
-  assert.match(await page.textContent('#epname'), /1장 · 매물 고르기/);
-  assert.equal(await page.isVisible('#epdoc'), true, '매물 안내 서류가 보인다');
+  assert.match((await cineScene(page)).sub, /매물 고르기/);
+  assert.match((await cineScene(page)).doc, /매물 안내/, '매물 안내 서류가 보인다');
   await playChapter(page, [0, 0, 0]);
   let st = await stateOf(page);
   assert.equal(st.lease.ch, 1); assert.equal(st.lease.pick, 'B'); assert.equal(st.scr, 'home');
   await approach(page);
-  assert.match(await page.textContent('#epname'), /2장 · 가계약/);
+  assert.match((await cineScene(page)).sub, /가계약/);
   assert.equal(await page.evaluate(() => ME.map), 'villa_old', '가계약은 주택가 구축 아파트 안에서');
-  assert.match(await page.textContent('#epdoc'), /예금주/);
+  assert.match((await cineScene(page)).doc, /예금주/);
   await playChapter(page, [0, 0]);
   await approach(page);
-  assert.match(await page.textContent('#epname'), /3장 · 삼자대면 본계약/);
+  assert.match((await cineScene(page)).sub, /삼자대면 본계약/);
   await playChapter(page, [0, 0, 0, 0]);
   await approach(page);
-  assert.match(await page.textContent('#epname'), /4장 · 이사 당일 \(오전\)/);
+  assert.match((await cineScene(page)).sub, /이사 당일 오전/);
   await playChapter(page, [0, 0]);
   st = await stateOf(page);
   assert.equal(st.tier, 6, '전입신고 전에는 아직 옛집');
   await approach(page);
-  assert.match(await page.textContent('#epname'), /4장 · 이사 당일 \(오후\)/);
+  assert.match((await cineScene(page)).sub, /이사 당일 오후/);
   assert.equal(await page.evaluate(() => ME.map), 'town_hall', '마지막 장면은 주민센터');
   await playChapter(page, [0, 0]);
   await page.waitForSelector('#epend.on');
@@ -145,11 +138,8 @@ test('4. 깡통전세(A)에 특약 없이 들어가면 이사는 하지만 보�
   await approach(page); await playChapter(page, [0, 0, 1, 0]);
   await approach(page); await playChapter(page, [0, 0]);
   await approach(page);
-  await playChapter(page, [0]);                            // 전입신고·확정일자
-  await page.waitForSelector('#epchoices:not([hidden]) .choice:not([disabled])', { timeout: 8000 });
-  const opts = await page.$$eval('#epchoices .choice', (b) => b.map((x) => x.textContent));
-  assert.equal(opts.length, 1, 'A는 보증보험 가입이 안 돼 선택지가 하나');
-  await playChapter(page, [0]);
+  assert.equal((await cineScene(page, 1)).opts, 1, 'A는 보증보험 가입이 안 돼 선택지가 하나');
+  await playChapter(page, [0, 0]);                         // 전입신고·확정일자, 보증보험
   await page.waitForSelector('#epend.on');
   assert.equal(await page.textContent('#eebig'), '보증금이 묶였다');
   assert.match(await page.textContent('#eebody'), /1억 7,600만 원/);
@@ -163,16 +153,14 @@ test('5. 중간에 나가고 새로고침해도 그 장면부터 이어진다', 
   await page.evaluate(() => { tierMove(7); save(); });
   await approach(page); await playChapter(page, [0, 0, 0]);
   await approach(page);
-  await page.waitForSelector('#epchoices:not([hidden]) .choice');
-  await page.locator('#epchoices .choice').first().click();
-  await page.click('#epback');                             // 가계약 첫 장면을 고르고 나간다
+  await sleep(page, 500); await page.evaluate(() => MQP.next({ type: 'test' }));   // 제목 카드를 넘기고
+  await page.evaluate(() => MQP.pick(0));                  // 가계약 첫 장면을 고르고 앱을 닫는다
   await reloadSaved(page);
   await page.waitForFunction(() => window.S && window.QUESTS && document.getElementById('home').classList.contains('on'), null, { polling: 100 });
   const st = await stateOf(page);
   assert.deepEqual([st.lease.ch, st.lease.b, st.lease.pick], [1, 1, 'B']);
   await approach(page);
-  await page.waitForSelector('#epchoices:not([hidden]) .choice');
-  assert.match(await page.textContent('#eptext'), /답장/, '두 번째 장면부터');
+  assert.match((await cineScene(page)).text, /답장/, '두 번째 장면부터');
   await ctx.close();
 });
 

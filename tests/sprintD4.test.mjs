@@ -29,6 +29,7 @@ async function open() {
     S.onboarded = true; S.demo = false; S.demoDone = 1; S.lv = 10; S.coin = 500; S.full = 100;
     S.tut = 1; S.tuts = ['intro', 'afterq', 'travel', 'check', 'needs', 'hungry', 'doors', 'room', 'gear', 'lv2', 'ep', 'pet', 'car', 'boss'];
     S.evDay = dayKey(); S.evN = 99;                       // 생활 이벤트 대화가 끼어들지 않게
+    S.mq.gf.job = 1;                                        // 역 앞은 메인 1장이 연다(sprintE에서 따로 본다)
     S.todayQ = pickDaily(); save(); render('home');
   });
   return { ctx, page, logs };
