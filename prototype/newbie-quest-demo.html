@@ -8875,6 +8875,179 @@ function shareCheck(c){
   if(navigator.share){ navigator.share({title:c.title+' 체크리스트',text:txt}).catch(function(){}); return; }
   if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(function(){ toast('체크리스트를 복사했습니다. 메신저에 붙여 넣으세요.'); },function(){ toast('복사하지 못했습니다.'); }); return; }
   toast('이 기기에서는 공유를 지원하지 않습니다.'); }
+
+/* ══════════ 첫 월급 계산기 + 도트 영수증 (C4) ══════════
+   세전 월급, 비과세 식대, 부양가족 수를 넣으면 4대보험과 소득세를 뺀 실수령액을 영수증으로 보여 준다.
+   요율은 PAY_RATES 한 곳에 모았고 출처와 검증 표는 ops/meeting-0929/c4-salary.md 에 있다.
+   4대보험은 공단 고시 요율 그대로 계산하고, 소득세는 근로소득 간이세액표를 연 환산 산식으로 근사한 추정치다.
+   이 블록은 자립형이다. 진입점은 아래 두 곳(첫 출근 체크리스트, 백과)이고 renderCheck·checkCards 를 감싸서 붙인다. */
+var PAY_ASOF='2026년 요율 기준 · 추정';
+var PAY_RATES={np:0.0475,npMin:410000,npMax:6590000,hi:0.0719,ltc:0.1314,ei:0.009,mealCap:200000,hiMinTotal:20160,hiMaxTotal:9180000,minWage:2156880};
+function calcFirstSalary(gross,meal,fam){
+  var R=PAY_RATES,f10=function(x){ return Math.floor(x/10)*10; };
+  gross=Math.max(0,Math.floor(+gross||0));
+  meal=Math.min(Math.max(0,Math.floor(+meal||0)),R.mealCap,gross);
+  fam=Math.max(1,Math.min(11,Math.floor(+fam||1)));
+  var base=gross-meal;                                   /* 4대보험과 과세의 기준이 되는 보수(비과세 식대 제외) */
+  var npBase=Math.min(R.npMax,Math.max(R.npMin,Math.floor(base/1000)*1000));
+  var np=base>0?f10(npBase*R.np):0;
+  var hT=base>0?Math.min(R.hiMaxTotal,Math.max(R.hiMinTotal,f10(base*R.hi))):0;   /* 건강보험료 전체(회사 절반 포함) */
+  var hi=f10(hT/2), ltc=f10(f10(hT*R.ltc)/2), ei=f10(base*R.ei);
+  /* 소득세: 연 환산 → 근로소득공제 → 인적공제 → 국민연금공제 → 특별공제 근사 → 기본세율 → 근로소득세액공제 */
+  var A=base*12,ded;
+  if(A<=5e6) ded=A*0.7; else if(A<=15e6) ded=3.5e6+(A-5e6)*0.4; else if(A<=45e6) ded=7.5e6+(A-15e6)*0.15;
+  else if(A<=1e8) ded=12e6+(A-45e6)*0.05; else ded=14.75e6+(A-1e8)*0.02;
+  ded=Math.min(ded,2e7);
+  var off=function(n,a){   /* 간이세액표 특별소득공제 등 산식(총급여 구간별) */
+    if(n===1) return 3100000+(a<=45e6?a*0.04-Math.max(0,a-30e6)*0.05:a<=70e6?a*0.015:a*0.005);
+    if(n===2) return 3600000+(a<=45e6?a*0.04-Math.max(0,a-30e6)*0.05:a<=70e6?a*0.02:a*0.01);
+    return 5000000+(a<=45e6?a*0.07-Math.max(0,a-30e6)*0.05:a<=70e6?a*0.05:a*0.03); };
+  var n3=Math.min(fam,3),sp=off(n3,A);
+  if(A<=45e6) sp=450000+A*0.07+(off(n3,A)-off(1,A));   /* 4천5백만 이하는 공개된 실수령액표에 맞춰 보정한 근사 */
+  var ti=Math.max(0,A-ded-1500000*fam-np*12-sp);
+  var br=[[14e6,.06],[50e6,.15],[88e6,.24],[150e6,.35],[300e6,.38],[500e6,.40],[1e9,.42],[Infinity,.45]],tax=0,lo=0;
+  for(var i=0;i<br.length;i++){ if(ti>lo) tax+=(Math.min(ti,br[i][0])-lo)*br[i][1]; lo=br[i][0]; }
+  var cr=tax<=1.3e6?tax*0.55:715000+(tax-1.3e6)*0.3,lim;
+  if(A<=33e6) lim=740000; else if(A<=70e6) lim=Math.max(740000-(A-33e6)*0.008,660000);
+  else if(A<=120e6) lim=Math.max(660000-(A-70e6)*0.5,500000); else lim=Math.max(500000-(A-120e6)*0.5,200000);
+  tax=Math.max(0,tax-Math.min(cr,lim));
+  var it=f10(tax/12),lt=f10(it*0.1),total=np+hi+ltc+ei+it+lt;
+  return {gross:gross,meal:meal,fam:fam,base:base,np:np,hi:hi,ltc:ltc,ei:ei,it:it,lt:lt,total:total,net:gross-total};
+}
+function payFmt(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+function payMan(n){ n=Math.round(n); if(n<=0) return ''; var m=Math.floor(n/10000),r=n%10000;
+  return (m?payFmt(m)+'만':'')+(r?(m?' ':'')+payFmt(r):'')+'원'; }
+function payShareText(r){
+  var L=['[뉴비 퀘스트] 첫 월급 영수증',
+    '세전 월급 '+payFmt(r.gross)+'원 (비과세 식대 '+payFmt(r.meal)+'원 · 부양가족 '+r.fam+'명)','',
+    '국민연금 '+payFmt(r.np)+'원','건강보험 '+payFmt(r.hi)+'원','장기요양보험 '+payFmt(r.ltc)+'원','고용보험 '+payFmt(r.ei)+'원',
+    '소득세 '+payFmt(r.it)+'원','지방소득세 '+payFmt(r.lt)+'원',
+    '공제 합계 '+payFmt(r.total)+'원 ('+(r.gross?(r.total/r.gross*100).toFixed(1):'0.0')+'%)',
+    '실수령액 '+payFmt(r.net)+'원','',
+    PAY_ASOF+' · 간이세액표 기준 추정, 실제와 다를 수 있음','',
+    SHARE_BASE+'#c=firstjob'];
+  return L.join('\n'); }
+function payShare(r){
+  var txt=payShareText(r); ev('salary_share',{net:r.net});
+  if(navigator.share){ navigator.share({title:'첫 월급 영수증',text:txt}).catch(function(){}); return; }
+  if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(function(){ toast('영수증 내용을 복사했습니다. 메신저에 붙여 넣으세요.'); },function(){ toast('복사하지 못했습니다.'); }); return; }
+  toast('이 기기에서는 공유를 지원하지 않습니다.'); }
+function payStyle(){
+  if(document.getElementById('paycss')) return;
+  var s=document.createElement('style'); s.id='paycss';
+  s.textContent=
+  '.pay-back{position:absolute;inset:0;z-index:35;background:rgba(24,24,27,.6);display:flex;align-items:flex-end;justify-content:center;padding:12px;}'+
+  '.pay-back[hidden]{display:none;}'+
+  '.pay{width:100%;max-width:404px;max-height:100%;overflow-y:auto;background:var(--p1);border:3px solid var(--s4);box-shadow:0 0 0 3px #0E0E10;padding:var(--u3);display:flex;flex-direction:column;gap:var(--u3);}'+
+  '.pay-h{display:flex;align-items:center;justify-content:space-between;gap:8px;}'+
+  '.pay-h b{font-family:var(--f-display);font-size:16px;line-height:22px;color:var(--s4);}'+
+  '.pay-x{min-width:44px;min-height:44px;font-family:var(--f-ui);font-weight:700;font-size:13px;background:var(--p2);border:3px solid var(--s4);color:var(--s4);cursor:pointer;}'+
+  '.pay-f{display:flex;flex-direction:column;gap:4px;}'+
+  '.pay-f label{font-family:var(--f-ui);font-weight:700;font-size:12px;line-height:18px;color:var(--s4);}'+
+  '.pay-f input{font-family:var(--f-ui);font-size:16px;line-height:24px;padding:8px 10px;border:3px solid var(--s4);background:var(--w);color:var(--s4);width:100%;min-height:44px;text-align:right;}'+
+  '.pay-hint{font-family:var(--f-micro);font-size:10px;line-height:14px;color:var(--s2);min-height:14px;text-align:right;}'+
+  '.pay-chips{display:flex;flex-wrap:wrap;gap:6px;}'+
+  '.pay-chip{font-family:var(--f-ui);font-size:11px;line-height:16px;padding:6px 10px;min-height:32px;background:var(--p2);border:3px solid var(--s4);color:var(--s4);cursor:pointer;}'+
+  '.pay-step{display:flex;align-items:center;gap:8px;justify-content:flex-end;}'+
+  '.pay-step button{width:44px;height:44px;font-family:var(--f-ui);font-weight:700;font-size:18px;background:var(--p2);border:3px solid var(--s4);color:var(--s4);cursor:pointer;}'+
+  '.pay-step output{min-width:56px;text-align:center;font-family:var(--f-ui);font-weight:700;font-size:16px;}'+
+  '.pay-rc{background:var(--w);border:3px solid var(--s4);padding:14px 14px 22px;position:relative;'+
+    'background-image:linear-gradient(135deg,var(--p1) 50%,transparent 50%),linear-gradient(225deg,var(--p1) 50%,transparent 50%);background-size:12px 12px;background-position:0 100%,0 100%;background-repeat:repeat-x;}'+
+  '.pay-rc h3{margin:0;text-align:center;font-family:var(--f-display);font-size:15px;line-height:22px;color:var(--s4);letter-spacing:.08em;}'+
+  '.pay-rc .pay-asof{text-align:center;font-family:var(--f-micro);font-size:10px;line-height:14px;color:var(--s2);margin-bottom:6px;}'+
+  '.pay-row{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-ui);font-size:12px;line-height:20px;color:var(--s3);}'+
+  '.pay-row b{font-weight:400;color:var(--s4);}'+
+  '.pay-row.pay-sub{font-family:var(--f-micro);font-size:10px;color:var(--s2);}'+
+  '.pay-dash{border:0;border-top:2px dashed var(--s1);margin:6px 0;}'+
+  '.pay-row.pay-tot{font-weight:700;color:var(--s4);}'+
+  '.pay-net{display:flex;justify-content:space-between;align-items:baseline;gap:8px;background:var(--y0);border:3px solid var(--s4);padding:6px 8px;margin-top:4px;}'+
+  '.pay-net span{font-family:var(--f-ui);font-weight:700;font-size:13px;color:var(--s4);}'+
+  '.pay-net b{font-family:var(--f-display);font-size:20px;line-height:26px;color:var(--r3);}'+
+  '.pay-stamp{position:absolute;right:10px;top:10px;transform:rotate(8deg);border:2px solid var(--r2);color:var(--r2);font-family:var(--f-ui);font-weight:700;font-size:10px;line-height:14px;padding:1px 5px;}'+
+  '.pay-foot{display:flex;gap:var(--u2);} .pay-foot .btn{flex:1;}'+
+  '.payentry{margin:4px 0;} .paytool{min-height:56px;gap:4px;}';
+  document.head.appendChild(s); }
+function payClose(){ var b=document.getElementById('paycalc'); if(b) b.hidden=true; try{ if(PAYUI&&PAYUI.from) PAYUI.from.focus(); }catch(e){} }
+function openPayCalc(from){
+  payStyle(); S.pay=S.pay||{};
+  var back=document.getElementById('paycalc');
+  if(!back){
+    back=document.createElement('div'); back.id='paycalc'; back.className='pay-back'; back.hidden=true;
+    back.innerHTML='<div class="pay" role="dialog" aria-modal="true" aria-labelledby="pay-t">'+
+      '<div class="pay-h"><b id="pay-t">첫 월급 계산기</b><button class="pay-x" id="pay-x" aria-label="닫기">닫기</button></div>'+
+      '<div class="pay-f"><label for="pay-g">세전 월급 (원)</label>'+
+        '<input id="pay-g" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="예: 3,000,000">'+
+        '<div class="pay-hint" id="pay-gh"></div>'+
+        '<div class="pay-chips"><button class="pay-chip" data-v="'+PAY_RATES.minWage+'">최저임금</button><button class="pay-chip" data-v="2500000">250만</button>'+
+        '<button class="pay-chip" data-v="3000000">300만</button><button class="pay-chip" data-v="3500000">350만</button><button class="pay-chip" data-v="4000000">400만</button></div></div>'+
+      '<div class="pay-f"><label for="pay-m">비과세 식대 (원, 월 20만원까지)</label>'+
+        '<input id="pay-m" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="200,000"><div class="pay-hint" id="pay-mh"></div></div>'+
+      '<div class="pay-f"><label>부양가족 수 (본인 포함)</label>'+
+        '<div class="pay-step"><button id="pay-fm" aria-label="줄이기">-</button><output id="pay-fv" aria-live="polite">1</output><button id="pay-fp" aria-label="늘리기">+</button></div>'+
+        '<div class="pay-hint">본인만이면 1명. 배우자·부모·자녀를 더하면 2명부터 늘어납니다.</div></div>'+
+      '<button class="btn btn--wide" id="pay-go">영수증 뽑기</button>'+
+      '<div id="pay-out"></div></div>';
+    document.getElementById('app').appendChild(back);
+    var g=back.querySelector('#pay-g'),m=back.querySelector('#pay-m');
+    var dig=function(el){ var d=el.value.replace(/\D/g,'').slice(0,9); el.value=d?payFmt(+d):''; return d?+d:0; };
+    var hint=function(){ var gv=+g.value.replace(/\D/g,'')||0,mv=+m.value.replace(/\D/g,'')||0;
+      back.querySelector('#pay-gh').textContent=gv?'= '+payMan(gv):'만원 단위로 넣으면 편해요 (300만원 = 3,000,000)';
+      back.querySelector('#pay-mh').textContent=mv>PAY_RATES.mealCap?'식대 비과세는 월 20만원까지라 20만원으로 계산합니다':(mv?'= '+payMan(mv):'식대를 따로 안 받으면 0'); };
+    var run=function(){ payRender(true); };
+    g.oninput=function(){ dig(g); hint(); if(PAYUI.shown) payRender(false); };
+    m.oninput=function(){ dig(m); hint(); if(PAYUI.shown) payRender(false); };
+    g.onkeydown=m.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); run(); } };
+    back.querySelectorAll('.pay-chip').forEach(function(c){ c.onclick=function(){ sfx('pick'); g.value=payFmt(+c.getAttribute('data-v')); hint(); if(PAYUI.shown) payRender(false); }; });
+    back.querySelector('#pay-fm').onclick=function(){ payFam(-1); };
+    back.querySelector('#pay-fp').onclick=function(){ payFam(1); };
+    back.querySelector('#pay-go').onclick=run;
+    back.querySelector('#pay-x').onclick=payClose;
+    back.onclick=function(e){ if(e.target===back) payClose(); };
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!back.hidden) payClose(); });
+    PAYUI={back:back,g:g,m:m,fam:1,shown:false,from:null,hint:hint}; }
+  PAYUI.from=from||document.activeElement;
+  PAYUI.g.value=payFmt(S.pay.g!=null?S.pay.g:3000000);
+  PAYUI.m.value=payFmt(S.pay.m!=null?S.pay.m:PAY_RATES.mealCap);
+  PAYUI.fam=S.pay.f||1; back.querySelector('#pay-fv').textContent=PAYUI.fam;
+  PAYUI.shown=false; back.querySelector('#pay-out').innerHTML=''; PAYUI.hint();
+  back.hidden=false; ev('salary_open',{});
+  setTimeout(function(){ try{ PAYUI.g.focus(); }catch(e){} },30); }
+function payFam(d){ PAYUI.fam=Math.max(1,Math.min(11,PAYUI.fam+d)); document.getElementById('pay-fv').textContent=PAYUI.fam; sfx('pick'); if(PAYUI.shown) payRender(false); }
+function payRender(first){
+  var gv=+PAYUI.g.value.replace(/\D/g,'')||0,mv=+PAYUI.m.value.replace(/\D/g,'')||0,out=document.getElementById('pay-out');
+  if(gv<=0){ out.innerHTML='<div class="pay-hint">세전 월급을 먼저 넣어 주세요.</div>'; PAYUI.shown=false; return; }
+  var r=calcFirstSalary(gv,mv,PAYUI.fam); PAYUI.last=r; PAYUI.shown=true;
+  S.pay=S.pay||{}; S.pay.g=gv; S.pay.m=mv; S.pay.f=PAYUI.fam;
+  var pct=(r.total/r.gross*100).toFixed(1);
+  var row=function(a,b,cls,u){ return '<div class="pay-row'+(cls?' '+cls:'')+'"><span>'+a+'</span><b>'+payFmt(b)+(u||'원')+'</b></div>'; };
+  out.innerHTML='<div class="pay-rc" id="pay-rc" role="group" aria-label="첫 월급 영수증"><span class="pay-stamp">추정</span>'+
+    '<h3>첫 월급 영수증</h3><div class="pay-asof">'+esc(PAY_ASOF)+'</div><hr class="pay-dash">'+
+    row('세전 월급',r.gross)+row('비과세 식대',r.meal,'pay-sub')+row('부양가족(본인 포함)',r.fam,'pay-sub','명')+
+    '<hr class="pay-dash">'+
+    row('국민연금',r.np)+row('건강보험',r.hi)+row('장기요양보험',r.ltc)+row('고용보험',r.ei)+row('소득세',r.it)+row('지방소득세',r.lt)+
+    '<hr class="pay-dash">'+row('공제 합계 ('+pct+'%)',r.total,'pay-tot')+
+    '<div class="pay-net"><span>실수령액</span><b>'+payFmt(r.net)+'원</b></div>'+
+    '<hr class="pay-dash"><div class="pay-hint" style="text-align:left">소득세는 간이세액표 기준 추정, 실제와 다를 수 있음. 8~20세 자녀 세액공제와 각종 감면은 반영하지 않았습니다. 2026.7 이후 국민연금 기준소득월액 상한 659만원 적용.</div></div>'+
+    '<div class="pay-foot"><button class="btn" id="pay-sh">친구에게 공유</button></div>';
+  document.getElementById('pay-sh').onclick=function(){ payShare(PAYUI.last); };
+  if(first){ sfx('good'); ev('salary_calc',{net:r.net});
+    if(!S.pay.rewarded){ S.pay.rewarded=1; grant({coin:30}); toast('첫 영수증 보상 +￦30'); } else save(); }
+  else save();
+  if(first){ try{ out.scrollIntoView({block:'nearest'}); }catch(e){} } }
+/* 진입점 1: 첫 출근 체크리스트 맨 위 */
+var _renderCheckPay0=renderCheck;
+renderCheck=function(){ _renderCheckPay0.apply(this,arguments);
+  if(CHKOPEN!=='firstjob') return; var top=document.querySelector('#chkbody .chktop'); if(!top) return;
+  var b=document.createElement('button'); b.className='btn btn--plain btn--wide payentry'; b.textContent='첫 월급 계산해 보기';
+  b.onclick=function(){ sfx('pick'); openPayCalc(b); }; top.parentNode.insertBefore(b,top.nextSibling); };
+/* 진입점 2: 백과 맨 위 체크리스트 카드 아래 */
+var _checkCardsPay0=checkCards;
+checkCards=function(box){ _checkCardsPay0.apply(this,arguments);
+  payStyle();
+  var lab=document.createElement('div'); lab.className='sectlab'; lab.textContent='계산 도구'; box.appendChild(lab);
+  var b=document.createElement('button'); b.className='wrow pix paytool'; b.setAttribute('data-tool','salary');
+  b.innerHTML='<span class="wt">첫 월급 계산기</span><span class="ws">4대보험·소득세를 뺀 실수령액을 영수증으로 · '+esc(PAY_ASOF)+'</span>';
+  b.onclick=function(){ sfx('pick'); openPayCalc(b); }; box.appendChild(b); };
 /* 백과 맨 위: 지금 무슨 일 있어요? */
 function checkCards(box){
   var lab=document.createElement('div'); lab.className='sectlab'; lab.textContent='실전 체크리스트 · 지금 무슨 일 있어요?'; box.appendChild(lab);
