@@ -186,7 +186,8 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .qtip{background:var(--y1);border:3px solid var(--s4);padding:8px 10px;font-size:13px;line-height:1.5;color:var(--s4);cursor:pointer;}
 .qtip b{font-family:var(--f-ui);}
 .qtip .qtipx{display:block;margin-top:4px;font-family:var(--f-ui);font-size:10px;line-height:14px;color:var(--s2);text-align:right;}
-.qtools .mak{font-family:var(--f-ui);font-size:12px;line-height:16px;color:var(--k4);background:var(--w);border:3px solid var(--s4);padding:6px 10px;}
+.qtools .mak{font-family:var(--f-ui);font-size:12px;line-height:16px;color:var(--s3);padding:6px 4px;}
+.qtools .mak::before{content:'';display:inline-block;width:8px;height:8px;margin-right:6px;background:var(--k2);border:2px solid var(--s4);vertical-align:-1px;}
 .choice.gone{opacity:.35;text-decoration:line-through;pointer-events:none;}
 .hud-top{display:flex;align-items:center;gap:var(--u2);}
 .hud-top .who{flex:1;min-width:0;}
@@ -207,8 +208,9 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .scenewrap{border-bottom:3px solid var(--s4);background:var(--k1);
   display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:var(--u2);}
 #home .scenewrap{flex:1;min-height:0;}
-.sceneinfo{display:flex;align-items:center;justify-content:center;gap:var(--u2);flex-wrap:wrap;padding:var(--u2) var(--u3) 0;}
-.tiername{font-family:var(--f-display);font-size:15px;line-height:22px;}
+.sceneinfo{display:flex;align-items:center;justify-content:center;gap:var(--u2);flex-wrap:nowrap;padding:var(--u2) var(--u3) 0;}
+.tiername{font-family:var(--f-display);font-size:15px;line-height:20px;min-width:0;flex:0 1 auto;white-space:nowrap;}
+.tiername .micro{display:block;line-height:13px;overflow:hidden;text-overflow:ellipsis;}
 .def{display:flex;align-items:baseline;gap:5px;background:var(--w);border:3px solid var(--s4);
   padding:2px 8px;font-family:var(--f-ui);font-weight:700;font-size:12px;line-height:18px;box-shadow:0 3px 0 var(--s4);}
 .def b{font-size:24px;line-height:24px;font-variant-numeric:tabular-nums;}
@@ -243,7 +245,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
   box-shadow:inset 0 -5px 0 var(--r3),0 4px 0 var(--s4);}
 .bosscard:active{transform:translateY(4px);box-shadow:inset 0 -5px 0 var(--r3),0 0 0 var(--s4);}
 .bosscard[disabled]{background:var(--p3);box-shadow:inset 0 -5px 0 var(--p3);transform:none;}
-.bosscard .bt{display:block;font-family:var(--f-display);font-size:15px;line-height:22px;}
+.bosscard .bt{display:block;font-family:var(--f-ui);font-weight:700;font-size:14px;line-height:20px;}
 .bosscard .bm{display:block;font-family:var(--f-micro);font-size:10px;line-height:15px;margin-top:3px;}
 
 .tabbar{display:grid;grid-template-columns:repeat(4,1fr);background:var(--p2);border-top:3px solid var(--s4);}
@@ -391,7 +393,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
   font-size:15px;line-height:23px;}
 .explain.good{border-left-color:var(--g1);}
 .explain.bad{border-left-color:var(--r1);}
-.explain .src a{color:var(--k4);}
+.explain .src a,.micro a{color:var(--k4);}
 .explain .src{display:block;margin-top:6px;font-family:var(--f-micro);font-size:10px;line-height:14px;color:var(--s2);}
 
 .hpwrap{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
@@ -441,6 +443,9 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .item .idesc{font-family:var(--f-micro);font-size:10px;line-height:14px;color:var(--s2);}
 .item .ist{font-family:var(--f-ui);font-weight:700;font-size:12px;line-height:16px;text-align:right;
   white-space:nowrap;font-variant-numeric:tabular-nums;}
+.item .ilock,.item .inote{display:block;margin-top:2px;font-family:var(--f-micro);font-size:10px;line-height:14px;}
+.item .ilock{color:var(--r3);} .item .ilock::before{content:'잠김 · ';}
+.item .inote{color:var(--k4);}
 .item .ist .a{color:var(--r3);} .item .ist .d{color:var(--k4);} .item .ist .p{color:var(--y3);}
 .item[aria-pressed="true"] .idesc,.item[aria-pressed="true"] .ist span{color:var(--s4);}
 
@@ -544,8 +549,10 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .chkrow{display:grid;grid-template-columns:44px 1fr;align-items:center;background:var(--w);border:3px solid var(--s4);box-shadow:0 3px 0 var(--s4);}
 .chkrow.on{background:#EEF6EA;}
 .chkrow.on .chktx span{color:var(--s1);text-decoration:line-through;}
-.chkbox{width:44px;height:44px;border:0;border-right:3px solid var(--s4);background:transparent;font:700 18px var(--f-ui);color:var(--g3);}
-.chkrow.on .chkbox{background:var(--g1);color:var(--s4);}
+.chkbox{width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;padding:0;}
+.chkbox::before{content:'';box-sizing:border-box;width:22px;height:22px;border:3px solid var(--s4);background:var(--w);
+  font:700 14px/16px var(--f-ui);color:var(--s4);text-align:center;}
+.chkrow.on .chkbox::before{content:'✓';background:var(--g1);}
 .chktx{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;border:0;background:transparent;
   padding:8px 10px;font-family:var(--f-ui);font-size:12px;line-height:17px;color:var(--s4);min-height:44px;}
 .chktx i{font-style:normal;font-size:10px;color:var(--k4);white-space:nowrap;}
@@ -3466,9 +3473,10 @@ function obRender(){
     box.appendChild(b); });
   body.appendChild(box);
   var pips=document.getElementById('obpips'); pips.innerHTML='';
-  steps.forEach(function(_,i){ var e=document.createElement('i'); if(i<=obStep) e.className='on'; pips.appendChild(e); });
+  var nst=S.status?steps.length:4;                         /* 신분을 고르기 전에도 전체 단계 수(4)를 보여 준다 */
+  for(var pi=0;pi<nst;pi++){ var e=document.createElement('i'); if(pi<=obStep) e.className='on'; pips.appendChild(e); }
   var nb=document.getElementById('obnext');
-  nb.disabled=S[key]==null; nb.textContent=(obStep===steps.length-1)?'시작하기':'다음';
+  nb.disabled=S[key]==null; nb.textContent=(obStep===nst-1)?'시작하기':'다음';
   paintHero(document.getElementById('obchar'),'idle',0); }
 document.getElementById('obnext').onclick=function(){
   var steps=obSteps();
@@ -4605,7 +4613,7 @@ function furniRow(id){
   var mql=(!owned&&it.mq&&!mqOk(it.mq))?mqById(it.mq):null;
   var locked=S.tier<it.need||!!mql;
   var b=document.createElement('button');
-  b.className='item pix'+(owned?' on':'')+(locked?' off':'');
+  b.className='item pix'+(owned?' on':'')+(locked?' locked':'');
   var cv=document.createElement('canvas'); cv.width=30; cv.height=30;
   cv.style.width='60px'; cv.style.height='60px';
   var x=cv.getContext('2d'); x.imageSmoothingEnabled=false;
@@ -4614,15 +4622,15 @@ function furniRow(id){
     x.save(); x.translate(15-((it.w||1)*TS*s)/2,15-((it.h||1)*TS*s)/2); x.scale(s,s);
     drawObj(x,{id:id},0,0); x.restore(); }
   var right=(id==='ramen')
-    ? '<span class="a">'+(S.ramen||0)+'봉지</span>'
+    ? '<span>'+(S.ramen||0)+'봉지</span>'
     : (it.atk?'<span class="a">공 +'+it.atk+'</span><br>':'')+(it.def?'<span class="d">방 +'+it.def+'</span>':'');
-  var wrap=document.createElement('span'); wrap.className='iw';
+  var wrap=document.createElement('span');
   wrap.innerHTML='<span class="inm">'+it.name+(it.w?' <span class="sz">'+it.w+'×'+it.h+'</span>':'')+'</span>'+
-    '<span class="ids">'+it.desc+
-    (mql?'<br>'+mqLockMsg(mql):locked?'<br>'+TIERS[it.need].name+'부터 놓을 수 있습니다':'')+
-    (owned&&id!=='ramen'?(furniOf(id)&&furniOf(id).x==null?'<br>창고에 있습니다 · 눌러서 놓기':'<br>눌러서 자리를 옮깁니다'):'')+'</span>';
-  var price=document.createElement('span'); price.className='ip';
-  price.innerHTML=right+'<br><b>'+(owned&&id!=='ramen'?(furniOf(id)&&furniOf(id).x==null?'놓기':'옮기기'):'￦'+it.cost)+'</b>';
+    '<span class="idesc">'+it.desc+'</span>'+
+    (mql?'<span class="ilock">'+mqLockShort(mql)+'</span>':locked?'<span class="ilock">'+TIERS[it.need].name+'부터</span>':'')+
+    (owned&&id!=='ramen'?'<span class="inote">'+(furniOf(id)&&furniOf(id).x==null?'창고에 있음 · 눌러서 놓기':'놓여 있음 · 눌러서 옮기기')+'</span>':'');
+  var price=document.createElement('span'); price.className='ist';
+  price.innerHTML=right+'<br><span class="p">'+(owned&&id!=='ramen'?(furniOf(id)&&furniOf(id).x==null?'놓기':'옮기기'):'￦'+it.cost)+'</span>';
   b.appendChild(cv); b.appendChild(wrap); b.appendChild(price);
   b.onclick=function(){ buyFurni(id); };
   return b;
@@ -7393,10 +7401,10 @@ function renderHome(){
   paintHero(document.getElementById('hudchar'),'idle',0,-12,-2);
   var nx=(S.peak<TIERS.length-1)?TIERS[S.peak+1].need-S.stats.ju:null,hold=nx!==null&&S.peak>=tierCap();
   document.getElementById('htier').innerHTML=TIERS[S.tier].name+
-   (nx===null?' <span class="micro">· 최종 단계</span>'
-    :hold?' <span class="micro">· 자가는 메인 6장 뒤에 열림</span>'
-    :nx>0?' <span class="micro">· 다음 해금까지 주 '+nx+'</span>'
-    :' <span class="micro">· '+(upLeft()>0?'다음 퀘스트에서 해금':'새 거처는 내일 해금')+'</span>');
+   (nx===null?'<span class="micro">최종 단계</span>'
+    :hold?'<span class="micro">자가는 메인 6장 뒤에 열림</span>'
+    :nx>0?'<span class="micro">다음 거처까지 주 스탯 '+nx+'</span>'
+    :'<span class="micro">'+(upLeft()>0?'다음 퀘스트를 깨면 해금':'새 거처는 내일 해금')+'</span>');
   document.getElementById('hdef').textContent=tt.def;
   if(S.lastTier===undefined) S.lastTier=S.tier;
   if(S.fightId&&!FIGHT){ S.fightId=null; save();           /* 보스전 도중 닫고 다시 열었다 */
@@ -7485,7 +7493,7 @@ function stepTutor(){
   if(TUT.i>=TUT.lines.length) return endTalk();
   showTutor(); }
 function endTalk(){
-  var done=TUT; TUT=null; hlSet(null);
+  var done=TUT; TUT=null; hlSet(null); mqRetry();
   document.getElementById('htutor').hidden=true;
   if(done&&done.tut){ TUT_COOL=Date.now()+45000; if(!S.tuts) S.tuts=[]; if(S.tuts.indexOf(done.tut)<0) S.tuts.push(done.tut); if(done.tut==='intro') S.tut=1; save(); }
   if(done&&done.onEnd) done.onEnd();
@@ -7957,7 +7965,7 @@ function renderEpCards(){
     var box=document.createElement('span');
     box.innerHTML='<span class="et">'+e.title+' \u00B7 '+e.beats.length+'장면</span>'+
       '<span class="eo">'+e.one+'</span>'+
-      '<span class="eb">'+(best===null?'아직 안 걸어 봤습니다':'최고 결말 \u00B7 '+e.ends[best].big)+'</span>';
+      '<span class="eb">'+(best===null?'아직 해 보지 않음':'최고 결말 \u00B7 '+e.ends[best].big)+'</span>';
     b.appendChild(box);
     b.onclick=function(){ epStart(e); };
     wrap.appendChild(b); });
@@ -8197,7 +8205,9 @@ function openTip(html,rc,buttons){
   var th=bx.querySelector('.ithumb'); if(th&&openTip.thumb){ th.appendChild(openTip.thumb); openTip.thumb=null; }
   bk.hidden=false;
   bk.onclick=function(e){ if(e.target===bk) closeTip(); }; }
-function closeTip(){ var bk=document.getElementById('itip'); if(bk) bk.hidden=true; }
+function closeTip(){ var bk=document.getElementById('itip'); if(bk) bk.hidden=true; mqRetry(); }
+/* 시트나 대화에 가려 못 뜬 할배 알림을 창이 닫힌 뒤 한 번 더 시도한다. 세션에 한 번만 뜨는 것은 MQ_SAID가 지킨다 */
+function mqRetry(){ if(typeof mqAnnounce!=='function') return; setTimeout(function(){ if(!MQ_SAID&&S&&S.onboarded) mqAnnounce(); },900); }
 function statLine(k,v,cmp){
   if(!v&&!cmp) return '';
   var d=(cmp==null)?0:v-cmp;
@@ -8224,8 +8234,9 @@ function gearTip(slot,id){
   if(have&&!on) bt.push({t:'장착하기',f:function(){ S.equip[slot]=id; ev('equip',{slot:slot,id:id}); save(); closeTip(); renderChar(); }});
   else if(on&&SLOT_EMPTY[slot]&&SLOT_EMPTY[slot]!==id) bt.push({t:'벗기',f:function(){ S.equip[slot]=SLOT_EMPTY[slot]; save(); closeTip(); renderChar(); }});
   else if(!have&&!it.special&&it.cost>0){
-    var away=(slot==='pet'&&it.kind&&!petHome());
-    bt.push({t:away?'키울 집이 없습니다':S.coin<it.cost?'코인 모자람 (￦'+it.cost+')':'￦'+it.cost+'에 사기',off:away||S.coin<it.cost,
+    var away=(slot==='pet'&&it.kind&&!petHome()),mql=mqShopLock(slot,id);
+    if(mql) h+='<div class="il warn"><i>◆</i>'+mql+'</div>';
+    bt.push({t:mql?'아직 못 삼':away?'키울 집이 없습니다':S.coin<it.cost?'코인 모자람 (￦'+it.cost+')':'￦'+it.cost+'에 사기',off:!!mql||away||S.coin<it.cost,
       f:function(){ S.coin-=it.cost; S.owned.push(id); S.equip[slot]=id; sfx('coin');
         ev('buy',{slot:slot,id:id,cost:it.cost,from:'char'}); save(); closeTip(); renderChar(); }}); }
   openTip(h,r.c,bt); }
@@ -8741,7 +8752,7 @@ function drawTools(){
   if(tip){ if(!S.tipTools){ tip.hidden=false; S.tipTools=1; save(); tip.onclick=function(){ tip.hidden=true; }; } }
   kb.textContent='간파 '+RUN.kan+(RUN.kanUsed?' · 사용함':'');
   kb.disabled=!(RUN.kan>0)||RUN.kanUsed||answered;
-  mk.textContent='막기 '+RUN.mak;
+  mk.textContent='막기 '+RUN.mak+'회 남음';
   kb.onclick=function(){
     if(RUN.kan<=0||RUN.kanUsed||RUN.marks[RUN.i]!==undefined) return;
     var item=RUN.q.qs[RUN.i],cands=[];
@@ -9093,6 +9104,8 @@ function upNoteShow(){
   setTimeout(function(){ toast('새 거처 해금 · '+TIERS[n.i].name+(n.stay?' · 캐릭터 탭에서 옮길 수 있어요'
     :n.ok?(n.cost?' · 입주 보증금 ￦'+n.cost:''):n.lease?' · 부동산에서 전세 계약부터 해요':' · 보증금 ￦'+n.cost+'이 모자라 아직 못 옮겼어요')); },3600); }
 var _renderHomeB=renderHome; renderHome=function(){ _renderHomeB.apply(this,arguments); todayBtn(); todayAuto(); upNoteShow(); };
+/* 전세 계약을 거쳐야 옮기는 거처. rollDay가 새 거처를 열 때 leaseGate가 바로 읽으므로 불러오기 전에 둔다. */
+var LEASE_TIERS={7:1,8:1};
 S=load();
 if(!S.first) S.first=dayKey();
 rollDay();
@@ -10451,7 +10464,7 @@ var MQ_LIST=[
   ann:['오늘 할 일 셋을 다 했구먼. 허허, 제법이야.','이제 큰일 하나를 같이 보세. 합격 문자부터 첫 월급까지.'],q:'메인 1장 · 첫 취업. 두세 분이면 보네.'},
  {id:'lease',no:2,title:'첫 전세 계약',
   open:function(){ return mqDone('job')&&(S.peak>=7||!!S.lease||leaseDoneAny()); },
-  wait:function(){ return (S.peak>=7||S.lease||leaseDoneAny())?null:'원룸 전세 해금까지 주 '+Math.max(0,TIERS[7].need-S.stats.ju); },
+  wait:function(){ return (S.peak>=7||S.lease||leaseDoneAny())?null:(TIERS[7].need>S.stats.ju?'원룸 전세까지 주 스탯 '+(TIERS[7].need-S.stats.ju)+' 더':'원룸 전세가 열리면'); },
   ann:['원룸 전세가 열렸네. 이번엔 이사가 아니라 계약부터야.','보증금은 자네가 모은 돈 거의 전부일 걸세. 처음부터 끝까지 같이 보지.'],q:'메인 2장 · 첫 전세 계약. 부동산으로 가 볼 텐가?'},
  {id:'card',key:'MQ_CARD',no:3,title:'첫 신용카드',
   open:function(){ return mqDone('lease')&&mqDay('lease')&&S.lv>=6&&mapOpen('bank'); },
@@ -10533,15 +10546,16 @@ function mqPay(c,g){
   else rows.push(['이미 더 좋은 등급','보상 없음','#9B93A8']);
   if(first&&R.item&&allItems(R.item)&&S.owned.indexOf(R.item)<0){ S.owned.push(R.item); rows.push(['획득',allItems(R.item).name,'#9BE38F']); }
   if(first) (R.unlock||[]).forEach(function(u){ rows.push(['열림 · '+u,'','#6EC8F0']); });
-  if(first&&c.id==='home'){ S.upN=Math.max(0,(S.upN||0)-1); var gr=tierGrow();            /* 자가 한 칸을 그날 몫과 상관없이 바로 연다 */
-    if(gr){ var mv=gr.wasTop?tierMove(S.peak):null; rows.push(['새 거처 · '+TIERS[S.peak].name,mv&&mv.ok?'입주':'','#FFE79B']); } }
+  if(first&&c.id==='home'&&S.peak<9){                       /* 자가 첫 칸을 주 스탯·그날 몫과 상관없이 바로 연다. 보증금은 낸다 */
+    var wasTop=(S.tier===S.peak); S.peak=9;
+    var mv=wasTop?tierMove(S.peak):null; rows.push(['새 거처 · '+TIERS[S.peak].name,mv&&mv.ok?'입주':'열림','#FFE79B']); }
   M.cur=null; M.i=0; M.ok=0; M.n=0; M.last={id:c.id,coin:first?gain.coin:0};
   save(); ev('mq_clear',{id:c.id,grade:g,first:first?1:0});
   return rows; }
 function mqFinish(c,d,g,extra){
   var rows=mqPay(c,g),ends=(extra&&extra.ends)||(d&&d.ends&&d.ends[g])||['장을 마쳤다.'],sc=(d&&d.scenes)||[],last=sc[sc.length-1]||{};
   return [{bg:last.bg||'night',cast:(extra&&extra.cast)||[['hero','C']],who:extra&&extra.who,text:ends,end:1,fx:g==='good'?'confetti':null},
-          {type:'reward',grade:g,rows:rows.slice(0,8),card:(MQ_COPY[c.id]||{}).card,end:1}]; }
+          {type:'reward',grade:g,rows:rows.slice(0,8),card:g==='bad'?null:(MQ_COPY[c.id]||{}).card,end:1}]; }
 /* 장을 마친 뒤: 열린 것, 다음 장, 공유. 처음 깬 장이면 광고로 코인을 한 번 더 받을 수 있다(economy.md, 하루 1회) */
 function mqAfter(c){
   render('home'); hudRefresh();
@@ -10552,7 +10566,7 @@ function mqAfter(c){
     if(last&&last.coin>=30){
       if(adLeft('mq')>0) bt.unshift({t:'광고 보고 ￦'+last.coin+' 더 받기',f:function(){ adGo('mq',function(){ S.coin+=last.coin; M.last=null; M.adPend=null; save(); hudRefresh(); sfx('coin'); toast('광고 보상 ￦'+last.coin); closeTip(); }); }});
       else { M.adPend={id:c.id,coin:last.coin}; save(); } }
-    openTip('<div class="ih"><div><span class="inm">'+esc((cp.card||[c.title])[0])+'</span><span class="isub">'+esc((cp.card||['',''])[1]||'')+'</span></div></div><hr>'+
+    openTip('<div class="ih"><div><span class="inm">'+esc((cp.card||[c.title])[0])+'</span><span class="isub">'+(M.done[c.id]==='bad'?c.no+'장 · '+esc(c.title):esc((cp.card||['',''])[1]||''))+'</span></div></div><hr>'+
       (last?(R.unlock||[]).map(function(u){ return '<div class="il good"><i>◆</i>열림 · '+esc(u)+'</div>'; }).join(''):'')+
       '<div class="il"><i>◆</i>'+(nx?'다음은 '+nx.no+'장 '+esc(nx.title)+' · '+esc(mqReady(nx)?'지도 왼쪽 위 메인 표시를 누르세요':mqWait(nx)):'메인 퀘스트를 모두 마쳤습니다')+'</div>','#FFC53C',bt);
     sheetStack();
@@ -10610,7 +10624,7 @@ function mqChip(){
   if(leasing){ var voided=S.lease.voided&&S.lease.ch===0&&S.lease.b===0,short=S.lease.ch===3&&S.lease.b===0&&S.coin<tierCost(S.lease.to);
     txt='<b>메인 2장</b> 첫 전세 계약<span>'+(voided?'부동산에서 매물 다시 고르기':short?'잔금 ￦'+(tierCost(S.lease.to)-S.coin)+' 모자람':'다음은 '+esc(leaseWhere())+'에서')+'</span>'; cls+=' at';
     tap=function(){ toast('다음 장면은 '+leaseWhere()+'에서 이어집니다.'); }; }
-  else if(ready){ txt='<b>메인 '+c.no+'장</b> '+esc(c.title)+'<span>'+(M.cur===c.id&&M.i>0?'눌러서 이어 보기':'눌러서 시작')+'</span>'; cls+=' on';
+  else if(ready){ txt='<b>메인 '+c.no+'장</b> '+esc(c.title)+'<span>'+(M.cur===c.id&&M.i>0?'눌러서 이어 보기':c.id==='lease'&&S.lease?'눌러서 계약 시작':'눌러서 시작')+'</span>'; cls+=' on';
     tap=function(){ mqStart(c.id); }; }
   else { var w=mqWait(c); txt='<b>다음 메인</b> '+c.no+'장 '+esc(c.title)+'<span>'+esc(w)+'</span>';
     tap=function(){ toast(w==='내일 열려요'?'오늘은 푹 쉬게. 다음 장은 내일 보세.':c.no+'장 '+c.title+' · '+w); }; }
@@ -10623,6 +10637,7 @@ function mqChip(){
 function mqShopLock(slot,id){
   var it=allItems(id); if(!it||!it.mq||mqOk(it.mq)) return null;
   return mqLockMsg(mqById(it.mq)); }
+function mqLockShort(c){ return '메인 '+c.no+'장을 마친 뒤'; }
 function mqLockMsg(c){ return mqName(c)+을를(c.title).slice(c.title.length)+' 마치면 살 수 있어요'; }
 function mqRegionLock(to){ return mqOk('wedding')?null:'메인 5장 「결혼 준비」를 마치면 '+(to==='daegu'?'대구':'경주')+' 가는 길이 열려요'; }
 function tierCap(){ return mqOk('home')?TIERS.length-1:Math.max(8,S.peak>=9?S.peak:8); }
@@ -10634,6 +10649,7 @@ function mqGrandfather(o){
   if(own('card')) gf.card=1;
   if(road){ gf.car=1; gf.wedding=1; }
   if((o.peak||0)>=9) gf.home=1;
+  if((o.paid||0)>=7||(o.leaseDone&&(o.leaseDone[7]||o.leaseDone[8]))) gf.lease=1;     /* 전세 계약을 해 본 저장은 대형 가전을 바로 산다 */
   return gf; }
 /* 도감의 메인 퀘스트 목록. 끝낸 장은 다시 볼 수 있고, 더 좋은 등급을 내면 차액만 받는다 */
 var MQ_STARS={good:'★★★',ok:'★★☆',bad:'★☆☆'};
@@ -11006,7 +11022,7 @@ function renderCheck(){
     s.items.forEach(function(it){
       var key=si+':'+it.id,on=!!st.done[key],open=CHKWHY===key;
       var row=document.createElement('div'); row.className='chkrow pix'+(on?' on':'');
-      var cb=document.createElement('button'); cb.className='chkbox'; cb.setAttribute('aria-label',on?'체크 해제':'체크'); cb.textContent=on?'✓':'';
+      var cb=document.createElement('button'); cb.className='chkbox'; cb.setAttribute('aria-label',on?'체크 해제':'체크');
       cb.onclick=function(){ if(st.done[key]) delete st.done[key]; else st.done[key]=1; sfx(st.done[key]?'good':'pick');
         var cc=chkCount(c); if(cc.d===cc.n&&!st.fin){ st.fin=dayKey(); grant({xp:80,coin:80}); ev('check_done',{id:c.id});
           setTimeout(function(){ toast('귀인 할배: "허허, '+c.title+' 준비를 다 마쳤구먼. 경험치 +80 · ￦80"'); },200); }
@@ -11370,7 +11386,6 @@ function endingShareSheet(){
    A 신축 빌라: 전세 2억, 매매 2억 5천. 전세가율 80%인 깡통전세.
    B 구축 아파트: 전세 1억, 매매 3억(근저당 채권최고액 6천만 원). 전세가율 약 33%.
    중간에 나가도 S.lease에 장면 단위로 남아 이어서 한다. 기준일 2026-10. */
-var LEASE_TIERS={7:1,8:1};
 var LEASE_SRC=[['인터넷등기소','https://www.iros.go.kr'],['국토교통부 실거래가 공개시스템','https://rt.molit.go.kr'],
   ['주택도시보증공사(HUG) 전세보증금반환보증','https://www.khug.or.kr'],['찾기쉬운 생활법령정보 · 주택임대차','https://easylaw.go.kr']];
 var LISTING={

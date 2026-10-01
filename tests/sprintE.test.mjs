@@ -173,3 +173,57 @@ test('6. 360x640에서도 선택지가 화면 안에 들어오고 눌러서 고�
   assert.deepEqual(logs, []);
   await ctx.close();
 });
+
+test('7. 하루를 넘겨 새로고침한 날 원룸 전세가 열려도 게임이 뜬다(전세 계약이 열린다)', async () => {
+  const { ctx, page, logs } = await open({ mq: ALLDONE('lease'), done: ['ju1', 'sik1', 'stu1'] });
+  await page.evaluate(() => {
+    S.stats.ju = 45; S.peak = 6; S.tier = 6; S.paid = 6; S.lease = null; S.leaseDone = {};
+    S.upDay = null; S.upN = 0; S.day = addDays(dayKey(), -1); save();
+  });
+  await reloadSaved(page);
+  await sleep(page, 400);
+  const r = await page.evaluate(() => ({ home: document.getElementById('home').classList.contains('on'), peak: S.peak, to: S.lease && S.lease.to, day: S.day === dayKey() }));
+  assert.deepEqual(r, { home: true, peak: 7, to: 7, day: true });
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
+
+test('8. 캐릭터 탭 상세 시트에서도 장 잠금 물건은 살 수 없다', async () => {
+  const { ctx, page, logs } = await open({ mq: { done: {}, gf: {}, ann: {} } });
+  const r = await page.evaluate(() => {
+    S.coin = 5000; S.owned = S.owned.filter((x) => ['car', 'oxford', 'wallet'].indexOf(x) < 0); render('char');
+    const out = {};
+    [['mount', 'car'], ['top', 'oxford'], ['weapon', 'wallet']].forEach(([slot, id]) => {
+      gearTip(slot, id);
+      const bs = [...document.querySelectorAll('#itip button')].filter((b) => b.textContent !== '닫기');
+      out[id] = bs.map((b) => [b.textContent, b.disabled]); closeTip(); });
+    return out;
+  });
+  for (const id of ['car', 'oxford', 'wallet']) assert.deepEqual(r[id], [['아직 못 삼', true]], id + ' ' + JSON.stringify(r[id]));
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
+
+test('9. 6장을 낮은 등급으로 깨도 자가 첫 칸(도시형생활주택)이 열린다', async () => {
+  const { ctx, page, logs } = await open({ mq: ALLDONE('home') });
+  const r = await page.evaluate(() => {
+    S.stats.ju = 49; S.peak = 8; S.tier = 8; S.paid = 8; S.coin = 5000; S.leaseDone = { 7: 1, 8: 1 };
+    const rows = mqPay(mqById('home'), 'bad');
+    return { peak: S.peak, tier: S.tier, row: rows.some((x) => /도시형생활주택/.test(x[0])) };
+  });
+  assert.deepEqual(r, { peak: 9, tier: 9, row: true });
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
+
+test('10. 다른 창에 가려 못 뜬 할배 알림은 창을 닫으면 다시 뜬다', async () => {
+  const { ctx, page, logs } = await open({ done: ['ju1', 'sik1', 'stu1'] });
+  await page.evaluate(() => { S.first = '2020-01-01'; save(); openTip('<div>가림</div>', '#FFC53C', []); });
+  await sleep(page, 3200);
+  assert.equal(await page.evaluate(() => MQ_SAID), 0, '시트가 열려 있으면 알리지 않는다');
+  await page.evaluate(() => closeTip());
+  await page.waitForFunction(() => MQ_SAID === 1 && !document.getElementById('htutor').hidden, null, { timeout: 4000, polling: 100 });
+  assert.equal(await page.evaluate(() => S.mq.ann.job === dayKey()), true);
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
