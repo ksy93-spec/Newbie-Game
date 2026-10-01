@@ -37,9 +37,9 @@ body{overscroll-behavior:none;touch-action:manipulation;}
   --w:#FFFFFF;
   --u1:4px; --u2:8px; --u3:12px; --u4:16px; --u5:20px; --u6:24px;
   --f-display:'Galmuri14','Galmuri11',monospace;
-  --f-body:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',system-ui,sans-serif;
+  --f-body:'Galmuri14','Galmuri11',system-ui,sans-serif;
   --f-ui:'Galmuri11',monospace;
-  --f-micro:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',system-ui,sans-serif;
+  --f-micro:'Galmuri9','Galmuri11',monospace;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;}
@@ -9470,8 +9470,8 @@ function skipOpening(){ if(OPEN){ OPEN.done=true; openingEnd(); } }
    그리고 귀인 할배의 등장. 엔딩: 보스를 다 이기고 84㎡ 신축에 들어간 날. 할배의 정체가 밝혀진다. */
 /* 오프닝·컷신 캔버스는 가로 160칸으로 그리되, 실제 해상도는 화면 픽셀에 맞춘다. 그림과 글씨가 확대돼 뭉개지지 않게 */
 function cineRes(W,H){ var s=Math.min(innerWidth/W,innerHeight/H)*(window.devicePixelRatio||1); return Math.max(2,Math.min(8,Math.ceil(s))); }
-/* 캔버스 글씨: 대사와 안내는 읽기 쉬운 고딕, 제목만 도트 글꼴 */
-var CFONT='"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif';
+/* 캔버스 글씨는 게임 글꼴(갈무리). 캔버스를 화면 해상도로 그리므로 확대돼 뭉개지지 않는다 */
+var CFONT='Galmuri11,monospace';
 function cinemaHost(){
   var W=160,H=Math.max(240,Math.min(356,Math.round(160*innerHeight/Math.max(1,innerWidth)))),R=cineRes(W,H);
   var wrap=document.createElement('div'); wrap.id='opening'; wrap.className='cine';
