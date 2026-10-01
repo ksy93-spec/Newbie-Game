@@ -10909,7 +10909,7 @@ function mqChip(){
   var M=mqS(),ready=mqReady(c),leasing=c.id==='lease'&&mqLeasing(),txt,cls='mqchip pix',tap;
   if(leasing){ var voided=S.lease.voided&&S.lease.ch===0&&S.lease.b===0,short=S.lease.ch===3&&S.lease.b===0&&S.coin<tierCost(S.lease.to);
     txt='<b>메인 2장</b> 첫 전세 계약<span>'+(voided?'부동산에서 매물 다시 고르기':short?'잔금 ￦'+(tierCost(S.lease.to)-S.coin)+' 모자람':'다음은 '+esc(leaseWhere())+'에서')+'</span>'; cls+=' at';
-    tap=function(){ toast('다음 장면은 '+leaseWhere()+'에서 이어져요.'); }; }
+    tap=function(){ leaseGoNext(); }; }
   else if(ready){ txt='<b>메인 '+c.no+'장</b> '+esc(c.title)+'<span>'+(M.cur===c.id&&M.i>0?'눌러서 이어 보기':c.id==='lease'&&S.lease?'눌러서 계약 시작':'눌러서 시작')+'</span>'; cls+=' on';
     tap=function(){ mqStart(c.id); }; }
   else { var w=mqWait(c); txt='<b>다음 메인</b> '+c.no+'장 '+esc(c.title)+'<span>'+esc(w)+'</span>';
@@ -11806,6 +11806,16 @@ function leaseGate(i){
 function leaseCh(){ return S.lease?LEASE_CH[S.lease.ch]:null; }
 /* 장면이 벌어지는 곳. 주택가 맵이 없으면 매물 장면도 부동산에서 한다 */
 function leasePlace(p){ return (p==='house'&&!MAPS.villa)?'estate':p; }
+/* 메인 2장 칩을 누르면 다음 장면이 벌어지는 곳(중개사, 매물 집, 주민센터) 앞으로 바로 옮겨 말을 건다.
+   안내 문구만 보고 주택가의 맞는 건물을 찾지 못해 진행이 멈추던 문제 */
+function leaseGoNext(){
+  var hit=null;
+  Object.keys(MAPS).forEach(function(k){ (MAPS[k].spots||[]).forEach(function(sp){ if(!hit&&sp.kind==='lease'&&leaseHere(sp)) hit=[k,sp]; }); });
+  if(!hit||MOVE||DRIVE) return toast('다음 장면은 '+leaseWhere()+'에서 이어져요.');
+  var m=MAPS[hit[0]],near=adjacentTo(m,hit[1])||{x:hit[1].x,y:hit[1].y+1};
+  if(S.onFoot===false&&S.equip&&MOUNTS[S.equip.mount]&&MOUNTS[S.equip.mount].kind) S.onFoot=true;
+  enterMap(hit[0],near.x,near.y); faceSpot(hit[1]); drawScene();
+  setTimeout(function(){ triggerSpot(hit[1]); },250); }
 function leaseHere(s){ var c=leaseCh(); return !!(c&&leasePlace(c.place)===s.place&&(!s.pick||s.pick===S.lease.pick)); }
 var LEASE_WHERE={estate:'부동산',house:'매물 집 앞',hall:'주민센터'};
 function leaseWhere(){ var c=leaseCh(); if(!c) return ''; var p=leasePlace(c.place);

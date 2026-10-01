@@ -120,3 +120,31 @@ test('5. 오늘 할 일 시트는 다른 시트를 덮지 않고, 닫힌 뒤에 
   assert.deepEqual(logs, []);
   await ctx.close();
 });
+
+test('6. 메인 2장: 칩만 눌러도 부동산→매물 집→부동산→매물 집→주민센터를 거쳐 장을 마친다', async () => {
+  const { playCine } = await import('./cine.mjs');
+  const { ctx, page, logs } = await open();
+  await page.evaluate(() => {
+    Object.assign(S, { status: '직장인', years: 2, company: '중소기업', region: '수도권', age: 29 });
+    S.onboarded = true; S.tut = 1; S.tuts = ['intro', 'afterq', 'travel', 'check', 'needs', 'hungry', 'doors', 'room', 'gear', 'lv2', 'ep', 'pet', 'car', 'boss'];
+    S.lv = 8; S.coin = 3000; S.done = ['ju1', 'sik1', 'stu1']; S.stats.ju = 45; S.tier = 6; S.peak = 7; S.paid = 6;
+    S.mq = { done: { job: 'good' }, ann: {}, gf: {}, at: { job: '2020-01-01' } }; save(); render('home'); mqChip();
+    document.getElementById('hmq').click();
+  });
+  await playCine(page, []);
+  for (let k = 0; k < 8; k++) {
+    if (await page.evaluate(() => !!(S.mq.done && S.mq.done.lease))) break;
+    await page.evaluate(() => document.getElementById('hmq').click());
+    await page.waitForTimeout(600);
+    await playCine(page, Array(10).fill(0), { timeout: 15000 });
+    await page.waitForTimeout(600);
+    await page.evaluate(() => document.querySelectorAll('#epend button').forEach((b) => { if (/새 집으로/.test(b.textContent)) b.click(); }));
+    await page.waitForTimeout(600);
+    if (await page.evaluate(() => !!window.MQP)) await playCine(page, [], { timeout: 15000 });
+  }
+  const r = await page.evaluate(() => ({ done: S.mq.done.lease, tier: S.tier }));
+  assert.ok(r.done, '2장 완료');
+  assert.equal(r.tier, 7);
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
