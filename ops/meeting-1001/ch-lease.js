@@ -19,31 +19,31 @@ var MQ_LEASE_WRAP = {
     ['주택도시보증공사 전세보증금반환보증', 'https://www.khug.or.kr']
   ],
   intro: [
-    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['원룸 전세가 열렸다고?', '허허, 큰 날이 왔구먼.'] },
-    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['월세는 매달 조금씩', '나가지만, 전세는', '한 번에 다 거는 거야.'] },
-    { bg: 'apartment', fx: 'fade', cast: [['gpa', 'C']], who: '귀인 할배',
+    { bg: 'apartment', fx: 'fade', cast: [['halbae', 'C']], who: '귀인 할배',
       text: ['보증금은 자네가 모은', '돈 거의 전부일 걸세.', '돌려받아야 끝나지.'] },
     { bg: 'town',
       doc: { t: '전세 계약 순서', rows: [['하나', '매물 고르기'], ['둘', '가계약'], ['셋', '삼자대면 본계약'], ['넷', '잔금과 전입신고']], bad: [] },
       text: ['부동산, 매물 집,', '다시 부동산, 그리고', '주민센터 순서야.'] },
-    { bg: 'town', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['벽지 말고 서류를 보게.', '등기부, 실거래가.', '돈은 소유자 계좌로.'] },
-    { bg: 'town', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['중간에 나가도 되네.', '그 자리에서 이어서', '하면 돼. 가 보세.'] }
   ],
   outro: [
     { bg: 'apartment', fx: 'fade', cast: [['hero', 'C']],
       text: ['새 집 열쇠를 받았다.', '현관 비밀번호부터', '바꿨다.'] },
-    { bg: 'livingroom', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'livingroom', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['허허, 도장 몇 번에', '진이 다 빠졌지?'] },
     { bg: 'livingroom',
       doc: { t: '이사 뒤에 둘 것', rows: [['계약서', '원본 보관'], ['확정일자', '계약서에 도장'], ['등기부', '가끔 다시 열람'], ['만기일', '달력에 적기']], bad: [] },
       text: ['종이는 버리지 말고', '한곳에 모아 두자.'] },
-    { bg: 'livingroom', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'livingroom', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['전세는 들어갈 때보다', '나올 때 돈이 돌아와야', '끝나는 계약이야.'] },
-    { bg: 'livingroom', fx: 'confetti', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'livingroom', fx: 'confetti', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['방이 좀 넓어졌으니', '이제 큰 가전도', '들일 수 있겠구먼.'] }
   ],
   ends: {
@@ -53,12 +53,12 @@ var MQ_LEASE_WRAP = {
   },
   /* 메인 퀘스트 전에 이미 전세 계약을 끝낸 사람에게. intro 대신 이것을 틀고 outro로 넘어간다. */
   recap: [
-    { bg: 'livingroom', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'livingroom', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['자네는 전세 계약을', '벌써 해 봤지?', '허허, 기억나나?'] },
     { bg: 'town',
       doc: { t: '그때 거친 순서', rows: [['하나', '매물 고르기'], ['둘', '가계약'], ['셋', '삼자대면 본계약'], ['넷', '잔금과 전입신고']], bad: [] },
       text: ['서류 보고, 계좌 보고,', '특약 넣고, 그날', '전입신고까지.'] },
-    { bg: 'livingroom', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'livingroom', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['다음 계약도 순서는', '똑같네. 서류부터.', '그 버릇 잊지 말게.'] }
   ]
 };

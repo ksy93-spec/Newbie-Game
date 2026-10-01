@@ -37,9 +37,9 @@ var MQ_JOB = {
   scenes: [
     { bg: 'phone', fx: 'flash',
       text: ['[문자] 최종 합격을', '축하드립니다.', '월요일 9시 출근 바랍니다.'] },
-    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['허허, 합격이라고?', '축하하네. 그런데', '진짜 시험은 이제부터야.'] },
-    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['첫 달엔 종이 몇 장이', '오갈 걸세. 계약서,', '명세서. 꼭 챙기게.'] },
     { bg: 'office', fx: 'fade', cast: [['hero', 'L'], ['officem', 'R']], who: '인사팀 과장',
       text: ['어서 와요.', '계약서부터 쓰죠.'] },
@@ -86,9 +86,9 @@ var MQ_JOB = {
           note: '4대사회보험 정보연계센터에서 내 가입 내역을 한 번에 볼 수 있다. 입사하고 한두 달 뒤에 한 번 보면 된다.' },
         { a: '떼 갔으면 됐겠지', ok: 0,
           note: '월급에서 뗐다고 신고까지 됐다는 뜻은 아니다. 조회는 몇 분이면 끝난다. 내 기록은 내가 본다.' } ] } },
-    { bg: 'night', fx: 'confetti', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'night', fx: 'confetti', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['허허, 첫 월급이구먼.', '계약서 한 장,', '명세서 한 장.'] },
-    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['숫자는 해마다 바뀌네.', '최저임금, 보험료율.', '해마다 한 번은 보게.'] }
   ],
   ends: {

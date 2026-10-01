@@ -42,7 +42,7 @@ var MQ_HOME = {
     ['K-apt 공동주택관리정보시스템', 'https://www.k-apt.go.kr']
   ],
   scenes: [
-    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'C'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'C'], ['halbae', 'R']], who: '귀인 할배',
       text: ['허허, 전세 만기가', '다가오는구먼.', '이번엔 내 집 차례일세.'] },
     { bg: 'phone', fx: 'flash',
       text: ['[알림] 관심 단지', '입주자모집공고가', '올라왔습니다.'] },
@@ -94,7 +94,7 @@ var MQ_HOME = {
     { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'R']],
       doc: { t: '재산세', rows: [['기준일', '매년 6월 1일'], ['주택분', '7월·9월 절반씩'], ['조회·납부', '위택스']], bad: [] },
       text: ['6월 1일에 집을 가진', '사람이 그해', '재산세를 낸다.'] },
-    { bg: 'livingroom', fx: 'confetti', cast: [['hero', 'L'], ['partner', 'C'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'livingroom', fx: 'confetti', cast: [['hero', 'L'], ['partner', 'C'], ['halbae', 'R']], who: '귀인 할배',
       text: ['허허, 문패를 달았구먼.', '집은 사는 날보다', '지키는 날이 더 길다네.'] }
   ],
   ends: {

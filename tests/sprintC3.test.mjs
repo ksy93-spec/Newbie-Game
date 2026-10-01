@@ -85,7 +85,7 @@ test('1. 보스전 승리: 화면, 체력, 보상, 거처 해금과 보증금은
   assert.equal(await page.textContent('#bebig'), '보스 격파');
   const body = await page.innerText('#bebody');
   assert.match(body, /해금/);
-  assert.match(body, /입주 보증금 ￦50을 내고 옮겼습니다/, '새 거처 보증금이 결과 화면에 보인다');
+  assert.match(body, /입주 보증금 ￦50을 내고 옮겼어요/, '새 거처 보증금이 결과 화면에 보인다');
   const after = await snap(page);
   assert.deepEqual(after.bd, ['jeonse']);
   assert.equal(after.peak, before.peak + 1);

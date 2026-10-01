@@ -38,9 +38,9 @@ var MQ_CAR = {
     ['위택스', 'https://www.wetax.go.kr']
   ],
   scenes: [
-    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['막차를 또 놓쳤다고?', '허허, 이제 차 얘기를', '할 때가 됐구먼.'] },
-    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['차는 사는 날보다', '타는 동안 돈이 더 드네.', '값, 세금, 보험, 기름.'] },
     { bg: 'phone', fx: 'flash',
       text: ['[중고차 광고]', '인기 차종, 무사고.', '시세의 절반! 오늘만.'] },
@@ -97,7 +97,7 @@ var MQ_CAR = {
       text: ['세금은 배기량 따라', '매겨진다. 보험은', '해마다 다시 본다.'] },
     { bg: 'road', fx: 'confetti',
       text: ['고속도로 입구가', '보인다. 이제 어디든', '갈 수 있다.'] },
-    { bg: 'night', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['허허, 차 키보다', '영수증 뭉치가 더', '무겁지? 그게 차라네.'] }
   ],
   ends: {

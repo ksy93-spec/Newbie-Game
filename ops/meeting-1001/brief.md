@@ -37,7 +37,7 @@ var MQ_JOB = {
       choice: { opts: [
         { a: '항목을 다 읽고 한 부 받는다', ok: 1, note: '근로계약서는 서면으로 쓰고 근로자에게 한 부를 줘야 한다.' },
         { a: '바쁘니 서명만 한다', ok: 0, note: '적힌 조건이 나중의 유일한 증거다. 읽지 않은 서명은 내 편이 아니다.' } ] } },
-    { bg: 'office', cast: [['gpa', 'R'], ['hero', 'L']], who: '귀인 할배', text: ['허허, 잘했네.'] }
+    { bg: 'office', cast: [['halbae', 'R'], ['hero', 'L']], who: '귀인 할배', text: ['허허, 잘했네.'] }
   ],
   ends: {
     good: ['계약서 한 장, 명세서 한 장.', '첫 월급을 제대로 받았다.'],
@@ -50,7 +50,7 @@ var MQ_JOB = {
 필드 설명
 
 - `bg`: 배경 이름. 아래 목록에서만 고른다.
-- `cast`: 화면에 세울 사람 `[열쇠, 자리]`. 열쇠는 `hero`(나), `gpa`(귀인 할배), `partner`(결혼 상대, 성별은 엔진이 나에 맞춰 고른다), 그리고 `gma peerm peerf deskf officem boss mlmf fp boy girl`. 자리는 `L`, `C`, `R`.
+- `cast`: 화면에 세울 사람 `[열쇠, 자리]`. 열쇠는 `hero`(나), `halbae`(귀인 할배, 옥색 두루마기와 흰 수염), `gpa`(동네 노인), `partner`(결혼 상대, 성별은 엔진이 나에 맞춰 고른다), 그리고 `gma peerm peerf deskf officem boss mlmf fp boy girl`. 자리는 `L`, `C`, `R`.
 - `who`: 말하는 사람 이름. 없으면 해설.
 - `text`: 한 줄 18자 안팎, 한 장면에 세 줄까지. 길면 장면을 나눈다. 화면이 가로 160칸이라 넘치면 잘린다.
 - `doc`: 화면에 뜨는 서류 카드. `t` 제목, `rows` 최대 4줄(`[항목, 값]`, 값은 12자 안팎), `bad`는 빨간색으로 칠할 줄 번호(0부터).

@@ -25,7 +25,7 @@ var MQ_WEDDING = {
     ['주택도시기금 신혼부부 전세자금', 'https://nhuf.molit.go.kr']
   ],
   scenes: [
-    { bg: 'town', cast: [['hero', 'L'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
       text: ['허허, 차도 뽑았겠다.', '이제 혼자 할 일이 아니라', '둘이 할 일이 생겼구먼?'] },
     { bg: 'cafe', cast: [['hero', 'L'], ['partner', 'R']], who: '짝꿍',
       text: ['우리 진짜 하는 거지?', '근데 뭐부터 해야 돼?'] },
@@ -73,9 +73,9 @@ var MQ_WEDDING = {
         { a: '남들이 미루라니 일단 미룬다', ok: 0, note: '미뤄서 득인 제도도 손해인 제도도 있다. 남의 말보다 우리 계획에 맞는 날짜를 고른다.' } ] } },
     { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'R']], who: '짝꿍',
       text: ['신혼집 계약서엔', '우리 둘 이름 다 쓸까?'] },
-    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'C'], ['gpa', 'R']], who: '귀인 할배',
+    { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'C'], ['halbae', 'R']], who: '귀인 할배',
       text: ['공동명의는 장단이 다 있네.', '그 얘긴 집 살 때', '다시 하세나. 허허.'] },
-    { bg: 'weddinghall', cast: [['hero', 'L'], ['partner', 'C'], ['gpa', 'R']], fx: 'confetti',
+    { bg: 'weddinghall', cast: [['hero', 'L'], ['partner', 'C'], ['halbae', 'R']], fx: 'confetti',
       text: ['식장도, 스드메도, 돈 얘기도.', '둘이 같이 정했다.'] }
   ],
   ends: {

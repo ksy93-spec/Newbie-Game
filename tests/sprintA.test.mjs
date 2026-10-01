@@ -55,7 +55,7 @@ test('처음 시작은 시연 모드가 아니다: Lv.1, 시작 코인, 거처 0
   assert.ok(r.coin < 500, 'coin ' + r.coin);
   assert.equal(r.tier, 0);
   assert.equal(r.banner, false);
-  assert.ok(!/이사했습니다/.test(r.lab));
+  assert.ok(!/이사했어요/.test(r.lab));
   await ctx.close();
 });
 
