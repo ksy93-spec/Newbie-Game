@@ -575,6 +575,100 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 .todaybtn{background:var(--y1);color:var(--s4);border:2px solid var(--s4);font-family:var(--f-ui);font-size:11px;line-height:16px;padding:3px 9px;min-height:28px;cursor:pointer;}
 .todaybtn b{background:var(--s4);color:var(--y1);padding:0 4px;margin-left:3px;font-weight:400;}
 #opening.drive .crt{background:repeating-linear-gradient(to bottom,rgba(0,0,0,.12) 0 1px,transparent 1px 3px);}
+
+/* ══════════ 화면 스킨 v2 (2026-10) ══════════
+   도트 그림과 갈무리 글꼴은 그대로 두고, 판(패널)·버튼·탭을 요즘 모바일 게임처럼 둥글고 차분하게.
+   게임 화면 틀(HUD·지도·탭)은 짙은 남색, 읽는 화면(상점·백과·도감)은 밝은 카드. */
+:root{--n0:#0E1022;--n1:#161A33;--n2:#20264A;--n3:#2E3666;--n4:#4A548F;--line:rgba(255,255,255,.10);
+  --acc:#FFC53C;--acc2:#FF9F43;--r-s:10px;--r-m:14px;--r-l:20px;--sh:0 6px 18px rgba(10,12,30,.18);}
+body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
+#app{background:#F3F1EC;}
+@media(min-width:520px){#app{border:0;border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.55);}}
+
+/* HUD: 짙은 판 위에 둥근 칩 */
+#home .hud{background:linear-gradient(180deg,var(--n2),var(--n1));border-bottom:0;color:#F4F2FF;
+  padding:calc(10px + env(safe-area-inset-top)) 14px 10px;gap:6px;box-shadow:0 4px 14px rgba(0,0,0,.25);position:relative;z-index:3;}
+#home .hud-top .nm{color:#fff;font-size:13px;}
+#home .hud-top .sub{color:#A9B0DA;}
+#home #hudchar{background:var(--n3);border-radius:12px;}
+#home .cchip{background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:999px;color:#fff;padding:2px 9px;}
+#home .cchip.coin{background:linear-gradient(180deg,#FFD866,#FFB830);color:#3A2600;border-color:transparent;}
+#home .xpbar{height:8px;border:0;border-radius:99px;background:rgba(255,255,255,.12);}
+#home .xpbar i{border-radius:99px;background:linear-gradient(90deg,#6BE38A,#3FC7A0);box-shadow:none;}
+#home .xpmeta{color:#A9B0DA;}
+#home .needs .nd{color:#A9B0DA;}
+#home .needs .nd b{color:#D6DAF5;}
+#home .fullbar{height:6px;border:0;border-radius:99px;background:rgba(255,255,255,.12);}
+#home .fullbar i{border-radius:99px;box-shadow:none;}
+
+/* 지도 틀: 바깥 하늘색을 걷고 지도가 판을 꽉 채운다 */
+#home .scenewrap{background:var(--n0);border-bottom:0;padding:0;justify-content:flex-start;align-items:stretch;overflow:hidden;}
+#home .stagebox{flex:1;min-height:0;overflow:hidden;}
+#home .sceneinfo{background:linear-gradient(180deg,var(--n1),var(--n2));padding:5px 14px;gap:10px;justify-content:space-between;
+  border-top:1px solid var(--line);}
+#home .tiername{color:#fff;font-size:15px;}
+#home .tiername .micro{color:#A9B0DA;}
+#home .def{background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:12px;box-shadow:none;color:#fff;padding:3px 10px;}
+#home .def b{color:var(--acc);font-size:20px;line-height:22px;}
+.todaybtn{border:0;border-radius:999px;background:linear-gradient(180deg,#FFD866,#FFB830);color:#3A2600;padding:6px 14px;min-height:32px;
+  box-shadow:0 3px 0 #C98A12;}
+.todaybtn b{border-radius:99px;}
+
+/* 지도 위 칩: 반투명 유리판, 둥근 모서리 */
+.zonetag,.mqchip,.chkchip{border-radius:12px;background:rgba(14,16,34,.78);border:1px solid rgba(255,255,255,.14);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.mqchip.on{border-color:var(--acc);}
+.guidechip{border-radius:14px;border:0;background:linear-gradient(180deg,#FFD866,#FFB830);color:#3A2600;box-shadow:0 4px 0 #C98A12;animation:none;}
+.dpad{opacity:.9;gap:2px;}
+.dpad button{border-radius:10px;background:rgba(14,16,34,.62);border:1px solid rgba(255,255,255,.18);}
+.minimap{border-radius:12px;background:rgba(14,16,34,.78);border:1px solid rgba(255,255,255,.2);}
+.tutor{border:0;border-radius:var(--r-m);box-shadow:0 10px 30px rgba(10,12,30,.35);background:#FFFDF8;}
+.tutor .topt{border:1px solid #D9D5CC;border-radius:10px;background:#F3F1EC;}
+.travel{background:rgba(14,16,34,.94);backdrop-filter:blur(6px);}
+.travel button{border:0;border-radius:10px;background:rgba(255,255,255,.92);}
+
+/* 아래 탭: 짙은 판에 선택된 칸만 밝게 */
+.tabbar{background:var(--n1);border-top:1px solid var(--line);padding:4px 8px calc(4px + env(safe-area-inset-bottom));gap:4px;}
+.tab{color:#8E95C4;border-radius:14px;min-height:50px;justify-content:center;}
+.tab.on{background:rgba(255,197,60,.14);color:var(--acc);box-shadow:none;}
+
+/* 공통 버튼·카드·보기: 둥글고 얇은 테두리 */
+.btn{border:0;border-radius:var(--r-m);background:linear-gradient(180deg,#6BE38A,#3FBF6A);color:#0F2A18;box-shadow:0 4px 0 #2A8E4C;}
+.btn:active{box-shadow:0 1px 0 #2A8E4C;}
+.btn--plain{background:#FFFFFF;color:var(--s4);box-shadow:0 4px 0 #D3CFC6;border:1px solid #E2DED5;}
+.btn--plain:active{box-shadow:0 1px 0 #D3CFC6;}
+.btn[disabled]{background:#E4E1DA;color:#A7A39A;box-shadow:none;}
+.card,.wrow,.item,.epcard,.chkrow,.hcell,.bcell,.dslot{border-radius:var(--r-m);border-width:1px!important;border-color:#E2DED5!important;box-shadow:var(--sh)!important;}
+.item.locked{opacity:.6;}
+.bosscard{border-radius:var(--r-m);border-width:0;box-shadow:var(--sh);}
+.qhead,.chead{background:#FFFFFF;border-bottom:1px solid #E2DED5;}
+.dlg,.explain{border-radius:var(--r-m);border-width:1px;border-color:#E2DED5;box-shadow:var(--sh);}
+.choice{border-radius:var(--r-m)!important;border-width:1px!important;border-color:#E2DED5!important;box-shadow:0 3px 0 #D3CFC6!important;}
+.itip{border-radius:var(--r-l) var(--r-l) var(--r-m) var(--r-m);border-width:1px;box-shadow:0 20px 50px rgba(0,0,0,.45);background:#1A1D36;}
+.itip .ithumb{border-radius:12px;border:0;background:#262B50;}
+.toast{border-radius:999px;}
+
+/* 첫 화면(온보딩): 짙은 밤하늘 위 유리 카드 */
+#onboard .scroll{background:radial-gradient(130% 70% at 50% 0%,#2E3A7A 0%,#161A33 55%,#0E1022 100%);color:#F4F2FF;}
+#onboard .h1{color:#fff;text-shadow:0 3px 0 #C2452D,0 0 24px rgba(255,197,60,.35);}
+#onboard .micro{color:#A9B0DA;}
+#onboard .ob-q{color:#fff;font-size:17px;}
+#onboard .opt{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:var(--r-m);color:#F4F2FF;box-shadow:none;
+  min-height:56px;padding:12px 16px;transition:background .15s,border-color .15s,transform .1s;}
+#onboard .opt .oc{color:#A9B0DA;}
+#onboard .opt:active{transform:scale(.98);}
+#onboard .opt[aria-pressed="true"]{background:linear-gradient(180deg,rgba(255,197,60,.22),rgba(255,159,67,.12));border-color:var(--acc);color:#fff;box-shadow:0 0 0 3px rgba(255,197,60,.18);}
+#onboard .opt[aria-pressed="true"] .oc{color:#FFE7A8;}
+#onboard .pips i{border:0;border-radius:99px;width:22px;height:6px;background:rgba(255,255,255,.18);}
+#onboard .pips i.on{background:var(--acc);}
+#onboard #obnext{background:linear-gradient(180deg,#FFD866,#FFB830);color:#3A2600;box-shadow:0 4px 0 #C98A12;}
+#onboard #obnext[disabled]{background:rgba(255,255,255,.1);color:rgba(255,255,255,.35);box-shadow:none;}
+#onboard #obchar{filter:drop-shadow(0 8px 16px rgba(0,0,0,.45));}
+
+.charstage{background:radial-gradient(120% 100% at 50% 0%,#2E3A7A 0%,#161A33 75%)!important;border-bottom:0!important;}
+.charstage .cchip.coin{border:0;border-radius:999px;background:linear-gradient(180deg,#FFD866,#FFB830);color:#3A2600;padding:3px 12px;}
+.stage{background:linear-gradient(180deg,#BFE6FF,#E6F5FF);border-bottom:0;}
+#onboard .h1{text-shadow:0 3px 0 #1B1F3F,0 0 28px rgba(255,197,60,.45);color:#FFE7A8;}
 </style>
 
 <div id="app">
@@ -3683,15 +3777,14 @@ var walk={x:30,dir:1,frame:0,timer:null};
 function fitScene(){
   var cv=document.getElementById('scene'),app=document.getElementById('app');
   if(!cv||!app) return;
-  var sc=Math.max(1,Math.floor((app.clientWidth-4)/SW));
-  var h=function(sel){ var e=document.querySelector(sel); return e?e.offsetHeight:0; };
-  /* 화면이 넘치면 #app 높이도 같이 늘어나서 기준이 안 된다. 창 높이를 같이 본다. */
-  var vh=Math.min(app.clientHeight||9999,window.innerHeight||9999);
-  var left=vh-h('#home .hud')-h('#home .sceneinfo')-h('#home .homefoot')-h('#tab-home')-10;
-  if(left<160) left=Math.max(160,Math.round(vh*0.42));
-  SH=Math.max(128,Math.min(SH_MAX,Math.floor(left/sc)));
-  RES=Math.max(2,Math.min(4,2*Math.round(sc*(window.devicePixelRatio||1)/2)));   /* 화면 픽셀에 맞추되 짝수(2·4)로. 1.5배 확대에도 도트가 고르게 */
-  cv.width=SW*RES; cv.height=SH*RES; cv.style.width=(SW*sc)+'px'; cv.style.height=(SH*sc)+'px'; }
+  /* 지도는 HUD와 아래 줄 사이에 남은 칸(.stagebox)을 꽉 채운다. 폭에 맞춰 배율을 정하고(소수 배율도 허용)
+     남은 높이만큼 보이는 줄 수(SH)를 정한다. 예전에는 창 높이로 어림해 폰에서 지도가 HUD와 탭을 덮었다 */
+  var box=document.querySelector('#home .stagebox');
+  var aw=(box&&box.clientWidth)||app.clientWidth,ah=(box&&box.clientHeight)||Math.round((window.innerHeight||640)*0.5);
+  var sc=Math.max(1,aw/SW);
+  SH=Math.max(96,Math.min(SH_MAX,Math.floor(ah/sc)));
+  RES=Math.max(2,Math.min(4,2*Math.round(sc*(window.devicePixelRatio||1)/2)));   /* 화면 픽셀에 맞추되 짝수(2·4)로 */
+  cv.width=SW*RES; cv.height=SH*RES; cv.style.width=aw+'px'; cv.style.height=Math.round(SH*sc)+'px'; }
 /* 캔버스를 화면보다 두 배 이상 해상도로 잡는다(fitScene이 2나 4로 정한다). 건물 안을 1.5배로 당겨도 도트 한 칸이 정확히 정수 칸이 되어 들쭉날쭉하지 않다. */
 var RES=2;
 /* ══════════ 거처마다 다른 무대 ══════════
