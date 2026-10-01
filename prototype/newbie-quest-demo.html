@@ -3496,7 +3496,7 @@ function todaySheet(eod){
   var h='<div class="ih"><div><span class="inm">오늘 할 일</span><span class="isub">연속 '+S.streak+'일 · 최고 '+Math.max(S.best||0,S.streak)+'일</span></div></div><hr>';
   (S.msNew||[]).forEach(function(m){
     h+='<div class="il good"><i>◆</i>연속 '+m.d+'일 한정 보상 · ￦'+m.coin+(m.item?' · '+esc(m.item):'')+'</div>'; });
-  S.msNew=[];
+  if((S.msNew||[]).length){ S.msNew=[]; save(); }
   if(eod){                                   /* 그날 새 퀘스트를 다 풀고 처음 열 때 */
     var rest=[]; if(quizAvail()) rest.push('복습 퀴즈'); if(S.claimed===t&&S.attAd!==t&&adLeft('att')>0) rest.push('출석 광고 보너스');
     h+='<div class="il good"><i>◆</i>오늘 몫 끝! '+(lk?'내일 새 퀘스트 '+Math.min(DRIP_DAILY,lk)+'개가 열려요':'새 퀘스트를 전부 풀었어요')+'</div>'+
@@ -3585,6 +3585,8 @@ function avatarPair(){ return avatarList(); }
 var STARTER={ '대학생':['hoodie','jeans'], '취준생':['shirt','slack'], '직장인':['badge','slack'] };
 function applyStarter(){
   var o=STARTER[S.status]; if(!o) return;
+  /* 신분을 바꿔 고르면 앞 신분의 시작 옷은 거둔다(공짜로 남지 않게) */
+  Object.keys(STARTER).forEach(function(k){ if(k===S.status) return; STARTER[k].forEach(function(id){ if(o.indexOf(id)<0){ var j=S.owned.indexOf(id); if(j>=0) S.owned.splice(j,1); } }); });
   o.forEach(function(id){ if(S.owned.indexOf(id)<0) S.owned.push(id); });
   S.equip.top=o[0]; S.equip.bottom=o[1]; }
 var obStep=0;
@@ -8432,7 +8434,8 @@ function houseTip(i){
     (HOUSE_TIP[i]?'<div class="il" style="color:#9BDCF7"><i>✦</i>'+HOUSE_TIP[i]+'</div>':'');
   openTip.thumb=houseThumb(i,52);
   var bt=[];
-  if(open&&!here) bt.push({t:dep?(S.coin>=dep?'￦'+dep+' 내고 여기서 살기':'보증금 ￦'+dep+' 모자람'):'여기서 살기',off:!!dep&&S.coin<dep,
+  var needLease=!!(LEASE_TIERS[i]&&i>paidBase()&&!(S.leaseDone&&S.leaseDone[i]));     /* 전세는 계약 사건을 거쳐야 옮긴다 */
+  if(open&&!here) bt.push({t:needLease?'전세 계약하러 가기':dep?(S.coin>=dep?'￦'+dep+' 내고 여기서 살기':'보증금 ￦'+dep+' 모자람'):'여기서 살기',off:!needLease&&!!dep&&S.coin<dep,
     f:function(){ var mv=tierMove(i); if(!mv.ok){ if(mv.lease){ save(); closeTip(); render('home'); setTimeout(function(){ enterMap('town_estate',6,8); toast('전세는 계약부터 · 중개사에게 말을 걸어 보자'); },80); return; }
         toast('보증금 ￦'+mv.cost+'이 모자라요.'); return; }
       save(); closeTip(); toast(tr.name+'(으)로 옮겼어요.'+(mv.cost?' 보증금 ￦'+mv.cost:'')); renderChar(); }});
@@ -8998,7 +9001,7 @@ function finish(failed){
   save();
   sfx(failed?'hit':(S.lv>before.lv)?'level':unlocked?'open':'win');
   var big=document.getElementById('rbig');
-  big.textContent=failed?'퀘스트 실패':(S.lv>before.lv)?'레벨 업!':'퀘스트 완료';
+  big.textContent=failed?(q.keys?'복습 실패':'퀘스트 실패'):(S.lv>before.lv)?'레벨 업!':(q.keys?'복습 완료':'퀘스트 완료');
   big.style.color=failed?P.r2:'';
   var rxp=document.getElementById('rxp');
   rxp.textContent=failed?'보상 없음 · 틀린 문항은 복습에 담았어요':'+'+xp+' XP · ￦'+coin;
@@ -9152,6 +9155,7 @@ function bossEnd(win){
   }
   if(win&&BOSSMOVE&&moved){ var dl=document.createElement('span'); dl.className='micro';
     dl.textContent=BOSSMOVE.ok?(BOSSMOVE.cost?'입주 보증금 ￦'+BOSSMOVE.cost+'을 내고 옮겼어요':'보증금 없이 옮겼어요')
+      :BOSSMOVE.lease?'전세는 계약부터 해요. 동네 부동산에서 중개사에게 말을 걸어 보세요.'
       :'입주 보증금 ￦'+BOSSMOVE.cost+'이 모자라 아직 못 옮겼어요. 캐릭터 탭의 거처에서 옮기세요.';
     box.appendChild(dl); }
   body.appendChild(box);
@@ -11130,7 +11134,7 @@ function lifeEvPick(month){
   for(i=0;i<pool.length;i++){ r-=pool[i].months?3:1; if(r<0) return pool[i]; }
   return pool[pool.length-1]; }
 function maybeLifeEvent(force,month){
-  if(TUT||PLACE||MOVE||DRIVE||!S.onboarded||!S.tut||document.getElementById('opening')) return;
+  if(TUT||PLACE||MOVE||DRIVE||!S.onboarded||!S.tut||(!force&&!(S.done||[]).length)||document.getElementById('opening')) return;   /* 첫 퀘스트 전에는 저절로 뜨지 않는다(안내를 끊지 않게) */
   var hs=document.getElementById('home'); if(!hs||!hs.classList.contains('on')) return;   /* 보스·퀘스트 화면 뒤에서 뜨면 글자 찍기(typeInto)를 가로채 화면이 멈춘다 */
   if(ME.map==='room'||ME.map==='korea'||(MAPS[ME.map]&&MAPS[ME.map].interior)) return;
   if(S.evDay!==dayKey()){ S.evDay=dayKey(); S.evN=0; }
@@ -11513,10 +11517,16 @@ var _renderHome0=renderHome; renderHome=function(){ _renderHome0.apply(this,argu
    지도에서는 문(동네)과 창구(건물 안)에 맥박 테두리와 화살표가 뜨고, 아래 칩을 누르면 알아서 걸어간다.
    첫 퀘스트는 대개 ju1(등기부등본). 보상 ￦70과 시작 코인이면 첫 보증금 ￦20은 충분하고, 주 스탯이 +12라 움막이 바로 열린다. */
 var GUIDE_AUTO=0,MVB=null;
+/* 첫 안내는 동네에서 걸어서(동네 안이나 동네 문 하나로) 닿는 창구의 퀘스트만 고른다.
+   다른 맵 건물을 고르면 길을 못 찾아 동네로 되돌아가기를 되풀이했다(재학 중 → 학생지원센터) */
+function guideMapOf(q){ var did=QPLACE[q.id],mk=null; if(!did) return null;
+  Object.keys(MAPS).forEach(function(k){ (MAPS[k].spots||[]).forEach(function(s){ if(s.kind==='desk'&&s.id===did) mk=k; }); }); return mk; }
+function guideReach(q){ var mk=guideMapOf(q); return !!mk&&(mk==='town'||(MAPS.town.warps||[]).some(function(x){ return x.to===mk; })); }
 function guideQuest(){
   if(!S||!S.onboarded||S.done.length||!S.tut) return null;
+  var ok=function(x){ return x&&QPLACE[x.id]&&fits(x)&&qOpen(x)&&!x.keys&&guideReach(x); };
   var q=QMAP.ju1;
-  if(!(q&&fits(q)&&qOpen(q)&&QPLACE[q.id])) q=QUESTS.filter(function(x){ return x.theme==='ju'&&QPLACE[x.id]&&fits(x)&&qOpen(x); })[0];
+  if(!ok(q)) q=QUESTS.filter(function(x){ return x.theme==='ju'&&ok(x); })[0]||QUESTS.filter(ok)[0];
   return q||null; }
 function guideTarget(){
   var q=guideQuest(); if(!q) return null;
@@ -11559,6 +11569,7 @@ function guideStep(t){
     var near=adjacentTo(m,s); if(!near){ GUIDE_AUTO=0; return; }
     return goTo(near.x,near.y,function(){ GUIDE_AUTO=0; faceSpot(s); drawScene(); triggerSpot(s); }); }
   if(ME.map==='town'&&t.warp){ goTo(t.warp.x,t.warp.y,null); return guideWait(t); }
+  if(ME.map==='town'){ GUIDE_AUTO=0; return; }                /* 동네에서 갈 길이 없으면 멈춘다(되풀이 방지) */
   if(S.onFoot){ S.onFoot=false; S.park=null; }                /* 지도에서 옮길 때와 같다 */
   enterMap('town',MAPS.town.spawn.x,MAPS.town.spawn.y);
   setTimeout(function(){ if(GUIDE_AUTO) guideStep(t); },300); }

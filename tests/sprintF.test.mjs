@@ -1,0 +1,87 @@
+// 스프린트 F: 플레이 QA(에이전트 셋)에서 나온 막힘과 불편의 회귀 테스트.
+// 실행: node --test tests/sprintF.test.mjs
+import test, { before, after } from 'node:test';
+import assert from 'node:assert/strict';
+import path from 'node:path';
+import url from 'node:url';
+
+process.env.PLAYWRIGHT_BROWSERS_PATH ||= '/opt/pw-browsers';
+const { chromium } = await import('playwright');
+
+const here = path.dirname(url.fileURLToPath(import.meta.url));
+const BASE = url.pathToFileURL(path.resolve(here, '../prototype/newbie-quest-demo.html')).href;
+const GAME = BASE + '#nointro';
+
+let browser;
+before(async () => { browser = await chromium.launch(); });
+after(async () => { await browser?.close(); });
+
+async function open(url = GAME, { w = 360, h = 640 } = {}) {
+  const ctx = await browser.newContext({ viewport: { width: w, height: h } });
+  const page = await ctx.newPage();
+  const logs = [];
+  page.on('pageerror', (e) => logs.push('pageerror: ' + e));
+  page.on('console', (m) => { if (m.type() === 'error') logs.push('error: ' + m.text()); });
+  await page.addInitScript(() => { try { if (!localStorage.getItem('nq_demo')) localStorage.setItem('nq_demo', '0'); } catch (e) {} });
+  await page.goto(url);
+  await page.waitForFunction(() => window.S && window.QUESTS, null, { polling: 100 });
+  return { ctx, page, logs };
+}
+
+for (const status of ['대학생', '취준생', '직장인']) {
+  test('1. ' + status + ': 첫 안내 칩을 누르면 창구까지 걸어가 첫 퀘스트가 열린다(동네에 갇히지 않는다)', async () => {
+    const { ctx, page, logs } = await open();
+    const t = await page.evaluate((st) => {
+      S = fresh(); S.status = st; applyStarter();
+      Object.assign(S, { years: 0, living: '자취', region: '수도권', age: 23, prep: '공채', company: '중소기업' });
+      S.onboarded = true; S.tut = 1; S.tuts = ['intro']; S.todayQ = pickDaily(); save(); render('home');
+      const g = guideTarget(); return g && { map: g.map, warp: !!g.warp };
+    }, status);
+    assert.ok(t && (t.map === 'town' || t.warp), '동네에서 닿는 창구: ' + JSON.stringify(t));
+    await page.evaluate(() => document.getElementById('hguide').click());
+    await page.waitForFunction(() => !!window.RUN, null, { timeout: 15000, polling: 200 });
+    assert.equal(await page.evaluate(() => GUIDE_AUTO), 0);
+    assert.deepEqual(logs, []);
+    await ctx.close();
+  });
+}
+
+test('2. 전세로 옮겨야 하는 거처 카드는 "전세 계약하러 가기"이고, 첫 퀘스트 전에는 생활 이벤트가 없다', async () => {
+  const { ctx, page, logs } = await open();
+  const r = await page.evaluate(() => {
+    Object.assign(S, { status: '직장인', years: 2, company: '중소기업', region: '수도권', age: 29 });
+    S.onboarded = true; S.tut = 1; S.coin = 5000; S.tier = 6; S.peak = 7; S.paid = 6; S.leaseDone = {}; S.lease = null; save();
+    render('char'); houseTip(7);
+    const labels = [...document.querySelectorAll('#itip button')].map((b) => b.textContent);
+    closeTip(); S.done = []; S.evN = 0; S.evDay = null; render('home');
+    let fired = 0; const orig = window.talkTo; window.talkTo = function () { fired++; return orig.apply(this, arguments); };
+    const rnd = Math.random; Math.random = () => 0;          // 확률을 늘 통과시켜도
+    for (let i = 0; i < 30; i++) maybeLifeEvent();
+    Math.random = rnd; window.talkTo = orig;
+    return { labels, fired };
+  });
+  assert.ok(r.labels.includes('전세 계약하러 가기'), JSON.stringify(r.labels));
+  assert.equal(r.fired, 0, '첫 퀘스트 전 생활 이벤트');
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
+
+test('3. 시작 메뉴: 기록이 있으면 이어하기·처음부터 하기가 있고, 처음부터 하기는 확인 뒤 기록을 지운다', async () => {
+  const { ctx, page, logs } = await open(BASE);
+  await page.evaluate(() => { Object.assign(S, { status: '직장인', years: 2, company: '중소기업', region: '수도권', age: 29 }); S.onboarded = true; S.prologue = 1; S.lv = 7; save(); });
+  await page.waitForTimeout(300);
+  await page.reload();
+  await page.waitForSelector('#opening .omb[data-k="cont"]', { timeout: 5000 });
+  const keys = await page.$$eval('#opening .omb', (bs) => bs.map((b) => b.dataset.k));
+  assert.deepEqual(keys, ['cont', 'new', 'pro', 'snd']);
+  await page.click('#opening .omb[data-k="new"]');
+  await page.waitForSelector('#opening .omb[data-k="wipe"]');
+  await page.click('#opening .omb[data-k="back"]');
+  assert.equal(await page.evaluate(() => S.lv), 7, '돌아가기는 기록을 지우지 않는다');
+  await page.click('#opening .omb[data-k="new"]');
+  await page.click('#opening .omb[data-k="wipe"]');
+  await page.waitForTimeout(300);
+  assert.deepEqual(await page.evaluate(() => ({ lv: S.lv, on: S.onboarded })), { lv: 1, on: false });
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
