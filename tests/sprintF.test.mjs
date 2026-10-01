@@ -85,3 +85,38 @@ test('3. 시작 메뉴: 기록이 있으면 이어하기·처음부터 하기가
   assert.deepEqual(logs, []);
   await ctx.close();
 });
+
+test('4. 첫날 직장인: 열린 퀘스트와 오늘 목록이 지금 갈 수 있는 곳에서 셋 이상이고, 역 앞 잠금 이유는 메인 1장이다', async () => {
+  const { ctx, page, logs } = await open();
+  const r = await page.evaluate(() => {
+    S = fresh(); S.status = '직장인'; applyStarter();
+    Object.assign(S, { years: 2, company: '중소기업', region: '수도권', age: 29 });
+    S.onboarded = true; S.tut = 1; S.drip = null; dripEnsure(); S.todayQ = pickDaily(); save();
+    const open = S.drip.u.map((id) => QMAP[id]).filter((q) => q && qOpen(q));
+    const near = open.filter(qReach).length, todayNear = S.todayQ.map((id) => QMAP[id]).filter(qReach).length;
+    S.lv = 12; S.mq = { done: {}, ann: {}, gf: {} }; render('home'); openTravel();
+    const st = [...document.querySelectorAll('#htravel button')].find((b) => /역 앞/.test(b.textContent));
+    return { near, todayNear, today: S.todayQ.length, station: st && st.textContent };
+  });
+  assert.ok(r.near >= 3, '갈 수 있는 열린 퀘스트 ' + r.near);
+  assert.equal(r.todayNear, r.today, '오늘 목록은 모두 갈 수 있는 곳');
+  assert.match(r.station, /메인 1장/);
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
+
+test('5. 오늘 할 일 시트는 다른 시트를 덮지 않고, 닫힌 뒤에 뜬다', async () => {
+  const { ctx, page, logs } = await open();
+  await page.evaluate(() => {
+    Object.assign(S, { status: '직장인', years: 2, company: '중소기업', region: '수도권', age: 29 });
+    S.onboarded = true; S.tut = 1; S.tuts = ['intro', 'afterq', 'travel', 'check', 'needs', 'hungry', 'doors', 'room', 'gear', 'lv2', 'ep', 'pet', 'car', 'boss'];
+    S.msNew = [{ d: 3, coin: 50 }]; S.tdAuto = null; save(); render('home');
+    openTip('<div id="other">장 완료</div>', '#FFC53C', []);
+  });
+  await page.waitForTimeout(3500);
+  assert.equal(await page.evaluate(() => !!document.getElementById('other')), true, '앞 시트가 그대로');
+  await page.evaluate(() => closeTip());
+  await page.waitForFunction(() => /오늘 할 일/.test(document.getElementById('itip').textContent) && !document.getElementById('itip').hidden, null, { timeout: 4000, polling: 100 });
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});

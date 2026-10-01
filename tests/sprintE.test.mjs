@@ -220,9 +220,9 @@ test('10. 다른 창에 가려 못 뜬 할배 알림은 창을 닫으면 다시 
   const { ctx, page, logs } = await open({ done: ['ju1', 'sik1', 'stu1'] });
   await page.evaluate(() => { S.first = '2020-01-01'; save(); openTip('<div>가림</div>', '#FFC53C', []); });
   await sleep(page, 3200);
-  assert.equal(await page.evaluate(() => MQ_SAID), 0, '시트가 열려 있으면 알리지 않는다');
+  assert.notEqual(await page.evaluate(() => MQ_SAID), await page.evaluate(() => dayKey()), '시트가 열려 있으면 알리지 않는다');
   await page.evaluate(() => closeTip());
-  await page.waitForFunction(() => MQ_SAID === 1 && !document.getElementById('htutor').hidden, null, { timeout: 4000, polling: 100 });
+  await page.waitForFunction(() => MQ_SAID === dayKey() && !document.getElementById('htutor').hidden, null, { timeout: 4000, polling: 100 });
   assert.equal(await page.evaluate(() => S.mq.ann.job === dayKey()), true);
   assert.deepEqual(logs, []);
   await ctx.close();

@@ -3347,7 +3347,8 @@ function seedRand(str){ var h=2166136261,i;
   return function(){ h=Math.imul(h^(h>>>15),2246822507); h^=h>>>13; return ((h>>>0)%100000)/100000; }; }
 function pickDaily(){
   dripEnsure();
-  var pool=curated().filter(function(q){ return S.done.indexOf(q.id)<0&&!q.trip&&qOpen(q); }).slice(0,8);
+  var open=curated().filter(function(q){ return S.done.indexOf(q.id)<0&&!q.trip&&qOpen(q); }),near=open.filter(qReach);
+  var pool=(near.length>=DAILY_N?near:near.concat(open.filter(function(q){ return !qReach(q); }))).slice(0,8);   /* 오늘 목록도 갈 수 있는 곳부터 */
   var r=seedRand(dayKey()+'|'+(S.status||'')),out=[];
   while(out.length<DAILY_N&&pool.length) out.push(pool.splice(Math.floor(r()*pool.length),1)[0].id);
   return out; }
@@ -3399,9 +3400,16 @@ function dripInit(d){
   if(!d.u.length){ d.d0=t; d.g=0; }
   else { d.d0=S.first||t; var idx=Math.max(0,dayGap(d.d0,t)); d.g=DRIP_FIRST+DRIP_DAILY*idx-(idx===0?DRIP_FIRST:DRIP_DAILY); }
   d.v=1; }
+/* 퀘스트 창구가 있는 맵이 지금 열려 있는지. 창구가 없는 퀘스트는 어디서나 열 수 있다 */
+var DESKMAP=null;
+function qReach(q){
+  if(!DESKMAP){ DESKMAP={}; Object.keys(MAPS).forEach(function(k){ (MAPS[k].spots||[]).forEach(function(s){ if(s.kind==='desk') DESKMAP[s.id]=k; }); }); }
+  var mk=DESKMAP[QPLACE[q.id]]; if(!mk) return true;
+  return mapOpen(mk.split('_')[0]); }
 function dripOpen(n){
-  var d=S.drip,got=[];
-  dripOrder().forEach(function(q){ if(got.length<n&&d.u.indexOf(q.id)<0&&S.done.indexOf(q.id)<0) got.push(q.id); });
+  var d=S.drip,got=[],ord=dripOrder();
+  /* 지금 갈 수 있는 곳의 퀘스트부터 연다. 첫날 직장인이 회사 앞(Lv.3)·은행 골목(Lv.4) 퀘스트만 받아 셋을 못 채우던 문제 */
+  ord.filter(qReach).concat(ord.filter(function(q){ return !qReach(q); })).forEach(function(q){ if(got.length<n&&d.u.indexOf(q.id)<0&&S.done.indexOf(q.id)<0) got.push(q.id); });
   got.forEach(function(id){ d.u.push(id); });
   return got; }
 function dripEnsure(){
@@ -3544,10 +3552,14 @@ function todayBtn(){
 function todayAuto(){
   if(!S.onboarded||S.tdAuto===dayKey()) return;
   if(!((S.msNew||[]).length||restoreOffer())) return;
-  S.tdAuto=dayKey(); save();
-  setTimeout(function(){ var hs=document.getElementById('home');
-    if(TUT||!hs||!hs.classList.contains('on')||document.getElementById('opening')) { S.tdAuto=null; return; }
-    todaySheet(); },1800); }
+  S.tdAuto=dayKey(); save(); TD_WAIT=1;
+  var tries=0;
+  (function wait(){ setTimeout(function(){ var hs=document.getElementById('home'),tp=document.getElementById('itip');
+    if(!hs||!hs.classList.contains('on')){ TD_WAIT=0; S.tdAuto=null; return; }
+    /* 대화, 컷신, 다른 시트(장 완료 시트 등)가 떠 있으면 덮지 않고 닫힐 때까지 기다린다 */
+    if((TUT||MQP||document.getElementById('opening')||(tp&&!tp.hidden))&&++tries<240) return wait();
+    TD_WAIT=0; todaySheet(); },tries?1000:1800); })(); }
+var TD_WAIT=0;                                             /* 오늘 할 일 시트가 뜨기를 기다리는 중(할배 알림은 그 뒤에) */
 
 /* ══════════ 복습 큐 ══════════
    퀴즈는 한 번 풀면 재미가 0이다. 틀린 문항만 간격을 두고 되돌려 주면
@@ -7365,7 +7377,7 @@ function openTravel(){
     var b=document.createElement('button');
     if(id===ME.map.split('_')[0]) b.className='here';
     if(!mapOpen(id)){ b.disabled=true;
-      b.innerHTML='<span>'+m.name+'</span><i class="sub">Lv.'+MAP_LV[id]+'부터</i><i>잠김</i>';
+      b.innerHTML='<span>'+m.name+'</span><i class="sub">'+(id==='station'&&S.lv>=(MAP_LV[id]||1)?'메인 1장을 마치면':'Lv.'+MAP_LV[id]+'부터')+'</i><i>잠김</i>';
       el.appendChild(b); return; }
     var sub=(id==='room')?'내 방':(m.sub||'');
     b.innerHTML='<span>'+(id==='room'?TIERS[S.tier].name:m.name)+'</span>'+
@@ -8401,8 +8413,8 @@ function openTip(html,rc,buttons){
   bk.hidden=false;
   bk.onclick=function(e){ if(e.target===bk) closeTip(); }; }
 function closeTip(){ var bk=document.getElementById('itip'); if(bk) bk.hidden=true; mqRetry(); }
-/* 시트나 대화에 가려 못 뜬 할배 알림을 창이 닫힌 뒤 한 번 더 시도한다. 세션에 한 번만 뜨는 것은 MQ_SAID가 지킨다 */
-function mqRetry(){ if(typeof mqAnnounce!=='function') return; setTimeout(function(){ if(!MQ_SAID&&S&&S.onboarded) mqAnnounce(); },900); }
+/* 시트나 대화에 가려 못 뜬 할배 알림을 창이 닫힌 뒤 한 번 더 시도한다. 하루에 한 번만 뜨는 것은 MQ_SAID(알린 날)가 지킨다 */
+function mqRetry(){ if(typeof mqAnnounce!=='function') return; setTimeout(function(){ if(MQ_SAID!==dayKey()&&S&&S.onboarded) mqAnnounce(); },900); }
 function statLine(k,v,cmp){
   if(!v&&!cmp) return '';
   var d=(cmp==null)?0:v-cmp;
@@ -10619,7 +10631,7 @@ function playMQ(o){
       ctx.globalAlpha=0.85; ctx.strokeStyle='#D9342B'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(cx,cy,r,0,7); ctx.stroke();
       ctext(ctx,p.amt||'계약',cx,cy-4,8,'#D9342B','c'); ctx.globalAlpha=1; }
     if((fx==='money+'||fx==='money-')&&t>0.1){ var up=fx==='money+',yy=Math.round(gy-70-Math.min(1,t/1.2)*16);
-      ctx.font='bold 14px Galmuri14,Galmuri11,monospace'; ctx.textBaseline='top'; var s=(up?'+':'-')+(p.amt||''),w=ctx.measureText(s).width;
+      ctx.font='bold 14px Galmuri14,Galmuri11,monospace'; ctx.textBaseline='top'; var s=(up?'+':'-')+String(p.amt||'').replace(/^[+\-]/,''),w=ctx.measureText(s).width;
       ctx.fillStyle='#07060E'; ctx.fillText(s,W/2-w/2+1,yy+1); ctx.fillStyle=up?'#62C85C':'#F4705A'; ctx.fillText(s,W/2-w/2,yy); }
     if(fx==='confetti'){ for(var i=0;i<40;i++){ var x=(hrand(i,1,3)*W+t*20*(i%3-1))%W,y=((hrand(i,2,3)*H)+t*(30+i%20))%(H-100);
       ctx.fillStyle=['#FFC53C','#F4705A','#62C85C','#6EC8F0','#D9B8FF'][i%5]; ctx.fillRect(Math.round(x),Math.round(y),2,2); } }
@@ -10726,14 +10738,14 @@ function playMQ(o){
    2장(첫 전세 계약)은 스프린트 D의 전세 계약 사건을 그대로 쓰고, 앞뒤에 컷신을 붙인다.
    진행은 S.mq에 남는다: done[id]=최고 등급, at[id]=처음 깬 날, cur·i·ok·n=보다 만 장면,
    ann[id]=할배가 알린 날, gf=메인 퀘스트 전 저장이 이미 쓰던 잠금(장을 깬 것으로 치지는 않는다). */
-var MQ_T0=Date.now(),MQ_SAID=0;                                   /* 이번 세션 시작, 이번 세션에 알렸는지 */
+var MQ_T0=Date.now(),MQ_SAID=0,MQ_T3=0;                          /* 이번 세션 시작, 할배가 알린 날(dayKey), 첫날 3분 뒤 다시 시도 타이머 */
 function leaseDoneAny(){ return !!(S.leaseDone&&(S.leaseDone[7]||S.leaseDone[8]))||(S.paid||0)>=7; }
 function mqDay(id){ return !(S.mq&&S.mq.at&&S.mq.at[id]===dayKey()); }   /* 앞 장을 깬 날이 오늘이 아니다: 하루 한 장 */
 var MQ_LIST=[
  {id:'job',key:'MQ_JOB',no:1,title:'첫 취업',
   open:function(){ return (S.done||[]).length>=3; },
   wait:function(){ var n=3-(S.done||[]).length; return n>0?'퀘스트 '+n+'개 더':null; },
-  ann:['오늘 할 일 셋을 다 했구먼. 허허, 제법이야.','이제 큰일 하나를 같이 보세. 합격 문자부터 첫 월급까지.'],q:'메인 1장 · 첫 취업. 두세 분이면 보네.'},
+  ann:['퀘스트를 셋이나 해냈구먼. 허허, 제법이야.','이제 큰일 하나를 같이 보세. 합격 문자부터 첫 월급까지.'],q:'메인 1장 · 첫 취업. 두세 분이면 보네.'},
  {id:'lease',no:2,title:'첫 전세 계약',
   open:function(){ return mqDone('job')&&(S.peak>=7||!!S.lease||leaseDoneAny()); },
   wait:function(){ return (S.peak>=7||S.lease||leaseDoneAny())?null:(TIERS[7].need>S.stats.ju?'원룸 전세까지 주 스탯 '+(TIERS[7].need-S.stats.ju)+' 더':'원룸 전세가 열리면'); },
@@ -10821,7 +10833,7 @@ function mqPay(c,g){
   if(first&&c.id==='home'&&S.peak<9){                       /* 자가 첫 칸을 주 스탯·그날 몫과 상관없이 바로 연다. 보증금은 낸다 */
     var wasTop=(S.tier===S.peak); S.peak=9;
     var mv=wasTop?tierMove(S.peak):null; rows.push(['새 거처 · '+TIERS[S.peak].name,mv&&mv.ok?'입주':'열림','#FFE79B']); }
-  M.cur=null; M.i=0; M.ok=0; M.n=0; M.last={id:c.id,coin:first?gain.coin:0};
+  M.cur=null; M.i=0; M.ok=0; M.n=0; M.last={id:c.id,coin:first?gain.coin:0,first:first?1:0};
   save(); ev('mq_clear',{id:c.id,grade:g,first:first?1:0});
   return rows; }
 function mqFinish(c,d,g,extra){
@@ -10834,6 +10846,7 @@ function mqAfter(c){
   var nx=mqNext(),cp=MQ_COPY[c.id]||{},R=MQ_REWARD[c.id]||{},M=mqS(),last=M.last&&M.last.id===c.id?M.last:null;
   setTimeout(function(){
     if(!mqIdle()){ toast(c.no+'장 '+c.title+' 완료'); return; }
+    if(last&&last.first===0){ toast(c.no+'장 다시 보기를 마쳤어요'); return; }      /* 다시 보기에는 열림·공유 시트를 되풀이하지 않는다 */
     var bt=[{t:'친구에게 공유하기',f:function(){ ev('mq_share',{id:c.id}); shareTextOut((cp.share||c.title)+' '+SHARE_BASE,'뉴비 퀘스트',function(m){ if(m) toast(m); }); }}];
     if(last&&last.coin>=30){
       if(adLeft('mq')>0) bt.unshift({t:'광고 보고 ￦'+last.coin+' 더 받기',f:function(){ adGo('mq',function(){ S.coin+=last.coin; M.last=null; M.adPend=null; save(); hudRefresh(); sfx('coin'); toast('광고 보상 ￦'+last.coin); closeTip(); }); }});
@@ -10870,17 +10883,18 @@ function mqLeaseOutro(pre){
 /* 할배의 알림. 하루 한 번(장마다), 세션마다 한 번, 홈에서 한가할 때만 */
 function mqEodPending(){ return !!(S.eodArm===dayKey()&&S.eodDay!==dayKey()&&typeof openLeft==='function'&&openLeft()===0); }
 function mqAnnounce(){
-  if(!mqIdle()||MQ_SAID||mqEodPending()) return false;
+  if(!mqIdle()||MQ_SAID===dayKey()||mqEodPending()||TD_WAIT) return false;
   var M=mqS(),c=mqNext();
   if(M.adPend&&adLeft('mq')>0&&M.adPend.day!==dayKey()&&!(c&&mqReady(c))){          /* 어제 못 받은 광고 보상 */
-    var ap=M.adPend; MQ_SAID=1;
+    var ap=M.adPend; MQ_SAID=dayKey();
     talkTo({name:'귀인 할배',face:'halbae',lines:['어제 '+mqById(ap.id).no+'장 보상, 하나 덜 받았지?',{q:'광고 보고 ￦'+ap.coin+' 받기',a:['받는다','괜찮아요'],choose:function(k){
       if(k===0){ setTimeout(function(){ endTalk(); adGo('mq',function(){ S.coin+=ap.coin; M.adPend=null; save(); hudRefresh(); sfx('coin'); toast('광고 보상 ￦'+ap.coin); }); },60); return []; }
       M.adPend=null; save(); return ['그래, 다음에 또 보세.']; }}]}); return true; }
   if(!mqReady(c)||M.ann[c.id]===dayKey()) return false;
-  if(c.id==='job'&&S.first===dayKey()&&Date.now()-MQ_T0<180000) return false;       /* 첫날 첫 3분은 방해하지 않는다 */
+  if(c.id==='job'&&S.first===dayKey()&&Date.now()-MQ_T0<180000){                    /* 첫날 첫 3분은 방해하지 않고, 지나면 다시 시도한다 */
+    clearTimeout(MQ_T3); MQ_T3=setTimeout(function(){ if(MQ_SAID!==dayKey()) mqAnnounce(); },180000-(Date.now()-MQ_T0)+500); return false; }
   if(mqLeasing()) return false;                                                      /* 계약 중이면 표시만 */
-  M.ann[c.id]=dayKey(); MQ_SAID=1; save(); ev('mq_announce',{id:c.id});
+  M.ann[c.id]=dayKey(); MQ_SAID=dayKey(); save(); ev('mq_announce',{id:c.id});
   var resume=M.cur===c.id&&M.i>0,recap=c.id==='lease'&&leaseDoneAny()&&!S.lease;
   var lines=recap?['자네는 전세 계약을 벌써 해 봤지?','그때 얘기를 짧게 하고 넘어가세.']:c.ann;
   talkTo({name:'귀인 할배',face:'halbae',lines:lines.concat([{q:c.q,a:[resume?'이어서 보기':recap?'지금 보기':'지금 시작','나중에'],choose:function(k){
