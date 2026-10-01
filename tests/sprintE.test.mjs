@@ -163,7 +163,7 @@ test('6. 360x640에서도 선택지가 화면 안에 들어오고 눌러서 고�
     await page.evaluate(() => MQP.next({ type: 'test' })); await sleep(page, 60);
   }
   await sleep(page, 200);
-  const box = await page.evaluate(() => { const cv = document.querySelector('#opening canvas'), r = cv.getBoundingClientRect(), H = cv.height / RES;
+  const box = await page.evaluate(() => { const cv = document.querySelector('#opening canvas'), r = cv.getBoundingClientRect(), H = cv.height / (cv.width / 160);
     return { rects: MQP.opts.map((b) => ({ x: r.left + (b.x + b.w / 2) * r.width / 160, y: r.top + (b.y + b.h / 2) * r.height / H, top: b.y })), vw: innerWidth, vh: innerHeight }; });
   assert.ok(box.rects.length >= 2);
   assert.ok(box.rects.every((b) => b.top >= 0 && b.y < box.vh && b.x < box.vw), JSON.stringify(box));

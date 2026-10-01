@@ -436,9 +436,9 @@ Order: brown brick, red brick, glass curtain wall, raw concrete, Korean hanok cl
 
 받은 시트 9장(A~G, `H1 AND H2`, `I J K`)을 잘라 게임에 넣었다.
 
-- 자르기: `python3 tools/art/slice.py` (pillow, numpy, scipy 필요). 자홍 배경을 지우고 칸을 찾아 게임 크기로 줄인다. 결과는 `assets/art/`. 시트를 다시 뽑으면 같은 이름으로 덮어쓰고 다시 돌리면 된다. 칸 수가 다르면 스크립트가 알려 준다.
+- 자르기: `python3 tools/art/slice.py` (pillow, numpy, scipy 필요). 자홍 배경을 지우고 칸을 찾아 자른다. 결과는 `assets/art/*.webp`와 `index.json`. 시트를 다시 뽑으면 같은 이름으로 덮어쓰고 다시 돌리면 된다. 칸 수가 다르면 스크립트가 알려 준다.
 - 넣기: `node tools/art/embed.mjs`. 게임 HTML의 ART_DATA_BEGIN/END 사이에 붙인다.
-- 크기: 인물 36×64(발끝 맞춤), 장비 아이콘 26칸, 세간 30칸, 거처 높이 88, 컷신 배경 원본의 0.75배, 탭 아이콘 20칸.
+- 화질: 색을 깎거나 도트 크기로 줄이지 않는다. 게임 안 크기(인물 36×64, 장비 26칸, 세간 30칸, 거처 높이 88, 탭 아이콘 20칸)는 예전 도트 그림과 같고, 그림은 그 4배 해상도로 저장해 화면에서 부드럽게 줄여 그린다. 배경·엽서·외벽은 원본 해상도 그대로.
 - 상표처럼 보이는 곳(법인카드의 두 원, 노트북 덮개의 과일, 동네 배경 편의점 띠)은 `slice.py`의 `patch()`에서 덮는다.
 
 쓰는 곳:

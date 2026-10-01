@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""ChatGPT로 뽑은 에셋 시트(ops/art/*.png)를 칸별로 잘라 게임 크기로 줄여 assets/art/에 저장한다.
+"""ChatGPT로 뽑은 에셋 시트(ops/art/*.png)를 칸별로 잘라 assets/art/에 저장한다.
 
 실행: pip install pillow numpy scipy && python3 tools/art/slice.py
-결과: assets/art/<이름>.png, assets/art/index.json(이름별 크기). 게임에 넣는 것은 tools/art/embed.mjs.
+결과: assets/art/<이름>.webp, assets/art/index.json(이름: [게임 안 너비, 높이, 저장 너비, 높이]).
+게임에 넣는 것은 tools/art/embed.mjs.
 
-생성 이미지는 도트 한 칸이 원본 4~6픽셀인 "큰 도트"다. 칸마다 자홍색 배경을 지우고, 배경 쪽으로 번진
-보라색 테두리를 외곽선 색으로 바꾼 뒤, 배경을 뺀 평균(BOX)으로 줄이고 색 수를 줄여 도트 느낌을 되살린다.
+게임 안 크기(논리 크기)는 예전 도트 그림과 같게 두고, 그림은 그 4배 해상도로(원본보다 크게는 키우지 않는다)
+색을 깎지 않고 저장한다. 게임은 화면 해상도에 맞춰 부드럽게 줄여 그린다. 칸마다 자홍색 배경을 지우고
+배경 쪽으로 번진 보라색 테두리만 외곽선 색으로 바꾼다.
 """
 import json
 import os
@@ -19,6 +21,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 SRC = os.path.join(ROOT, 'ops', 'art')
 OUT = os.path.join(ROOT, 'assets', 'art')
 OUTLINE = (44, 44, 49)
+HI = 4          # 저장 해상도 = 게임 안 크기 × HI (원본이 더 작으면 원본 크기)
 
 # 시트마다 칸 순서대로 붙일 이름. None은 버리는 칸이다.
 # join: 이 거리(픽셀) 안의 조각은 한 칸으로 묶는다(기본 6, 반짝이가 떨어진 C는 14).
@@ -44,14 +47,14 @@ SHEETS = {
 PANELS = {
     'H1 AND H2': [dict(region=None, names=['bg_night', 'bg_phone', 'bg_office', 'bg_meeting', 'bg_bank', 'bg_carlot', 'bg_road', 'bg_cafe',
                                            'bg_station', 'bg_weddinghall', 'bg_modelhouse', 'bg_apartment', 'bg_livingroom', 'bg_town',
-                                           'bg_hometown'], scale=0.75)],
+                                           'bg_hometown'], scale=1.0)],
     'I J K': [dict(region=(0, 0, 512, 440), names=['ui_home', 'ui_wiki', 'ui_char', 'ui_shop', 'ui_coin', 'ui_heart', 'ui_star', 'ui_lock',
                                                     'ui_key', 'ui_job', 'ui_money', 'ui_food', 'ui_cloth', 'ui_study', 'ui_alert', 'ui_pin'],
                    icon=20),
               dict(region=(514, 0, 1536, 498), names=['pc_gangneung', 'pc_ojuk', 'pc_jeonju', 'pc_jeonju_market', 'pc_haeundae',
-                                                       'pc_gamcheon', 'pc_jagalchi', 'pc_gyeongju', 'pc_seomun', 'pc_kimgwangseok'], scale=0.5),
+                                                       'pc_gamcheon', 'pc_jagalchi', 'pc_gyeongju', 'pc_seomun', 'pc_kimgwangseok'], scale=1.0),
               dict(region=(0, 500, 1536, 1024), names=['tx_brick', 'tx_redbrick', 'tx_glass', 'tx_concrete', 'tx_hanok', 'tx_shop',
-                                                        'tx_wood', 'tx_apt', 'tx_tile', 'tx_stone'], scale=0.5)],
+                                                        'tx_wood', 'tx_apt', 'tx_tile', 'tx_stone'], scale=1.0)],
 }
 
 
@@ -77,14 +80,16 @@ def shrink(rgb, fg, w, h):
     chans = [np.asarray(Image.fromarray(pm[..., i]).resize((w, h), Image.BOX)) for i in range(3)]
     al = np.asarray(Image.fromarray(fg.astype(np.float32)).resize((w, h), Image.BOX))
     out = np.stack(chans, -1) / np.maximum(al, 1e-6)[..., None]
-    return np.clip(out, 0, 255).astype(np.uint8), al > 0.5
+    return np.clip(out, 0, 255).astype(np.uint8), al
 
 
-def to_png(rgb, alpha, colors=40):
-    im = Image.fromarray(rgb, 'RGB')
-    q = im.quantize(colors=colors, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE).convert('RGB')
-    rgba = np.dstack([np.asarray(q), (alpha * 255).astype(np.uint8)])
-    return Image.fromarray(rgba, 'RGBA')
+def to_img(rgb, alpha):
+    a = np.clip(alpha * 1.15, 0, 1)                    # 가장자리만 살짝 또렷하게
+    return Image.fromarray(np.dstack([rgb, (a * 255).astype(np.uint8)]), 'RGBA')
+
+
+def save(im, name, q=92):
+    im.save(os.path.join(OUT, name + '.webp'), 'WEBP', quality=q, alpha_quality=100, method=6)
 
 
 def components(fg, expect, join=6):
@@ -123,17 +128,20 @@ def do_sheet(key, spec, index):
             continue
         mask = fg[y0:y1, x0:x1] & ndimage.binary_dilation(lab[y0:y1, x0:x1] == li, iterations=2)
         h, w = y1 - y0, x1 - x0
-        s = size / tallest if kind == 'h' else size / max(h, w)
-        W, H = max(1, round(w * s)), max(1, round(h * s))
+        s = size / tallest if kind == 'h' else size / max(h, w)          # 게임 안 배율
+        lw, lh = max(1, round(w * s)), max(1, round(h * s))
+        k = min(HI, 1 / s)                                               # 저장 배율(원본보다 키우지 않는다)
+        W, H = max(1, round(w * s * k)), max(1, round(h * s * k))
         rgb, al = shrink(a[y0:y1, x0:x1], mask, W, H)
-        im = to_png(rgb, al)
+        im = to_img(rgb, al)
         if 'pad' in spec:                          # 인물은 같은 캔버스에 발끝을 맞춰 넣는다
             PW, PH = spec['pad']
-            cv = Image.new('RGBA', (PW, PH), (0, 0, 0, 0))
-            cv.paste(im, ((PW - W) // 2, PH - H), im)
-            im, W, H = cv, PW, PH
-        im.save(os.path.join(OUT, name + '.png'), optimize=True)
-        index[name] = [W, H]
+            cw, ch = round(PW * k), round(PH * k)
+            cv = Image.new('RGBA', (cw, ch), (0, 0, 0, 0))
+            cv.paste(im, ((cw - W) // 2, ch - H), im)
+            im, W, H, lw, lh = cv, cw, ch, PW, PH
+        save(im, name)
+        index[name] = [lw, lh, W, H]
     print('%s: %d개' % (key, min(len(boxes), len(spec['names']))))
 
 
@@ -169,26 +177,31 @@ def do_panels(key, groups, index):
                 ys, xs = np.nonzero(fg)
                 c2, fg = c2[ys.min():ys.max() + 1, xs.min():xs.max() + 1], fg[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
                 s = g['icon'] / max(c2.shape[:2])
-                W, H = max(1, round(c2.shape[1] * s)), max(1, round(c2.shape[0] * s))
+                lw, lh = max(1, round(c2.shape[1] * s)), max(1, round(c2.shape[0] * s))
+                k = min(HI, 1 / s)
+                W, H = max(1, round(c2.shape[1] * s * k)), max(1, round(c2.shape[0] * s * k))
                 rgb, al = shrink(c2, fg, W, H)
-                to_png(rgb, al, 24).save(os.path.join(OUT, name + '.png'), optimize=True)
+                save(to_img(rgb, al), name)
+                index[name] = [lw, lh, W, H]
             else:
                 W, H = round(c.shape[1] * g['scale']), round(c.shape[0] * g['scale'])
-                img = Image.fromarray(c).resize((W, H), Image.BOX)
-                img.quantize(colors=96, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE).save(os.path.join(OUT, name + '.png'), optimize=True)
-            index[name] = [W, H]
+                img = Image.fromarray(c)
+                if (W, H) != img.size:
+                    img = img.resize((W, H), Image.LANCZOS)
+                save(img, name, 88)
+                index[name] = [W, H, W, H]
         print('%s: %d개' % (key, min(len(cells), len(g['names']))))
 
 
 def patch():
-    """상표처럼 보이는 곳을 덮는다. 좌표는 줄인 뒤 그림 기준."""
-    def load(n):
-        return Image.open(os.path.join(OUT, n + '.png')).convert('RGBA')
-
-    def recolor(n, box, pick, to):
-        im = load(n)
+    """상표처럼 보이는 곳을 덮는다. 상자는 그림 크기에 대한 비율(x0, y0, x1, y1)."""
+    def recolor(n, rel, pick, to):
+        path = os.path.join(OUT, n + '.webp')
+        if not os.path.exists(path):
+            return
+        im = Image.open(path).convert('RGBA')
         a = np.asarray(im).copy()
-        x0, y0, x1, y1 = box
+        x0, y0, x1, y1 = [int(round(v * (im.width if i % 2 == 0 else im.height))) for i, v in enumerate(rel)]
         sub = a[y0:y1, x0:x1]
         r, g, b, al = [sub[..., i].astype(int) for i in range(4)]
         sel = pick(r, g, b) & (al > 0)
@@ -198,18 +211,15 @@ def patch():
             sub[cond, 0] = np.clip(tr * k[cond], 0, 255)
             sub[cond, 1] = np.clip(tg * k[cond], 0, 255)
             sub[cond, 2] = np.clip(tb * k[cond], 0, 255)
-        Image.fromarray(a, 'RGBA').save(os.path.join(OUT, n + '.png'), optimize=True)
+        save(Image.fromarray(a, 'RGBA'), n, 88 if n.startswith(('bg_', 'pc_', 'tx_')) else 92)
 
     # 법인카드 오른쪽 아래 두 원(카드사 표시)을 카드 바탕색으로
-    if os.path.exists(os.path.join(OUT, 'it_card.png')):
-        recolor('it_card', (17, 9, 26, 18), lambda r, g, b: (r > b + 8) & (r > g + 8), lambda r, g, b, s: [((40, 58, 98), s)])
+    recolor('it_card', (0.62, 0.42, 1.0, 0.97), lambda r, g, b: (r > b + 8) & (r > g + 8), lambda r, g, b, s: [((40, 58, 98), s)])
     # 노트북 덮개 가운데 과일 모양을 덮개 색으로
-    if os.path.exists(os.path.join(OUT, 'it_laptop.png')):
-        recolor('it_laptop', (12, 7, 18, 13), lambda r, g, b: (r + g + b) / 3 < 195, lambda r, g, b, s: [((196, 198, 204), s)])
+    recolor('it_laptop', (0.44, 0.30, 0.71, 0.61), lambda r, g, b: (r + g + b) / 3 < 200, lambda r, g, b, s: [((196, 198, 204), s)])
     # 동네 배경 편의점 띠(주황·초록 줄)를 옥색으로. 특정 편의점처럼 보이지 않게
-    if os.path.exists(os.path.join(OUT, 'bg_town.png')):
-        recolor('bg_town', (27, 27, 132, 47), lambda r, g, b: (r > g + 40) | (g > r + 20),
-                lambda r, g, b, s: [((96, 170, 150), s & (r > g + 40)), ((44, 104, 92), s & (g > r + 20))])
+    recolor('bg_town', (0.07, 0.18, 0.36, 0.33), lambda r, g, b: (r > g + 40) | (g > r + 20),
+            lambda r, g, b, s: [((96, 170, 150), s & (r > g + 40)), ((44, 104, 92), s & (g > r + 20))])
 
 
 def main():
