@@ -80,7 +80,7 @@ test('1. 새 사용자: 온보딩 → 첫 상담 표시 → 첫 퀘스트 → �
   await tap(page.locator('#obnext'));
   await tap(page.locator('#obbody .opt', { hasText: '수도권' }));
   await tap(page.locator('#obnext'));
-  await page.waitForSelector('#obbody .opt canvas');                 // 아바타 고르기
+  await page.waitForSelector('#obbody .herocard canvas');             // 주인공 고르기
   await tap(page.locator('#obnext'));
   assert.equal(await st(page, () => S.onboarded), true);
 
