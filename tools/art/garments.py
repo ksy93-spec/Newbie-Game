@@ -100,12 +100,20 @@ def garment(c, fig, kind, sh, feet):
     if kind == 'top':
         line &= rows < hip + 3
     keep = fig & band & ~mann & (cloth | line)
+    keep = ndimage.binary_opening(keep, iterations=1)          # 가장자리 부스러기(마네킹 그늘 조각) 정리
     lab, n = ndimage.label(keep)
     if n:
         size = ndimage.sum(keep, lab, range(1, n + 1))
         ok = np.zeros(n + 1, bool)
-        ok[1:] = size >= size.max() * 0.08
+        ok[1:] = size >= size.max() * 0.15                       # 옷 덩어리만(떨어진 조각은 버린다)
         keep = ok[lab]
+    holes = ndimage.binary_fill_holes(keep) & ~keep               # 옷 안의 작은 구멍은 메운다(큰 틈은 둔다)
+    hl, hn = ndimage.label(holes)
+    if hn:
+        hs = ndimage.sum(holes, hl, range(1, hn + 1))
+        small = np.zeros(hn + 1, bool)
+        small[1:] = hs < 40
+        keep |= small[hl]
     return keep
 
 
