@@ -1693,6 +1693,23 @@ function avatarGear(ctx,id,av,src,ox,bob,hd,wp){
       ctx.fillStyle=P.p1; ctx.fillRect(tc-2,t0+bob-5,4,3); ctx.fillRect(tc-1,t0+bob-6,2,1); } } }
 /* 그림 주인공(av.k): 겹을 원래 해상도로 합성하고, 걷기·탈것 자세와 장비는 게임 안 좌표에 배율을 곱해 맞춘다.
    돌려주는 판은 64·k 크기이고 lw·lh(64)가 게임 안 크기다. */
+/* 그림 주인공의 장비: 상점 아이콘 그림(it_)을 얼굴·머리·손 자리에 맞춰 얹는다. 그림이 없는 장비가 있으면 false(도트로 그린다) */
+function hiGear(ctx,K,id,av,ox,bob){
+  var hid=S.equip.head,wid=S.equip.weapon,hd=ITEMS[hid],wp=ITEMS[wid];
+  var ha=hd&&hd.gear?castCv('it_'+hid):null,wa=wp&&wp.gear?castCv('it_'+wid):null;
+  if((hd&&hd.gear&&!ha)||(wp&&wp.gear&&!wa)) return false;
+  var rows=rowSpans(lowLayer(id,'body')),ey=av.eye,fc=ox+av.fcx;
+  var span=function(y){ var r=rows[y]; return r&&r[0]>=0?r:[av.fcx-9,av.fcx+9]; };
+  var t0=0; while(t0<av.h&&(!rows[t0]||rows[t0][0]<0)) t0++;
+  ctx.save(); ctx.setTransform(K,0,0,K,0,0); ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+  var put=function(im,cx,cy,w){ var h=w*im.height/im.width; ctx.drawImage(im,cx-w/2,cy-h/2,w,h); return h; };
+  if(ha){ var g=hd.gear,fw=span(ey)[1]-span(ey)[0]+1;
+    if(g==='glass') put(ha,fc,ey+bob+.5,Math.min(22,fw*0.86));
+    else if(g==='beanie'){ var hw=span(t0+4)[1]-span(t0+4)[0]+5,bh=hw*ha.height/ha.width; ctx.drawImage(ha,fc-hw/2,ey-5+bob-bh,hw,bh); }
+    else if(g==='band') put(ha,fc+1,ey-6+bob,fw*1.15);
+    else put(ha,fc,ey+bob,fw*0.86); }
+  if(wa) put(wa,ox+av.hx,av.hy+bob+1,10);
+  ctx.restore(); return true; }
 function hiAvatarCv(id,pose,frame){
   var av=AVATARS[id],K=av.k,o=equipOpts(),hd=ITEMS[S.equip.head],wp=ITEMS[S.equip.weapon];
   var key='H'+id+pose+(frame||0)+'|'+o.top+o.bot+'|'+S.equip.head+'|'+(wp&&wp.gear);
@@ -1709,7 +1726,7 @@ function hiAvatarCv(id,pose,frame){
     ctx.drawImage(src,sp*K,hip*K,(av.w-sp)*K,lh*K, (ox+sp-1)*K,(hip+2)*K, (av.w-sp)*K,lh2*K); }
   else { ctx.drawImage(src,0,hip*K,sp*K,lh*K, ox*K,(hip+bob+lL)*K, sp*K,lh*K);
     ctx.drawImage(src,sp*K,hip*K,(av.w-sp)*K,lh*K, (ox+sp)*K,(hip+bob+lR)*K, (av.w-sp)*K,lh*K); }
-  if((wp&&wp.gear)||(hd&&hd.gear)){ var g=mkcv(64,64); avatarGear(g.getContext('2d'),id,av,null,ox,bob,hd,wp);
+  if(!hiGear(ctx,K,id,av,ox,bob)&&((wp&&wp.gear)||(hd&&hd.gear))){ var g=mkcv(64,64); avatarGear(g.getContext('2d'),id,av,null,ox,bob,hd,wp);
     ctx.imageSmoothingEnabled=false; ctx.drawImage(g,0,0,64*K,64*K); }
   cv.lw=64; cv.lh=64; CVCACHE[key]=cv; return cv; }
 function imgAvatarCv(id,pose,frame){
@@ -3449,7 +3466,7 @@ function fresh(){ return {onboarded:false,status:null,age:null,years:null,compan
  furni:[],ramen:0,redecorate:0,lastTier:0,econ:2,tut:0,
  mq:{done:{},gf:{},ann:{},cur:null,i:0,ok:0,n:0,adPend:null},
  stats:{ju:5,sik:5,ui:5,geum:5,jik:5},
- avatar:'stuM',
+ avatar:'h_doyun',
  look:{hair:0,haircol:-1,skin:0},
  demo:false,
  first:null,day:null,streak:0,best:0,todayQ:[],todayDone:[],claimed:null,bonus:false,
@@ -7372,6 +7389,14 @@ function drawScene(){
     var wf=0;
     if(MOVE&&MOVE.dur){ wf=(MOVE.t<MOVE.dur/2)?(ME.step?3:1):2; }
     var riding=rideHere();
+    var hav=AVATARS[S.avatar];
+    if(hav&&hav.k&&!riding){                                         /* 그림 주인공: 지도에서도 같은 그림(걷기 4동작)으로 */
+      var hv=hiAvatarCv(S.avatar,MOVE&&MOVE.dur?'walk':'idle',MOVE&&MOVE.dur?[0,1,2,3][(wf+(ME.step?2:0))%4]:0);
+      if(hv){ var sm=ctx.imageSmoothingEnabled,HW=34; ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+        var hx0=p.x+TS/2-HW/2,hy0=p.y+TS+2-HW;
+        if(ME.dir===1){ ctx.save(); ctx.translate(hx0+HW,hy0); ctx.scale(-1,1); ctx.drawImage(hv,0,0,HW,HW); ctx.restore(); }
+        else ctx.drawImage(hv,hx0,hy0,HW,HW);
+        ctx.imageSmoothingEnabled=sm; return; } }
     var im=heroTop(ME.dir,wf),bob=(wf===2&&!riding)?1:0;              /* 두 발이 스칠 때 몸이 한 칸 뜬다 */
     ctx.drawImage(im,Math.round(p.x+(TS-im.width)/2),Math.round(p.y+TS-im.height+2)-bob); }});
   var pw=petTick(m);
@@ -9456,6 +9481,8 @@ var _renderHomeB=renderHome; renderHome=function(){ _renderHomeB.apply(this,argu
 var LEASE_TIERS={7:1,8:1};
 S=load();
 if(!S.first) S.first=dayKey();
+/* 예전 남·여 주인공 저장은 새 그림 주인공으로 옮긴다(시작 보너스는 주지 않는다) */
+if(!(AVATARS[S.avatar]||{}).hero){ S.avatar=(S.avatar==='stuF'||S.avatar==='imgF')?'h_haeun':'h_doyun'; S.heroBonus=S.heroBonus||'old'; }
 rollDay();
 ev('app_open',{ver:CONTENT.ver,streak:S.streak,dayN:dayGap(S.first,dayKey())+1});
 loadPack(function(ok){ if(ok){ ev('pack_load',{ver:CONTENT.ver}); S.packVer=CONTENT.ver;
