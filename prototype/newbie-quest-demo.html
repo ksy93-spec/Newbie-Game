@@ -9385,6 +9385,8 @@ var _renderHomeB=renderHome; renderHome=function(){ _renderHomeB.apply(this,argu
 /* 전세 계약을 거쳐야 옮기는 거처. rollDay가 새 거처를 열 때 leaseGate가 바로 읽으므로 불러오기 전에 둔다. */
 var LEASE_TIERS={7:1,8:1};
 S=load();
+/* 되돌린 일러스트 주인공(h_로 시작하는 id) 저장은 예전 남·여 주인공으로 돌린다. 모르는 id로 남으면 상태창·캐릭터 화면이 깨진다 */
+if(!AVATARS[S.avatar]) S.avatar=/^h_(haeun|seoyun|jimin|narae)$/.test(S.avatar||'')?'stuF':'stuM';
 if(!S.first) S.first=dayKey();
 rollDay();
 ev('app_open',{ver:CONTENT.ver,streak:S.streak,dayN:dayGap(S.first,dayKey())+1});

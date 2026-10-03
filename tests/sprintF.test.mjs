@@ -149,3 +149,16 @@ test('6. 메인 2장: 칩만 눌러도 부동산→매물 집→부동산→매�
   assert.deepEqual(logs, []);
   await ctx.close();
 });
+
+test('7. 되돌린 일러스트 주인공 저장(h_seoyun 등)을 불러와도 오류 없이 예전 주인공으로 열린다', async () => {
+  const { reloadSaved } = await import('./storage.mjs');
+  const { ctx, page, logs } = await open();
+  await page.evaluate(() => { Object.assign(S, { status: '직장인', years: 2, company: '중소기업', region: '수도권', age: 29 }); S.onboarded = true; S.tut = 1; S.avatar = 'h_seoyun'; save(); });
+  await reloadSaved(page);
+  await page.waitForTimeout(400);
+  const r = await page.evaluate(() => { render('char'); render('home'); return { av: S.avatar, nm: document.getElementById('hnm').textContent }; });
+  assert.equal(r.av, 'stuF');
+  assert.match(r.nm, /Lv\./);
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
