@@ -4,6 +4,7 @@ import test, { before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import url from 'node:url';
+import { flushStorage } from './storage.mjs';
 
 process.env.PLAYWRIGHT_BROWSERS_PATH ||= '/opt/pw-browsers';
 const { chromium } = await import('playwright');
@@ -69,9 +70,9 @@ test('2. 전세로 옮겨야 하는 거처 카드는 "전세 계약하러 가기
 test('3. 시작 메뉴: 기록이 있으면 이어하기·처음부터 하기가 있고, 처음부터 하기는 확인 뒤 기록을 지운다', async () => {
   const { ctx, page, logs } = await open(BASE);
   await page.evaluate(() => { Object.assign(S, { status: '직장인', years: 2, company: '중소기업', region: '수도권', age: 29 }); S.onboarded = true; S.prologue = 1; S.lv = 7; save(); });
-  await page.waitForTimeout(300);
+  await flushStorage(page);                                   // 저장이 넘어간 뒤 새로고침(부하가 크면 빈 저장을 읽는 일이 있다)
   await page.reload();
-  await page.waitForSelector('#opening .omb[data-k="cont"]', { timeout: 5000 });
+  await page.waitForSelector('#opening .omb[data-k="cont"]', { timeout: 8000 });
   const keys = await page.$$eval('#opening .omb', (bs) => bs.map((b) => b.dataset.k));
   assert.deepEqual(keys, ['cont', 'new', 'pro', 'snd']);
   await page.click('#opening .omb[data-k="new"]');
