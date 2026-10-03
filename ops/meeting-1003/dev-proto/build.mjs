@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+let h = fs.readFileSync('/tmp/meet-dev/orig.html','utf8');
+const big = fs.readFileSync('/tmp/meet-dev/big.js','utf8');
+const hook = fs.existsSync('/tmp/meet-dev/hook.js') ? fs.readFileSync('/tmp/meet-dev/hook.js','utf8') : '';
+const marker = '/* ══════════ 세간 ══════════';
+const i = h.indexOf(marker);
+if (i < 0) throw new Error('marker');
+h = h.slice(0,i) + big + '\n' + hook + '\n' + h.slice(i);
+fs.writeFileSync('/tmp/meet-dev/new.html', h);
+console.log('built', h.length);
