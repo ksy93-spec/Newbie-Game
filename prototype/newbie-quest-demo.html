@@ -864,7 +864,7 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
         <div class="baggrid" id="baggrid"></div>
       </div>
       <div class="bag" style="padding-top:0">
-        <div class="sectlab">외형</div>
+        <div class="sectlab">주인공</div>
         <div class="pickrow" id="pavatar"></div>
         <div class="sectlab">머리 색</div><div class="pickrow" id="phaircol"></div>
         <button class="btn btn--wide pix" id="sharebtn">캐릭터 카드 내보내기</button>
@@ -1613,7 +1613,9 @@ function tidyCv(cv){
 function imgAvatarCv(id,pose,frame){
   var av=AVATARS[id]; if(!av) return null;
   var o=equipOpts(),hd=ITEMS[S.equip.head],wp=ITEMS[S.equip.weapon];
-  var key='A'+id+pose+(frame||0)+'|'+o.hair+o.top+o.bot+o.ts+o.bs+o.ac+'|'+(hd&&hd.gear)+S.equip.head+'|'+(wp&&wp.gear);
+  var hg0=(hd&&hd.gear==='glass')?0:(heroOf().glasses?1:0);      /* 안경 쓴 주인공은 머리 장비가 안경이 아닐 때 제 안경을 쓴다 */
+  var mk=heroOf().mark||'';
+  var key='A'+id+pose+(frame||0)+'|'+o.hair+o.top+o.bot+o.ts+o.bs+o.ac+'|'+(hd&&hd.gear)+S.equip.head+'|'+(wp&&wp.gear)+hg0+mk;
   if(CVCACHE[key]) return CVCACHE[key];
   var src=avatarSheet(id,o); if(!src) return null;
   var cv=mkcv(64,64),ctx=cv.getContext('2d');
@@ -1631,6 +1633,15 @@ function imgAvatarCv(id,pose,frame){
     ctx.drawImage(src,sp,hip,av.w-sp,lh, ox+sp,hip+bob+lR, av.w-sp,lh);
   }
   if(wp&&wp.gear) drawWeaponSmall(ctx,wp.gear,ox+av.hx,av.hy+bob);
+  if(mk){ var my=av.eye+bob,mfc=ox+av.fcx;
+    [-5,5].forEach(function(dxx){ var lx=mfc+dxx;
+      if(mk==='tired'){ ctx.fillStyle='rgba(110,90,140,.55)'; ctx.fillRect(lx-2,my+3,5,1); }
+      else { ctx.fillStyle='rgba(244,120,120,.6)'; ctx.fillRect(lx+(dxx<0?-3:1),my+4,3,2); } }); }
+  if(hg0){ var gy=av.eye+bob,gfc=ox+av.fcx;
+    [-5,5].forEach(function(dxx){ var lx=gfc+dxx;
+      ctx.fillStyle=P.s5; ctx.fillRect(lx-3,gy-3,7,6);
+      ctx.drawImage(src,lx-2-ox,gy-2-bob,5,4, lx-2,gy-2, 5,4); });
+    ctx.fillStyle=P.s5; ctx.fillRect(gfc-2,gy-1,4,1); }
   if(hd&&hd.gear){
     if(!av.rows) av.rows=rowSpans(layerCv(id,'body',null)).map(function(sv,i){
       var h=rowSpans(layerCv(id,'hair',null))[i]||[-1,-1];
@@ -3385,7 +3396,7 @@ function fresh(){ return {onboarded:false,status:null,age:null,years:null,compan
  furni:[],ramen:0,redecorate:0,lastTier:0,econ:2,tut:0,
  mq:{done:{},gf:{},ann:{},cur:null,i:0,ok:0,n:0,adPend:null},
  stats:{ju:5,sik:5,ui:5,geum:5,jik:5},
- avatar:'stuM',
+ avatar:'stuM',hero:'newbie',
  look:{hair:0,haircol:-1,skin:0},
  demo:false,
  first:null,day:null,streak:0,best:0,todayQ:[],todayDone:[],claimed:null,bonus:false,
@@ -3686,6 +3697,35 @@ function obSteps(){ return S.status==='대학생'?['status','living','region','a
 /* 신분에 맞는 기본 아바타. 대학생은 가방 멘 쪽, 나머지는 정장 쪽이다. */
 function avatarList(){ return Object.keys(AVATARS).filter(function(id){ return !AVATARS[id].hide; }); }
 function avatarPair(){ return avatarList(); }
+/* 고를 수 있는 주인공 여덟 명. 누가 봐도 가명인 이름에 한 줄 성격을 붙였다.
+   몸은 남·여 두 아바타를 함께 쓰고, 머리 모양·머리색·안경·얼굴 표시·손에 든 것으로 구별한다.
+   mark: tired는 다크서클(야근), blush는 볼터치(먹방).
+   능력치 보너스는 없다(특정 인물이 정답이 되지 않게). hc는 HAIRC 번호, -1은 원본 색. */
+var HEROES=[
+ {id:'newbie', name:'김뉴비',line:'이제 막 독립한 사회 초년생',av:'stuM',hc:-1,hs:'short',prop:'tote'},
+ {id:'alttle', name:'이알뜰',line:'영수증은 하나도 안 버리는 짠순이',av:'stuF',hc:1,hs:'bob',glasses:1,prop:'tote'},
+ {id:'yageun', name:'박야근',line:'오늘도 막차 타는 3년차',av:'stuM',hc:0,hs:'short',mark:'tired',prop:'cup'},
+ {id:'jachwi', name:'최자취',line:'원룸 꾸미기에 진심인 자취러',av:'stuF',hc:2,hs:'bun',prop:'bag'},
+ {id:'spec',   name:'정스펙',line:'자격증만 일곱 개인 취준생',av:'stuM',hc:1,hs:'short',glasses:1,prop:'files'},
+ {id:'mukbang',name:'한먹방',line:'동네 맛집 지도가 머릿속에 있다',av:'stuF',hc:-1,hs:'bob',eyes:'smile',mark:'blush',prop:'bag'},
+ {id:'wolse',  name:'오월세',line:'월세 탈출이 인생 목표',av:'stuM',hc:3,hs:'short',prop:'clip'},
+ {id:'kaltoe', name:'윤칼퇴',line:'여섯 시 정각에 퇴근한다',av:'stuF',hc:4,hs:'long',prop:'tote'}];
+var HEROMAP={}; HEROES.forEach(function(h){ HEROMAP[h.id]=h; });
+function heroOf(){ return HEROMAP[S&&S.hero]||HEROMAP[(S&&S.avatar==='stuF')?'mukbang':'newbie']; }
+function pickHero(id){ var h=HEROMAP[id]; if(!h) return; S.hero=id; S.avatar=h.av; S.look.haircol=h.hc; }
+/* 주인공 고르기 카드 한 장. 캔버스는 64×64 아바타를 그린다 */
+function heroCard(h,px,on){
+  var b=document.createElement('button'); b.className='opt pix hcard';
+  b.style.cssText='flex-direction:column;align-items:center;gap:2px;padding:4px 2px;min-width:0';
+  b.setAttribute('aria-pressed',on?'true':'false');
+  var cv=document.createElement('canvas'); cv.width=36; cv.height=64;
+  cv.style.cssText='width:'+px+'px;height:'+Math.round(px*64/36)+'px;image-rendering:pixelated';
+  b.appendChild(cv);
+  var nm=document.createElement('span'); nm.textContent=h.name; nm.style.cssText='font-size:12px;line-height:14px'; b.appendChild(nm);
+  var keep=[S.hero,S.avatar,S.look.haircol]; pickHero(h.id);
+  var src=heroCv('idle',0); S.hero=keep[0]; S.avatar=keep[1]; S.look.haircol=keep[2];
+  if(src) cv.getContext('2d').drawImage(src,-14,0);
+  return b; }
 
 /* 신분마다 처음 입고 시작하는 옷. 몸은 하나이고 옷이 신분을 말한다. */
 var STARTER={ '대학생':['hoodie','jeans'], '취준생':['shirt','slack'], '직장인':['badge','slack'] };
@@ -3700,24 +3740,19 @@ function obRender(){
   var steps=obSteps(),key=steps[Math.min(obStep,steps.length-1)];
   var body=document.getElementById('obbody');
   if(key==='avatar'){
-    body.innerHTML='<div class="ob-q">어떤 모습으로 시작할까요?</div>'+
-      '<div class="micro">나중에 캐릭터 화면에서 언제든 바꿀 수 있어요.</div>';
-    var box0=document.createElement('div'); box0.className='opts';
-    box0.style.flexDirection='row';
-    avatarPair().forEach(function(id){
-      var b=document.createElement('button'); b.className='opt pix';
-      b.style.cssText='flex:1;flex-direction:column;align-items:center;gap:6px';
-      b.setAttribute('aria-pressed',S.avatar===id?'true':'false');
-      var cv=document.createElement('canvas'); cv.width=64; cv.height=64;
-      cv.style.cssText='width:96px;height:96px;image-rendering:pixelated';
-      b.appendChild(cv);
-      var nm=document.createElement('span'); nm.textContent=AVATARS[id].name; b.appendChild(nm);
-      b.onclick=function(){ S.avatar=id; sfx('pick'); obRender(); };
-      box0.appendChild(b);
-      var c2=imgAvatarCv(id,'idle',0);
-      if(c2) cv.getContext('2d').drawImage(c2,0,0);
-    });
-    body.appendChild(box0);
+    if(!HEROMAP[S.hero]) pickHero('newbie');
+    body.innerHTML='<div class="ob-q">누구로 시작할까요?</div>'+
+      '<div class="micro">겉모습만 달라요. 나중에 캐릭터 화면에서 언제든 바꿀 수 있어요.</div>';
+    var box0=document.createElement('div');
+    box0.style.cssText='display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px';
+    HEROES.forEach(function(h){
+      var b=heroCard(h,44,S.hero===h.id);
+      b.onclick=function(){ pickHero(h.id); sfx('pick'); obRender(); };
+      box0.appendChild(b); });
+    var hl=document.createElement('div'); hl.className='micro'; hl.id='obhline';
+    hl.style.cssText='margin-top:8px;text-align:center';
+    hl.textContent=heroOf().name+' · '+heroOf().line;
+    body.appendChild(box0); body.appendChild(hl);
     var pips0=document.getElementById('obpips'); pips0.innerHTML='';
     steps.forEach(function(_,i){ var e=document.createElement('i'); if(i<=obStep) e.className='on'; pips0.appendChild(e); });
     var nb0=document.getElementById('obnext'); nb0.disabled=false; nb0.textContent='시작하기';
@@ -4178,6 +4213,8 @@ function faceFeat2(g,pal,dir,p){
     px2(g,a,9,pal.w); px2(g,b,9,pal.e); rc2(g,a,10,b,10,pal.e); });          /* 눈: 위 안쪽에 빛 */
   if(dir===2){ px2(g,17,10,pal.s); px2(g,17,11,pal.S); px2(g,15,12,pal.S); }
   else px2(g,11,11,pal.S);
+  if(p.mark==='tired'&&p.eyes!=='smile') E.forEach(function(xx){ rc2(g,xx[0],11,xx[1],11,'#A08FB0'); });   /* 다크서클 */
+  if(p.mark==='blush'){ if(dir===2) rc2(g,13,12,14,12,'#F49A92'); else { rc2(g,6,12,7,12,'#F49A92'); rc2(g,14,12,15,12,'#F49A92'); } }
   if(p.eyes==='smile'&&dir!==2){ px2(g,10,12,pal.S); px2(g,11,12,pal.S); px2(g,12,12,pal.S); }
 }
 
@@ -4562,12 +4599,14 @@ function heroDesc(){
   var o=equipOpts(),L=S.look||{},E=S.equip;
   var hi=(L.haircol>=0)?L.haircol:0,hc=HAIRC[hi]||HAIRC[0],sk=SKIN[L.skin||0]||SKIN[0];
   var wp=ITEMS[E.weapon],hd=ITEMS[E.head],av=AVATARS[S.avatar]||{};
-  var p={hair:hc,skin:sk,top:o.top||'#2C3A5E',bot:o.bot||'#C9B79A',acc:o.ac,prop:'tote',lanyard:1,
-    hs:(av.name==='여')?'bob':'short',weapon:(E.weapon==='goldpen')?'goldpen':(wp&&wp.gear),
+  var hr=heroOf();
+  var p={hair:hc,skin:sk,top:o.top||'#2C3A5E',bot:o.bot||'#C9B79A',acc:o.ac,prop:hr.prop||'tote',lanyard:1,
+    hs:(av.name===(AVATARS[hr.av]||{}).name&&hr.hs)||((av.name==='여')?'bob':'short'),eyes:hr.eyes,mark:hr.mark,weapon:(E.weapon==='goldpen')?'goldpen':(wp&&wp.gear),
     hood:o.ts==='hood',badge:o.ts==='badge',sharp:o.ts==='sharp',puff:o.ts==='puff',
     stripe:o.bs==='stripe',shirt:(E.top==='shirt'||!o.ts)?1:0};     /* 일러스트처럼 재킷 안 흰 깃 */
   var hg=hd&&hd.gear;
   if(hg==='glass'){ if(hd.dark) p.shades=1; else p.glasses=1; }
+  else if(hr.glasses) p.glasses=1;
   if(hg==='beanie'){ p.hat=hd.color||'#3A5F8C'; p.hatband=hd.color2||'#2C4668'; }
   if(hg==='band') p.band=P.r1;
   return p;
@@ -4575,7 +4614,7 @@ function heroDesc(){
 function heroTop(dir,f){
   var E=S.equip,L=S.look||{},mt=MOUNTS[E.mount];
   if(!rideHere()) mt=null;                          /* 방·건물 안·휴게소·여행지에서는 내려서 걷는다 */
-  var key='HT'+dir+f+'|'+(L.haircol)+(L.skin||0)+E.top+E.bottom+E.weapon+E.head+(mt?E.mount:'-')+S.avatar;
+  var key='HT'+dir+f+'|'+(L.haircol)+(L.skin||0)+E.top+E.bottom+E.weapon+E.head+(mt?E.mount:'-')+S.avatar+S.hero;
   if(TOPC[key]) return TOPC[key];
   var p=heroDesc();
   var cv=(mt&&mt.kind)?ridingCv(p,mt.kind,dir,f,mt.top):personTopCv(p,dir,f);
@@ -8423,19 +8462,14 @@ function renderChar(){
   fbn.appendChild(ft); fbn.onclick=function(){ CHARSEL='furni'; sfx('pick'); renderChar(); }; B.appendChild(fbn);
   renderBag();
   var pa=document.getElementById('pavatar'); pa.innerHTML='';
-  avatarList().forEach(function(id){
-    var b=document.createElement('button'); b.className='pick pix';
-    b.style.cssText+='width:78px;height:92px;flex-direction:column;gap:1px;justify-content:flex-start;padding-top:2px';
-    b.setAttribute('aria-pressed',S.avatar===id?'true':'false');
-    var cv=document.createElement('canvas'); cv.width=36; cv.height=36;
-    cv.style.width='64px'; cv.style.height='64px'; b.appendChild(cv);
-    var nm=document.createElement('span'); nm.className='micro';
-    nm.style.cssText='font-size:10px;line-height:11px'; nm.textContent=AVATARS[id].name;
-    b.appendChild(nm);
-    b.onclick=function(){ S.avatar=id; save(); renderChar(); };
-    pa.appendChild(b);
-    var keep=S.avatar; S.avatar=id; var src=heroCv('idle',0); S.avatar=keep;
-    if(src) cv.getContext('2d').drawImage(src,-14,-2); });
+  pa.style.cssText='display:grid;grid-template-columns:repeat(4,1fr);gap:6px';
+  HEROES.forEach(function(h){
+    var b=heroCard(h,40,S.hero===h.id);
+    b.onclick=function(){ pickHero(h.id); save(); sfx('pick'); renderChar(); };
+    pa.appendChild(b); });
+  var phl=document.getElementById('phline');
+  if(!phl){ phl=document.createElement('div'); phl.id='phline'; phl.className='micro'; phl.style.cssText='margin-top:6px'; pa.parentNode.insertBefore(phl,pa.nextSibling); }
+  phl.textContent=heroOf().name+' · '+heroOf().line;
   document.getElementById('sharebtn').onclick=shareCardOut; syncShareBtn();
   var pc=document.getElementById('phaircol'); pc.innerHTML='';
   var ob=document.createElement('button'); ob.className='swatchpick pix';
@@ -9387,6 +9421,8 @@ var LEASE_TIERS={7:1,8:1};
 S=load();
 /* 되돌린 일러스트 주인공(h_로 시작하는 id) 저장은 예전 남·여 주인공으로 돌린다. 모르는 id로 남으면 상태창·캐릭터 화면이 깨진다 */
 if(!AVATARS[S.avatar]) S.avatar=/^h_(haeun|seoyun|jimin|narae)$/.test(S.avatar||'')?'stuF':'stuM';
+/* 주인공을 고르기 전에 만든 저장은 성별에 맞는 기본 인물로(머리색은 그대로 둔다) */
+if(!HEROMAP[S.hero]) S.hero=(S.avatar==='stuF')?'mukbang':'newbie';
 if(!S.first) S.first=dayKey();
 rollDay();
 ev('app_open',{ver:CONTENT.ver,streak:S.streak,dayN:dayGap(S.first,dayKey())+1});
@@ -9642,7 +9678,7 @@ function opaqueBox(cv,key){
   for(y=0;y<cv.height;y++) for(x=0;x<cv.width;x++) if(d[(y*cv.width+x)*4+3]>40){ if(x<x0) x0=x; if(x>x1) x1=x; if(y>y1) y1=y; }
   return (OPAQ[key]={x0:x0,x1:x1,y1:y1}); }
 function portraitSrc(k){
-  if(k==='hero'){ var h=heroCv('idle',0); return h?{cv:h,key:'hero|'+S.avatar+'|'+JSON.stringify(S.equip),right:!!(AVATARS[S.avatar]||{}).faceRight,k:1}:null; }
+  if(k==='hero'){ var h=heroCv('idle',0); return h?{cv:h,key:'hero|'+S.avatar+S.hero+'|'+JSON.stringify(S.equip),right:!!(AVATARS[S.avatar]||{}).faceRight,k:1}:null; }
   if(k==='partner'){ var av=AVATARS[S.avatar]||{}; k=av.name==='여'?'partnerM':'partnerF'; }
   var c=castCv('npc_'+k); return c?{cv:c,key:k,right:false,k:c.width/(c.lw||c.width)}:null; }
 function scenePortrait(ctx,k,cx,base,dir,f){

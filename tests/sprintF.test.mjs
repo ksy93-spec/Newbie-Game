@@ -162,3 +162,22 @@ test('7. 되돌린 일러스트 주인공 저장(h_seoyun 등)을 불러와도 �
   assert.deepEqual(logs, []);
   await ctx.close();
 });
+
+test('8. 주인공 여덟 명: 고르기 화면에 여덟 장이 나오고, 고르면 지도 그림(머리 모양·안경·손에 든 것)이 바뀐다', async () => {
+  const { ctx, page, logs } = await open();
+  const r = await page.evaluate(() => {
+    S = fresh(); S.status = '직장인'; applyStarter(); obStep = obSteps().length - 1; obRender();
+    const cards = [...document.querySelectorAll('#obbody .hcard')].map((b) => b.textContent);
+    const descs = HEROES.map((h) => { pickHero(h.id); const p = heroDesc(); return [h.id, S.avatar, p.hs, !!p.glasses, p.prop].join(','); });
+    pickHero('spec'); renderChar();
+    const picks = document.querySelectorAll('#pavatar .hcard').length;
+    return { cards, descs, picks, line: document.getElementById('phline').textContent };
+  });
+  assert.equal(r.cards.length, 8);
+  assert.ok(r.cards.includes('김뉴비') && r.cards.includes('윤칼퇴'), JSON.stringify(r.cards));
+  assert.equal(new Set(r.descs.map((d) => d.split(',').slice(1).join(','))).size, 8, '여덟 명이 서로 다르게 그려진다');
+  assert.equal(r.picks, 8);
+  assert.match(r.line, /정스펙/);
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
