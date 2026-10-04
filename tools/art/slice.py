@@ -42,6 +42,9 @@ SHEETS = {
                                       'fu_sofa', 'fu_aircon', 'fu_dryer', 'fu_robot', 'fu_dish', 'fu_massage', 'fu_bigtv', 'fu_fridge2',
                                       'fu_purifier', 'fu_bed2', 'fu_table2', 'fu_shelf', 'fu_plant']),
     'G': dict(fit=('h', 88), names=['ho_%d' % i for i in range(15)]),
+    # 고를 수 있는 주인공 여덟 명의 가슴 위 초상(고르기 카드·상태창 얼굴). 순서는 게임의 HEROES와 같다.
+    'H8': dict(fit=('h', 48), pad=(44, 48), names=['hp_newbie', 'hp_alttle', 'hp_yageun', 'hp_jachwi',
+                                                   'hp_spec', 'hp_mukbang', 'hp_wolse', 'hp_kaltoe']),
 }
 # 흰 줄로 나뉜 그림 칸(배경, 엽서, 질감). region은 원본에서 그 묶음이 있는 범위(x0, y0, x1, y1).
 PANELS = {
