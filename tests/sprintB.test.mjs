@@ -172,7 +172,10 @@ test('5. 결과 화면 "광고 보고 코인 더 받기"는 한 번만, 딱 획�
   // 오늘 목록 밖의 열린 퀘스트를 고른다. 날짜에 따라 오늘 목록이 열린 퀘스트를 다 덮으면, 하나를 오늘 목록에서 뺀다(완주 보너스가 섞이지 않게)
   const pick = await st(page, () => { const c = dripOrder().filter((q) => q.theme !== 'ju' && S.drip.u.includes(q.id));
     const q = c.find((x) => !S.todayQ.includes(x.id)) || c[0]; if (!q) return null;
-    if (S.todayQ.includes(q.id)) { S.todayQ = S.todayQ.filter((id) => id !== q.id); save(); } return q.id; });
+    if (S.todayQ.includes(q.id)) { S.todayQ = S.todayQ.filter((id) => id !== q.id); save(); }
+    // 결과 광고는 네 번째 퀘스트부터 뜬다. 다른 퀘스트 넷을 끝낸 상태로 둔다
+    QUESTS.filter((x) => x.id !== q.id && !S.done.includes(x.id)).slice(0, 4).forEach((x) => S.done.push(x.id)); save();
+    return q.id; });
   assert.ok(pick);
   const coin0 = await st(page, () => S.coin);
   assert.equal(await playQuest(page, pick), 'ok');

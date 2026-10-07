@@ -529,7 +529,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
              radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%)}
 #opening.out{opacity:0}
 #opening .cskip{position:absolute;top:calc(10px + env(safe-area-inset-top));right:10px;z-index:2;background:rgba(20,16,38,.7);color:#C9C3D6;
-  border:1px solid #57517A;font:11px Galmuri11,monospace;padding:6px 10px;border-radius:0;cursor:pointer}
+  border:1px solid #57517A;font:12px Galmuri11,monospace;padding:12px 14px;min-height:44px;border-radius:0;cursor:pointer}
 
 /* 실전 체크리스트 */
 .chkgrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--u2);}
@@ -687,7 +687,7 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
     </div>
   </section>
 
-  <div class="toast pix" id="htoast" hidden></div>
+  <div class="toast pix" id="htoast" role="status" aria-live="polite" hidden></div>
   <div class="itip-back" id="mg" hidden><div class="itip mgbox pix" id="mgbox">
     <span class="inm" id="mgt">도장 찍기</span><span class="isub" id="mgs">—</span>
     <canvas id="mgcv" width="280" height="84"></canvas>
@@ -702,8 +702,8 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
         <canvas id="hudchar" width="40" height="38" style="width:40px;height:38px"></canvas>
         <div class="who"><span class="nm" id="hnm">Lv.1</span><span class="sub" id="hsub">—</span></div>
         <div class="chips">
-          <span class="cchip">공 <span id="hatk">0</span></span>
-          <span class="cchip">방 <span id="hdefc">0</span></span>
+          <span class="cchip">공격 <span id="hatk">0</span></span>
+          <span class="cchip">방어 <span id="hdefc">0</span></span>
           <span class="cchip coin">￦ <span id="hcoin">0</span></span>
         </div>
       </div>
@@ -924,15 +924,15 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
       <div class="card pix" style="display:flex;flex-direction:column;gap:var(--u2)" id="csettings"></div>
       <div class="sectlab">문항 묶음</div>
       <div class="card pix"><div class="kv" id="ckv"></div></div>
-      <div class="sectlab">계측 · 개발용</div>
-      <div class="card pix" style="display:flex;flex-direction:column;gap:var(--u2)">
+      <div class="sectlab devonly">계측 · 개발용</div>
+      <div class="card pix devonly" style="display:flex;flex-direction:column;gap:var(--u2)">
         <div class="kv" id="cfunnel"></div>
         <div class="micro" id="cevlog" style="max-height:150px;overflow:auto"></div>
         <button class="btn btn--plain btn--wide pix" id="cevcopy">이벤트 로그 복사</button>
       </div>
       <button class="btn btn--plain btn--wide pix" id="reset">처음부터 다시</button>
       <div class="micro" style="text-align:center;padding-bottom:var(--u4)">
-        서체 Galmuri © quiple · SIL OFL 1.1<br>프로토타입 · 문항은 검수 전 초안이에요</div>
+        서체 Galmuri © quiple · SIL OFL 1.1<br>제도와 금액은 바뀔 수 있어요. 중요한 결정 전에는 공식 안내를 확인하세요.</div>
     </div>
     <nav class="tabbar" id="tab-codex"></nav>
   </section>
@@ -2462,7 +2462,7 @@ var MOUNTS={
 /* 새 퀘스트의 보상이자 상점 물건. 모양은 기존 장비를 쓰고 색과 능력만 다르다 */
 ITEMS.receipt ={slot:'weapon',perk:{xp:5},name:'연말정산 영수증 파일',atk:22,gear:'board',cost:400,desc:'1년치 영수증이 들어 있다. 13월의 월급이 여기서 나온다.'};
 ITEMS.otp     ={slot:'weapon',perk:{mak:1},name:'OTP 카드',atk:15,def:4,gear:'card',cost:300,desc:'숫자 여섯 자리가 계좌를 지킨다.'};
-ITEMS.lunchbox={slot:'weapon',perk:{foodDisc:10},name:'보온 도시락통',atk:11,gear:'tumbler',cost:220,desc:'점심값이 한 달에 십만 원 넘게 준다.'};
+ITEMS.lunchbox={slot:'weapon',perk:{foodDisc:10},name:'보온 도시락통',atk:11,gear:'tumbler',cost:220,desc:'점심값이 한 달에 십만 원 넘게 줄어든다.'};
 ITEMS.nomu    ={slot:'top',perk:{kan:1},name:'노무사 정장',def:18,atk:2,color:'#26406B',accent:'#C9C3D6',ts:'sharp',cost:420,desc:'근로계약서를 펼치면 눈빛이 달라진다.'};
 ITEMS.windbrk ={slot:'top',perk:{fullSave:2},name:'바람막이',def:13,atk:3,color:'#3A9BC9',accent:'#FFFDF6',ts:'hood',cost:260,desc:'공항에서도 산에서도 한 벌.'};
 ITEMS.knitvest={slot:'top',perk:{coin:5},name:'니트 조끼',def:10,color:'#8E7C5A',cost:160,desc:'셔츠 위에 걸치면 사무실 3년 차처럼 보인다.'};
@@ -2696,8 +2696,8 @@ var ENERGY_COST={quest:10,review:6,ep:15,boss:20,game:5};
 function fullCost(kind){ return Math.max(5,(FULL_COST[kind]||10)-perkSum('fullSave')); }
 function useFull(kind){
   needTick(); var c=fullCost(kind),ec=ENERGY_COST[kind]||0;
-  if(S.energy<ec){ sfx('bad'); toast('너무 피곤하다 · 체력 '+ec+' 필요 (지금 '+S.energy+'). 집에서 쉬거나 공원 벤치에 앉자. 시간이 지나도 조금씩 찬다.'); hudRefresh(); return false; }
-  if(S.full<c){ sfx('bad'); toast('배가 고파서 집중이 안 된다 · 포만감 '+c+' 필요 (지금 '+S.full+'). 편의점이나 푸드트럭에서 뭘 좀 먹자.'); hudRefresh(); return false; }
+  if(S.energy<ec){ sfx('bad'); toast('체력이 모자라요 · '+ec+' 필요 (지금 '+S.energy+'). 집이나 공원 벤치에서 쉬면 차고, 가만히 있어도 조금씩 차요.'); hudRefresh(); return false; }
+  if(S.full<c){ sfx('bad'); toast('배가 고파 집중이 안 돼요 · 포만감 '+c+' 필요 (지금 '+S.full+'). 편의점이나 푸드트럭에서 먹으면 차요.'); hudRefresh(); return false; }
   S.full-=c; S.energy-=ec; S.clean=Math.max(0,S.clean-2); save(); hudRefresh(); return true; }
 function foodPrice(f){ return Math.max(1,Math.round(f.cost*(1-perkSum('foodDisc')/100))); }
 function eatFood(f){
@@ -2845,13 +2845,13 @@ Q('ju2','ju','전입신고와 확정일자',100,80,{},'3년차 선배','glass',
   a:['보증금을 다른 채권자보다 먼저 받을 순위를 준다','계약을 법적으로 유효하게 만든다','집주인의 세금을 깎아준다'],ok:0,
   why:'확정일자는 우선변제권을 준다. 대항력과 확정일자가 둘 다 있어야 보증금을 지킬 수 있다.'},
  {q:"이사 당일에 전입신고를 했는데 그날 집주인이 대출을 받았다면?",a:["그 대출이 내 대항력보다 앞선다","내 대항력이 앞선다","같은 순위로 나눠 받는다"],ok:0,
-  why:"대항력은 다음 날 0시에 생긴다. 하루의 틈이 순위를 바꾼다. 잔금일에 근저당을 설정하지 않는다는 특약이 필요한 이유다."}],{ju:16}),
+  why:"대항력은 다음 날 0시에 생긴다. 하루의 틈이 순위를 바꾼다. 잔금일 다음 날까지 근저당을 설정하지 않는다는 특약이 필요한 이유다."}],{ju:16}),
 Q('ju3','ju','월세 계약서에서 꼭 볼 세 곳',70,60,{regions:['수도권','광역시']},'부동산 사장','badge',
  '도장 찍기 전에, 세 군데만 다시 봐요.',[
  {q:'계약서의 임대인 이름과 반드시 대조해야 하는 것은?',a:['등기부등본상 소유자와 신분증','공인중개사 명함','관리사무소 연락처'],ok:0,
   why:'소유자가 아닌 사람과 계약하면 보증금을 돌려받을 상대가 사라진다. 대리인이면 위임장과 인감증명을 확인한다.'},
  {q:'특약에 넣어두면 좋은 것은?',
-  a:['잔금일까지 근저당을 설정하지 않는다는 조항','벽지 색을 바꿔도 된다는 조항','월세를 현금으로 낸다는 조항'],ok:0,
+  a:['잔금일 다음 날까지 근저당을 설정하지 않는다는 조항','벽지 색을 바꿔도 된다는 조항','월세를 현금으로 낸다는 조항'],ok:0,
   why:'계약금만 낸 상태에서 집주인이 대출을 받으면 순위가 밀린다. 이 조항 한 줄이 그 구간을 막는다.'},
  {q:"집주인 본인이 아니라 대리인이 나왔다면 무엇을 확인해야 할까?",a:["위임장과 인감증명서","대리인의 명함","구두로 확인하면 충분하다"],ok:0,
   why:"위임 사실이 서류로 남아야 한다. 확인하지 않으면 계약 상대가 누구인지부터 흔들린다."}],{ju:10}),
@@ -2959,7 +2959,7 @@ Q('jik2','jik','연차는 언제 몇 개 생기나',80,70,{status:['직장인']}
  {q:'1년 미만 근로자의 연차는 어떻게 발생할까?',a:['1개월 개근하면 1일','입사와 동시에 15일','발생하지 않는다'],ok:0,
   why:'1개월 개근마다 1일씩 붙는다. 1년을 채우기 전에도 쓸 수 있는 휴가가 쌓이고 있다는 뜻이다.'},
  {q:'1년간 80% 이상 출근한 근로자의 연차는?',a:['15일','10일','12일'],ok:0,
-  why:'근로기준법상 15일이 기본이고, 근속 연수가 쌓이면 가산된다.'},
+  why:'상시 5인 이상 사업장이면 15일이 기본이고, 근속 연수가 쌓이면 가산된다. 5인 미만 사업장은 연차 규정이 적용되지 않는다.'},
  {q:"입사 8개월 동안 매달 개근했다면 쌓인 연차는 며칠일까?",a:["8일","15일","0일"],ok:0,
   why:"1개월 개근마다 1일이니 8일이다. 1년을 못 채우고 그만둬도 남은 연차는 수당으로 정산된다."}],{jik:14}),
 Q('jik3','jik','실업급여 기본 조건',80,70,{status:['직장인','취준생']},'고용센터 상담원','card',
@@ -2983,7 +2983,7 @@ Q('job4','jik','이직확인서, 누가 내나',80,70,{status:['취준생','직�
 Q('job5','geum','국민취업지원제도',80,70,{status:['취준생']},'고용센터 상담원','glass',
  '실업급여 대상이 아니어도 받을 수 있는 게 따로 있어요.',[
  {q:'국민취업지원제도는 어디에 신청할까?',a:['고용노동부가 운영하는 고용센터·온라인 창구','국민연금공단','세무서'],ok:0,
-  why:'고용보험공단이 아니라 고용노동부의 취업지원 사업이다. 거주지 고용센터나 온라인으로 신청한다.'},
+  why:'고용보험에서 나오는 실업급여와 달리 고용노동부가 운영하는 취업지원 사업이다. 거주지 고용센터나 고용24에서 신청한다.'},
  {q:'이 제도가 실업급여와 다른 점은?',a:['고용보험 가입 이력이 없어도 요건을 채우면 신청할 수 있다','실업급여와 같은 제도다','퇴직자만 신청할 수 있다'],ok:0,
   why:'구직급여는 고용보험에서 나오는 보험금이고, 이쪽은 보험이 아니라 취업지원 사업이다. 그래서 대상이 다르다.'},
  {q:'지원을 받는 동안 해야 하는 것은?',a:['취업활동계획을 세우고 정해진 구직활동을 이행한다','아무 조건 없이 수당만 받는다','매일 센터에 출석한다'],ok:0,
@@ -3217,9 +3217,9 @@ Q('sub1','sik','새는 구독 막기',70,60,{},'자취 선배','lunchbox',
  '통장에서 매달 몇천 원씩 빠져나가는 거, 다 합쳐 본 적 있어?',[
  {q:'OTT 13,900원, 음악 10,900원, 클라우드 3,300원을 매달 낸다. 1년이면?',a:['337,200원','28,100원','168,600원'],ok:0,
   why:'13,900 + 10,900 + 3,300 = 28,100원. 12개월이면 337,200원이다.'},
- {q:'정기결제 구독료가 오르거나 유료 구독으로 바뀔 때 사업자는?',a:['소비자에게 미리 알리고 동의를 받아야 한다(30일 이내 동의 기준으로 안내됨)','알림 없이 결제해도 된다','1년 뒤에 알리면 된다'],ok:0,
+ {q:'정기결제 구독료가 오르거나 유료 구독으로 바뀔 때 사업자는?',a:['소비자에게 미리 알리고 동의를 받아야 한다','알림 없이 결제해도 된다','1년 뒤에 알리면 된다'],ok:0,
   why:'정기결제 금액을 올리거나 유료로 전환할 때는 소비자 동의를 받도록 전자상거래법이 정하고 있고, 동의 기한은 30일 이내로 안내된다. 세부 시행 시점과 기준은 공정거래위원회·소비자원 공지를 확인한다.'},
- {q:'무료 체험 기간이 끝나 유료로 넘어가기 전에 사업자는?',a:['종료 전에 유료로 바뀐다는 것을 미리 알려야 한다(14일 전 고지로 안내됨)','알리지 않고 다음 날부터 결제해도 된다','체험이 끝난 뒤에 알리면 된다'],ok:0,
+ {q:'무료 체험 기간이 끝나 유료로 넘어가기 전에 사업자는?',a:['종료 전에 유료로 바뀐다는 것을 미리 알려야 한다','알리지 않고 다음 날부터 결제해도 된다','체험이 끝난 뒤에 알리면 된다'],ok:0,
   why:'무료 체험은 동의 절차와 별개로 종료 전에 유료 전환을 고지하게 되어 있고, 14일 전 고지로 안내된다. 체험을 시작할 때 종료일을 달력에 적어 두면 안전하다.'},
  {q:'안 쓰는 구독을 찾는 가장 빠른 방법은?',a:['카드·통장 자동결제 내역을 한 번에 훑는다','앱을 전부 지운다','해지는 어려우니 둔다'],ok:0,
   why:'앱을 지워도 결제는 계속된다. 카드사 앱과 계좌 자동이체 목록에서 정기결제를 찾아 해지한다.'}],{sik:10}),
@@ -3330,6 +3330,7 @@ function tone(f,t0,dur,type,vol){
   o.start(a.currentTime+t0); o.stop(a.currentTime+t0+dur+0.02); }
 var SFX={
   tap:  [[660,0,.05]],
+  tick: [[1568,0,.025]],
   pick: [[880,0,.05],[1175,.04,.06]],
   good: [[784,0,.07],[1047,.07,.11]],
   bad:  [[311,0,.09],[233,.09,.15]],
@@ -3375,7 +3376,7 @@ function notifTick(){
   S.notified=dayKey(); save();
   ev('notif_fire',{hour:S.notif.hour,streak:S.streak});
   if(notifSupported()&&Notification.permission==='granted'){
-    try{ new Notification('뉴비 퀘스트',{body:'연속 '+S.streak+'일. 오늘 출석하면 '+dailyCoin()+'원이에요.'}); }catch(e){} } }
+    try{ new Notification('뉴비 퀘스트',{body:'연속 '+S.streak+'일째예요. 오늘 출석하면 ￦'+dailyCoin()+'를 받아요.'}); }catch(e){} } }
 setInterval(function(){ if(S&&S.onboarded) notifTick(); },60000);
 
 /* ══════════ 날짜 ══════════
@@ -3690,7 +3691,7 @@ var OB={
  status:{q:'지금 어떤 상황인가요?',hint:'신분에 따라 급한 정보가 완전히 달라요.',
   o:[['대학생','재학 중','학자금·알바·자취'],['취준생','취업 준비 중','건강보험·연금·면접비'],['직장인','일하는 중','계약·급여·전월세']]},
  age:{q:'나이가 어떻게 되세요?',hint:'청년 정책 대부분이 만 19~34세를 기준으로 갈려요.',
-  o:[[24,'만 24세 이하','청년 정책 전부 해당'],[29,'만 25~29세','청약·주거 지원 핵심'],[34,'만 30~34세','청년 요건 마지막'],[40,'만 35세 이상','일반 요건']]},
+  o:[[24,'만 24세 이하','청년 정책 대부분 해당'],[29,'만 25~29세','청약·주거 지원 핵심'],[34,'만 30~34세','청년 요건 마지막'],[40,'만 35세 이상','일반 요건']]},
  living:{q:'어디서 지내세요?',hint:'주거 형태에 따라 챙길 것이 달라요.',
   o:[['기숙사','기숙사','비용은 적고 제약은 많다'],['자취','자취','계약과 공과금이 생긴다'],['본가','본가에서 통학','이동 시간이 비용이다']]},
  prep:{q:'준비한 지 얼마나 됐어요?',hint:'기간에 따라 챙겨야 할 제도가 달라요.',
@@ -3715,7 +3716,7 @@ function avatarPair(){ return avatarList(); }
    능력치 보너스는 없다(특정 인물이 정답이 되지 않게). hc는 HAIRC 번호, -1은 원본 색. */
 var HEROES=[
  {id:'newbie', name:'김뉴비',line:'이제 막 독립한 사회 초년생',av:'stuM',hc:-1,hs:'short',prop:'tote'},
- {id:'alttle', name:'이알뜰',line:'영수증은 하나도 안 버리는 짠순이',av:'stuF',hc:1,hs:'bob',glasses:1,prop:'tote'},
+ {id:'alttle', name:'이알뜰',line:'영수증은 하나도 안 버리는 알뜰파',av:'stuF',hc:1,hs:'bob',glasses:1,prop:'tote'},
  {id:'yageun', name:'박야근',line:'오늘도 막차 타는 3년차',av:'stuM',hc:0,hs:'short',mark:'tired',prop:'cup'},
  {id:'jachwi', name:'최자취',line:'원룸 꾸미기에 진심인 자취러',av:'stuF',hc:2,hs:'bun',prop:'bag'},
  {id:'spec',   name:'정스펙',line:'자격증만 일곱 개인 취준생',av:'stuM',hc:1,hs:'short',glasses:1,prop:'files'},
@@ -3790,7 +3791,10 @@ function obRender(){
     b.innerHTML=op[1]+'<span class="oc">'+op[2]+'</span>';
     b.onclick=function(){ S[key]=op[0];
       if(key==='status'){ obStep=0; applyStarter(); }
-      ev('onboard_pick',{k:key}); obRender(); };
+      ev('onboard_pick',{k:key}); obRender();
+      /* 고르면 잠깐 뒤 다음 질문으로 넘어간다(다음 버튼을 따로 누르지 않아도). 그사이 직접 넘겼으면 그대로 둔다 */
+      var at=obStep; setTimeout(function(){ var nb=document.getElementById('obnext');
+        if(obStep===at&&nb&&!nb.disabled&&document.getElementById('onboard').classList.contains('on')&&obSteps()[obStep]!=='avatar') nb.click(); },260); };
     box.appendChild(b); });
   body.appendChild(box);
   var pips=document.getElementById('obpips'); pips.innerHTML='';
@@ -4674,7 +4678,7 @@ var FURNI={
  mat:   {name:'접이식 매트',  cost:90,  need:1, def:4,  w:2,h:2,      desc:'바닥에서 자도 등이 덜 아프다.'},
  fan:   {name:'선풍기',       cost:140, need:3, def:4,  w:1,h:1,      desc:'여름에 잠은 자야 한다.'},
  desk2: {name:'접이식 책상',perk:{kan:1},  cost:200, need:4, atk:6,  w:2,h:1,      desc:'밥상에서 공부하지 않아도 된다.'},
- fridge:{name:'소형 냉장고',perk:{fullMax:20},  cost:300, need:5, def:8,  w:1,h:2,      desc:'식비가 눈에 띄게 준다.'},
+ fridge:{name:'소형 냉장고',perk:{fullMax:20},  cost:300, need:5, def:8,  w:1,h:2,      desc:'식비가 눈에 띄게 줄어든다.'},
  bed:   {name:'접이식 침대',perk:{fullMax:10},  cost:340, need:5, def:12, w:2,h:2,      desc:'바닥에서 안 자도 되는 날이 왔다.'},
  wash:  {name:'세탁기',       cost:420, need:6, def:10, w:1,h:1,      desc:'코인 세탁소에 안 가도 된다.'},
  tv:    {name:'바퀴 달린 TV', cost:560, need:7, atk:9,  w:2,h:1,      desc:'누워서 보는 화면. 사치의 시작.'},
@@ -6365,7 +6369,7 @@ function openTalk(s){
     lines.push({q:'Q'+(qi+1)+'. '+q.q,a:q.a,ok:q.ok,
       right:function(){ S.quiz[s.id]=qi+1; grant({coin:10,xp:10});
         if(qi+1>=T.quiz.length){ markEgg('qz_'+s.id); grant({item:T.prize});
-          return ['딩동댕! 전부 맞혔어요. 상품이에요.','['+ITEMS[T.prize].name+']을(를) 받았다! 캐릭터 창에서 장착할 수 있다.']; }
+          return ['딩동댕! 전부 맞혔어요. 상품이에요.','['+ITEMS[T.prize].name+']을(를) 받았다! 캐릭터 탭에서 장착할 수 있어요.']; }
         return ['딩동댕! 코인 10, 경험치 10.']; },
       wrong:function(){ return ['땡! 천천히 생각해 보고 다시 말 걸어 주세요.']; }}); })(i); }
   talkTo({name:s.name,face:s.face,lines:lines}); }
@@ -6427,8 +6431,8 @@ function mgStamp(){
 function mgEnd(win,quit){
   var d=MG&&MG.d,R=MG&&MG.R; MG=null;
   document.getElementById('mg').hidden=true;
-  if(quit||!d){ toast('게임을 그만뒀다.'); return; }
-  if(!win){ toast('도장 찍기 '+d+' · 실패. 다시 도전해 봐!'); return; }
+  if(quit||!d){ toast('게임을 그만뒀어요.'); return; }
+  if(!win){ toast('도장 찍기 '+d+' · 실패. 다시 해 봐요!'); return; }
   if(!S.mg) S.mg={};
   var msg='도장 찍기 '+d+' 성공!';
   if(!mgPaid(d)){ S.mg[d]=dayKey(); grant({coin:R.coin,xp:R.xp}); msg+=' ￦'+R.coin+' · 경험치 +'+R.xp; }
@@ -6447,7 +6451,7 @@ function openThing(s){
   var lines=(once&&got)?[L[0],'이미 살펴봤다.']:L.slice();
   talkTo({name:s.name,face:null,lines:lines,onEnd:function(){
     if(once&&!got){ markEgg('th_'+s.id); sfx('coin'); grant({xp:s.xp,coin:s.coin,item:s.item});
-      if(s.item) toast('['+ITEMS[s.item].name+'] 획득 · 캐릭터 창에서 장착'); } }}); }
+      if(s.item) toast('['+ITEMS[s.item].name+'] 획득 · 캐릭터 탭에서 장착해요'); } }}); }
 /* ── 타일 그리기 ──────────────────────────────────────────────────────── */
 function tileAt(m,x,y){
   if(x<0||y<0||x>=m.w||y>=m.h) return null;
@@ -7068,9 +7072,9 @@ function spotHint(s){
   if(s.kind==='thing') return '눌러서 살펴보기';
   if(s.kind==='lease') return leaseHere(s)?'전세 계약 · '+leaseCh().title+' · 눌러서 계속':S.lease?'다음 장면은 '+leaseWhere()+'에서':'눌러서 말 걸기';
   if(s.kind==='ep') return epBestOf(s.id)===null?'눌러서 걸어 보기':'다시 걸어 보기';
-  if(s.kind==='review') return reviewQuest()?'눌러서 복습하기':'복습할 문항이 없다';
+  if(s.kind==='review') return reviewQuest()?'눌러서 복습하기':'복습할 문항이 없어요';
   if(s.kind==='boss'){ var bb=bossById(s.id);
-    if(!bossReady(bb)) return THEMES[bb.stat].k+' 스탯 '+bb.need+'부터 · 지금 '+S.stats[bb.stat];
+    if(!bossReady(bb)) return THEMES[bb.stat].full+' 스탯 '+bb.need+'부터 · 지금 '+S.stats[bb.stat];
     return bossCleared(s.id)?'다시 맞서기':'눌러서 맞서기'; }
   var a=questAt(s.who);
   if(!a){ var lq2=lockedFor(function(q){ return q.npc===s.who; }); if(lq2) return '내일 열림 · '+lq2.title; }
@@ -7232,7 +7236,7 @@ function goTo(gx,gy,then){
   var m=curMap(),path;
   if(carOn()&&!walkable(m,gx,gy,0,'car')){
     var r=carRoute(m,gx,gy);
-    if(!r){ toast('차는 찻길과 주차장에서만 달린다. 세울 주차장이 안 보인다.'); if(then) then(); return false; }
+    if(!r){ toast('차는 찻길과 주차장에서만 달려요. 근처에 세울 주차장(P)이 없어요.'); if(then) then(); return false; }
     var after=function(){ parkHere(); toast('주차장에 차를 세우고 내렸다.'); drawScene();
       if(!(gx===ME.tx&&gy===ME.ty)) goTo(gx,gy,then); else if(then) then(); };
     if(!r.car.length){ after(); return true; }
@@ -7272,16 +7276,16 @@ function checkWarp(){
   for(i=0;i<(m.warps||[]).length;i++){ w=m.warps[i];
     if(w.x===ME.tx&&w.y===ME.ty){
       if(w.to==='room'&&!ROOMSPEC[S.tier]){
-        toast('아직 들어갈 방이 없어요. 주 스탯을 올려 거처를 해금하세요.');
+        toast('아직 내 방이 없어요. 집 퀘스트를 풀어 집 스탯을 올리면 거처가 열려요.');
         ME.ty=Math.min(m.h-2,ME.ty+1); ME.dir=0; savePos(); drawScene(); return true; }
       if(w.to==='room'){ var rs=roomMap().spawn; enterMap('room',rs.x,rs.y); return true; }
       var gl=((w.needCar||w.to==='korea')&&!mqOk('car'))?'고속도로는 메인 4장 「첫 차」를 마치면 열려요':(w.mq&&!mqOk(w.mq))?mqRegionLock(w.to):null;
       if(gl){ { toast(gl); ME.ty=Math.max(0,ME.ty-1); if(!walkable(m,ME.tx,ME.ty)) ME.ty++; ME.tx=Math.max(0,ME.tx-(walkable(m,ME.tx-1,ME.ty)?1:0)); savePos(); drawScene(); return true; } }
       if(w.fuel){ var fc=Math.round(w.fuel*(S.done.indexOf('car1')>=0?0.7:1));
-        if(S.coin<fc){ toast('기름값이 모자란다 · ￦'+fc+' 필요'); ME.ty=Math.min(m.h-2,ME.ty+1); savePos(); drawScene(); return true; }
+        if(S.coin<fc){ toast('기름값이 모자라요 · ￦'+fc+' 필요'); ME.ty=Math.min(m.h-2,ME.ty+1); savePos(); drawScene(); return true; }
         S.coin-=fc; save(); hudRefresh(); setTimeout(function(){ sfx('coin'); toast('기름값 ￦'+fc+(S.done.indexOf('car1')>=0?' · 알뜰 운전으로 30% 아낌':'')); },300); }
       if((w.needCar||w.to==='korea')&&!carOn()){
-        toast(S.park&&S.park.map===ME.map?'세워 둔 차에 타야 고속도로로 갈 수 있다. 차를 눌러 보자.':'고속도로는 자동차를 타고 가야 한다.');
+        toast(S.park&&S.park.map===ME.map?'세워 둔 차에 타야 고속도로로 갈 수 있어요. 차를 눌러 보세요.':'고속도로는 자동차를 타야 갈 수 있어요.');
         ME.tx=Math.max(1,Math.min(m.w-2,ME.tx+(w.x<=0?1:w.x>=m.w-1?-1:0))); savePos(); drawScene(); return true; }
       takeWarp(w); return true; } }
   if(m.edges){
@@ -7306,7 +7310,7 @@ function enterMap(id,tx,ty){
   if(PLACE&&id!=='room'){ PLACE=null; showPlaceBar(); }
   var prevMap=ME.map,ptx=ME.tx,pty=ME.ty,wasRiding=rideHere();
   var m=(id==='room')?roomMap():MAPS[id];
-  if(!m){ toast('아직 들어갈 방이 없어요. 주 스탯을 올려 거처를 해금하세요.'); return; }
+  if(!m){ toast('아직 내 방이 없어요. 집 퀘스트를 풀어 집 스탯을 올리면 거처가 열려요.'); return; }
   MOVE=null;
   ME.map=id; ME.tx=Math.max(0,Math.min(m.w-1,tx)); ME.ty=Math.max(0,Math.min(m.h-1,ty));
   if(!walkable(m,ME.tx,ME.ty)){                      /* 착지 칸이 막혀 있으면 옆으로 민다 */
@@ -7559,7 +7563,7 @@ function triggerSpot(s){
     return toast(up.length?'다음 복습은 내일 · '+up.length+'문항 대기 중':'아직 복습할 문항이 없어요.'); }
   if(s.kind==='boss'){ var b=bossById(s.id);
     if(bossReady(b)) return startBoss(b);
-    return toast(THEMES[b.stat].k+' 스탯 '+b.need+'부터 붙을 수 있어요 · 지금 '+S.stats[b.stat]); }
+    return toast(THEMES[b.stat].full+' 스탯 '+b.need+'부터 붙을 수 있어요 · 지금 '+S.stats[b.stat]); }
   var a=questAt(s.who);
   if(a) return startQuest(a.q);
   var lq2=lockedFor(function(q){ return q.npc===s.who; }); if(lq2) return lockedDialog(lq2);
@@ -7612,7 +7616,7 @@ function stepDir(d){
     /* 차를 탄 채 보도 쪽으로 가려 하면: 주차장이면 내려서 걷고, 아니면 막는다 */
     if(carOn()&&walkable(m,nx,ny,1,'foot')){
       if(tileAt(m,ME.tx,ME.ty)==='Q'){ parkHere(); toast('주차장에 차를 세우고 내렸다.'); MOVE={path:[{x:nx,y:ny}],pi:-1,then:null}; nextStep(); return; }
-      if(Date.now()-CARTIP>4000){ CARTIP=Date.now(); toast('차는 찻길과 주차장에서만 달린다. 주차장(P)에 세우고 걷자.'); } }
+      if(Date.now()-CARTIP>4000){ CARTIP=Date.now(); toast('차는 찻길과 주차장에서만 달려요. 주차장(P)에 세우고 걸어가세요.'); } }
     savePos(); drawScene(); return; }
   MOVE={path:[{x:nx,y:ny}],pi:-1,then:null};
   nextStep();
@@ -7671,8 +7675,8 @@ function bindScene(){
     if(!reachable(m,t.x,t.y)){
       var ch=tileAt(m,t.x,t.y);
       var wq=warpAt(m,t.x,t.y);
-      if(wq&&wq.needCar) toast(S.park&&S.park.map===ME.map?'세워 둔 차에 먼저 타자.':S.owned.indexOf('car')>=0||S.owned.indexOf('sedan')>=0?'캐릭터 창에서 자동차를 타면 고속도로로 갈 수 있다.':'고속도로는 자동차가 있어야 탈 수 있다. 상점에서 탈것을 알아보자.');
-      else if(ch==='r'&&S.owned.indexOf('car')>=0&&!carOn()) toast('캐릭터 창에서 자동차를 타면 찻길로 갈 수 있다.');
+      if(wq&&wq.needCar) toast(S.park&&S.park.map===ME.map?'세워 둔 차에 먼저 타세요.':S.owned.indexOf('car')>=0||S.owned.indexOf('sedan')>=0?'캐릭터 탭에서 자동차를 타면 고속도로로 갈 수 있어요.':'고속도로는 자동차가 있어야 갈 수 있어요. 상점의 탈것에서 살 수 있어요.');
+      else if(ch==='r'&&S.owned.indexOf('car')>=0&&!carOn()) toast('캐릭터 탭에서 자동차를 타면 찻길로 갈 수 있어요.');
       else if(ch==='D'&&!warpAt(m,t.x,t.y)) toast('아직 문이 잠겨 있어요.');
       else if(ch==='r'||ch==='-') toast('찻길은 건널 수 없어요.');
       return; }
@@ -7702,7 +7706,7 @@ function toast(msg){
   el.style.bottom='';
   try{ var hm=document.getElementById('home'),ap=document.getElementById('app'),sb=hm&&hm.classList.contains('on')&&hm.querySelector('.stagebox');
     if(sb&&ap){ var d=ap.getBoundingClientRect().bottom-sb.getBoundingClientRect().bottom+8; if(d>0&&d<400) el.style.bottom=Math.round(d)+'px'; } }catch(e){}
-  clearTimeout(toast.t); toast.t=setTimeout(function(){ el.hidden=true; },2200);
+  clearTimeout(toast.t); toast.t=setTimeout(function(){ el.hidden=true; },Math.min(7000,1800+70*String(msg).length));   /* 긴 안내는 읽을 시간만큼 */
 }
 
 var TABS=[['home','홈','home'],['wiki','백과','find'],['char','캐릭터','user'],['shop','상점','bag']];
@@ -7761,7 +7765,7 @@ function renderHome(){
   document.getElementById('htier').innerHTML=TIERS[S.tier].name+
    (nx===null?'<span class="micro">최종 단계</span>'
     :hold?'<span class="micro">자가는 메인 6장 뒤에 열림</span>'
-    :nx>0?'<span class="micro">다음 거처까지 주 스탯 '+nx+'</span>'
+    :nx>0?'<span class="micro">다음 거처까지 집 스탯 '+nx+'</span>'
     :'<span class="micro">'+(upLeft()>0?'다음 퀘스트를 깨면 해금':'새 거처는 내일 해금')+'</span>');
   document.getElementById('hdef').textContent=tt.def;
   if(S.lastTier===undefined) S.lastTier=S.tier;
@@ -8017,7 +8021,7 @@ var EPISODES=[
    note:'말은 등기에 안 남는다. 확인은 서류로 하고, 서류에 없는 약속은 특약으로 남긴다.'}]},
  {t:'계약서를 쓴다. 특약 칸이 비어 있다.',
   opts:[
-  {a:'잔금일까지 근저당을 새로 잡지 않는다는 특약을 넣는다',risk:0,
+  {a:'잔금일 다음 날까지 근저당을 새로 잡지 않는다는 특약을 넣는다',risk:0,
    note:'계약일과 잔금일 사이에 대출이 새로 잡히면 내 순위가 뒤로 밀린다. 그 사이를 막는 문장이 특약이다.'},
   {a:'표준 계약서 그대로 간다',risk:2,
    note:'표준 계약서는 최소한이다. 이 집에만 있는 위험은 특약에만 적힌다.'},
@@ -8029,7 +8033,7 @@ var EPISODES=[
    note:'계약일 이후에 근저당이 새로 잡혔는지는 잔금 직전에만 확인할 수 있다. 보내고 나면 되돌릴 방법이 없다.'},
   {a:'계약할 때 봤으니 그대로 보낸다',risk:3,
    note:'등기는 계약 다음 날에도 바뀔 수 있다. 확인은 돈이 나가기 전에만 의미가 있다.'}]},
- {t:'이사를 마쳤다. 짐은 다 들어왔고 주민센터는 아직 문을 열었다.',
+ {t:'이사를 마쳤다. 짐은 다 들어왔고 주민센터는 아직 문을 닫지 않았다.',
   opts:[
   {a:'그날 바로 전입신고와 확정일자를 함께 처리한다',risk:0,
    note:'대항력은 전입신고한 다음 날 0시부터 생긴다. 하루를 미루면 그 하루에 잡힌 권리가 나보다 앞선다.'},
@@ -8341,10 +8345,10 @@ function renderQuests(){
     var fc=document.createElement('canvas'); epSprite(fc,b.face,1); row.appendChild(fc);
     var txt=document.createElement('span');
     txt.innerHTML='<span class="bt">'+b.name+(done?' · 격파':'')+'</span>'+
-      '<span class="bm">HP '+Math.round(b.hp*1.25)+' · 공격 '+b.atk+' · 문항 '+b.qs.length+'개 · '+pl.need+'개 맞추면 승리'+
+      '<span class="bm">HP '+Math.round(b.hp*1.25)+' · 공격 '+b.atk+' · 문항 '+b.qs.length+'개 · '+pl.need+'개 맞히면 승리'+
       '<br>'+(done?'이미 물리쳤어요. 다시 이기면 하루 한 번 ￦30을 받아요.'
         :S.stats[b.stat]>=b.need?'오답 '+pl.take+' 피해 · '+pl.survive+'번까지 버텨요.'
-        :THEMES[b.stat].k+' 스탯 '+b.need+'부터 붙을 수 있어요 · 지금 '+S.stats[b.stat])+'</span>';
+        :THEMES[b.stat].full+' 스탯 '+b.need+'부터 붙을 수 있어요 · 지금 '+S.stats[b.stat])+'</span>';
     row.appendChild(txt); bc.appendChild(row);
     bc.disabled=!ready;
     if(ready) bc.onclick=function(){ startBoss(b); };
@@ -8365,8 +8369,8 @@ function bigCharCanvas(cv){
   else drawFlip(ctx,heroCv('idle',0),16,cv.height-64,!!av.faceRight);
   var pet=PETS[S.equip.pet];
   if(pet&&pet.kind){ var pc=petCv(pet.kind,0); ctx.drawImage(pc,cv.width-pc.width-12,cv.height-pc.height); } }
-function itemStat(it){ return (it.atk?'<span class="a">공 '+(it.atk>0?'+':'')+it.atk+'</span><br>':'')+
-  (it.def?'<span class="d">방 '+(it.def>0?'+':'')+it.def+'</span>':''); }
+function itemStat(it){ return (it.atk?'<span class="a">공격 '+(it.atk>0?'+':'')+it.atk+'</span><br>':'')+
+  (it.def?'<span class="d">방어 '+(it.def>0?'+':'')+it.def+'</span>':''); }
 function thumbFor(slot,id){
   var cv=document.createElement('canvas'); cv.width=26; cv.height=26;
   cv.style.width='52px'; cv.style.height='52px';
@@ -8506,7 +8510,7 @@ function renderChar(){
   if(!own) fbn.lastChild.style.opacity='.35';
   var ft=document.createElement('span'); ft.className='dt';
   ft.innerHTML='<span class="dn" style="color:var(--p0)">'+(own?own+'개 가짐':'아직 없음')+'</span><span class="dn">'+
-    (own?'방에 '+placed+' · 창고 '+(own-placed):'상점에서 산다')+'</span>';
+    (own?'방에 '+placed+' · 창고 '+(own-placed):'상점에서 사요')+'</span>';
   fbn.appendChild(ft); fbn.onclick=function(){ CHARSEL='furni'; sfx('pick'); renderChar(); }; B.appendChild(fbn);
   renderBag();
   var pa=document.getElementById('pavatar'); pa.innerHTML='';
@@ -8610,10 +8614,10 @@ function houseTip(i){
   var h='<div class="ih"><div class="ithumb"></div><div><span class="inm">'+tr.name+'</span>'+
     '<span class="isub">거처 · '+(i+1)+'단계</span>'+(here?'<span class="ion">사는 곳</span>':'')+'</div></div><hr>'+
     statLine('방어',tr.def,here?null:TIERS[S.tier].def)+
-    '<div class="il"><i>◆</i>'+(sp?'방 '+(sp.w-2)+'×'+(sp.h-2)+'칸':'방 없음 · 세간을 둘 수 없다')+(tr.rooms?' · '+tr.rooms:'')+'</div>'+
+    '<div class="il"><i>◆</i>'+(sp?'방 '+(sp.w-2)+'×'+(sp.h-2)+'칸':'방 없음 · 세간을 둘 수 없어요')+(tr.rooms?' · '+tr.rooms:'')+'</div>'+
     (tr.own?'<div class="il good"><i>◆</i>자가 · 이사 걱정 없음</div>':'')+
     '<div class="il '+(sp&&!PET_NO[i]?'good':'warn')+'"><i>◆</i>펫 '+(sp&&!PET_NO[i]?'키울 수 있음':'키울 수 없음')+'</div>'+
-    (open?'':'<div class="il warn"><i>◆</i>주 스탯 '+tr.need+' 필요 · 지금 '+S.stats.ju+'</div>')+
+    (open?'':'<div class="il warn"><i>◆</i>집 스탯 '+tr.need+' 필요 · 지금 '+S.stats.ju+'</div>')+
     (dep?'<div class="il '+(S.coin>=dep?'good':'warn')+'"><i>◆</i>입주 보증금 ￦'+dep+' · 지금 ￦'+S.coin+
       (S.coin>=dep?'':' · ￦'+(dep-S.coin)+' 모자라요. 퀘스트·출석·광고 보상으로 모을 수 있어요')+'</div>'
      :(open&&!here&&i>0?'<div class="il good"><i>◆</i>이미 살아 본 곳이라 보증금 없이 옮길 수 있어요</div>':''))+
@@ -8623,7 +8627,7 @@ function houseTip(i){
   var bt=[];
   var needLease=!!(LEASE_TIERS[i]&&i>paidBase()&&!(S.leaseDone&&S.leaseDone[i]));     /* 전세는 계약 사건을 거쳐야 옮긴다 */
   if(open&&!here) bt.push({t:needLease?'전세 계약하러 가기':dep?(S.coin>=dep?'￦'+dep+' 내고 여기서 살기':'보증금 ￦'+dep+' 모자람'):'여기서 살기',off:!needLease&&!!dep&&S.coin<dep,
-    f:function(){ var mv=tierMove(i); if(!mv.ok){ if(mv.lease){ save(); closeTip(); render('home'); setTimeout(function(){ enterMap('town_estate',6,8); toast('전세는 계약부터 · 중개사에게 말을 걸어 보자'); },80); return; }
+    f:function(){ var mv=tierMove(i); if(!mv.ok){ if(mv.lease){ save(); closeTip(); render('home'); setTimeout(function(){ enterMap('town_estate',6,8); toast('전세는 계약부터 해요 · 중개사에게 말을 걸어 보세요'); },80); return; }
         toast('보증금 ￦'+mv.cost+'이 모자라요.'); return; }
       save(); closeTip(); toast(tr.name+'(으)로 옮겼어요.'+(mv.cost?' 보증금 ￦'+mv.cost:'')); renderChar(); }});
   openTip(h,open?'#FFC53C':'#6B6380',bt); }
@@ -8750,7 +8754,7 @@ var WIKI=[
    d:'금액·계약일·특약을 문자로 남기고 보낸다. 계좌는 반드시 등기부상 소유자 명의로.',
    miss:'조건을 안 남기면 돌려받기 어려워진다.'},
   {t:'계약서 작성',when:'계약일',
-   d:'임대인 신분증과 등기부상 소유자를 대조한다. 대리인이면 위임장과 인감증명서. 특약에 "잔금일까지 근저당을 설정하지 않는다"를 넣는다.',
+   d:'임대인 신분증과 등기부상 소유자를 대조한다. 대리인이면 위임장과 인감증명서. 특약에 "잔금일 다음 날까지 근저당을 설정하지 않는다"를 넣는다.',
    miss:'계약금만 낸 사이에 대출이 잡히면 순위가 밀린다.',q:'ju3'},
   {t:'전세대출 신청',when:'계약 직후',
    d:'은행 심사와 보증기관 요건을 함께 본다. 대출이 안 나오면 계약금을 잃을 수 있어 특약으로 조건부 해제를 넣어 두기도 한다.',
@@ -8793,7 +8797,7 @@ var WIKI=[
    miss:'시급제라면 매주 하루치가 빠진다.',q:'stu1'},
   {t:'연차',when:'1개월 뒤부터',
    d:'1년 미만은 1개월 개근마다 1일. 1년간 80% 이상 출근하면 15일.',
-   miss:'안 쓰고 모르고 넘기면 사라지거나 정산에서 빠진다.',q:'jik2'},
+   miss:'회사가 사용을 권했는데도 안 쓰면 수당 없이 사라질 수 있다(연차 사용촉진).',q:'jik2'},
   {t:'퇴사와 실업급여',when:'퇴사할 때',
    d:'원칙적으로 비자발적 이직이고, 이직 전 18개월 중 피보험단위기간 180일 이상이어야 한다.',
    miss:'자발적 퇴사로 처리되면 대상에서 빠진다. 퇴사 전에 기간을 조회해 둔다.',q:'jik3'}
@@ -9193,7 +9197,8 @@ function finish(failed){
   big.style.color=failed?P.r2:'';
   var rxp=document.getElementById('rxp');
   rxp.textContent=failed?'보상 없음 · 틀린 문항은 복습에 담았어요':'+'+xp+' XP · ￦'+coin;
-  rxp.style.color=failed?P.s2:'';
+  rxp.style.color=failed?P.s2:''; rxp.style.fontSize=failed?'14px':'';
+  if(!failed) countUp(rxp,xp,coin);
   paintHero(document.getElementById('rchar'),failed?'idle':'cheer',0);
   var g=document.getElementById('rgains'); g.innerHTML='';
   Object.keys(q.stat).forEach(function(k){ var d=document.createElement('div'); d.className='gain';
@@ -9204,7 +9209,7 @@ function finish(failed){
   if(wrong&&!q.keys){ var d4=document.createElement('div'); d4.className='gain';
     d4.innerHTML='<span>복습 예약</span><b>'+wrong+'문항 · 내일</b>'; g.appendChild(d4); }
   if(!failed&&(dirty||blue)){ var d6=document.createElement('div'); d6.className='gain';
-    d6.innerHTML='<span>'+(dirty?'청결이 낮아 코인 -20%':'')+(dirty&&blue?' · ':'')+(blue?'기분이 처져 경험치 -20%':'')+'</span><b>집에서 채우자</b>'; g.appendChild(d6); }
+    d6.innerHTML='<span>'+(dirty?'청결이 낮아 코인 -20%':'')+(dirty&&blue?' · ':'')+(blue?'기분이 처져 경험치 -20%':'')+'</span><b>집에서 채워요</b>'; g.appendChild(d6); }
   if(bonus){ var d5=document.createElement('div'); d5.className='gain';
     d5.innerHTML='<span>오늘 완주 보너스</span><b>￦'+bonus+'</b>'; g.appendChild(d5); }
   if(got){ var d3=document.createElement('div'); d3.className='gain';
@@ -9223,13 +9228,14 @@ function finish(failed){
   } else up.hidden=true;
   /* 결과 화면 광고: 이번에 번 코인만큼 더. 한 결과에 한 번, 하루 3회 */
   var od=document.getElementById('rdbl'); if(od) od.remove();
-  if(!failed&&coin>=30){
+  /* 처음 세 퀘스트는 광고를 권하지 않는다. 그 뒤로도 광고는 돌아가기보다 약한 보조 버튼 */
+  if(!failed&&coin>=30&&S.done.length>3){
     var dw=document.createElement('div'); dw.id='rdbl'; dw.style.cssText='width:100%;display:flex;flex-direction:column;gap:var(--u2)';
     if(adLeft('dbl')>0){
-      var db=document.createElement('button'); db.className='btn btn--wide pix'; db.textContent='광고 보고 ￦'+coin+' 더 받기 (오늘 '+adLeft('dbl')+'회 남음)';
+      var db=document.createElement('button'); db.className='btn btn--plain btn--wide pix'; db.textContent='광고 보고 ￦'+coin+' 더 받기 (오늘 '+adLeft('dbl')+'회 남음)';
       var got2=false;
       db.onclick=function(){ adGo('dbl',function(){ if(got2) return; got2=true;
-        S.coin+=coin; save(); sfx('coin'); ev('result_double',{coin:coin});
+        clearInterval(rxp.__cu); S.coin+=coin; save(); sfx('coin'); ev('result_double',{coin:coin});
         rxp.textContent='+'+xp+' XP · ￦'+coin+' + 광고 ￦'+coin;
         dw.innerHTML=''; var nt=document.createElement('div'); nt.className='micro'; nt.style.textAlign='center';
         nt.textContent='광고 보상 ￦'+coin+'을 받았어요 · 합계 ￦'+(coin*2); dw.appendChild(nt); }); };
@@ -9239,6 +9245,15 @@ function finish(failed){
   go('result');
   if(MVB){ var mb=MVB; MVB=null; setTimeout(function(){ moveBanner(mb); },350); } }
 
+/* 결과 숫자를 0부터 0.6초 동안 올려 보여 준다. 줄인 움직임이면 바로 최종 값 */
+function countUp(el,xp,coin){
+  clearInterval(el.__cu);
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var t0=performance.now(),last=-1;
+  el.__cu=setInterval(function(){ var k=Math.min(1,(performance.now()-t0)/600),e=1-Math.pow(1-k,3);
+    var x=Math.round(xp*e),c=Math.round(coin*e); el.textContent='+'+x+' XP · ￦'+c;
+    if(c!==last&&k<1&&Math.floor(c/Math.max(1,coin/6))!==Math.floor(last/Math.max(1,coin/6))) sfx('tick'); last=c;
+    if(k>=1) clearInterval(el.__cu); },40); }
 /* ══════════ 보스전 ══════════ */
 var FIGHT=null,BOSSMOVE=null;
 function startBoss(b){
@@ -9319,7 +9334,7 @@ function bossEnd(win){
     else { if(!S.bossDay) S.bossDay={}; if(S.bossDay[B.id]!==dayKey()){ S.bossDay[B.id]=dayKey(); prize=30; } }
     S.coin+=prize;
     var gb=tierGrow();
-    if(gb&&gb.wasTop){ var mv=tierMove(S.peak); BOSSMOVE=mv; if(!mv.ok) setTimeout(function(){ toast(mv.lease?'전세 계약부터 · 동네 부동산으로 가자':'입주 보증금 ￦'+mv.cost+'이 모자라 아직 못 옮겼어요'); },900); } }
+    if(gb&&gb.wasTop){ var mv=tierMove(S.peak); BOSSMOVE=mv; if(!mv.ok) setTimeout(function(){ toast(mv.lease?'전세 계약부터 해요 · 동네 부동산으로 가 보세요':'입주 보증금 ￦'+mv.cost+'이 모자라 아직 못 옮겼어요'); },900); } }
   /* 져도 거처는 그대로다. 포만감·체력만 쓴다(시작할 때 이미 냈다) */
   S.fightId=null;
   save();
@@ -9351,8 +9366,8 @@ function bossEnd(win){
     box.appendChild(dl); }
   body.appendChild(box);
   var pl=bossPlan(B),note=document.createElement('div'); note.className='micro'; note.style.textAlign='center';
-  note.innerHTML=win?(B.win+(first?'<br>'+THEMES[B.stat].k+' 스탯 +15':''))
-   :(B.lose+'<br>틀린 문항의 해설을 다시 읽어보세요. 지금 공격력이면 '+pl.need+'개를 맞춰야 이겨요.');
+  note.innerHTML=win?(B.win+(first?'<br>'+THEMES[B.stat].full+' 스탯 +15':''))
+   :(B.lose+'<br>틀린 문항의 해설을 다시 읽어보세요. 지금 공격력이면 '+pl.need+'개를 맞혀야 이겨요.');
   body.appendChild(note); go('bossend'); }
 
 document.getElementById('qback').onclick=function(){ render('home'); };
@@ -9365,7 +9380,11 @@ document.getElementById('epback').onclick=function(){ render('home'); };
 document.getElementById('htutor').onclick=function(){ stepTutor(); };
 var MQ_OUTRO=0;
 document.getElementById('eeback').onclick=function(){ render('home'); if(MQ_OUTRO){ MQ_OUTRO=0; setTimeout(mqLeaseOutro,300); } };
-document.getElementById('reset').onclick=function(){ S=fresh(); save(); obStep=0; stopWalk(); obRender(); go('onboard'); };
+/* 되돌릴 수 없는 일이라 한 번 더 묻는다. 기본은 돌아가기 */
+document.getElementById('reset').onclick=function(){
+  openTip('<div class="ih"><div><span class="inm">처음부터 할까요?</span></div></div><hr>'+
+    '<div class="il warn"><i>◆</i>레벨, 코인, 거처, 메인 퀘스트 진행이 모두 지워지고 되돌릴 수 없어요.</div>','#F4705A',
+    [{t:'돌아가기',f:closeTip},{t:'지우고 처음부터',f:function(){ closeTip(); S=fresh(); save(); obStep=0; stopWalk(); obRender(); go('onboard'); }}]); };
 window.addEventListener('resize',function(){
   if(document.getElementById('home').classList.contains('on')){ fitScene(); drawScene(); } });
 
@@ -9397,7 +9416,10 @@ function applyDemo(){
   fullTick(); S.full=fullMax(); ROOMC={}; save(); }
 function renderSettings(){
   var h=document.getElementById('csettings'); h.innerHTML='';
-  toggleRow(h,'시연 모드',demoOn(),function(v){ try{ localStorage.setItem('nq_demo',v?'1':'0'); }catch(e){}
+  /* 시연 모드와 계측 칸은 개발·시연용이다. 주소에 #dev나 #demo가 있거나 이미 켠 사람에게만 보인다 */
+  var dev=/[#&](dev|demo)/.test(location.hash)||demoOn();
+  document.querySelectorAll('#codex .devonly').forEach(function(e){ e.hidden=!dev; });
+  if(dev) toggleRow(h,'시연 모드',demoOn(),function(v){ try{ localStorage.setItem('nq_demo',v?'1':'0'); }catch(e){}
     if(v){ applyDemo(); toast('시연 모드 · 모든 장비·탈것·세간·거처를 열었어요.'); }
     else toast('시연 모드를 껐어요. "처음부터 다시"를 하면 실제 경제로 시작해요.');
     renderSettings(); },'모든 장비·탈것·세간·거처 해금, 코인 5000');
@@ -9590,7 +9612,7 @@ function openingStart(){
     menu.innerHTML='';
     if(confirmNew){
       var q=document.createElement('div'); q.className='omq';
-      q.innerHTML='<b>처음부터 할까요?</b><span>레벨, 코인, 거처, 메인 퀘스트 진행이 모두 지워져요.</span>';
+      q.innerHTML='<b>처음부터 할까요?</b><span>레벨, 코인, 거처, 메인 퀘스트 진행이 모두 지워지고 되돌릴 수 없어요.</span>';
       menu.appendChild(q);
       [{k:'wipe',t:'지우고 처음부터'},{k:'back',t:'돌아가기'}].forEach(function(it,i){ menu.appendChild(menuBtn(it,i)); });
       MI=1; focusMenu(); return; }
@@ -9694,7 +9716,7 @@ function playCinema(panels,onDone,host){
     ctx.fillStyle='rgba(8,6,18,.88)'; ctx.fillRect(bx,by,bw,bh);
     ctx.fillStyle='#57517A'; ctx.fillRect(bx,by,bw,1); ctx.fillRect(bx,by+bh-1,bw,1); ctx.fillRect(bx,by,1,bh); ctx.fillRect(bx+bw-1,by,1,bh);
     if(p.who) ctext(ctx,p.who,bx+6,by-11,8,'#FFE79B',null,'#07060E');
-    shown=Math.min(total(p),Math.floor(t*16));
+    shown=Math.min(total(p),Math.floor(t*26));   /* 초당 26자. 16자는 프롤로그가 30초 걸렸다 */
     var left=shown;
     wrapLines(p).forEach(function(line,j){ var n=Math.max(0,Math.min(line.length,left)); left-=line.length+6;
       if(n>0) ctext(ctx,line.slice(0,n),bx+7,by+8+j*14,8,p.col||'#FFFDF6'); });
@@ -9706,7 +9728,7 @@ function playCinema(panels,onDone,host){
     if(e&&e.type==='keydown'){ e.stopPropagation(); e.preventDefault(); }
     if(done) return;
     var p=panels[pi],t=(performance.now()-p0)/1000;
-    if(Math.floor(t*16)<total(p)){ p0-=100000; return; }          /* 글자 먼저 다 찍기 */
+    if(Math.floor(t*26)<total(p)){ p0-=100000; return; }          /* 글자 먼저 다 찍기 */
     sfx('tap');
     if(pi<panels.length-1){ pi++; p0=performance.now(); if(panels[pi].sfx) sfx(panels[pi].sfx); return; }
     finish(); }
@@ -10920,7 +10942,7 @@ var MQ_LIST=[
   ann:['퀘스트를 셋이나 해냈구먼. 허허, 제법이야.','이제 큰일 하나를 같이 보세. 합격 문자부터 첫 월급까지.'],q:'메인 1장 · 첫 취업. 두세 분이면 보네.'},
  {id:'lease',no:2,title:'첫 전세 계약',
   open:function(){ return mqDone('job')&&(S.peak>=7||!!S.lease||leaseDoneAny()); },
-  wait:function(){ return (S.peak>=7||S.lease||leaseDoneAny())?null:(TIERS[7].need>S.stats.ju?'원룸 전세까지 주 스탯 '+(TIERS[7].need-S.stats.ju)+' 더':'원룸 전세가 열리면'); },
+  wait:function(){ return (S.peak>=7||S.lease||leaseDoneAny())?null:(TIERS[7].need>S.stats.ju?'원룸 전세까지 집 스탯 '+(TIERS[7].need-S.stats.ju)+' 더':'원룸 전세가 열리면'); },
   ann:['원룸 전세가 열렸네. 이번엔 이사가 아니라 계약부터야.','보증금은 자네가 모은 돈 거의 전부일 걸세. 처음부터 끝까지 같이 보지.'],q:'메인 2장 · 첫 전세 계약. 부동산으로 가 볼 텐가?'},
  {id:'card',key:'MQ_CARD',no:3,title:'첫 신용카드',
   open:function(){ return mqDone('lease')&&mqDay('lease')&&S.lv>=6&&mapOpen('bank'); },
@@ -10996,7 +11018,7 @@ function mqPay(c,g){
   if(better){
     gain.xp=r10((R.xp||0)*k)-(first?0:r10((R.xp||0)*pk)); gain.coin=r10((R.coin||0)*k)-(first?0:r10((R.coin||0)*pk));
     M.done[c.id]=g; if(first) M.at[c.id]=dayKey();
-    rows.push(['경험치','+'+gain.xp],['코인','₩'+gain.coin]);
+    rows.push(['경험치','+'+gain.xp],['코인','￦'+gain.coin]);
     Object.keys(R.stat||{}).forEach(function(s){ var v=st(R.stat[s],k)-(first?0:st(R.stat[s],pk)); if(v>0){ S.stats[s]=Math.min(100,(S.stats[s]||0)+v); rows.push([(THEMES[s]?THEMES[s].k:s)+' 스탯','+'+v]); } });
     S.xp+=gain.xp; S.coin+=gain.coin; while(S.xp>=need(S.lv)){ S.xp-=need(S.lv); S.lv++; } }
   else rows.push(['이미 더 좋은 등급','보상 없음','#9B93A8']);
@@ -11042,7 +11064,7 @@ function mqLeaseStart(c){
       if(!S.lease&&S.peak>=7) leaseGate(7);
       render('home');
       if(S.lease){ setTimeout(function(){ if(leaseCh()&&leaseCh().place==='estate'){ S.onFoot=true; enterMap('town_estate',8,7); ME.dir=3; savePos(); drawScene(); }
-        toast(leaseCh()&&leaseCh().place==='estate'?'중개사에게 말을 걸어 매물부터 보자':'다음 장면은 '+leaseWhere()+'에서 이어져요'); },300); } }}); }
+        toast(leaseCh()&&leaseCh().place==='estate'?'중개사에게 말을 걸어 매물부터 보세요':'다음 장면은 '+leaseWhere()+'에서 이어져요'); },300); } }}); }
 function mqLeaseGrade(){ var b=S.mq&&S.mq.leaseTier!=null?S.mq.leaseTier:(S.leaseBest&&S.leaseBest.any); return b===0?'good':b===1?'ok':b===2?'bad':'ok'; }
 function mqLeaseOutro(pre){
   var c=mqById('lease'),W=mqWrap(),g=mqLeaseGrade(),replay=mqDone('lease');
@@ -11380,7 +11402,7 @@ var CHECKS=[
    {id:'agent',t:'공인중개사 등록 여부를 확인하고 확인설명서를 받았다',why:'등록된 중개사무소인지 보고, 중개대상물 확인·설명서를 꼭 받는다.'}]},
   {t:'잔금 · 입주 날',items:[
    {id:'reg2',t:'잔금 전에 등기부등본을 한 번 더 뗐다',why:'계약 뒤 잔금 전까지 근저당이 새로 잡히는 경우가 있다.'},
-   {id:'move',t:'전입신고를 했다 (이사 후 14일 이내)',why:'전입신고와 실제 거주로 대항력이 생긴다. 대항력은 전입신고 다음 날 0시부터다.',q:'ju2'},
+   {id:'move',t:'전입신고를 했다 (이사 당일, 늦어도 14일 안)',why:'전입신고와 실제 거주로 대항력이 생긴다. 대항력은 전입신고 다음 날 0시부터다.',q:'ju2'},
    {id:'fixed',t:'확정일자를 받았다',why:'확정일자가 있어야 경매·공매 때 순위에 따라 보증금을 먼저 받을 수 있다. 전월세 신고를 하면 함께 부여된다.',q:'ju2'},
    {id:'report',t:'전월세 신고를 했다 (계약 후 30일 이내)',why:'보증금 6천만원 초과 또는 월세 30만원 초과면 신고 대상이다.',q:'ju4'},
    {id:'meter',t:'관리비·공과금을 정산하고 계량기 사진을 찍었다',why:'이전 사람이 쓴 요금을 내가 내지 않게 입주 날 숫자를 남긴다.'}]},
@@ -11496,8 +11518,9 @@ function renderCheck(){
   var foot=document.createElement('div'); foot.className='chkfoot';
   var sh=document.createElement('button'); sh.className='btn btn--plain'; sh.textContent='목록 공유하기';
   sh.onclick=function(){ shareCheck(c); };
-  var rs=document.createElement('button'); rs.className='btn btn--plain'; rs.textContent='처음부터';
-  rs.onclick=function(){ st.done={}; save(); renderCheck(); };
+  var rs=document.createElement('button'); rs.className='btn btn--plain'; rs.textContent='체크 모두 지우기';
+  rs.onclick=function(){ openTip('<div class="ih"><div><span class="inm">체크를 모두 지울까요?</span></div></div><hr><div class="il warn"><i>◆</i>이 목록에서 체크한 항목이 모두 지워져요.</div>','#F4705A',
+    [{t:'돌아가기',f:closeTip},{t:'모두 지우기',f:function(){ closeTip(); st.done={}; save(); renderCheck(); }}]); };
   foot.appendChild(sh); foot.appendChild(rs); box.appendChild(foot);
   var nt=document.createElement('div'); nt.className='micro';
   nt.innerHTML='기준일 '+CHECK_ASOF+' · 참고: <a href="'+c.src[1]+'" target="_blank" rel="noopener">'+esc(c.src[0])+'</a><br>'+
@@ -11789,7 +11812,7 @@ function moveBanner(o){
   var old=document.getElementById('mvbanner'); if(old&&old.parentNode) old.parentNode.removeChild(old);
   var el=document.createElement('div'); el.id='mvbanner'; el.className='mvbanner pix'; el.setAttribute('role','status');
   el.innerHTML='<div class="mvt">첫 이사</div><div class="mvr"></div><div class="mvn">'+esc(TIERS[o.from].name)+' → '+esc(TIERS[o.to].name)+'</div>'+
-    '<div class="mvs">'+(o.cost?'입주 보증금 ￦'+o.cost+'을 냈어요':'보증금 없이 옮겼어요')+' · 다음 집은 주 스탯을 올리면 열려요</div>';
+    '<div class="mvs">'+(o.cost?'입주 보증금 ￦'+o.cost+'을 냈어요':'보증금 없이 옮겼어요')+' · 다음 집은 집 스탯을 올리면 열려요</div>';
   var row=el.querySelector('.mvr');
   [o.from,o.to].forEach(function(i,k){
     if(k){ var ar=document.createElement('span'); ar.textContent='▶'; ar.style.cssText='align-self:center'; row.appendChild(ar); }
@@ -11948,7 +11971,7 @@ var LEASE_CH=[
    {a:'열쇠만 받고 짐부터 올린다',risk:1,
     note:'정산은 미루면 누가 낼지 다투게 된다. 이사 날 10분이면 끝나는 일이다.'}]}]},
  {title:'이사 당일 오후',place:'hall',beats:[
-  {who:'주민센터 직원',face:'deskf',t:'짐을 다 옮겼다. 주민센터가 아직 문을 열었다.',
+  {who:'주민센터 직원',face:'deskf',t:'짐을 다 옮겼다. 주민센터는 아직 문을 닫지 않았다.',
    opts:[
    {a:'전입신고와 확정일자를 오늘 같이 한다',risk:0,
     note:'전입신고와 실제 거주로 대항력이, 확정일자로 우선변제권이 생긴다. 대항력은 전입신고 다음 날 0시부터다. 보증금이 6천만 원을 넘으면 계약 30일 안에 임대차 신고도 해야 하고, 신고하면 확정일자가 함께 붙는다.'},
