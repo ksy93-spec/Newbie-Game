@@ -688,6 +688,19 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
 .charstage .cchip.coin{border:0;border-radius:999px;background:linear-gradient(180deg,#FFD866,#FFB830);color:#3A2600;padding:3px 12px;}
 .stage{background:linear-gradient(180deg,#BFE6FF,#E6F5FF);border-bottom:0;}
 #onboard .h1{text-shadow:0 3px 0 #1B1F3F,0 0 28px rgba(255,197,60,.45);color:#FFE7A8;}
+/* 리뷰 1007: 누르는 곳은 40~48px 이상, 지도 위 메뉴 단추, 맵 이동 페이드 */
+.dpad{width:120px;height:120px;}
+.guidechip{left:132px;}
+.travel button{min-height:44px;}
+.todaybtn{position:relative;}
+.todaybtn::after{content:'';position:absolute;left:-4px;right:-4px;top:-7px;bottom:-7px;}   /* 줄 높이는 그대로, 누르는 칸만 44px */
+.mqchip{min-height:40px;}
+#opening .omb{min-height:48px;}
+.menuchip{position:absolute;right:8px;top:8px;z-index:4;width:44px;height:44px;border:1px solid rgba(255,255,255,.2);border-radius:12px;
+  background:rgba(14,16,34,.78);color:#FFF;font:18px/1 var(--f-ui);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.chkchip{right:60px;}
+.mapfade{position:absolute;inset:0;z-index:7;background:#0E1022;opacity:0;pointer-events:none;transition:opacity .22s ease-out;}
+.mapfade.on{opacity:1;transition:none;}
 </style>
 
 <div id="app">
@@ -740,6 +753,8 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
         <button class="chkchip pix" id="hchk" hidden></button>
         <button class="guidechip pix" id="hguide" hidden type="button"></button>
         <button class="mqchip pix" id="hmq" hidden type="button"></button>
+        <button class="menuchip pix" id="hmenu" type="button" aria-label="수집 노트와 설정">☰</button>
+        <div class="mapfade" id="hfade"></div>
 
         <div class="dpad" id="hdpad">
           <button data-d="3" aria-label="위">▲</button>
@@ -3610,10 +3625,13 @@ function quizStart(){ var q=quizBuild(); if(!q) return; closeTip(); startQuest(q
 
 /* ══════════ 연속 출석 ══════════
    3·7·14일에 한 번씩만 주는 한정 보상. 새 그림 없이 있는 물건을 쓴다. */
-var MILESTONES=[{d:3,coin:100,item:'beanie2'},{d:7,coin:200,item:'bird'},{d:14,coin:400,item:'ebike'}];
+var MILESTONES=[{d:3,coin:100,item:'beanie2'},{d:7,coin:200,item:'bird'},{d:14,coin:400,item:'ebike'},
+  {d:21,coin:300},{d:30,coin:500}];
+/* 30일 뒤로도 30일마다 ￦500. 연속 기록이 14일 뒤에 아무것도 주지 않던 것 */
+function msList(){ var a=MILESTONES.slice(); for(var d=60;d<=Math.max(60,(S.streak||0));d+=30) a.push({d:d,coin:500}); return a; }
 function msCheck(){
   if(!S.ms) S.ms=[]; if(!S.msNew) S.msNew=[];
-  MILESTONES.forEach(function(m){
+  msList().forEach(function(m){
     if(S.streak<m.d||S.ms.indexOf(m.d)>=0) return;
     S.ms.push(m.d); S.coin+=m.coin;
     var nm=''; if(m.item&&S.owned.indexOf(m.item)<0){ S.owned.push(m.item); nm=allItems(m.item).name; }
@@ -3820,6 +3838,7 @@ function obRender(){
   var nb=document.getElementById('obnext');
   nb.disabled=S[key]==null; nb.textContent=(obStep===nst-1)?'시작하기':'다음';
   paintHero(document.getElementById('obchar'),'idle',0); }
+document.getElementById('hmenu').onclick=function(){ render('codex'); };
 document.getElementById('obnext').onclick=function(){
   var steps=obSteps();
   if(obStep<steps.length-1){ obStep++; ev('onboard_step',{i:obStep,k:steps[obStep]}); obRender(); return; }
@@ -7340,13 +7359,21 @@ function enterMap(id,tx,ty){
   parkOnArrive(id,wasRiding);
   if(carOn()&&!walkable(m,ME.tx,ME.ty,1,'car')) carSettle(m,id);     /* 차를 탄 채 보도에 내려앉았으면 주차장에 세운다 */
   if(S.onFoot&&S.park&&S.park.map!==id&&id!=='room'&&nm2&&!nm2.interior&&MAPS[S.park.map])
-    setTimeout(function(){ toast(MOUNTS[S.equip.mount].name+'은(는) '+MAPS[S.park.map].name+'에 세워 두었다.'); },500);
+    setTimeout(function(){ toast(MOUNTS[S.equip.mount].name+' · '+MAPS[S.park.map].name+'에 세워 뒀어요.'); },500);
   sfx('pick'); savePos(); drawScene(); checkEgg();
+  if(prevMap!==id) mapFade();
   setTimeout(function(){ maybeLifeEvent(); },1400);
   if(id==='room'&&perkSum('dogcoin')&&S.dogDay!==dayKey()){ S.dogDay=dayKey(); S.coin+=15; save(); hudRefresh();
     setTimeout(function(){ sfx('coin'); toast('강아지가 어디선가 동전을 물어 왔다. ￦15'); },400); }
   setTimeout(checkTutor,500);
 }
+/* 지도는 초당 여러 번 다시 그린다. 글이 그대로면 DOM을 건드리지 않아 스타일 재계산을 줄인다 */
+function setHtml(el,h){ if(el.__h!==h){ el.innerHTML=h; el.__h=h; } }
+/* 다른 맵으로 들어가면 어둡게 시작해 0.22초 동안 밝아진다. 순간 이동처럼 툭 바뀌지 않게 */
+function mapFade(){
+  var f=document.getElementById('hfade'); if(!f) return;
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  f.classList.add('on'); void f.offsetWidth; requestAnimationFrame(function(){ f.classList.remove('on'); }); }
 /* ── 그리기 ──────────────────────────────────────────────────────────── */
 function drawScene(){
   var cv=document.getElementById('scene'); if(!cv) return;
@@ -7414,8 +7441,8 @@ function drawScene(){
   ctx.restore();
 
   var zn=document.getElementById('hzone');
-  if(zn) zn.innerHTML='<b>'+(m.sub?m.sub.split(' · ')[0]:'')+'</b> '+m.name+
-    (m.sub&&m.sub.indexOf(' · ')>=0?' <span>· '+m.sub.split(' · ')[1]+'</span>':'');
+  if(zn) setHtml(zn,'<b>'+(m.sub?m.sub.split(' · ')[0]:'')+'</b> '+m.name+
+    (m.sub&&m.sub.indexOf(' · ')>=0?' <span>· '+m.sub.split(' · ')[1]+'</span>':''));
   if(PLACE){                                      /* 놓을 자리 미리보기 */
     var okp=fitsAt(m,{w:PLACE.w,h:PLACE.h},PLACE.x,PLACE.y,PLACE.id);
     ctx.save(); ctx.scale(cam.z,cam.z); ctx.translate(-cam.x,-cam.y);
@@ -7427,7 +7454,7 @@ function drawScene(){
   }
   drawMini(); guideSync();
   var nb=document.getElementById('hnear'),ns=PLACE?null:facingSpot(),zt=document.getElementById('hzone');
-  if(nb){ if(ns){ nb.hidden=false; nb.innerHTML='<b>'+spotLabel(ns)+'</b> <span>'+spotHint(ns)+'</span>'; }
+  if(nb){ if(ns){ nb.hidden=false; setHtml(nb,'<b>'+spotLabel(ns)+'</b> <span>'+spotHint(ns)+'</span>'); }
     else nb.hidden=true; }
   if(zt) zt.hidden=!!ns||!!PLACE;                      /* 한 자리에 둘이 겹치지 않게 */
   var ft=document.getElementById('hfoot'); if(ft&&PLACE) ft.hidden=true;
@@ -11769,7 +11796,11 @@ function guideQuest(){
   if(!S||!S.onboarded||S.done.length||!S.tut) return null;
   var ok=function(x){ return x&&QPLACE[x.id]&&fits(x)&&qOpen(x)&&!x.keys&&guideReach(x); };
   var q=QMAP.ju1;
-  if(!ok(q)) q=QUESTS.filter(function(x){ return x.theme==='ju'&&ok(x); })[0]||QUESTS.filter(ok)[0];
+  if(!ok(q)) q=QUESTS.filter(function(x){ return x.theme==='ju'&&ok(x); })[0];
+  /* 첫 퀘스트는 집 퀘스트여야 첫 거처가 열린다. 오늘 열린 몫에 없으면(대학생) 동네에서 닿는 집 퀘스트 하나를 연다 */
+  if(!q){ var ju=QUESTS.filter(function(x){ return x.theme==='ju'&&QPLACE[x.id]&&fits(x)&&!x.keys&&!x.trip&&guideReach(x); })[0];
+    if(ju){ dripEnsure(); if(S.drip.u.indexOf(ju.id)<0){ S.drip.u.push(ju.id); save(); } q=ju; } }
+  if(!q) q=QUESTS.filter(ok)[0];
   return q||null; }
 function guideTarget(){
   var q=guideQuest(); if(!q) return null;
