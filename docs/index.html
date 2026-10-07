@@ -267,6 +267,8 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 /* 하늘만 깔면 인물 위가 텅 빈다. 구름 · 먼 건물 · 길을 한 층씩 넣어 길가로 만든다.
    전부 사각형이라 확대해도 도트가 깨지지 않는다. */
 .stage>canvas{position:relative;z-index:2;margin-bottom:28px;}
+/* 키가 작은 폰(높이 720 아래)은 무대를 줄여 문제와 보기가 한 화면에 들어오게 한다. 인물은 1.5배로 */
+@media (max-height:720px){ #qstage{height:150px;} #qstage>canvas{width:96px!important;height:96px!important;margin-bottom:16px;} }
 .sb{position:absolute;inset:0;z-index:1;pointer-events:none;
   display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;}
 .sb .cloud{position:absolute;display:flex;flex-direction:column;align-items:center;}
@@ -352,7 +354,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .nearbar b{color:var(--y1);font-weight:400;}
 .nearbar span{color:var(--s0);}
-.toast{position:absolute;z-index:40;left:50%;bottom:92px;transform:translateX(-50%);max-width:88%;
+.toast{position:absolute;z-index:60;left:50%;bottom:92px;transform:translateX(-50%);max-width:88%;
   background:rgba(44,44,49,.92);color:var(--p0);font-family:var(--f-ui);font-size:11px;
   line-height:16px;padding:6px 9px;pointer-events:none;text-align:center;
   overflow-wrap:anywhere;}
@@ -787,8 +789,8 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
     <div class="scroll" style="gap:var(--u3)">
       <div class="dlg pix"><span class="nm" id="qnpc">3년차 선배</span><span id="qtext">—</span></div>
       <div class="qtools" id="qtools"><button class="btn btn--plain pix" id="qkan">간파 0</button><span class="mak" id="qmak">막기 0</span></div>
-      <div class="qtip" id="qtip" hidden><b>간파</b> 오답 보기 하나를 지워 줘요. 한 문제에 한 번 써요. <b>막기</b> 틀려도 목숨이 깎이지 않고 막기 횟수만 하나 줄어들어요. 둘 다 공격력과 방어력이 오르면 늘어나요.<span class="qtipx">눌러서 닫기 ✕</span></div>
       <div style="display:flex;flex-direction:column;gap:var(--u2)" id="qchoices"></div>
+      <div class="qtip" id="qtip" hidden><b>간파</b> 오답 보기 하나를 지워 줘요. 한 문제에 한 번 써요. <b>막기</b> 틀려도 목숨이 깎이지 않고 막기 횟수만 하나 줄어들어요. 둘 다 공격력과 방어력이 오르면 늘어나요.<span class="qtipx">눌러서 닫기 ✕</span></div>
       <div id="qexplain" hidden></div>
       <button class="btn btn--wide pix" id="qramen" hidden>라면 먹기</button>
       <button class="btn btn--wide pix" id="qnext" hidden>계속</button>
@@ -2637,7 +2639,7 @@ function driveLoading(from,to,cb){
     requestAnimationFrame(frame); }
   function finish(){ if(done) return; done=true; DRIVE=null;
     host.wrap.classList.add('out'); cb();
-    setTimeout(function(){ if(host.wrap.parentNode) host.wrap.parentNode.removeChild(host.wrap); },450); }
+    setTimeout(function(){ hostClose(host); },450); }
   host.wrap.querySelector('.cskip').addEventListener('click',function(e){ e.stopPropagation(); finish(); });
   requestAnimationFrame(frame); }
 /* 차가 있어야 하는 문(고속도로 입구)에는 초록 표지판을 세운다 */
@@ -2694,8 +2696,9 @@ var NEED_KEYS=['energy','clean','mood'];
 function tickStat(k,step,dir){
   var now=Date.now(),at='_'+k+'At'; if(S[at]==null) S[at]=now;
   var g=Math.floor((now-S[at])/(step*60000));
-  if(g>0){ S[k]=Math.max(0,Math.min(100,S[k]+dir*g)); S[at]+=g*step*60000; }
-  if((dir>0&&S[k]>=100)||(dir<0&&S[k]<=0)) S[at]=now; }
+  /* 시간이 지나 떨어지는 것은 40에서 멈춘다. 하루 쉬고 온 사람이 다음 날 보상을 깎이지 않게(30 아래가 감점) */
+  if(g>0){ S[k]=(dir<0)?Math.max(Math.min(S[k],40),S[k]-g):Math.min(100,S[k]+g); S[at]+=g*step*60000; }
+  if((dir>0&&S[k]>=100)||(dir<0&&S[k]<=40)) S[at]=now; }
 function hasPlaced(id){ var o=furniOf(id); return !!(o&&o.x!=null&&ROOMSPEC[S.tier]); }
 function needTick(){
   fullTick();
@@ -3406,7 +3409,7 @@ function dayGap(a,b){ return dayNum(b)-dayNum(a); }
 /* ══════════ 이벤트 계측 ══════════
    어디서 이탈하는지 모르면 무엇을 고칠지도 모른다. 이름과 속성을 지금 확정해 두면
    나중에 SDK를 붙일 때 바꿀 게 sink 한 줄뿐이다. */
-var EVMAX=400;
+var EVMAX=120;   /* 이벤트 기록이 저장의 대부분을 차지했다. 설정의 기록 보기에는 최근 것으로 충분하다 */
 function ev(n,p){
   if(!S) return;
   if(!S.log) S.log=[];
@@ -7274,7 +7277,13 @@ function nextStep(){
   ME.dir=(n.x>ME.tx)?2:(n.x<ME.tx)?1:(n.y<ME.ty)?3:0;
   ME.tx=n.x; ME.ty=n.y;
 }
-function savePos(){ S.pos={map:ME.map,tx:ME.tx,ty:ME.ty,dir:ME.dir}; save(); }
+/* 걸을 때마다 저장 전체를 쓰면 초당 열 번 넘게 쓴다. 위치가 바뀌었을 때만, 멈춘 뒤 1.5초에 한 번 쓴다 */
+function savePos(){
+  var p=S.pos||{};
+  if(p.map===ME.map&&p.tx===ME.tx&&p.ty===ME.ty&&p.dir===ME.dir) return;
+  S.pos={map:ME.map,tx:ME.tx,ty:ME.ty,dir:ME.dir};
+  clearTimeout(savePos.t); savePos.t=setTimeout(save,1500); }
+function savePosNow(){ if(savePos.t){ clearTimeout(savePos.t); savePos.t=0; save(); } }
 function checkWarp(){
   var m=curMap(),i,w;
   for(i=0;i<(m.warps||[]).length;i++){ w=m.warps[i];
@@ -7310,6 +7319,7 @@ function checkWarp(){
   return false;
 }
 function enterMap(id,tx,ty){
+  savePosNow();
   if(PLACE&&id!=='room'){ PLACE=null; showPlaceBar(); }
   var prevMap=ME.map,ptx=ME.tx,pty=ME.ty,wasRiding=rideHere();
   var m=(id==='room')?roomMap():MAPS[id];
@@ -7588,7 +7598,12 @@ function startWalk(){
     else drawScene();
   },55);
 }
-function stopWalk(){ if(MAPT){ clearInterval(MAPT); MAPT=null; } MOVE=null; }
+function stopWalk(){ if(MAPT){ clearInterval(MAPT); MAPT=null; } MOVE=null; savePosNow(); }
+/* 앱이 뒤로 가면 지도 루프와 소리를 멈추고 저장을 마친다. 돌아오면 홈일 때만 다시 켠다 */
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){ savePosNow(); if(MAPT){ clearInterval(MAPT); MAPT=null; MOVE=null; } try{ if(AC&&AC.state==='running') AC.suspend(); }catch(e){} }
+  else { var hm=document.getElementById('home'); if(hm&&hm.classList.contains('on')&&!MAPT) startWalk(); try{ if(AC&&AC.state==='suspended') AC.resume(); }catch(e){} } });
+addEventListener('pagehide',function(){ savePosNow(); });
 function sceneTile(ev){
   var cv=document.getElementById('scene'),r=cv.getBoundingClientRect();
   var m=curMap(),cam=camOf(m);
@@ -7983,7 +7998,9 @@ function renderProfileCard(){
   card.appendChild(box); host.appendChild(card); }
 function bossPlan(b){ var tt=totals();
   /* 보스는 더 세게. 두세 번 틀리면 끝나고, 상대 체력도 25% 늘렸다. 장비와 거처가 여기서 값을 한다. */
-  var dmg=Math.max(22,Math.round(tt.atk*1.3)),take=Math.max(12,Math.round(b.atk*1.4)-Math.floor(tt.def/6));
+  var bh=Math.round(b.hp*1.25),nq=(b.qs&&b.qs.length)||5;
+  /* 한 문항은 틀려도 이길 수 있게 피해 하한을 둔다. 공격력이 낮아 문항 수보다 많이 맞혀야 하는 일이 없다 */
+  var dmg=Math.max(22,Math.round(tt.atk*1.3),Math.ceil(bh/Math.max(1,nq-1))),take=Math.max(12,Math.round(b.atk*1.4)-Math.floor(tt.def/6));
   var hp=20+Math.floor(tt.def/3);
   b=Object.create(b); b.hp=Math.round(b.hp*1.25);
   return {atk:tt.atk,def:tt.def,dmg:dmg,take:take,hp:hp,
@@ -8342,7 +8359,7 @@ function renderQuests(){
     var txt=document.createElement('span');
     txt.innerHTML='<span class="bt">'+b.name+(done?' · 격파':'')+'</span>'+
       '<span class="bm">HP '+Math.round(b.hp*1.25)+' · 공격 '+b.atk+' · 문항 '+b.qs.length+'개 · '+pl.need+'개 맞추면 승리'+
-      '<br>'+(done?'이미 물리쳤어요. 다시 붙을 수 있어요.'
+      '<br>'+(done?'이미 물리쳤어요. 다시 이기면 하루 한 번 ￦30을 받아요.'
         :S.stats[b.stat]>=b.need?'오답 '+pl.take+' 피해 · '+pl.survive+'번까지 버텨요.'
         :THEMES[b.stat].k+' 스탯 '+b.need+'부터 붙을 수 있어요 · 지금 '+S.stats[b.stat])+'</span>';
     row.appendChild(txt); bc.appendChild(row);
@@ -8407,9 +8424,20 @@ function itemRow(slot,id,mode){
   else if(mode==='char') b.disabled=true;
   else if(petAway||mql){ b.disabled=true; b.classList.add('locked'); }
   else if(S.coin<it.cost){ b.disabled=true; b.classList.add('locked'); }
-  else b.onclick=function(){ S.coin-=it.cost; S.owned.push(id); S.equip[slot]=id; sfx('coin');
-    ev('buy',{slot:slot,id:id,cost:it.cost}); save(); renderShop(); };
+  else b.onclick=function(){ sfx('pick'); shopConfirm(slot,id,it); };
   return b; }
+/* 상점은 한 번 눌러 바로 사지 않는다. 값·능력·사고 남는 코인을 보여 주고 "사기"를 눌러야 산다 */
+function shopConfirm(slot,id,it){
+  var h='<div class="ih"><div class="ithumb"></div><div><span class="inm">'+esc(it.name)+'</span>'+
+    '<span class="isub">'+itemStat(it).replace(/<br>/g,' · ')+'</span></div></div><hr>'+
+    '<div class="iq">"'+it.desc+'"</div>'+
+    '<div class="il"><i>◆</i>가진 코인 ￦'+S.coin+' → 산 뒤 ￦'+(S.coin-it.cost)+'</div>';
+  openTip.thumb=thumbFor(slot,id);
+  openTip(h,'#FFC53C',[{t:'￦'+it.cost+'에 사서 입기',f:function(){
+      if(S.coin<it.cost||S.owned.indexOf(id)>=0){ closeTip(); return; }
+      S.coin-=it.cost; S.owned.push(id); S.equip[slot]=id; sfx('coin');
+      ev('buy',{slot:slot,id:id,cost:it.cost}); save(); closeTip(); renderShop(); toast(it.name+' 샀어요 · 바로 입었어요'); }},
+    {t:'그만두기',f:function(){ closeTip(); }}]); }
 /* ── 캐릭터 상태창 ───────────────────────────────────────────────────
    장비·거처·세간을 한 화면에서 바꾼다. 몸 둘레의 칸을 누르면 아래 가방이 그 칸의 물건으로
    바뀌고, 물건을 누르면 능력치·비교·설명·얻는 곳이 담긴 상세 카드가 뜬다. */
@@ -9086,7 +9114,8 @@ function stepQuest(intro){
       next.onclick=function(){ box.hidden=false; stepQuest(false); }; });
     return; }
   box.hidden=true; next.hidden=true;
-  typeInto(qt,item.q,function(){ box.hidden=false; });
+  typeInto(qt,item.q,function(){ box.hidden=false;
+    try{ var lc=box.lastElementChild; if(lc) lc.scrollIntoView({block:'nearest',behavior:'smooth'}); }catch(e){} });   /* 작은 화면에서 보기가 화면 밖에 있지 않게 */
   RUN.kanUsed=false; drawTools();
   RUN.order=shuffledIdx(item.a.length);
   RUN.order.forEach(function(orig){ var b=document.createElement('button'); b.className='choice pix';
@@ -9299,13 +9328,16 @@ function bossEnd(win){
   sfx(win?'win':'hit');
   var B=FIGHT.b;
   ev(win?'boss_win':'boss_lose',{id:B.id,lv:S.lv,ju:S.stats.ju});
+  /* 첫 승리만 큰 상(￦200, 스탯 +15). 다시 이기면 하루 한 번 ￦30. 반복 대결이 돈벌이가 되지 않게 */
+  var first=!(S.bossDone&&S.bossDone.indexOf(B.id)>=0),prize=0;
   if(win){ S.bossCleared=true;
     if(!S.bossDone) S.bossDone=[];
-    if(S.bossDone.indexOf(B.id)<0) S.bossDone.push(B.id);
-    S.coin+=200; S.stats[B.stat]=Math.min(100,S.stats[B.stat]+15);
+    if(first){ S.bossDone.push(B.id); prize=200; S.stats[B.stat]=Math.min(100,S.stats[B.stat]+15); }
+    else { if(!S.bossDay) S.bossDay={}; if(S.bossDay[B.id]!==dayKey()){ S.bossDay[B.id]=dayKey(); prize=30; } }
+    S.coin+=prize;
     var gb=tierGrow();
     if(gb&&gb.wasTop){ var mv=tierMove(S.peak); BOSSMOVE=mv; if(!mv.ok) setTimeout(function(){ toast(mv.lease?'전세 계약부터 · 동네 부동산으로 가자':'입주 보증금 ￦'+mv.cost+'이 모자라 아직 못 옮겼어요'); },900); } }
-  else { S.peak=Math.max(0,S.peak-1); if(S.tier>S.peak) S.tier=S.peak; }   /* 내려가는 것은 보증금을 다시 받지 않는다. S.paid 는 그대로 */
+  /* 져도 거처는 그대로다. 포만감·체력만 쓴다(시작할 때 이미 냈다) */
   S.fightId=null;
   save();
   paintHero(document.getElementById('bechar'),win?'cheer':'idle',0);
@@ -9318,7 +9350,7 @@ function bossEnd(win){
   /* 거처는 주 스탯에만 걸려 있다. 금 스탯 보스를 이겼는데 "노숙 해금"이 뜨면 이상하다. */
   var moved=(S.peak!==before);
   if(moved){
-    lab.textContent=win?('거처 '+TIERS[S.peak].name+' 해금 · ￦200 획득'):(TIERS[before].name+' → '+TIERS[S.peak].name);
+    lab.textContent=win?('거처 '+TIERS[S.peak].name+' 해금 · ￦'+prize+' 획득'):(TIERS[before].name+' → '+TIERS[S.peak].name);
     box.appendChild(lab);
     var hc=houseCv(S.peak),cv=document.createElement('canvas');
     cv.width=hc.width; cv.height=hc.height; cv.style.width=hc.width+'px'; cv.style.height=hc.height+'px';
@@ -9326,7 +9358,7 @@ function bossEnd(win){
     var d2=document.createElement('span'); d2.className='lbold'; d2.textContent='방어 '+TIERS[S.peak].def;
     box.appendChild(d2);
   } else {
-    lab.textContent=win?'￦200 획득':'거처는 그대로예요';
+    lab.textContent=win?(prize?'￦'+prize+' 획득':'오늘 다시 이긴 상은 이미 받았어요'):'거처는 그대로예요';
     box.appendChild(lab);
   }
   if(win&&BOSSMOVE&&moved){ var dl=document.createElement('span'); dl.className='micro';
@@ -9336,7 +9368,7 @@ function bossEnd(win){
     box.appendChild(dl); }
   body.appendChild(box);
   var pl=bossPlan(B),note=document.createElement('div'); note.className='micro'; note.style.textAlign='center';
-  note.innerHTML=win?(B.win+'<br>'+THEMES[B.stat].k+' 스탯 +15')
+  note.innerHTML=win?(B.win+(first?'<br>'+THEMES[B.stat].k+' 스탯 +15':''))
    :(B.lose+'<br>틀린 문항의 해설을 다시 읽어보세요. 지금 공격력이면 '+pl.need+'개를 맞춰야 이겨요.');
   body.appendChild(note); go('bossend'); }
 
@@ -9495,7 +9527,7 @@ function openingStart(){
   var stars=[],i; for(i=0;i<46;i++) stars.push({x:Math.floor(hrand(i,1,1)*W),y:Math.floor(hrand(i,2,2)*H*0.55),p:Math.floor(hrand(i,3,3)*60)});
   function town(seed,n,minH,maxH){ var a=[],x=0; while(x<W*2){ var w=12+Math.floor(hrand(x,seed,4)*16),h=minH+Math.floor(hrand(x,seed,5)*(maxH-minH));
     a.push({x:x,w:w,h:h,s:x*31+seed}); x+=w+(hrand(x,seed,6)<.3?2:0); } return a; }
-  OPEN={t0:performance.now(),coin:0,done:false,far:town(1,0,30,70),near:town(2,0,24,56),wrap:wrap,ctx:ctx,W:W,H:H,stars:stars,go:0};
+  OPEN={t0:performance.now(),coin:0,done:false,far:town(1,0,30,70),near:town(2,0,24,56),wrap:wrap,ctx:ctx,W:W,H:H,stars:stars,go:0,fit:fit,cv:cv};
   var story=['20XX년, 서울.','월세, 계약서, 4대보험, 연말정산.','학교에서는 아무도 알려주지 않았다.','이제 스스로 깨우칠 차례다.'];
   function txt(s,x,y,size,col,align,shadow){ ctx.font=size+'px Galmuri11,monospace'; ctx.textBaseline='top';
     var w=ctx.measureText(s).width,xx=align==='c'?Math.round(x-w/2):align==='r'?Math.round(x-w):x;
@@ -9624,7 +9656,7 @@ function openingStart(){
 function openingEnd(){
   if(!OPEN) return; OPEN.done=true;
   document.removeEventListener('keydown',OPEN.insert,true);
-  if(OPEN.wrap&&OPEN.wrap.parentNode) OPEN.wrap.parentNode.removeChild(OPEN.wrap);
+  hostClose(OPEN);
   OPEN=null; setTimeout(function(){ if(!document.getElementById('opening')&&typeof checkTutor==='function') checkTutor(); },300);   /* 프롤로그가 떠 있으면 끝난 뒤에 */
   setTimeout(function(){ if(typeof mqChip==='function'){ mqChip(); mqAnnounce(); } },2600);
 }
@@ -9636,7 +9668,7 @@ function skipOpening(){ if(OPEN){ OPEN.done=true; openingEnd(); } }
    프롤로그: 처음 동전을 넣었을 때 한 번. 촌구석에서 상경한 나, 어디에 물어봐야 할지 모르는 것들,
    그리고 귀인 할배의 등장. 엔딩: 보스를 다 이기고 84㎡ 신축에 들어간 날. 할배의 정체가 밝혀진다. */
 /* 오프닝·컷신 캔버스는 가로 160칸으로 그리되, 실제 해상도는 화면 픽셀에 맞춘다. 그림과 글씨가 확대돼 뭉개지지 않게 */
-function cineRes(W,H){ var s=Math.min(innerWidth/W,innerHeight/H)*(window.devicePixelRatio||1); return Math.max(2,Math.min(8,Math.ceil(s))); }
+function cineRes(W,H){ var s=Math.min(innerWidth/W,innerHeight/H)*(window.devicePixelRatio||1); return Math.max(2,Math.min(4,Math.ceil(s))); }   /* 4배 위로는 눈에 띄는 차이 없이 느려진다 */
 /* 캔버스 글씨는 게임 글꼴(갈무리). 캔버스를 화면 해상도로 그리므로 확대돼 뭉개지지 않는다 */
 var CFONT='Galmuri11,monospace';
 function cinemaHost(){
@@ -9649,6 +9681,12 @@ function cinemaHost(){
   fit(); addEventListener('resize',fit);
   return {W:W,H:H,R:R,wrap:wrap,cv:cv,ctx:ctx,fit:fit};
 }
+/* 컷신 화면을 걷을 때 resize 리스너를 떼고 캔버스 버퍼도 놓는다. 안 떼면 컷신마다 큰 캔버스가 메모리에 남는다 */
+function hostClose(h){
+  if(!h) return;
+  if(h.fit) removeEventListener('resize',h.fit);
+  if(h.wrap&&h.wrap.parentNode) h.wrap.parentNode.removeChild(h.wrap);
+  if(h.cv){ h.cv.width=0; h.cv.height=0; } }
 function ctext(ctx,s,x,y,size,col,align,shadow){ ctx.font=size+'px '+CFONT; ctx.textBaseline='top';
   var w=ctx.measureText(s).width,xx=align==='c'?Math.round(x-w/2):align==='r'?Math.round(x-w):x;
   if(shadow){ ctx.fillStyle=shadow; ctx.fillText(s,xx+1,y+1); } ctx.fillStyle=col; ctx.fillText(s,xx,y); return w; }
@@ -9692,7 +9730,7 @@ function playCinema(panels,onDone,host){
   function finish(){ if(done) return; done=true;
     document.removeEventListener('keydown',next,true);
     host.wrap.classList.add('out');
-    setTimeout(function(){ if(host.wrap.parentNode) host.wrap.parentNode.removeChild(host.wrap); if(onDone) onDone(); },500); }
+    setTimeout(function(){ hostClose(host); if(onDone) onDone(); },500); }
   host.wrap.addEventListener('pointerdown',function(e){ if(e.target.className==='cskip') return; next(e); });
   host.wrap.querySelector('.cskip').addEventListener('click',function(e){ e.stopPropagation(); finish(); });
   document.addEventListener('keydown',next,true);
@@ -10705,7 +10743,7 @@ function mqBgArt(ctx,im,W,H,gy){
   gy=gy==null?H-104:gy;
   var dh=gy+26,dw=im.width*dh/im.height,range=Math.max(0,dw-W);
   var x=-range/2-range/2*Math.sin(performance.now()/9000);
-  var sm=ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+  var sm=ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='low';   /* 매 프레임 그린다. high는 저사양 폰에서 컷신이 5fps로 떨어진다 */
   ctx.drawImage(im,x,0,dw,dh); ctx.imageSmoothingEnabled=sm;
   ctx.fillStyle='#1B1733'; ctx.fillRect(0,dh,W,H-dh); }
 function mqBg(ctx,name,t,W,H){
@@ -10867,7 +10905,7 @@ function playMQ(o){
   function finish(){ if(st.done) return; st.done=true; MQP=null;
     document.removeEventListener('keydown',next,true);
     host.wrap.classList.add('out');
-    setTimeout(function(){ if(host.wrap.parentNode) host.wrap.parentNode.removeChild(host.wrap); if(o.onDone) o.onDone({ok:st.ok,n:st.n}); },500); }
+    setTimeout(function(){ hostClose(host); if(o.onDone) o.onDone({ok:st.ok,n:st.n}); },500); }
   /* 결말과 보상은 선택이 끝난 뒤에 정해지므로, 마지막 대본 장면을 지나면 o.endScenes(ok,n)로 받아 붙인다 */
   var _go=go; go=function(i){ if(i>=list.length&&o.endScenes&&!st.ended){ st.ended=1; list=list.concat(o.endScenes(st.ok,st.n)); } return _go(i); };
   host.wrap.addEventListener('pointerdown',function(e){
