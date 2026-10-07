@@ -1,0 +1,32 @@
+[
+ {
+  "variant": "base",
+  "N": 10,
+  "before": {
+   "rendererMB": 150,
+   "gpuMB": 76
+  },
+  "after": {
+   "rendererMB": 698,
+   "gpuMB": 479
+  },
+  "deltaRenderer": 548,
+  "deltaGpu": 403,
+  "heapMB": 3.8
+ },
+ {
+  "variant": "fix",
+  "N": 10,
+  "before": {
+   "rendererMB": 147,
+   "gpuMB": 73
+  },
+  "after": {
+   "rendererMB": 156,
+   "gpuMB": 74
+  },
+  "deltaRenderer": 9,
+  "deltaGpu": 1,
+  "heapMB": 3.8
+ }
+]

@@ -1,0 +1,25 @@
+0s start rss {"rendererMB":151,"gpuMB":77,"allMB":447} heap 3.3 nodes 970 jsL 383 winL 4 {"resize":1,"keydown":1,"keyup":1,"hashchange":1} cacheMB 0.4 int 2 ls 3 0.1MB save 14.2KB
+slots { weapon: 16, top: 14, head: 7, bottom: 10 } maps room,town,villa,campus,center,market,office,bank
+46s c2 rss {"rendererMB":254,"gpuMB":120,"allMB":645} heap 4.4 nodes 3008 jsL 543 winL 5 {"resize":2,"keydown":1,"keyup":1,"hashchange":1} cacheMB 7.5 int 2 ls 48 1.4MB save 15.4KB
+63s c3 rss {"rendererMB":311,"gpuMB":167,"allMB":749} heap 4.4 nodes 3017 jsL 545 winL 6 {"resize":3,"keydown":1,"keyup":1,"hashchange":1} cacheMB 7.5 int 2 ls 52 1.5MB save 15.8KB
+94s c4 rss {"rendererMB":362,"gpuMB":201,"allMB":834} heap 4.5 nodes 3072 jsL 552 winL 7 {"resize":4,"keydown":1,"keyup":1,"hashchange":1} cacheMB 8.4 int 2 ls 79 2.4MB save 16.6KB
+142s c6 rss {"rendererMB":472,"gpuMB":282,"allMB":1026} heap 4.6 nodes 3083 jsL 553 winL 9 {"resize":6,"keydown":1,"keyup":1,"hashchange":1} cacheMB 8.6 int 2 ls 114 3.6MB save 17.7KB
+156s c7 rss {"rendererMB":477,"gpuMB":285,"allMB":1033} heap 4.6 nodes 3103 jsL 553 winL 9 {"resize":6,"keydown":1,"keyup":1,"hashchange":1} cacheMB 8.6 int 2 ls 119 3.8MB save 17.9KB
+190s c8 rss {"rendererMB":531,"gpuMB":323,"allMB":1125} heap 4.6 nodes 3154 jsL 560 winL 10 {"resize":7,"keydown":1,"keyup":1,"hashchange":1} cacheMB 9.4 int 2 ls 173 5.7MB save 18.8KB
+238s c10 rss {"rendererMB":642,"gpuMB":405,"allMB":1318} heap 4.8 nodes 3201 jsL 566 winL 12 {"resize":9,"keydown":1,"keyup":1,"hashchange":1} cacheMB 9.6 int 2 ls 220 7.5MB save 19.9KB
+251s c11 rss {"rendererMB":646,"gpuMB":408,"allMB":1326} heap 4.8 nodes 3190 jsL 562 winL 12 {"resize":9,"keydown":1,"keyup":1,"hashchange":1} cacheMB 9.7 int 2 ls 225 7.7MB save 20.2KB
+286s c12 rss {"rendererMB":766,"gpuMB":498,"allMB":1536} heap 4.9 nodes 3215 jsL 567 winL 14 {"resize":11,"keydown":1,"keyup":1,"hashchange":1} cacheMB 9.8 int 2 ls 253 8.9MB save 21KB
+300s c13 rss {"rendererMB":771,"gpuMB":504,"allMB":1547} heap 4.9 nodes 3230 jsL 567 winL 14 {"resize":11,"keydown":1,"keyup":1,"hashchange":1} cacheMB 9.8 int 2 ls 262 9.2MB save 21.2KB
+333s c14 rss {"rendererMB":823,"gpuMB":540,"allMB":1635} heap 5 nodes 3291 jsL 574 winL 15 {"resize":12,"keydown":1,"keyup":1,"hashchange":1} cacheMB 9.9 int 2 ls 296 10.7MB save 22.1KB
+382s c16 rss {"rendererMB":934,"gpuMB":621,"allMB":1826} heap 5 nodes 3327 jsL 579 winL 17 {"resize":14,"keydown":1,"keyup":1,"hashchange":1} cacheMB 10.1 int 2 ls 336 12.5MB save 23.1KB
+396s c17 rss {"rendererMB":941,"gpuMB":626,"allMB":1839} heap 5 nodes 3312 jsL 575 winL 17 {"resize":14,"keydown":1,"keyup":1,"hashchange":1} cacheMB 10.1 int 2 ls 341 12.7MB save 23.4KB
+430s c18 rss {"rendererMB":1057,"gpuMB":715,"allMB":2043} heap 5.1 nodes 3338 jsL 580 winL 19 {"resize":16,"keydown":1,"keyup":1,"hashchange":1} cacheMB 10.2 int 2 ls 393 15.1MB save 24.2KB
+477s c20 rss {"rendererMB":1114,"gpuMB":756,"allMB":2142} heap 5.3 nodes 3415 jsL 587 winL 20 {"resize":17,"keydown":1,"keyup":1,"hashchange":1} cacheMB 10.4 int 2 ls 443 17.6MB save 25.3KB
+495s c21 rss {"rendererMB":1173,"gpuMB":803,"allMB":2248} heap 5.4 nodes 3396 jsL 585 winL 21 {"resize":18,"keydown":1,"keyup":1,"hashchange":1} cacheMB 10.4 int 2 ls 448 17.8MB save 25.5KB
+529s c22 rss {"rendererMB":1226,"gpuMB":837,"allMB":2335} heap 5.4 nodes 3457 jsL 592 winL 22 {"resize":19,"keydown":1,"keyup":1,"hashchange":1} cacheMB 11 int 2 ls 476 19.2MB save 26.4KB
+543s c23 rss {"rendererMB":1232,"gpuMB":843,"allMB":2348} heap 5.3 nodes 3437 jsL 588 winL 22 {"resize":19,"keydown":1,"keyup":1,"hashchange":1} cacheMB 11 int 2 ls 490 20MB save 26.6KB
+579s c24 rss {"rendererMB":1349,"gpuMB":931,"allMB":2551} heap 5.4 nodes 3466 jsL 593 winL 24 {"resize":21,"keydown":1,"keyup":1,"hashchange":1} cacheMB 11.1 int 2 ls 518 21.5MB save 27.4KB
+627s c26 rss {"rendererMB":1406,"gpuMB":972,"allMB":2651} heap 5.5 nodes 3533 jsL 600 winL 25 {"resize":22,"keydown":1,"keyup":1,"hashchange":1} cacheMB 11.3 int 2 ls 561 23.8MB save 28.5KB
+627s end rss {"rendererMB":1406,"gpuMB":972,"allMB":2650} heap 5.5 nodes 3499 jsL 596 winL 25 {"resize":22,"keydown":1,"keyup":1,"hashchange":1} cacheMB 11.3 int 2 ls 561 23.8MB save 28.5KB
+heap snapshot canvases {"canvasesInHeap":589,"canvasMB":187,"detached":586,"detachedMB":187,"detachedBig":["1280x2768","1280x2768","1280x2768","1280x2768","1280x2768","1280x2768","1280x2768","1280x2768","1280x2768","1280x2768","1280x2768","1280x2768","1280x2768"],"names":{"CanvasRenderingContext2D":727,"<canvas width=\"24\" height=\"34\">":385,"<canvas width=\"30\" height=\"64\">":28,"<canvas width=\"64\" height=\"64\">":26,"<canvas width=\"30\" height=\"72\">":23,"<canvas width=\"1280\" height=\"2768\">":13,"<canvas width=\"144\" height=\"256\">":10,"<canvas width=\"176\" height=\"192\">":8}}
+idle busy% after soak 13.2 errors 0

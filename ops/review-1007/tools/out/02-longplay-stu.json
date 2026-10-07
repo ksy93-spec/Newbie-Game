@@ -1,5 +1,5 @@
 {
- "status": "직장인",
+ "status": "대학생",
  "days": [
   {
    "d": 0,
@@ -9,25 +9,25 @@
    ],
    "state": {
     "lv": 4,
-    "coin": 1000,
+    "coin": 621,
     "tier": 2,
     "peak": 2,
-    "ju": 51,
+    "ju": 16,
     "done": 5,
     "mq": "job",
-    "boss": "jeonse",
+    "boss": "",
     "eps": 1,
     "streak": 1,
     "open": 0,
-    "locked": 26,
+    "locked": 24,
     "map": "town_estate",
-    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
+    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세까지 주 스탯 26 더"
    },
    "mem": 5.9,
    "counts": {
-    "dom": 537,
+    "dom": 520,
     "canv": 21,
-    "log": 67,
+    "log": 64,
     "saveKB": 8
    }
   },
@@ -38,26 +38,26 @@
     "quiz"
    ],
    "state": {
-    "lv": 5,
-    "coin": 1232,
+    "lv": 4,
+    "coin": 830,
     "tier": 3,
     "peak": 3,
-    "ju": 51,
+    "ju": 24,
     "done": 8,
     "mq": "job",
-    "boss": "jeonse",
+    "boss": "",
     "eps": 1,
     "streak": 2,
     "open": 0,
-    "locked": 23,
-    "map": "office_lobby",
-    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
+    "locked": 21,
+    "map": "bank_branch",
+    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세까지 주 스탯 18 더"
    },
-   "mem": 6.3,
+   "mem": 6.2,
    "counts": {
-    "dom": 1477,
+    "dom": 1457,
     "canv": 122,
-    "log": 108,
+    "log": 105,
     "saveKB": 11
    }
   },
@@ -69,57 +69,57 @@
     "quiz"
    ],
    "state": {
-    "lv": 6,
-    "coin": 1709,
+    "lv": 5,
+    "coin": 1279,
     "tier": 3,
     "peak": 3,
-    "ju": 51,
+    "ju": 35,
     "done": 11,
     "mq": "job",
-    "boss": "jeonse",
+    "boss": "",
     "eps": 2,
     "streak": 3,
     "open": 0,
-    "locked": 20,
+    "locked": 18,
     "map": "campus_cafe",
-    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
+    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세까지 주 스탯 7 더"
    },
    "mem": 6.4,
    "counts": {
-    "dom": 1479,
+    "dom": 1480,
     "canv": 122,
-    "log": 157,
+    "log": 154,
     "saveKB": 16
    }
   },
   {
    "d": 3,
-   "quests": 3,
+   "quests": 4,
    "notes": [
     "quiz"
    ],
    "state": {
     "lv": 6,
-    "coin": 2145,
-    "tier": 3,
-    "peak": 3,
-    "ju": 61,
+    "coin": 2076,
+    "tier": 4,
+    "peak": 4,
+    "ju": 50,
     "done": 14,
     "mq": "job",
-    "boss": "jeonse",
+    "boss": "jeonse,mlm",
     "eps": 2,
     "streak": 4,
     "open": 0,
-    "locked": 17,
+    "locked": 15,
     "map": "bank",
     "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
    },
    "mem": 6.5,
    "counts": {
-    "dom": 1479,
-    "canv": 122,
-    "log": 196,
-    "saveKB": 19
+    "dom": 1478,
+    "canv": 121,
+    "log": 203,
+    "saveKB": 20
    }
   },
   {
@@ -129,27 +129,27 @@
     "quiz"
    ],
    "state": {
-    "lv": 7,
-    "coin": 2523,
-    "tier": 3,
-    "peak": 3,
-    "ju": 61,
+    "lv": 6,
+    "coin": 2376,
+    "tier": 4,
+    "peak": 4,
+    "ju": 57,
     "done": 17,
     "mq": "job",
-    "boss": "jeonse",
+    "boss": "jeonse,mlm",
     "eps": 3,
     "streak": 5,
     "open": 0,
-    "locked": 14,
+    "locked": 12,
     "map": "office_lobby",
     "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
    },
-   "mem": 6.7,
+   "mem": 6.6,
    "counts": {
-    "dom": 1471,
+    "dom": 1469,
     "canv": 123,
-    "log": 249,
-    "saveKB": 24
+    "log": 256,
+    "saveKB": 25
    }
   },
   {
@@ -160,26 +160,26 @@
    ],
    "state": {
     "lv": 7,
-    "coin": 3183,
-    "tier": 3,
-    "peak": 3,
-    "ju": 72,
+    "coin": 2796,
+    "tier": 4,
+    "peak": 4,
+    "ju": 64,
     "done": 20,
     "mq": "job",
     "boss": "jeonse,mlm",
     "eps": 3,
     "streak": 6,
     "open": 0,
-    "locked": 11,
+    "locked": 9,
     "map": "bank",
     "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
    },
-   "mem": 6.6,
+   "mem": 6.8,
    "counts": {
-    "dom": 1473,
+    "dom": 1471,
     "canv": 122,
-    "log": 292,
-    "saveKB": 28
+    "log": 296,
+    "saveKB": 29
    }
   },
   {
@@ -190,27 +190,27 @@
     "quiz"
    ],
    "state": {
-    "lv": 8,
-    "coin": 3960,
-    "tier": 3,
-    "peak": 3,
-    "ju": 72,
+    "lv": 7,
+    "coin": 3503,
+    "tier": 4,
+    "peak": 4,
+    "ju": 64,
     "done": 23,
     "mq": "job",
     "boss": "jeonse,mlm",
     "eps": 4,
     "streak": 7,
     "open": 0,
-    "locked": 8,
+    "locked": 6,
     "map": "center_lobby",
     "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
    },
    "mem": 6.8,
    "counts": {
-    "dom": 1476,
+    "dom": 1474,
     "canv": 122,
-    "log": 341,
-    "saveKB": 32
+    "log": 345,
+    "saveKB": 33
    }
   },
   {
@@ -221,26 +221,26 @@
    ],
    "state": {
     "lv": 8,
-    "coin": 4459,
-    "tier": 3,
-    "peak": 3,
-    "ju": 81,
+    "coin": 3993,
+    "tier": 4,
+    "peak": 4,
+    "ju": 73,
     "done": 26,
     "mq": "job",
     "boss": "jeonse,mlm",
     "eps": 4,
     "streak": 8,
     "open": 0,
-    "locked": 5,
+    "locked": 3,
     "map": "bank",
     "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
    },
-   "mem": 6.8,
+   "mem": 6.9,
    "counts": {
-    "dom": 1471,
+    "dom": 1468,
     "canv": 123,
-    "log": 384,
-    "saveKB": 36
+    "log": 388,
+    "saveKB": 37
    }
   },
   {
@@ -250,24 +250,24 @@
     "quiz"
    ],
    "state": {
-    "lv": 9,
-    "coin": 5027,
-    "tier": 3,
-    "peak": 3,
-    "ju": 81,
+    "lv": 8,
+    "coin": 4518,
+    "tier": 4,
+    "peak": 4,
+    "ju": 80,
     "done": 29,
     "mq": "job",
     "boss": "jeonse,mlm",
     "eps": 4,
     "streak": 9,
     "open": 0,
-    "locked": 2,
+    "locked": 0,
     "map": "bank",
     "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
    },
-   "mem": 6.8,
+   "mem": 6.9,
    "counts": {
-    "dom": 1473,
+    "dom": 1469,
     "canv": 122,
     "log": 400,
     "saveKB": 38
@@ -275,17 +275,17 @@
   },
   {
    "d": 9,
-   "quests": 2,
+   "quests": 0,
    "notes": [
     "quiz"
    ],
    "state": {
-    "lv": 9,
-    "coin": 5520,
-    "tier": 3,
-    "peak": 3,
-    "ju": 88,
-    "done": 31,
+    "lv": 8,
+    "coin": 4638,
+    "tier": 4,
+    "peak": 4,
+    "ju": 80,
+    "done": 29,
     "mq": "job",
     "boss": "jeonse,mlm",
     "eps": 4,
@@ -310,12 +310,12 @@
     "quiz"
    ],
    "state": {
-    "lv": 9,
-    "coin": 5583,
-    "tier": 3,
-    "peak": 3,
-    "ju": 88,
-    "done": 31,
+    "lv": 8,
+    "coin": 4688,
+    "tier": 4,
+    "peak": 4,
+    "ju": 80,
+    "done": 29,
     "mq": "job",
     "boss": "jeonse,mlm",
     "eps": 4,
@@ -325,9 +325,9 @@
     "map": "bank",
     "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
    },
-   "mem": 6.8,
+   "mem": 6.9,
    "counts": {
-    "dom": 1471,
+    "dom": 1466,
     "canv": 123,
     "log": 400,
     "saveKB": 38
@@ -340,12 +340,12 @@
     "quiz"
    ],
    "state": {
-    "lv": 9,
-    "coin": 5701,
-    "tier": 3,
-    "peak": 3,
-    "ju": 88,
-    "done": 31,
+    "lv": 8,
+    "coin": 4808,
+    "tier": 4,
+    "peak": 4,
+    "ju": 80,
+    "done": 29,
     "mq": "job",
     "boss": "jeonse,mlm",
     "eps": 4,
@@ -355,9 +355,9 @@
     "map": "bank",
     "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
    },
-   "mem": 6.9,
+   "mem": 7,
    "counts": {
-    "dom": 1475,
+    "dom": 1472,
     "canv": 122,
     "log": 400,
     "saveKB": 38
@@ -370,12 +370,12 @@
     "quiz"
    ],
    "state": {
-    "lv": 9,
-    "coin": 5824,
-    "tier": 3,
-    "peak": 3,
-    "ju": 88,
-    "done": 31,
+    "lv": 8,
+    "coin": 4928,
+    "tier": 4,
+    "peak": 4,
+    "ju": 80,
+    "done": 29,
     "mq": "job",
     "boss": "jeonse,mlm",
     "eps": 4,
@@ -387,7 +387,7 @@
    },
    "mem": 6.9,
    "counts": {
-    "dom": 1475,
+    "dom": 1472,
     "canv": 122,
     "log": 400,
     "saveKB": 38
@@ -401,12 +401,12 @@
     "quiz"
    ],
    "state": {
-    "lv": 9,
-    "coin": 6287,
-    "tier": 3,
-    "peak": 3,
-    "ju": 88,
-    "done": 31,
+    "lv": 8,
+    "coin": 5383,
+    "tier": 4,
+    "peak": 4,
+    "ju": 80,
+    "done": 29,
     "mq": "job",
     "boss": "jeonse,mlm",
     "eps": 4,
@@ -416,9 +416,9 @@
     "map": "bank",
     "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
    },
-   "mem": 6.9,
+   "mem": 7,
    "counts": {
-    "dom": 1471,
+    "dom": 1468,
     "canv": 123,
     "log": 400,
     "saveKB": 38
@@ -431,12 +431,12 @@
     "quiz"
    ],
    "state": {
-    "lv": 9,
-    "coin": 6410,
-    "tier": 3,
-    "peak": 3,
-    "ju": 88,
-    "done": 31,
+    "lv": 8,
+    "coin": 5503,
+    "tier": 4,
+    "peak": 4,
+    "ju": 80,
+    "done": 29,
     "mq": "job",
     "boss": "jeonse,mlm",
     "eps": 4,
@@ -446,9 +446,9 @@
     "map": "bank",
     "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
    },
-   "mem": 6.9,
+   "mem": 7,
    "counts": {
-    "dom": 1475,
+    "dom": 1472,
     "canv": 122,
     "log": 400,
     "saveKB": 38
@@ -462,11 +462,11 @@
    ],
    "state": {
     "lv": 9,
-    "coin": 6533,
-    "tier": 3,
-    "peak": 3,
-    "ju": 88,
-    "done": 31,
+    "coin": 5623,
+    "tier": 4,
+    "peak": 4,
+    "ju": 80,
+    "done": 29,
     "mq": "job",
     "boss": "jeonse,mlm",
     "eps": 4,
@@ -476,9 +476,9 @@
     "map": "bank",
     "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
    },
-   "mem": 6.9,
+   "mem": 7,
    "counts": {
-    "dom": 1475,
+    "dom": 1472,
     "canv": 122,
     "log": 400,
     "saveKB": 38
@@ -488,5 +488,5 @@
  "issues": [],
  "errors": [],
  "mem": [],
- "secs": 505
+ "secs": 487
 }

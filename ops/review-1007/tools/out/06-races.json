@@ -1,0 +1,247 @@
+{
+ "back": {
+  "duringWipe": {
+   "handled": false,
+   "after": {
+    "scr": "home",
+    "full": 85,
+    "energy": 90,
+    "coin": 180,
+    "xp": 0,
+    "lv": 5,
+    "done": 0,
+    "run": "ui1",
+    "tip": false,
+    "travel": false,
+    "tut": null,
+    "mqp": false,
+    "opening": false,
+    "toast": null
+   }
+  },
+  "questScreen": {
+   "scr": "quest",
+   "full": 85,
+   "energy": 90,
+   "coin": 180,
+   "xp": 0,
+   "lv": 5,
+   "done": 0,
+   "run": "ui1",
+   "tip": false,
+   "travel": false,
+   "tut": null,
+   "mqp": false,
+   "opening": false,
+   "toast": "출석 1일째 · ￦30"
+  },
+  "questBack": {
+   "handled": true,
+   "before": {
+    "scr": "home",
+    "full": 100,
+    "energy": 100,
+    "coin": 180,
+    "xp": 0,
+    "lv": 5,
+    "done": 0,
+    "run": false,
+    "tip": false,
+    "travel": false,
+    "tut": null,
+    "mqp": false,
+    "opening": false,
+    "toast": null
+   },
+   "after": {
+    "scr": "home",
+    "full": 85,
+    "energy": 90,
+    "coin": 180,
+    "xp": 0,
+    "lv": 5,
+    "done": 0,
+    "run": "ui1",
+    "tip": false,
+    "travel": false,
+    "tut": null,
+    "mqp": false,
+    "opening": false,
+    "toast": "출석 1일째 · ￦30"
+   }
+  },
+  "boss1": {
+   "handled": false,
+   "s": {
+    "scr": "boss",
+    "full": 70,
+    "energy": 80,
+    "coin": 180,
+    "xp": 0,
+    "lv": 5,
+    "done": 0,
+    "run": "ui1",
+    "tip": false,
+    "travel": false,
+    "tut": null,
+    "mqp": false,
+    "opening": false,
+    "toast": "출석 1일째 · ￦30"
+   }
+  },
+  "boss2": {
+   "handled": false,
+   "s": {
+    "scr": "boss",
+    "full": 70,
+    "energy": 80,
+    "coin": 180,
+    "xp": 0,
+    "lv": 5,
+    "done": 0,
+    "run": "ui1",
+    "tip": false,
+    "travel": false,
+    "tut": null,
+    "mqp": false,
+    "opening": false,
+    "toast": "출석 1일째 · ￦30"
+   }
+  },
+  "travel": {
+   "handled": false,
+   "s": {
+    "scr": "home",
+    "full": 70,
+    "energy": 80,
+    "coin": 180,
+    "xp": 0,
+    "lv": 5,
+    "done": 0,
+    "run": "ui1",
+    "tip": false,
+    "travel": true,
+    "tut": null,
+    "mqp": false,
+    "opening": false,
+    "toast": null
+   }
+  },
+  "sheet": {
+   "handled": true,
+   "s": {
+    "scr": "home",
+    "full": 70,
+    "energy": 80,
+    "coin": 180,
+    "xp": 0,
+    "lv": 5,
+    "done": 0,
+    "run": "ui1",
+    "tip": false,
+    "travel": false,
+    "tut": null,
+    "mqp": false,
+    "opening": false,
+    "toast": "싸우던 도중에 나갔어요. 체력만 쓰고 결과는 없어요. 다시 붙을 수 있어요."
+   }
+  },
+  "paycalc": {
+   "open": true,
+   "handled": false,
+   "stillOpen": true,
+   "scr": "home"
+  },
+  "talk": {
+   "handled": true,
+   "s": {
+    "scr": "home",
+    "full": 70,
+    "energy": 80,
+    "coin": 180,
+    "xp": 0,
+    "lv": 5,
+    "done": 0,
+    "run": "ui1",
+    "tip": false,
+    "travel": false,
+    "tut": null,
+    "mqp": false,
+    "opening": false,
+    "toast": "싸우던 도중에 나갔어요. 체력만 쓰고 결과는 없어요. 다시 붙을 수 있어요."
+   }
+  },
+  "cine": "true:choice true:choice true:choice true:choice true:choice true:choice true:choice true:choice true:choice true:choice true:choice true:choice …(40)",
+  "tab_char": {
+   "handled": true,
+   "scr": "home"
+  },
+  "tab_shop": {
+   "handled": true,
+   "scr": "home"
+  },
+  "tab_wiki": {
+   "handled": true,
+   "scr": "home"
+  },
+  "tab_codex": {
+   "handled": true,
+   "scr": "home"
+  },
+  "check": {
+   "handled": true,
+   "scr": "wiki"
+  },
+  "prologue": {
+   "handled": false,
+   "opening": true
+  },
+  "homeIdle": {
+   "handled": true,
+   "scr": "home"
+  }
+ },
+ "backLogs": [],
+ "double": {
+  "deskDoubleTap": {
+   "fullBefore": 100,
+   "fullAfter": 70,
+   "energyBefore": 100,
+   "energyAfter": 80,
+   "scr": "quest",
+   "startEvents": 2
+  },
+  "resultDoubleTap": {
+   "scr": "quest",
+   "elementUnderFinger": null,
+   "adOverlay": false,
+   "coinDelta": 0,
+   "coinAfterAd": 0,
+   "note": "not on result: {\"scr\":\"quest\",\"full\":70,\"energy\":80,\"coin\":180,\"xp\":0,\"lv\":1,\"done\":0,\"run\":\"sik1\",\"tip\":false,\"travel\":false,\"tut\":null,\"mqp\":false,\"opening\":false,\"toast\":null}"
+  },
+  "chipDouble": {
+   "hosts": 1,
+   "mqp": true
+  },
+  "shopDouble": {
+   "item": "라면 5봉지",
+   "coinSpent": 120,
+   "owned": 8
+  },
+  "bossEndDouble": {
+   "lab": "마무리",
+   "coinDelta": 180,
+   "scr": "bossend",
+   "wins": 1
+  },
+  "epEndDouble": {
+   "scr": "epend",
+   "ends": 1
+  },
+  "tabDuringWipe": {
+   "scr": "quest",
+   "walkTimer": false
+  }
+ },
+ "doubleLogs": []
+}

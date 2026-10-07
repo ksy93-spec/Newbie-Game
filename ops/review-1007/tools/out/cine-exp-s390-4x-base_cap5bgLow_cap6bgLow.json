@@ -1,0 +1,62 @@
+[
+ {
+  "variant": "base",
+  "scene": "mq",
+  "canvas": "1280x2768",
+  "fps": 5.5,
+  "p50": 183.3,
+  "p95": 216.7,
+  "busy": 99.5,
+  "longSum": 6249
+ },
+ {
+  "variant": "base",
+  "scene": "opening",
+  "canvas": "1280x2768",
+  "fps": 6.7,
+  "p50": 150,
+  "p95": 183.3,
+  "busy": 58.1,
+  "longSum": 3652
+ },
+ {
+  "variant": "cap5bgLow",
+  "scene": "mq",
+  "canvas": "800x1730",
+  "fps": 32,
+  "p50": 33.3,
+  "p95": 50,
+  "busy": 94.2,
+  "longSum": 0
+ },
+ {
+  "variant": "cap5bgLow",
+  "scene": "opening",
+  "canvas": "800x1730",
+  "fps": 8,
+  "p50": 133.2,
+  "p95": 150,
+  "busy": 41.1,
+  "longSum": 1565
+ },
+ {
+  "variant": "cap6bgLow",
+  "scene": "mq",
+  "canvas": "960x2076",
+  "fps": 25.3,
+  "p50": 33.4,
+  "p95": 66.6,
+  "busy": 95.7,
+  "longSum": 105
+ },
+ {
+  "variant": "cap6bgLow",
+  "scene": "opening",
+  "canvas": "960x2076",
+  "fps": 7,
+  "p50": 149.9,
+  "p95": 166.6,
+  "busy": 46.1,
+  "longSum": 2907
+ }
+]

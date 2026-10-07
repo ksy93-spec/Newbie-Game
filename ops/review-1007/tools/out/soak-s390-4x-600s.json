@@ -1,0 +1,2259 @@
+{
+ "rows": [
+  {
+   "label": "start",
+   "t": 0,
+   "rendererMB": 151,
+   "gpuMB": 77,
+   "allMB": 447,
+   "heapMB": 3.3,
+   "heapTotalMB": 3.8,
+   "nodes": 970,
+   "docs": 1,
+   "jsListeners": 383,
+   "winListeners": 4,
+   "winByType": {
+    "resize": 1,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 0.4,
+   "caches": {
+    "TOPC": {
+     "keys": 3,
+     "canvases": 3,
+     "MB": 0.01
+    },
+    "CVCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "LCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "PCACHE": {
+     "keys": 6,
+     "canvases": 6,
+     "MB": 0.35
+    },
+    "OPAQ": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 3,
+   "timeoutsMade": 9,
+   "lsWrites": 3,
+   "lsMB": 0.1,
+   "lsMs": 3,
+   "saveKB": 14.2,
+   "logN": 205,
+   "domCanvases": 18,
+   "rafCalls": 0,
+   "listenersAdded": 28,
+   "listenersRemoved": 0,
+   "screen": "home",
+   "map": "town"
+  },
+  {
+   "label": "c2",
+   "t": 46,
+   "rendererMB": 254,
+   "gpuMB": 120,
+   "allMB": 645,
+   "heapMB": 4.4,
+   "heapTotalMB": 5,
+   "nodes": 3008,
+   "docs": 1,
+   "jsListeners": 543,
+   "winListeners": 5,
+   "winByType": {
+    "resize": 2,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 7.5,
+   "caches": {
+    "TOPC": {
+     "keys": 34,
+     "canvases": 34,
+     "MB": 0.11
+    },
+    "CVCACHE": {
+     "keys": 2,
+     "canvases": 2,
+     "MB": 0.03
+    },
+    "LCACHE": {
+     "keys": 9,
+     "canvases": 9,
+     "MB": 0.07
+    },
+    "PCACHE": {
+     "keys": 101,
+     "canvases": 101,
+     "MB": 7.26
+    },
+    "OPAQ": {
+     "keys": 4,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 2,
+     "canvases": 2,
+     "MB": 0.02
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 8,
+   "timeoutsMade": 70,
+   "lsWrites": 48,
+   "lsMB": 1.4,
+   "lsMs": 25,
+   "saveKB": 15.4,
+   "logN": 220,
+   "domCanvases": 135,
+   "rafCalls": 115,
+   "listenersAdded": 32,
+   "listenersRemoved": 1,
+   "screen": "home",
+   "map": "campus"
+  },
+  {
+   "label": "c3",
+   "t": 63,
+   "rendererMB": 311,
+   "gpuMB": 167,
+   "allMB": 749,
+   "heapMB": 4.4,
+   "heapTotalMB": 5,
+   "nodes": 3017,
+   "docs": 1,
+   "jsListeners": 545,
+   "winListeners": 6,
+   "winByType": {
+    "resize": 3,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 7.5,
+   "caches": {
+    "TOPC": {
+     "keys": 46,
+     "canvases": 46,
+     "MB": 0.14
+    },
+    "CVCACHE": {
+     "keys": 3,
+     "canvases": 3,
+     "MB": 0.05
+    },
+    "LCACHE": {
+     "keys": 9,
+     "canvases": 9,
+     "MB": 0.07
+    },
+    "PCACHE": {
+     "keys": 101,
+     "canvases": 101,
+     "MB": 7.26
+    },
+    "OPAQ": {
+     "keys": 4,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 2,
+     "canvases": 2,
+     "MB": 0.02
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 10,
+   "timeoutsMade": 97,
+   "lsWrites": 52,
+   "lsMB": 1.5,
+   "lsMs": 28,
+   "saveKB": 15.8,
+   "logN": 227,
+   "domCanvases": 135,
+   "rafCalls": 163,
+   "listenersAdded": 34,
+   "listenersRemoved": 1,
+   "screen": "home",
+   "map": "villa"
+  },
+  {
+   "label": "c4",
+   "t": 94,
+   "rendererMB": 362,
+   "gpuMB": 201,
+   "allMB": 834,
+   "heapMB": 4.5,
+   "heapTotalMB": 5,
+   "nodes": 3072,
+   "docs": 1,
+   "jsListeners": 552,
+   "winListeners": 7,
+   "winByType": {
+    "resize": 4,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 8.4,
+   "caches": {
+    "TOPC": {
+     "keys": 61,
+     "canvases": 61,
+     "MB": 0.19
+    },
+    "CVCACHE": {
+     "keys": 4,
+     "canvases": 4,
+     "MB": 0.06
+    },
+    "LCACHE": {
+     "keys": 12,
+     "canvases": 12,
+     "MB": 0.09
+    },
+    "PCACHE": {
+     "keys": 104,
+     "canvases": 104,
+     "MB": 8.02
+    },
+    "OPAQ": {
+     "keys": 6,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 3,
+     "canvases": 3,
+     "MB": 0.02
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 14,
+   "timeoutsMade": 133,
+   "lsWrites": 79,
+   "lsMB": 2.4,
+   "lsMs": 42,
+   "saveKB": 16.6,
+   "logN": 236,
+   "domCanvases": 135,
+   "rafCalls": 265,
+   "listenersAdded": 38,
+   "listenersRemoved": 2,
+   "screen": "home",
+   "map": "town"
+  },
+  {
+   "label": "c6",
+   "t": 142,
+   "rendererMB": 472,
+   "gpuMB": 282,
+   "allMB": 1026,
+   "heapMB": 4.6,
+   "heapTotalMB": 5.3,
+   "nodes": 3083,
+   "docs": 1,
+   "jsListeners": 553,
+   "winListeners": 9,
+   "winByType": {
+    "resize": 6,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 8.6,
+   "caches": {
+    "TOPC": {
+     "keys": 90,
+     "canvases": 90,
+     "MB": 0.28
+    },
+    "CVCACHE": {
+     "keys": 6,
+     "canvases": 6,
+     "MB": 0.09
+    },
+    "LCACHE": {
+     "keys": 15,
+     "canvases": 15,
+     "MB": 0.11
+    },
+    "PCACHE": {
+     "keys": 105,
+     "canvases": 105,
+     "MB": 8.05
+    },
+    "OPAQ": {
+     "keys": 7,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 5,
+     "canvases": 5,
+     "MB": 0.04
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 19,
+   "timeoutsMade": 189,
+   "lsWrites": 114,
+   "lsMB": 3.6,
+   "lsMs": 68,
+   "saveKB": 17.7,
+   "logN": 251,
+   "domCanvases": 135,
+   "rafCalls": 425,
+   "listenersAdded": 44,
+   "listenersRemoved": 3,
+   "screen": "home",
+   "map": "town"
+  },
+  {
+   "label": "c7",
+   "t": 156,
+   "rendererMB": 477,
+   "gpuMB": 285,
+   "allMB": 1033,
+   "heapMB": 4.6,
+   "heapTotalMB": 5.5,
+   "nodes": 3103,
+   "docs": 1,
+   "jsListeners": 553,
+   "winListeners": 9,
+   "winByType": {
+    "resize": 6,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 8.6,
+   "caches": {
+    "TOPC": {
+     "keys": 103,
+     "canvases": 103,
+     "MB": 0.32
+    },
+    "CVCACHE": {
+     "keys": 7,
+     "canvases": 7,
+     "MB": 0.11
+    },
+    "LCACHE": {
+     "keys": 15,
+     "canvases": 15,
+     "MB": 0.11
+    },
+    "PCACHE": {
+     "keys": 105,
+     "canvases": 105,
+     "MB": 8.05
+    },
+    "OPAQ": {
+     "keys": 7,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 5,
+     "canvases": 5,
+     "MB": 0.04
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 22,
+   "timeoutsMade": 213,
+   "lsWrites": 119,
+   "lsMB": 3.8,
+   "lsMs": 72,
+   "saveKB": 17.9,
+   "logN": 257,
+   "domCanvases": 135,
+   "rafCalls": 425,
+   "listenersAdded": 44,
+   "listenersRemoved": 3,
+   "screen": "home",
+   "map": "town"
+  },
+  {
+   "label": "c8",
+   "t": 190,
+   "rendererMB": 531,
+   "gpuMB": 323,
+   "allMB": 1125,
+   "heapMB": 4.6,
+   "heapTotalMB": 5.5,
+   "nodes": 3154,
+   "docs": 1,
+   "jsListeners": 560,
+   "winListeners": 10,
+   "winByType": {
+    "resize": 7,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 9.4,
+   "caches": {
+    "TOPC": {
+     "keys": 116,
+     "canvases": 116,
+     "MB": 0.36
+    },
+    "CVCACHE": {
+     "keys": 8,
+     "canvases": 8,
+     "MB": 0.13
+    },
+    "LCACHE": {
+     "keys": 17,
+     "canvases": 17,
+     "MB": 0.12
+    },
+    "PCACHE": {
+     "keys": 107,
+     "canvases": 107,
+     "MB": 8.78
+    },
+    "OPAQ": {
+     "keys": 9,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 6,
+     "canvases": 6,
+     "MB": 0.05
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 25,
+   "timeoutsMade": 245,
+   "lsWrites": 173,
+   "lsMB": 5.7,
+   "lsMs": 111,
+   "saveKB": 18.8,
+   "logN": 266,
+   "domCanvases": 135,
+   "rafCalls": 547,
+   "listenersAdded": 48,
+   "listenersRemoved": 4,
+   "screen": "home",
+   "map": "villa"
+  },
+  {
+   "label": "c10",
+   "t": 238,
+   "rendererMB": 642,
+   "gpuMB": 405,
+   "allMB": 1318,
+   "heapMB": 4.8,
+   "heapTotalMB": 5.5,
+   "nodes": 3201,
+   "docs": 1,
+   "jsListeners": 566,
+   "winListeners": 12,
+   "winByType": {
+    "resize": 9,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 9.6,
+   "caches": {
+    "TOPC": {
+     "keys": 148,
+     "canvases": 148,
+     "MB": 0.46
+    },
+    "CVCACHE": {
+     "keys": 10,
+     "canvases": 10,
+     "MB": 0.16
+    },
+    "LCACHE": {
+     "keys": 20,
+     "canvases": 20,
+     "MB": 0.15
+    },
+    "PCACHE": {
+     "keys": 107,
+     "canvases": 107,
+     "MB": 8.78
+    },
+    "OPAQ": {
+     "keys": 10,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 8,
+     "canvases": 8,
+     "MB": 0.07
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 32,
+   "timeoutsMade": 304,
+   "lsWrites": 220,
+   "lsMB": 7.5,
+   "lsMs": 147,
+   "saveKB": 19.9,
+   "logN": 282,
+   "domCanvases": 135,
+   "rafCalls": 715,
+   "listenersAdded": 54,
+   "listenersRemoved": 5,
+   "screen": "home",
+   "map": "town"
+  },
+  {
+   "label": "c11",
+   "t": 251,
+   "rendererMB": 646,
+   "gpuMB": 408,
+   "allMB": 1326,
+   "heapMB": 4.8,
+   "heapTotalMB": 5.3,
+   "nodes": 3190,
+   "docs": 1,
+   "jsListeners": 562,
+   "winListeners": 12,
+   "winByType": {
+    "resize": 9,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 9.7,
+   "caches": {
+    "TOPC": {
+     "keys": 167,
+     "canvases": 167,
+     "MB": 0.52
+    },
+    "CVCACHE": {
+     "keys": 11,
+     "canvases": 11,
+     "MB": 0.17
+    },
+    "LCACHE": {
+     "keys": 21,
+     "canvases": 21,
+     "MB": 0.15
+    },
+    "PCACHE": {
+     "keys": 108,
+     "canvases": 108,
+     "MB": 8.79
+    },
+    "OPAQ": {
+     "keys": 10,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 9,
+     "canvases": 9,
+     "MB": 0.07
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 34,
+   "timeoutsMade": 326,
+   "lsWrites": 225,
+   "lsMB": 7.7,
+   "lsMs": 151,
+   "saveKB": 20.2,
+   "logN": 288,
+   "domCanvases": 135,
+   "rafCalls": 715,
+   "listenersAdded": 54,
+   "listenersRemoved": 5,
+   "screen": "home",
+   "map": "bank"
+  },
+  {
+   "label": "c12",
+   "t": 286,
+   "rendererMB": 766,
+   "gpuMB": 498,
+   "allMB": 1536,
+   "heapMB": 4.9,
+   "heapTotalMB": 5.5,
+   "nodes": 3215,
+   "docs": 1,
+   "jsListeners": 567,
+   "winListeners": 14,
+   "winByType": {
+    "resize": 11,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 9.8,
+   "caches": {
+    "TOPC": {
+     "keys": 182,
+     "canvases": 182,
+     "MB": 0.57
+    },
+    "CVCACHE": {
+     "keys": 12,
+     "canvases": 12,
+     "MB": 0.19
+    },
+    "LCACHE": {
+     "keys": 21,
+     "canvases": 21,
+     "MB": 0.15
+    },
+    "PCACHE": {
+     "keys": 108,
+     "canvases": 108,
+     "MB": 8.79
+    },
+    "OPAQ": {
+     "keys": 11,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 10,
+     "canvases": 10,
+     "MB": 0.08
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 37,
+   "timeoutsMade": 361,
+   "lsWrites": 253,
+   "lsMB": 8.9,
+   "lsMs": 171,
+   "saveKB": 21,
+   "logN": 297,
+   "domCanvases": 135,
+   "rafCalls": 905,
+   "listenersAdded": 60,
+   "listenersRemoved": 6,
+   "screen": "home",
+   "map": "bank"
+  },
+  {
+   "label": "c13",
+   "t": 300,
+   "rendererMB": 771,
+   "gpuMB": 504,
+   "allMB": 1547,
+   "heapMB": 4.9,
+   "heapTotalMB": 5.5,
+   "nodes": 3230,
+   "docs": 1,
+   "jsListeners": 567,
+   "winListeners": 14,
+   "winByType": {
+    "resize": 11,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 9.8,
+   "caches": {
+    "TOPC": {
+     "keys": 195,
+     "canvases": 195,
+     "MB": 0.61
+    },
+    "CVCACHE": {
+     "keys": 13,
+     "canvases": 13,
+     "MB": 0.2
+    },
+    "LCACHE": {
+     "keys": 21,
+     "canvases": 21,
+     "MB": 0.15
+    },
+    "PCACHE": {
+     "keys": 108,
+     "canvases": 108,
+     "MB": 8.79
+    },
+    "OPAQ": {
+     "keys": 11,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 11,
+     "canvases": 11,
+     "MB": 0.09
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 39,
+   "timeoutsMade": 383,
+   "lsWrites": 262,
+   "lsMB": 9.2,
+   "lsMs": 181,
+   "saveKB": 21.2,
+   "logN": 303,
+   "domCanvases": 135,
+   "rafCalls": 905,
+   "listenersAdded": 60,
+   "listenersRemoved": 6,
+   "screen": "home",
+   "map": "office"
+  },
+  {
+   "label": "c14",
+   "t": 333,
+   "rendererMB": 823,
+   "gpuMB": 540,
+   "allMB": 1635,
+   "heapMB": 5,
+   "heapTotalMB": 5.8,
+   "nodes": 3291,
+   "docs": 1,
+   "jsListeners": 574,
+   "winListeners": 15,
+   "winByType": {
+    "resize": 12,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 9.9,
+   "caches": {
+    "TOPC": {
+     "keys": 210,
+     "canvases": 210,
+     "MB": 0.65
+    },
+    "CVCACHE": {
+     "keys": 14,
+     "canvases": 14,
+     "MB": 0.22
+    },
+    "LCACHE": {
+     "keys": 21,
+     "canvases": 21,
+     "MB": 0.15
+    },
+    "PCACHE": {
+     "keys": 108,
+     "canvases": 108,
+     "MB": 8.79
+    },
+    "OPAQ": {
+     "keys": 12,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 12,
+     "canvases": 12,
+     "MB": 0.1
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 42,
+   "timeoutsMade": 415,
+   "lsWrites": 296,
+   "lsMB": 10.7,
+   "lsMs": 201,
+   "saveKB": 22.1,
+   "logN": 312,
+   "domCanvases": 135,
+   "rafCalls": 1034,
+   "listenersAdded": 64,
+   "listenersRemoved": 7,
+   "screen": "home",
+   "map": "center"
+  },
+  {
+   "label": "c16",
+   "t": 382,
+   "rendererMB": 934,
+   "gpuMB": 621,
+   "allMB": 1826,
+   "heapMB": 5,
+   "heapTotalMB": 5.8,
+   "nodes": 3327,
+   "docs": 1,
+   "jsListeners": 579,
+   "winListeners": 17,
+   "winByType": {
+    "resize": 14,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 10.1,
+   "caches": {
+    "TOPC": {
+     "keys": 239,
+     "canvases": 239,
+     "MB": 0.74
+    },
+    "CVCACHE": {
+     "keys": 16,
+     "canvases": 16,
+     "MB": 0.25
+    },
+    "LCACHE": {
+     "keys": 23,
+     "canvases": 23,
+     "MB": 0.17
+    },
+    "PCACHE": {
+     "keys": 108,
+     "canvases": 108,
+     "MB": 8.79
+    },
+    "OPAQ": {
+     "keys": 13,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 14,
+     "canvases": 14,
+     "MB": 0.12
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 47,
+   "timeoutsMade": 471,
+   "lsWrites": 336,
+   "lsMB": 12.5,
+   "lsMs": 237,
+   "saveKB": 23.1,
+   "logN": 327,
+   "domCanvases": 134,
+   "rafCalls": 1202,
+   "listenersAdded": 70,
+   "listenersRemoved": 8,
+   "screen": "home",
+   "map": "office"
+  },
+  {
+   "label": "c17",
+   "t": 396,
+   "rendererMB": 941,
+   "gpuMB": 626,
+   "allMB": 1839,
+   "heapMB": 5,
+   "heapTotalMB": 5.8,
+   "nodes": 3312,
+   "docs": 1,
+   "jsListeners": 575,
+   "winListeners": 17,
+   "winByType": {
+    "resize": 14,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 10.1,
+   "caches": {
+    "TOPC": {
+     "keys": 254,
+     "canvases": 254,
+     "MB": 0.79
+    },
+    "CVCACHE": {
+     "keys": 17,
+     "canvases": 17,
+     "MB": 0.27
+    },
+    "LCACHE": {
+     "keys": 24,
+     "canvases": 24,
+     "MB": 0.18
+    },
+    "PCACHE": {
+     "keys": 108,
+     "canvases": 108,
+     "MB": 8.79
+    },
+    "OPAQ": {
+     "keys": 13,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 15,
+     "canvases": 15,
+     "MB": 0.12
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 50,
+   "timeoutsMade": 495,
+   "lsWrites": 341,
+   "lsMB": 12.7,
+   "lsMs": 243,
+   "saveKB": 23.4,
+   "logN": 333,
+   "domCanvases": 135,
+   "rafCalls": 1202,
+   "listenersAdded": 70,
+   "listenersRemoved": 8,
+   "screen": "home",
+   "map": "town"
+  },
+  {
+   "label": "c18",
+   "t": 430,
+   "rendererMB": 1057,
+   "gpuMB": 715,
+   "allMB": 2043,
+   "heapMB": 5.1,
+   "heapTotalMB": 5.8,
+   "nodes": 3338,
+   "docs": 1,
+   "jsListeners": 580,
+   "winListeners": 19,
+   "winByType": {
+    "resize": 16,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 10.2,
+   "caches": {
+    "TOPC": {
+     "keys": 270,
+     "canvases": 270,
+     "MB": 0.84
+    },
+    "CVCACHE": {
+     "keys": 18,
+     "canvases": 18,
+     "MB": 0.28
+    },
+    "LCACHE": {
+     "keys": 24,
+     "canvases": 24,
+     "MB": 0.18
+    },
+    "PCACHE": {
+     "keys": 108,
+     "canvases": 108,
+     "MB": 8.79
+    },
+    "OPAQ": {
+     "keys": 14,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 16,
+     "canvases": 16,
+     "MB": 0.13
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 53,
+   "timeoutsMade": 531,
+   "lsWrites": 393,
+   "lsMB": 15.1,
+   "lsMs": 288,
+   "saveKB": 24.2,
+   "logN": 342,
+   "domCanvases": 135,
+   "rafCalls": 1382,
+   "listenersAdded": 76,
+   "listenersRemoved": 9,
+   "screen": "home",
+   "map": "town_mart"
+  },
+  {
+   "label": "c20",
+   "t": 477,
+   "rendererMB": 1114,
+   "gpuMB": 756,
+   "allMB": 2142,
+   "heapMB": 5.3,
+   "heapTotalMB": 6,
+   "nodes": 3415,
+   "docs": 1,
+   "jsListeners": 587,
+   "winListeners": 20,
+   "winByType": {
+    "resize": 17,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 10.4,
+   "caches": {
+    "TOPC": {
+     "keys": 299,
+     "canvases": 299,
+     "MB": 0.93
+    },
+    "CVCACHE": {
+     "keys": 20,
+     "canvases": 20,
+     "MB": 0.31
+    },
+    "LCACHE": {
+     "keys": 24,
+     "canvases": 24,
+     "MB": 0.18
+    },
+    "PCACHE": {
+     "keys": 109,
+     "canvases": 109,
+     "MB": 8.8
+    },
+    "OPAQ": {
+     "keys": 15,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 17,
+     "canvases": 17,
+     "MB": 0.14
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 2,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 58,
+   "timeoutsMade": 585,
+   "lsWrites": 443,
+   "lsMB": 17.6,
+   "lsMs": 347,
+   "saveKB": 25.3,
+   "logN": 357,
+   "domCanvases": 135,
+   "rafCalls": 1493,
+   "listenersAdded": 80,
+   "listenersRemoved": 10,
+   "screen": "home",
+   "map": "center"
+  },
+  {
+   "label": "c21",
+   "t": 495,
+   "rendererMB": 1173,
+   "gpuMB": 803,
+   "allMB": 2248,
+   "heapMB": 5.4,
+   "heapTotalMB": 6,
+   "nodes": 3396,
+   "docs": 1,
+   "jsListeners": 585,
+   "winListeners": 21,
+   "winByType": {
+    "resize": 18,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 10.4,
+   "caches": {
+    "TOPC": {
+     "keys": 314,
+     "canvases": 314,
+     "MB": 0.98
+    },
+    "CVCACHE": {
+     "keys": 21,
+     "canvases": 21,
+     "MB": 0.33
+    },
+    "LCACHE": {
+     "keys": 24,
+     "canvases": 24,
+     "MB": 0.18
+    },
+    "PCACHE": {
+     "keys": 109,
+     "canvases": 109,
+     "MB": 8.8
+    },
+    "OPAQ": {
+     "keys": 15,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 18,
+     "canvases": 18,
+     "MB": 0.15
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 2,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 60,
+   "timeoutsMade": 608,
+   "lsWrites": 448,
+   "lsMB": 17.8,
+   "lsMs": 385,
+   "saveKB": 25.5,
+   "logN": 363,
+   "domCanvases": 135,
+   "rafCalls": 1524,
+   "listenersAdded": 82,
+   "listenersRemoved": 10,
+   "screen": "home",
+   "map": "office"
+  },
+  {
+   "label": "c22",
+   "t": 529,
+   "rendererMB": 1226,
+   "gpuMB": 837,
+   "allMB": 2335,
+   "heapMB": 5.4,
+   "heapTotalMB": 6,
+   "nodes": 3457,
+   "docs": 1,
+   "jsListeners": 592,
+   "winListeners": 22,
+   "winByType": {
+    "resize": 19,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 11,
+   "caches": {
+    "TOPC": {
+     "keys": 327,
+     "canvases": 327,
+     "MB": 1.02
+    },
+    "CVCACHE": {
+     "keys": 22,
+     "canvases": 22,
+     "MB": 0.34
+    },
+    "LCACHE": {
+     "keys": 24,
+     "canvases": 24,
+     "MB": 0.18
+    },
+    "PCACHE": {
+     "keys": 111,
+     "canvases": 111,
+     "MB": 9.29
+    },
+    "OPAQ": {
+     "keys": 17,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 19,
+     "canvases": 19,
+     "MB": 0.16
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 2,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 63,
+   "timeoutsMade": 641,
+   "lsWrites": 476,
+   "lsMB": 19.2,
+   "lsMs": 412,
+   "saveKB": 26.4,
+   "logN": 372,
+   "domCanvases": 135,
+   "rafCalls": 1636,
+   "listenersAdded": 86,
+   "listenersRemoved": 11,
+   "screen": "home",
+   "map": "villa"
+  },
+  {
+   "label": "c23",
+   "t": 543,
+   "rendererMB": 1232,
+   "gpuMB": 843,
+   "allMB": 2348,
+   "heapMB": 5.3,
+   "heapTotalMB": 6.3,
+   "nodes": 3437,
+   "docs": 1,
+   "jsListeners": 588,
+   "winListeners": 22,
+   "winByType": {
+    "resize": 19,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 11,
+   "caches": {
+    "TOPC": {
+     "keys": 342,
+     "canvases": 342,
+     "MB": 1.06
+    },
+    "CVCACHE": {
+     "keys": 23,
+     "canvases": 23,
+     "MB": 0.36
+    },
+    "LCACHE": {
+     "keys": 25,
+     "canvases": 25,
+     "MB": 0.18
+    },
+    "PCACHE": {
+     "keys": 111,
+     "canvases": 111,
+     "MB": 9.29
+    },
+    "OPAQ": {
+     "keys": 17,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 20,
+     "canvases": 20,
+     "MB": 0.16
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 2,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 65,
+   "timeoutsMade": 663,
+   "lsWrites": 490,
+   "lsMB": 20,
+   "lsMs": 426,
+   "saveKB": 26.6,
+   "logN": 378,
+   "domCanvases": 135,
+   "rafCalls": 1636,
+   "listenersAdded": 86,
+   "listenersRemoved": 11,
+   "screen": "home",
+   "map": "room"
+  },
+  {
+   "label": "c24",
+   "t": 579,
+   "rendererMB": 1349,
+   "gpuMB": 931,
+   "allMB": 2551,
+   "heapMB": 5.4,
+   "heapTotalMB": 6,
+   "nodes": 3466,
+   "docs": 1,
+   "jsListeners": 593,
+   "winListeners": 24,
+   "winByType": {
+    "resize": 21,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 11.1,
+   "caches": {
+    "TOPC": {
+     "keys": 357,
+     "canvases": 357,
+     "MB": 1.11
+    },
+    "CVCACHE": {
+     "keys": 24,
+     "canvases": 24,
+     "MB": 0.38
+    },
+    "LCACHE": {
+     "keys": 26,
+     "canvases": 26,
+     "MB": 0.19
+    },
+    "PCACHE": {
+     "keys": 111,
+     "canvases": 111,
+     "MB": 9.29
+    },
+    "OPAQ": {
+     "keys": 18,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 21,
+     "canvases": 21,
+     "MB": 0.17
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 2,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 68,
+   "timeoutsMade": 698,
+   "lsWrites": 518,
+   "lsMB": 21.5,
+   "lsMs": 455,
+   "saveKB": 27.4,
+   "logN": 387,
+   "domCanvases": 134,
+   "rafCalls": 1782,
+   "listenersAdded": 92,
+   "listenersRemoved": 12,
+   "screen": "home",
+   "map": "market"
+  },
+  {
+   "label": "c26",
+   "t": 627,
+   "rendererMB": 1406,
+   "gpuMB": 972,
+   "allMB": 2651,
+   "heapMB": 5.5,
+   "heapTotalMB": 6,
+   "nodes": 3533,
+   "docs": 1,
+   "jsListeners": 600,
+   "winListeners": 25,
+   "winByType": {
+    "resize": 22,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 11.3,
+   "caches": {
+    "TOPC": {
+     "keys": 385,
+     "canvases": 385,
+     "MB": 1.2
+    },
+    "CVCACHE": {
+     "keys": 26,
+     "canvases": 26,
+     "MB": 0.41
+    },
+    "LCACHE": {
+     "keys": 28,
+     "canvases": 28,
+     "MB": 0.21
+    },
+    "PCACHE": {
+     "keys": 111,
+     "canvases": 111,
+     "MB": 9.29
+    },
+    "OPAQ": {
+     "keys": 19,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 23,
+     "canvases": 23,
+     "MB": 0.19
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 2,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 73,
+   "timeoutsMade": 754,
+   "lsWrites": 561,
+   "lsMB": 23.8,
+   "lsMs": 497,
+   "saveKB": 28.5,
+   "logN": 400,
+   "domCanvases": 135,
+   "rafCalls": 1891,
+   "listenersAdded": 96,
+   "listenersRemoved": 13,
+   "screen": "home",
+   "map": "office"
+  },
+  {
+   "label": "end",
+   "t": 627,
+   "rendererMB": 1406,
+   "gpuMB": 972,
+   "allMB": 2650,
+   "heapMB": 5.5,
+   "heapTotalMB": 6.3,
+   "nodes": 3499,
+   "docs": 1,
+   "jsListeners": 596,
+   "winListeners": 25,
+   "winByType": {
+    "resize": 22,
+    "keydown": 1,
+    "keyup": 1,
+    "hashchange": 1
+   },
+   "docListeners": 2,
+   "docByType": {
+    "click": 1,
+    "pointerdown": 1
+   },
+   "cacheMB": 11.3,
+   "caches": {
+    "TOPC": {
+     "keys": 385,
+     "canvases": 385,
+     "MB": 1.2
+    },
+    "CVCACHE": {
+     "keys": 26,
+     "canvases": 26,
+     "MB": 0.41
+    },
+    "LCACHE": {
+     "keys": 28,
+     "canvases": 28,
+     "MB": 0.21
+    },
+    "PCACHE": {
+     "keys": 111,
+     "canvases": 111,
+     "MB": 9.29
+    },
+    "OPAQ": {
+     "keys": 19,
+     "canvases": 0,
+     "MB": 0
+    },
+    "NPCCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "BCACHE": {
+     "keys": 23,
+     "canvases": 23,
+     "MB": 0.19
+    },
+    "CCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "RCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "HCACHE": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "INKC": {
+     "keys": 0,
+     "canvases": 0,
+     "MB": 0
+    },
+    "ROOMC": {
+     "keys": 2,
+     "canvases": 0,
+     "MB": 0
+    }
+   },
+   "intervalsLive": 2,
+   "intervalsMade": 73,
+   "timeoutsMade": 754,
+   "lsWrites": 561,
+   "lsMB": 23.8,
+   "lsMs": 497,
+   "saveKB": 28.5,
+   "logN": 400,
+   "domCanvases": 135,
+   "rafCalls": 1891,
+   "listenersAdded": 96,
+   "listenersRemoved": 13,
+   "screen": "home",
+   "map": "office"
+  }
+ ],
+ "det": {
+  "canvasesInHeap": 589,
+  "canvasMB": 187,
+  "detached": 586,
+  "detachedMB": 187,
+  "detachedBig": [
+   "1280x2768",
+   "1280x2768",
+   "1280x2768",
+   "1280x2768",
+   "1280x2768",
+   "1280x2768",
+   "1280x2768",
+   "1280x2768",
+   "1280x2768",
+   "1280x2768",
+   "1280x2768",
+   "1280x2768",
+   "1280x2768"
+  ],
+  "names": {
+   "CanvasRenderingContext2D": 727,
+   "<canvas width=\"24\" height=\"34\">": 385,
+   "<canvas width=\"30\" height=\"64\">": 28,
+   "<canvas width=\"64\" height=\"64\">": 26,
+   "<canvas width=\"30\" height=\"72\">": 23,
+   "<canvas width=\"1280\" height=\"2768\">": 13,
+   "<canvas width=\"144\" height=\"256\">": 10,
+   "<canvas width=\"176\" height=\"192\">": 8
+  }
+ },
+ "idleBusy": 13.2,
+ "errors": []
+}

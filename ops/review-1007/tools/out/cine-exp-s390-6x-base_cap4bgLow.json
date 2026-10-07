@@ -1,0 +1,42 @@
+[
+ {
+  "variant": "base",
+  "scene": "mq",
+  "canvas": "1280x2768",
+  "fps": 3.7,
+  "p50": 283.4,
+  "p95": 333.3,
+  "busy": 100.3,
+  "longSum": 6572
+ },
+ {
+  "variant": "base",
+  "scene": "opening",
+  "canvas": "1280x2768",
+  "fps": 4.8,
+  "p50": 216.7,
+  "p95": 250,
+  "busy": 59.8,
+  "longSum": 4272
+ },
+ {
+  "variant": "cap4bgLow",
+  "scene": "mq",
+  "canvas": "640x1384",
+  "fps": 27.5,
+  "p50": 33.3,
+  "p95": 66.7,
+  "busy": 92.1,
+  "longSum": 226
+ },
+ {
+  "variant": "cap4bgLow",
+  "scene": "opening",
+  "canvas": "640x1384",
+  "fps": 8.3,
+  "p50": 183.3,
+  "p95": 216.6,
+  "busy": 36.5,
+  "longSum": 4581
+ }
+]

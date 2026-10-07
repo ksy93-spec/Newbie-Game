@@ -1,0 +1,152 @@
+[
+ {
+  "throttle": 4,
+  "tabs": {
+   "char": {
+    "jsMs": 241,
+    "layoutMs": 1,
+    "toFrameMs": 330,
+    "nodes": 543,
+    "nodesDelta": 144
+   },
+   "shop": {
+    "jsMs": 263,
+    "layoutMs": 0,
+    "toFrameMs": 375,
+    "nodes": 1306,
+    "nodesDelta": 763
+   },
+   "wiki": {
+    "jsMs": 29,
+    "layoutMs": 0,
+    "toFrameMs": 41,
+    "nodes": 1355,
+    "nodesDelta": 49
+   },
+   "quests": {
+    "jsMs": 102,
+    "layoutMs": 0,
+    "toFrameMs": 146,
+    "nodes": 1636,
+    "nodesDelta": 281
+   },
+   "home": {
+    "jsMs": 37,
+    "layoutMs": 0,
+    "toFrameMs": 96,
+    "nodes": 1636,
+    "nodesDelta": 0
+   },
+   "char(2)": {
+    "jsMs": 45,
+    "layoutMs": 0,
+    "toFrameMs": 135,
+    "nodes": 1636,
+    "nodesDelta": 0
+   },
+   "shop(2)": {
+    "jsMs": 72,
+    "layoutMs": 0,
+    "toFrameMs": 165,
+    "nodes": 1636,
+    "nodesDelta": 0
+   },
+   "home(2)": {
+    "jsMs": 35,
+    "layoutMs": 0,
+    "toFrameMs": 92,
+    "nodes": 1636,
+    "nodesDelta": 0
+   }
+  },
+  "save": {
+   "nowKB": 15,
+   "fullKB": 33.8,
+   "EVMAX": 400,
+   "saveMsFull": 1.35,
+   "biggest": [
+    "log 31.6KB",
+    "owned 0.5KB",
+    "drip 0.3KB",
+    "done 0.2KB",
+    "chk 0.1KB",
+    "equip 0.1KB"
+   ]
+  }
+ },
+ {
+  "throttle": 6,
+  "tabs": {
+   "char": {
+    "jsMs": 389,
+    "layoutMs": 1,
+    "toFrameMs": 497,
+    "nodes": 543,
+    "nodesDelta": 144
+   },
+   "shop": {
+    "jsMs": 422,
+    "layoutMs": 0,
+    "toFrameMs": 582,
+    "nodes": 1306,
+    "nodesDelta": 763
+   },
+   "wiki": {
+    "jsMs": 47,
+    "layoutMs": 0,
+    "toFrameMs": 74,
+    "nodes": 1355,
+    "nodesDelta": 49
+   },
+   "quests": {
+    "jsMs": 138,
+    "layoutMs": 0,
+    "toFrameMs": 215,
+    "nodes": 1636,
+    "nodesDelta": 281
+   },
+   "home": {
+    "jsMs": 65,
+    "layoutMs": 0,
+    "toFrameMs": 166,
+    "nodes": 1636,
+    "nodesDelta": 0
+   },
+   "char(2)": {
+    "jsMs": 75,
+    "layoutMs": 0,
+    "toFrameMs": 212,
+    "nodes": 1636,
+    "nodesDelta": 0
+   },
+   "shop(2)": {
+    "jsMs": 109,
+    "layoutMs": 0,
+    "toFrameMs": 260,
+    "nodes": 1636,
+    "nodesDelta": 0
+   },
+   "home(2)": {
+    "jsMs": 56,
+    "layoutMs": 0,
+    "toFrameMs": 147,
+    "nodes": 1636,
+    "nodesDelta": 0
+   }
+  },
+  "save": {
+   "nowKB": 15,
+   "fullKB": 33.8,
+   "EVMAX": 400,
+   "saveMsFull": 2.1,
+   "biggest": [
+    "log 31.6KB",
+    "owned 0.5KB",
+    "drip 0.3KB",
+    "done 0.2KB",
+    "chk 0.1KB",
+    "equip 0.1KB"
+   ]
+  }
+ }
+]

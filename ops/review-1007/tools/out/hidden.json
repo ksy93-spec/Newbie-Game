@@ -1,0 +1,18 @@
+[
+ {
+  "label": "visible-idle",
+  "vis": "visible",
+  "draws": 68,
+  "ac": "running",
+  "drawsPerSec": 4.5,
+  "cpuBusyPct": 18
+ },
+ {
+  "label": "hidden-idle",
+  "vis": "visible",
+  "draws": 69,
+  "ac": "running",
+  "drawsPerSec": 4.6,
+  "cpuBusyPct": 15.8
+ }
+]

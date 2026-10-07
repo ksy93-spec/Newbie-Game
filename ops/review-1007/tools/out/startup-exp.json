@@ -1,0 +1,44 @@
+[
+ {
+  "throttle": 4,
+  "variant": "original",
+  "dclMed": 1039.6,
+  "longSumMed": 484,
+  "heapMB": 4.5
+ },
+ {
+  "throttle": 4,
+  "variant": "noArt",
+  "dclMed": 873.2,
+  "longSumMed": 366,
+  "heapMB": 2.8
+ },
+ {
+  "throttle": 4,
+  "variant": "lazyImg",
+  "dclMed": 895.8,
+  "longSumMed": 376,
+  "heapMB": 4.2
+ },
+ {
+  "throttle": 6,
+  "variant": "original",
+  "dclMed": 1709.1,
+  "longSumMed": 944,
+  "heapMB": 4.5
+ },
+ {
+  "throttle": 6,
+  "variant": "noArt",
+  "dclMed": 1068.3,
+  "longSumMed": 514,
+  "heapMB": 2.8
+ },
+ {
+  "throttle": 6,
+  "variant": "lazyImg",
+  "dclMed": 1365,
+  "longSumMed": 649,
+  "heapMB": 4.3
+ }
+]
