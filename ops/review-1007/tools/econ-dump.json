@@ -1,0 +1,3145 @@
+{
+ "qs": [
+  {
+   "id": "stu1",
+   "th": "jik",
+   "xp": 70,
+   "coin": 60,
+   "n": 3,
+   "stat": {
+    "jik": 12
+   },
+   "fit": {
+    "status": [
+     "대학생",
+     "취준생"
+    ]
+   },
+   "trip": false,
+   "reward": "mouse",
+   "place": "c_alba"
+  },
+  {
+   "id": "stu2",
+   "th": "geum",
+   "xp": 70,
+   "coin": 60,
+   "n": 3,
+   "stat": {
+    "geum": 11
+   },
+   "fit": {
+    "status": [
+     "대학생",
+     "취준생"
+    ]
+   },
+   "trip": false,
+   "reward": "keyb",
+   "place": "u_loan"
+  },
+  {
+   "id": "stu3",
+   "th": "ju",
+   "xp": 60,
+   "coin": 50,
+   "n": 3,
+   "stat": {
+    "ju": 12
+   },
+   "fit": {
+    "status": [
+     "대학생"
+    ]
+   },
+   "trip": false,
+   "reward": "train",
+   "place": "u_dorm"
+  },
+  {
+   "id": "job1",
+   "th": "jik",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "jik": 13
+   },
+   "fit": {
+    "status": [
+     "취준생",
+     "대학생"
+    ]
+   },
+   "trip": false,
+   "reward": "glass",
+   "place": "n_health"
+  },
+  {
+   "id": "job2",
+   "th": "geum",
+   "xp": 70,
+   "coin": 60,
+   "n": 3,
+   "stat": {
+    "geum": 11
+   },
+   "fit": {
+    "status": [
+     "취준생"
+    ]
+   },
+   "trip": false,
+   "reward": "skinny",
+   "place": "n_pension"
+  },
+  {
+   "id": "job3",
+   "th": "ui",
+   "xp": 60,
+   "coin": 50,
+   "n": 3,
+   "stat": {
+    "ui": 10
+   },
+   "fit": {
+    "status": [
+     "취준생",
+     "대학생"
+    ]
+   },
+   "trip": false,
+   "reward": "suitg",
+   "place": "c_friend"
+  },
+  {
+   "id": "ju1",
+   "th": "ju",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "ju": 12
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "mouse",
+   "place": "e_jeonse"
+  },
+  {
+   "id": "ju2",
+   "th": "ju",
+   "xp": 100,
+   "coin": 80,
+   "n": 3,
+   "stat": {
+    "ju": 16
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "glass",
+   "place": "h_move"
+  },
+  {
+   "id": "ju3",
+   "th": "ju",
+   "xp": 70,
+   "coin": 60,
+   "n": 3,
+   "stat": {
+    "ju": 10
+   },
+   "fit": {
+    "regions": [
+     "수도권",
+     "광역시"
+    ]
+   },
+   "trip": false,
+   "reward": "badge",
+   "place": "e_wolse"
+  },
+  {
+   "id": "ju4",
+   "th": "ju",
+   "xp": 70,
+   "coin": 60,
+   "n": 3,
+   "stat": {
+    "ju": 11
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "tumbler",
+   "place": "h_report"
+  },
+  {
+   "id": "ju5",
+   "th": "ju",
+   "xp": 60,
+   "coin": 50,
+   "n": 3,
+   "stat": {
+    "ju": 9
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "jeans",
+   "place": "e_maemae"
+  },
+  {
+   "id": "geum1",
+   "th": "geum",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "geum": 10
+   },
+   "fit": {
+    "ageMax": 34
+   },
+   "trip": false,
+   "reward": "keyb",
+   "place": "b_sub"
+  },
+  {
+   "id": "geum2",
+   "th": "geum",
+   "xp": 60,
+   "coin": 40,
+   "n": 3,
+   "stat": {
+    "geum": 7
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "skinny",
+   "place": "c_friend"
+  },
+  {
+   "id": "geum3",
+   "th": "geum",
+   "xp": 70,
+   "coin": 60,
+   "n": 3,
+   "stat": {
+    "geum": 12
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "beanie",
+   "place": "b_credit"
+  },
+  {
+   "id": "geum4",
+   "th": "geum",
+   "xp": 70,
+   "coin": 60,
+   "n": 3,
+   "stat": {
+    "geum": 13
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "laptop",
+   "place": "o_senior"
+  },
+  {
+   "id": "sik1",
+   "th": "sik",
+   "xp": 60,
+   "coin": 50,
+   "n": 3,
+   "stat": {
+    "sik": 9
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "band",
+   "place": "m_table"
+  },
+  {
+   "id": "sik2",
+   "th": "sik",
+   "xp": 60,
+   "coin": 50,
+   "n": 3,
+   "stat": {
+    "sik": 11
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "hoodie",
+   "place": "m_table"
+  },
+  {
+   "id": "ui1",
+   "th": "ui",
+   "xp": 50,
+   "coin": 40,
+   "n": 3,
+   "stat": {
+    "ui": 8
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "suitg",
+   "place": "o_senior"
+  },
+  {
+   "id": "ui2",
+   "th": "ui",
+   "xp": 50,
+   "coin": 40,
+   "n": 3,
+   "stat": {
+    "ui": 9
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "padded",
+   "place": "w_laundry"
+  },
+  {
+   "id": "jik1",
+   "th": "jik",
+   "xp": 90,
+   "coin": 80,
+   "n": 3,
+   "stat": {
+    "jik": 12
+   },
+   "fit": {
+    "status": [
+     "직장인"
+    ]
+   },
+   "trip": false,
+   "reward": "laptop",
+   "place": "o_hr"
+  },
+  {
+   "id": "jik2",
+   "th": "jik",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "jik": 14
+   },
+   "fit": {
+    "status": [
+     "직장인"
+    ]
+   },
+   "trip": false,
+   "reward": "board",
+   "place": "o_hr"
+  },
+  {
+   "id": "jik3",
+   "th": "jik",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "jik": 15
+   },
+   "fit": {
+    "status": [
+     "직장인",
+     "취준생"
+    ]
+   },
+   "trip": false,
+   "reward": "card",
+   "place": "l_benefit"
+  },
+  {
+   "id": "job4",
+   "th": "jik",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "jik": 12
+   },
+   "fit": {
+    "status": [
+     "취준생",
+     "직장인"
+    ]
+   },
+   "trip": false,
+   "reward": "board",
+   "place": "l_quit"
+  },
+  {
+   "id": "job5",
+   "th": "geum",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "geum": 8,
+    "jik": 6
+   },
+   "fit": {
+    "status": [
+     "취준생"
+    ]
+   },
+   "trip": false,
+   "reward": "glass",
+   "place": "l_support"
+  },
+  {
+   "id": "job6",
+   "th": "jik",
+   "xp": 90,
+   "coin": 80,
+   "n": 3,
+   "stat": {
+    "jik": 12
+   },
+   "fit": {
+    "status": [
+     "취준생",
+     "대학생"
+    ]
+   },
+   "trip": false,
+   "reward": "suit",
+   "place": "o_hr"
+  },
+  {
+   "id": "job7",
+   "th": "jik",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "jik": 12
+   },
+   "fit": {
+    "status": [
+     "취준생",
+     "직장인"
+    ]
+   },
+   "trip": false,
+   "reward": "beanie",
+   "place": "l_benefit"
+  },
+  {
+   "id": "car1",
+   "th": "geum",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "geum": 10
+   },
+   "fit": {},
+   "trip": true,
+   "reward": null,
+   "place": "r_gas"
+  },
+  {
+   "id": "car2",
+   "th": "ui",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "ui": 10
+   },
+   "fit": {},
+   "trip": true,
+   "reward": null,
+   "place": "r_truck"
+  },
+  {
+   "id": "trip1",
+   "th": "geum",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "geum": 10
+   },
+   "fit": {},
+   "trip": true,
+   "reward": null,
+   "place": "g_info"
+  },
+  {
+   "id": "trip2",
+   "th": "ui",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "ui": 10
+   },
+   "fit": {},
+   "trip": true,
+   "reward": null,
+   "place": "g_guard"
+  },
+  {
+   "id": "trip3",
+   "th": "ju",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "ju": 10
+   },
+   "fit": {},
+   "trip": true,
+   "reward": null,
+   "place": "j_inn"
+  },
+  {
+   "id": "trip4",
+   "th": "geum",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "geum": 10
+   },
+   "fit": {},
+   "trip": true,
+   "reward": null,
+   "place": "b_rent"
+  },
+  {
+   "id": "tax1",
+   "th": "geum",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "geum": 12
+   },
+   "fit": {
+    "status": [
+     "직장인",
+     "취준생"
+    ]
+   },
+   "trip": false,
+   "reward": "receipt",
+   "place": "o_tax"
+  },
+  {
+   "id": "tax2",
+   "th": "geum",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "geum": 12
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "knitvest",
+   "place": "o_tax"
+  },
+  {
+   "id": "fin1",
+   "th": "geum",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "geum": 13
+   },
+   "fit": {
+    "status": [
+     "대학생",
+     "취준생",
+     "직장인"
+    ]
+   },
+   "trip": false,
+   "reward": null,
+   "place": "h_youth"
+  },
+  {
+   "id": "rent1",
+   "th": "ju",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "ju": 11
+   },
+   "fit": {
+    "status": [
+     "대학생",
+     "취준생",
+     "직장인"
+    ]
+   },
+   "trip": false,
+   "reward": null,
+   "place": "h_youth"
+  },
+  {
+   "id": "scam1",
+   "th": "geum",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "geum": 13
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "otp",
+   "place": "b_scam"
+  },
+  {
+   "id": "scam2",
+   "th": "sik",
+   "xp": 70,
+   "coin": 60,
+   "n": 3,
+   "stat": {
+    "sik": 10
+   },
+   "fit": {},
+   "trip": false,
+   "reward": null,
+   "place": "c_friend"
+  },
+  {
+   "id": "card1",
+   "th": "geum",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "geum": 12
+   },
+   "fit": {},
+   "trip": false,
+   "reward": null,
+   "place": "b_credit"
+  },
+  {
+   "id": "sub1",
+   "th": "sik",
+   "xp": 70,
+   "coin": 60,
+   "n": 4,
+   "stat": {
+    "sik": 10
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "lunchbox",
+   "place": "m_table"
+  },
+  {
+   "id": "labor1",
+   "th": "jik",
+   "xp": 90,
+   "coin": 80,
+   "n": 3,
+   "stat": {
+    "jik": 13
+   },
+   "fit": {},
+   "trip": false,
+   "reward": "nomu",
+   "place": "l_labor"
+  },
+  {
+   "id": "labor2",
+   "th": "jik",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "jik": 12
+   },
+   "fit": {
+    "status": [
+     "직장인",
+     "취준생"
+    ]
+   },
+   "trip": false,
+   "reward": "cargo",
+   "place": "l_labor"
+  },
+  {
+   "id": "labor3",
+   "th": "jik",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "jik": 12
+   },
+   "fit": {
+    "status": [
+     "직장인"
+    ]
+   },
+   "trip": false,
+   "reward": null,
+   "place": "l_labor"
+  },
+  {
+   "id": "wage1",
+   "th": "jik",
+   "xp": 70,
+   "coin": 60,
+   "n": 3,
+   "stat": {
+    "jik": 11
+   },
+   "fit": {
+    "status": [
+     "대학생",
+     "취준생"
+    ]
+   },
+   "trip": false,
+   "reward": "linen",
+   "place": "c_alba"
+  },
+  {
+   "id": "pen1",
+   "th": "geum",
+   "xp": 80,
+   "coin": 70,
+   "n": 3,
+   "stat": {
+    "geum": 13
+   },
+   "fit": {
+    "status": [
+     "직장인"
+    ]
+   },
+   "trip": false,
+   "reward": null,
+   "place": "o_tax"
+  },
+  {
+   "id": "ins1",
+   "th": "geum",
+   "xp": 70,
+   "coin": 60,
+   "n": 3,
+   "stat": {
+    "geum": 11
+   },
+   "fit": {},
+   "trip": false,
+   "reward": null,
+   "place": "o_senior"
+  },
+  {
+   "id": "trip5",
+   "th": "sik",
+   "xp": 70,
+   "coin": 60,
+   "n": 3,
+   "stat": {
+    "sik": 10
+   },
+   "fit": {},
+   "trip": true,
+   "reward": "windbrk",
+   "place": "g_info"
+  }
+ ],
+ "items": {
+  "pen": {
+   "slot": "weapon",
+   "name": "3색 볼펜",
+   "cost": 0,
+   "atk": 4,
+   "def": 0,
+   "perk": null,
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "mouse": {
+   "slot": "weapon",
+   "name": "무소음 마우스",
+   "cost": 120,
+   "atk": 9,
+   "def": 0,
+   "perk": null,
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "tumbler": {
+   "slot": "weapon",
+   "name": "대용량 텀블러",
+   "cost": 180,
+   "atk": 12,
+   "def": 0,
+   "perk": {
+    "fullSave": 5
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "keyb": {
+   "slot": "weapon",
+   "name": "기계식 키보드",
+   "cost": 260,
+   "atk": 16,
+   "def": 0,
+   "perk": {
+    "kan": 1
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "board": {
+   "slot": "weapon",
+   "name": "결재판",
+   "cost": 340,
+   "atk": 20,
+   "def": 0,
+   "perk": {
+    "mak": 1
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "laptop": {
+   "slot": "weapon",
+   "name": "노트북",
+   "cost": 460,
+   "atk": 25,
+   "def": 0,
+   "perk": {
+    "xp": 10
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "card": {
+   "slot": "weapon",
+   "name": "법인카드",
+   "cost": 700,
+   "atk": 32,
+   "def": 0,
+   "perk": {
+    "foodDisc": 20
+   },
+   "special": false,
+   "mq": "card",
+   "from": null
+  },
+  "shirt": {
+   "slot": "top",
+   "name": "네이비 재킷",
+   "cost": 0,
+   "atk": 0,
+   "def": 6,
+   "perk": null,
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "suit": {
+   "slot": "top",
+   "name": "차콜 정장",
+   "cost": 110,
+   "atk": 0,
+   "def": 10,
+   "perk": null,
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "badge": {
+   "slot": "top",
+   "name": "사원증 목걸이",
+   "cost": 140,
+   "atk": 0,
+   "def": 9,
+   "perk": {
+    "coin": 10
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "hoodie": {
+   "slot": "top",
+   "name": "후드집업",
+   "cost": 200,
+   "atk": 2,
+   "def": 12,
+   "perk": {
+    "fullSave": 3
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "suitg": {
+   "slot": "top",
+   "name": "필살기 정장",
+   "cost": 380,
+   "atk": 3,
+   "def": 17,
+   "perk": {
+    "kan": 1,
+    "mak": 1
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "padded": {
+   "slot": "top",
+   "name": "출근용 롱패딩",
+   "cost": 520,
+   "atk": 0,
+   "def": 22,
+   "perk": {
+    "mak": 1
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "hnone": {
+   "slot": "head",
+   "name": "없음",
+   "cost": 0,
+   "atk": 0,
+   "def": 0,
+   "perk": null,
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "glass": {
+   "slot": "head",
+   "name": "블루라이트 안경",
+   "cost": 150,
+   "atk": 0,
+   "def": 10,
+   "perk": {
+    "kan": 1
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "band": {
+   "slot": "head",
+   "name": "회식용 넥타이 머리띠",
+   "cost": 190,
+   "atk": 7,
+   "def": 2,
+   "perk": {
+    "coin": 10
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "beanie": {
+   "slot": "head",
+   "name": "비니",
+   "cost": 230,
+   "atk": 3,
+   "def": 8,
+   "perk": {
+    "fullMax": 10
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "beige": {
+   "slot": "bottom",
+   "name": "베이지 슬랙스",
+   "cost": 0,
+   "atk": 0,
+   "def": 8,
+   "perk": null,
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "jeans": {
+   "slot": "bottom",
+   "name": "청바지",
+   "cost": 110,
+   "atk": 0,
+   "def": 10,
+   "perk": null,
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "slack": {
+   "slot": "bottom",
+   "name": "검정 슬랙스",
+   "cost": 120,
+   "atk": 0,
+   "def": 12,
+   "perk": null,
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "train": {
+   "slot": "bottom",
+   "name": "기모 트레이닝복",
+   "cost": 210,
+   "atk": 2,
+   "def": 16,
+   "perk": {
+    "fullSave": 3
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "skinny": {
+   "slot": "bottom",
+   "name": "스키니진 빌런",
+   "cost": 170,
+   "atk": 14,
+   "def": -5,
+   "perk": {
+    "kan": 1
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "receipt": {
+   "slot": "weapon",
+   "name": "연말정산 영수증 파일",
+   "cost": 400,
+   "atk": 22,
+   "def": 0,
+   "perk": {
+    "xp": 5
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "otp": {
+   "slot": "weapon",
+   "name": "OTP 카드",
+   "cost": 300,
+   "atk": 15,
+   "def": 4,
+   "perk": {
+    "mak": 1
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "lunchbox": {
+   "slot": "weapon",
+   "name": "보온 도시락통",
+   "cost": 220,
+   "atk": 11,
+   "def": 0,
+   "perk": {
+    "foodDisc": 10
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "nomu": {
+   "slot": "top",
+   "name": "노무사 정장",
+   "cost": 420,
+   "atk": 2,
+   "def": 18,
+   "perk": {
+    "kan": 1
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "windbrk": {
+   "slot": "top",
+   "name": "바람막이",
+   "cost": 260,
+   "atk": 3,
+   "def": 13,
+   "perk": {
+    "fullSave": 2
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "knitvest": {
+   "slot": "top",
+   "name": "니트 조끼",
+   "cost": 160,
+   "atk": 0,
+   "def": 10,
+   "perk": {
+    "coin": 5
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "cargo": {
+   "slot": "bottom",
+   "name": "카고 팬츠",
+   "cost": 230,
+   "atk": 0,
+   "def": 14,
+   "perk": {
+    "fullSave": 2
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "linen": {
+   "slot": "bottom",
+   "name": "린넨 바지",
+   "cost": 150,
+   "atk": 3,
+   "def": 9,
+   "perk": null,
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "beanie2": {
+   "slot": "head",
+   "name": "주황 비니",
+   "cost": 280,
+   "atk": 3,
+   "def": 9,
+   "perk": {
+    "fullMax": 10,
+    "coin": 5
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "shades": {
+   "slot": "head",
+   "name": "선글라스",
+   "cost": 240,
+   "atk": 6,
+   "def": 6,
+   "perk": {
+    "mak": 1
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "goldpen": {
+   "slot": "weapon",
+   "name": "황금 볼펜",
+   "cost": 0,
+   "atk": 13,
+   "def": 3,
+   "perk": {
+    "mak": 1
+   },
+   "special": true,
+   "mq": null,
+   "from": "동네 편의점 알바생의 넌센스 퀴즈"
+  },
+  "catmug": {
+   "slot": "weapon",
+   "name": "고양이 머그",
+   "cost": 0,
+   "atk": 10,
+   "def": 5,
+   "perk": {
+    "foodBoost": 20
+   },
+   "special": true,
+   "mq": null,
+   "from": "은행 골목 세탁소 분실물함"
+  },
+  "quiztee": {
+   "slot": "top",
+   "name": "넌센스 왕 티셔츠",
+   "cost": 0,
+   "atk": 3,
+   "def": 11,
+   "perk": {
+    "kan": 1
+   },
+   "special": true,
+   "mq": null,
+   "from": "학교 앞 도서관 사서의 넌센스 퀴즈"
+  },
+  "goldstamp": {
+   "slot": "weapon",
+   "name": "황금 인감도장",
+   "cost": 0,
+   "atk": 18,
+   "def": 4,
+   "perk": {
+    "kan": 1,
+    "mak": 1
+   },
+   "special": true,
+   "mq": null,
+   "from": "학교 앞 게임 동아리 · 지옥 난이도"
+  },
+  "luckypants": {
+   "slot": "bottom",
+   "name": "행운의 체크 바지",
+   "cost": 0,
+   "atk": 2,
+   "def": 13,
+   "perk": {
+    "eggx2": 1
+   },
+   "special": true,
+   "mq": null,
+   "from": "회사 앞 로비 경비 아저씨의 넌센스 퀴즈"
+  },
+  "mq_badge": {
+   "slot": "top",
+   "name": "정규직 사원증",
+   "cost": 0,
+   "atk": 0,
+   "def": 12,
+   "perk": {
+    "coin": 10,
+    "xp": 5
+   },
+   "special": true,
+   "mq": null,
+   "from": "메인 퀘스트 1장 · 첫 취업"
+  },
+  "mq_lease": {
+   "slot": "weapon",
+   "name": "확정일자 받은 계약서",
+   "cost": 0,
+   "atk": 21,
+   "def": 3,
+   "perk": {
+    "kan": 1,
+    "mak": 1
+   },
+   "special": true,
+   "mq": null,
+   "from": "메인 퀘스트 2장 · 첫 전세 계약"
+  },
+  "mq_card": {
+   "slot": "weapon",
+   "name": "한도 낮춘 첫 카드",
+   "cost": 0,
+   "atk": 24,
+   "def": 2,
+   "perk": {
+    "foodDisc": 15
+   },
+   "special": true,
+   "mq": null,
+   "from": "메인 퀘스트 3장 · 첫 신용카드"
+  },
+  "mq_shades": {
+   "slot": "head",
+   "name": "초보운전 선글라스",
+   "cost": 0,
+   "atk": 6,
+   "def": 8,
+   "perk": {
+    "mak": 1,
+    "fullSave": 2
+   },
+   "special": true,
+   "mq": null,
+   "from": "메인 퀘스트 4장 · 첫 차"
+  },
+  "mq_suit": {
+   "slot": "top",
+   "name": "상견례 정장",
+   "cost": 0,
+   "atk": 3,
+   "def": 21,
+   "perk": {
+    "kan": 1,
+    "mak": 1,
+    "coin": 5
+   },
+   "special": true,
+   "mq": null,
+   "from": "메인 퀘스트 5장 · 결혼 준비"
+  },
+  "mq_homepants": {
+   "slot": "bottom",
+   "name": "집들이 실내복",
+   "cost": 0,
+   "atk": 2,
+   "def": 16,
+   "perk": {
+    "fullMax": 10,
+    "fullSave": 3
+   },
+   "special": true,
+   "mq": null,
+   "from": "메인 퀘스트 6장 · 첫 내 집 마련"
+  },
+  "oxford": {
+   "slot": "top",
+   "name": "옥스퍼드 셔츠",
+   "cost": 240,
+   "atk": 0,
+   "def": 11,
+   "perk": {
+    "xp": 5
+   },
+   "special": false,
+   "mq": "job",
+   "from": null
+  },
+  "cardigan": {
+   "slot": "top",
+   "name": "사무실 가디건",
+   "cost": 300,
+   "atk": 0,
+   "def": 14,
+   "perk": {
+    "coin": 5
+   },
+   "special": false,
+   "mq": "job",
+   "from": null
+  },
+  "wideslk": {
+   "slot": "bottom",
+   "name": "와이드 슬랙스",
+   "cost": 220,
+   "atk": 0,
+   "def": 13,
+   "perk": {
+    "fullSave": 2
+   },
+   "special": false,
+   "mq": "job",
+   "from": null
+  },
+  "wallet": {
+   "slot": "weapon",
+   "name": "카드지갑",
+   "cost": 360,
+   "atk": 18,
+   "def": 0,
+   "perk": {
+    "foodDisc": 10
+   },
+   "special": false,
+   "mq": "card",
+   "from": null
+  },
+  "bosssuit": {
+   "slot": "top",
+   "name": "집주인 정장",
+   "cost": 0,
+   "atk": 0,
+   "def": 0,
+   "perk": null,
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "pnone": {
+   "slot": "pet",
+   "name": "없음",
+   "cost": 0,
+   "atk": 0,
+   "def": 0,
+   "perk": null,
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "bird": {
+   "slot": "pet",
+   "name": "출근 참새",
+   "cost": 300,
+   "atk": 4,
+   "def": 4,
+   "perk": {
+    "daily": 50
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "dog": {
+   "slot": "pet",
+   "name": "퇴근길 강아지",
+   "cost": 420,
+   "atk": 6,
+   "def": 8,
+   "perk": {
+    "dogcoin": 1
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "turtle": {
+   "slot": "pet",
+   "name": "스테이플러 거북",
+   "cost": 520,
+   "atk": 0,
+   "def": 14,
+   "perk": {
+    "mak": 1
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "mnone": {
+   "slot": "mount",
+   "name": "없음",
+   "cost": 0,
+   "atk": 0,
+   "def": 0,
+   "perk": null,
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "kick": {
+   "slot": "mount",
+   "name": "전동 킥보드",
+   "cost": 320,
+   "atk": 6,
+   "def": 0,
+   "perk": {
+    "speed": 1
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "bike": {
+   "slot": "mount",
+   "name": "따릉이",
+   "cost": 420,
+   "atk": 3,
+   "def": 8,
+   "perk": {
+    "speed": 1,
+    "fullSave": 2
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "car": {
+   "slot": "mount",
+   "name": "중고 경차",
+   "cost": 900,
+   "atk": 8,
+   "def": 16,
+   "perk": {
+    "speed": 1,
+    "road": 1
+   },
+   "special": false,
+   "mq": "car",
+   "from": null
+  },
+  "ebike": {
+   "slot": "mount",
+   "name": "전기자전거",
+   "cost": 760,
+   "atk": 6,
+   "def": 10,
+   "perk": {
+    "speed": 1,
+    "fullSave": 4
+   },
+   "special": false,
+   "mq": null,
+   "from": null
+  },
+  "sedan": {
+   "slot": "mount",
+   "name": "중형 세단",
+   "cost": 1800,
+   "atk": 10,
+   "def": 24,
+   "perk": {
+    "speed": 1,
+    "road": 1,
+    "mak": 1
+   },
+   "special": false,
+   "mq": "car",
+   "from": null
+  },
+  "evcar": {
+   "slot": "mount",
+   "name": "소형 전기차",
+   "cost": 1300,
+   "atk": 9,
+   "def": 20,
+   "perk": {
+    "speed": 1,
+    "road": 1,
+    "fullSave": 3
+   },
+   "special": false,
+   "mq": "car",
+   "from": null
+  }
+ },
+ "furni": {
+  "ramen": {
+   "name": "라면 5봉지",
+   "cost": 60,
+   "need": 0,
+   "atk": 0,
+   "def": 0,
+   "perk": null,
+   "mq": null,
+   "ad": false
+  },
+  "mat": {
+   "name": "접이식 매트",
+   "cost": 90,
+   "need": 1,
+   "atk": 0,
+   "def": 4,
+   "perk": null,
+   "mq": null,
+   "ad": false
+  },
+  "fan": {
+   "name": "선풍기",
+   "cost": 140,
+   "need": 3,
+   "atk": 0,
+   "def": 4,
+   "perk": null,
+   "mq": null,
+   "ad": false
+  },
+  "desk2": {
+   "name": "접이식 책상",
+   "cost": 200,
+   "need": 4,
+   "atk": 6,
+   "def": 0,
+   "perk": {
+    "kan": 1
+   },
+   "mq": null,
+   "ad": false
+  },
+  "fridge": {
+   "name": "소형 냉장고",
+   "cost": 300,
+   "need": 5,
+   "atk": 0,
+   "def": 8,
+   "perk": {
+    "fullMax": 20
+   },
+   "mq": null,
+   "ad": false
+  },
+  "bed": {
+   "name": "접이식 침대",
+   "cost": 340,
+   "need": 5,
+   "atk": 0,
+   "def": 12,
+   "perk": {
+    "fullMax": 10
+   },
+   "mq": null,
+   "ad": false
+  },
+  "wash": {
+   "name": "세탁기",
+   "cost": 420,
+   "need": 6,
+   "atk": 0,
+   "def": 10,
+   "perk": null,
+   "mq": null,
+   "ad": false
+  },
+  "tv": {
+   "name": "바퀴 달린 TV",
+   "cost": 560,
+   "need": 7,
+   "atk": 9,
+   "def": 0,
+   "perk": null,
+   "mq": null,
+   "ad": false
+  },
+  "styler": {
+   "name": "옷 관리기",
+   "cost": 760,
+   "need": 8,
+   "atk": 0,
+   "def": 14,
+   "perk": null,
+   "mq": null,
+   "ad": false
+  },
+  "sofa": {
+   "name": "2인용 소파",
+   "cost": 980,
+   "need": 8,
+   "atk": 0,
+   "def": 18,
+   "perk": null,
+   "mq": null,
+   "ad": false
+  },
+  "aircon": {
+   "name": "스탠드 에어컨",
+   "cost": 1200,
+   "need": 9,
+   "atk": 0,
+   "def": 20,
+   "perk": null,
+   "mq": null,
+   "ad": false
+  },
+  "dryer": {
+   "name": "건조기",
+   "cost": 1400,
+   "need": 10,
+   "atk": 0,
+   "def": 16,
+   "perk": null,
+   "mq": null,
+   "ad": false
+  },
+  "robot": {
+   "name": "로봇청소기",
+   "cost": 1600,
+   "need": 11,
+   "atk": 8,
+   "def": 12,
+   "perk": null,
+   "mq": null,
+   "ad": false
+  },
+  "dish": {
+   "name": "식기세척기",
+   "cost": 1900,
+   "need": 12,
+   "atk": 0,
+   "def": 18,
+   "perk": null,
+   "mq": null,
+   "ad": false
+  },
+  "massage": {
+   "name": "안마의자",
+   "cost": 2400,
+   "need": 13,
+   "atk": 0,
+   "def": 24,
+   "perk": null,
+   "mq": null,
+   "ad": false
+  },
+  "bigtv": {
+   "name": "75인치 TV",
+   "cost": 3000,
+   "need": 14,
+   "atk": 16,
+   "def": 10,
+   "perk": null,
+   "mq": null,
+   "ad": false
+  },
+  "fridge2": {
+   "name": "양문형 냉장고",
+   "cost": 820,
+   "need": 7,
+   "atk": 0,
+   "def": 12,
+   "perk": {
+    "fullMax": 30
+   },
+   "mq": "lease",
+   "ad": false
+  },
+  "purifier": {
+   "name": "공기청정기",
+   "cost": 620,
+   "need": 7,
+   "atk": 0,
+   "def": 8,
+   "perk": {
+    "xp": 5
+   },
+   "mq": "lease",
+   "ad": false
+  },
+  "bed2": {
+   "name": "퀸 침대",
+   "cost": 1100,
+   "need": 8,
+   "atk": 0,
+   "def": 16,
+   "perk": {
+    "fullMax": 15
+   },
+   "mq": "wedding",
+   "ad": false
+  },
+  "table2": {
+   "name": "2인 식탁",
+   "cost": 720,
+   "need": 8,
+   "atk": 0,
+   "def": 8,
+   "perk": {
+    "foodBoost": 15
+   },
+   "mq": "wedding",
+   "ad": false
+  },
+  "shelf": {
+   "name": "거실 책장",
+   "cost": 1300,
+   "need": 9,
+   "atk": 6,
+   "def": 10,
+   "perk": {
+    "xp": 5
+   },
+   "mq": "home",
+   "ad": false
+  },
+  "plant": {
+   "name": "큰 화분",
+   "cost": 500,
+   "need": 9,
+   "atk": 0,
+   "def": 4,
+   "perk": {
+    "fullSave": 2
+   },
+   "mq": "home",
+   "ad": false
+  }
+ },
+ "eps": [
+  {
+   "id": "jeonse-day",
+   "title": "전세 계약 하루",
+   "stat": "ju",
+   "beats": 6,
+   "keys": [
+    "id",
+    "title",
+    "theme",
+    "stat",
+    "face",
+    "npc",
+    "one",
+    "ends"
+   ]
+  },
+  {
+   "id": "first-job",
+   "title": "첫 알바 한 달",
+   "stat": "jik",
+   "beats": 5,
+   "keys": [
+    "id",
+    "title",
+    "theme",
+    "stat",
+    "face",
+    "npc",
+    "one",
+    "ends"
+   ]
+  },
+  {
+   "id": "first-pay",
+   "title": "첫 월급 세 달",
+   "stat": "geum",
+   "beats": 5,
+   "keys": [
+    "id",
+    "title",
+    "theme",
+    "stat",
+    "face",
+    "npc",
+    "one",
+    "ends"
+   ]
+  },
+  {
+   "id": "job-hunt",
+   "title": "면접 다니는 달",
+   "stat": "jik",
+   "beats": 6,
+   "keys": [
+    "id",
+    "title",
+    "theme",
+    "stat",
+    "face",
+    "npc",
+    "one",
+    "ends"
+   ]
+  }
+ ],
+ "bosses": [
+  {
+   "id": "jeonse",
+   "name": "전세 먹튀 집주인",
+   "stat": "ju",
+   "need": 30,
+   "hp": 100,
+   "atk": 24,
+   "n": 7
+  },
+  {
+   "id": "mlm",
+   "name": "다단계 선배",
+   "stat": "geum",
+   "need": 20,
+   "hp": 80,
+   "atk": 20,
+   "n": 5
+  },
+  {
+   "id": "fp",
+   "name": "자칭 재무설계사",
+   "stat": "geum",
+   "need": 40,
+   "hp": 120,
+   "atk": 28,
+   "n": 5
+  }
+ ],
+ "eggs": [
+  {
+   "map": "town",
+   "id": "t_bush",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "town",
+   "id": "t_clover",
+   "coin": 0,
+   "xp": 15,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "campus",
+   "id": "c_field",
+   "coin": 30,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "campus",
+   "id": "c_notes",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "center",
+   "id": "ce_bench",
+   "coin": 20,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "center",
+   "id": "ce_pond",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "office",
+   "id": "o_truck",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "bank",
+   "id": "b_flea",
+   "coin": 35,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "bank",
+   "id": "b_alley",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "town_mart",
+   "id": "tm_coin",
+   "coin": 30,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "town_hall",
+   "id": "th_sofa",
+   "coin": 20,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "town_estate",
+   "id": "te_desk",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "campus_lib",
+   "id": "cl_book",
+   "coin": 0,
+   "xp": 30,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "campus_help",
+   "id": "ch_flyer",
+   "coin": 0,
+   "xp": 15,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "campus_cafe",
+   "id": "cc_coupon",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "center_lobby",
+   "id": "cel_memo",
+   "coin": 0,
+   "xp": 25,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "center_nhis",
+   "id": "cn_pamph",
+   "coin": 0,
+   "xp": 15,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "office_lobby",
+   "id": "ol_ramen",
+   "coin": 0,
+   "xp": 0,
+   "item": null,
+   "ramen": 1
+  },
+  {
+   "map": "bank_branch",
+   "id": "bb_coin",
+   "coin": 30,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "bank_laundry",
+   "id": "bl_floor",
+   "coin": 20,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "villa",
+   "id": "v_sand",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "villa",
+   "id": "v_flyer",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "villa_new",
+   "id": "vn_tag",
+   "coin": 0,
+   "xp": 15,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "villa_old",
+   "id": "vo_coin",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "market",
+   "id": "mk_coin",
+   "coin": 30,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "market",
+   "id": "mk_rice",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "market_fish",
+   "id": "mf_shell",
+   "coin": 0,
+   "xp": 15,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "market_food",
+   "id": "mfd_coin",
+   "coin": 20,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "station",
+   "id": "st_card",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "station",
+   "id": "st_coin",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "station_hall",
+   "id": "sh_coin",
+   "coin": 20,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "rest",
+   "id": "r_coin",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "rest",
+   "id": "r_map",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "rest_hall",
+   "id": "rh_coin",
+   "coin": 20,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "korea",
+   "id": "k_view",
+   "coin": 0,
+   "xp": 15,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "gangneung",
+   "id": "g_shell",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "gangneung",
+   "id": "g_coin",
+   "coin": 30,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "gangneung_ojuk",
+   "id": "go_ink",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "gangneung_ojuk",
+   "id": "go_coin",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "gangneung_cafe",
+   "id": "gc_bean",
+   "coin": 0,
+   "xp": 15,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "jeonju",
+   "id": "j_leaf",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "jeonju",
+   "id": "j_coin",
+   "coin": 30,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "jeonju_market",
+   "id": "jm_coin",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "jeonju_market",
+   "id": "jm_lamp",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "busan",
+   "id": "bu_coin",
+   "coin": 35,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "busan",
+   "id": "bu_view",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "busan_gamcheon",
+   "id": "gc_stamp",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "busan_gamcheon",
+   "id": "gc_coin",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "busan_jagalchi",
+   "id": "jg_gull",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "busan_jagalchi",
+   "id": "jg_coin",
+   "coin": 30,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "gyeongju",
+   "id": "gj_tile",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "gyeongju",
+   "id": "gj_coin",
+   "coin": 30,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "gyeongju_tomb",
+   "id": "gt_star",
+   "coin": 0,
+   "xp": 25,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "gyeongju_tomb",
+   "id": "gt_coin",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "gyeongju_inn",
+   "id": "gi_tea",
+   "coin": 0,
+   "xp": 15,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "daegu",
+   "id": "dg_coin",
+   "coin": 30,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "daegu",
+   "id": "dg_ticket",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "daegu_market",
+   "id": "sm_coin",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "daegu_market",
+   "id": "sm_cloth",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "daegu_kim",
+   "id": "dk_pick",
+   "coin": 0,
+   "xp": 20,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "daegu_kim",
+   "id": "dk_coin",
+   "coin": 25,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  },
+  {
+   "map": "jeonju_inn",
+   "id": "ji_key",
+   "coin": 20,
+   "xp": 0,
+   "item": null,
+   "ramen": 0
+  }
+ ],
+ "life": [
+  {
+   "id": "ev_smish",
+   "d": [
+    {
+     "coin": -80,
+     "mood": -15
+    },
+    {
+     "xp": 25
+    },
+    {
+     "xp": 30,
+     "coin": 10
+    }
+   ]
+  },
+  {
+   "id": "ev_prosecutor",
+   "d": [
+    {
+     "coin": -150,
+     "mood": -25
+    },
+    {
+     "xp": 30
+    }
+   ]
+  },
+  {
+   "id": "ev_used",
+   "d": [
+    {
+     "coin": -120,
+     "mood": -20
+    },
+    {
+     "xp": 25
+    },
+    {
+     "xp": 30,
+     "coin": 5
+    }
+   ]
+  },
+  {
+   "id": "ev_revolving",
+   "d": [
+    {
+     "coin": -60,
+     "mood": -5
+    },
+    {
+     "xp": 20,
+     "mood": -3
+    }
+   ]
+  },
+  {
+   "id": "ev_trial",
+   "d": [
+    {
+     "coin": -14
+    },
+    {
+     "xp": 15,
+     "coin": 14
+    }
+   ]
+  },
+  {
+   "id": "ev_nopay",
+   "d": [
+    {
+     "mood": -20
+    },
+    {
+     "xp": 35,
+     "coin": 40
+    }
+   ]
+  },
+  {
+   "id": "ev_trainee",
+   "d": [
+    {
+     "coin": -40,
+     "mood": -10
+    },
+    {
+     "xp": 30,
+     "coin": 20
+    }
+   ]
+  },
+  {
+   "id": "ev_landlord",
+   "d": [
+    {
+     "mood": -10
+    },
+    {
+     "xp": 35
+    }
+   ]
+  },
+  {
+   "id": "ev_survey",
+   "d": [
+    {
+     "mood": -15,
+     "coin": -30
+    },
+    {
+     "xp": 15
+    }
+   ]
+  },
+  {
+   "id": "ev_insure",
+   "d": [
+    {
+     "coin": -50,
+     "mood": -5
+    },
+    {
+     "xp": 25
+    }
+   ]
+  },
+  {
+   "id": "ev_passport",
+   "d": [
+    {
+     "coin": -60,
+     "mood": -20
+    },
+    {
+     "xp": 25,
+     "coin": -10
+    }
+   ]
+  },
+  {
+   "id": "ev_yearend",
+   "d": [
+    {
+     "mood": -5
+    },
+    {
+     "xp": 30,
+     "coin": 30
+    }
+   ]
+  },
+  {
+   "id": "ev_registry",
+   "d": [
+    {
+     "coin": -100,
+     "mood": -15
+    },
+    {
+     "xp": 30
+    },
+    {
+     "xp": 35,
+     "coin": 10
+    }
+   ]
+  },
+  {
+   "id": "ev_maintfee",
+   "d": [
+    {
+     "coin": -60,
+     "mood": -8
+    },
+    {
+     "xp": 25
+    },
+    {
+     "xp": 30,
+     "coin": 10
+    }
+   ]
+  },
+  {
+   "id": "ev_depositdelay",
+   "d": [
+    {
+     "coin": -120,
+     "mood": -20
+    },
+    {
+     "xp": 15,
+     "mood": -8
+    },
+    {
+     "xp": 35,
+     "coin": -10
+    }
+   ]
+  },
+  {
+   "id": "ev_lostparcel",
+   "d": [
+    {
+     "coin": -80,
+     "mood": -15
+    },
+    {
+     "xp": 20
+    },
+    {
+     "xp": 30,
+     "coin": 30
+    }
+   ]
+  },
+  {
+   "id": "ev_phoneplan",
+   "d": [
+    {
+     "coin": -90,
+     "mood": -10
+    },
+    {
+     "xp": 25
+    },
+    {
+     "xp": 30,
+     "coin": 20
+    }
+   ]
+  },
+  {
+   "id": "ev_mvno",
+   "d": [
+    {
+     "coin": -30,
+     "mood": -5
+    },
+    {
+     "xp": 25,
+     "coin": 15
+    },
+    {
+     "xp": 30,
+     "coin": 20
+    }
+   ]
+  },
+  {
+   "id": "ev_annualfee",
+   "d": [
+    {
+     "coin": -30,
+     "mood": -5
+    },
+    {
+     "xp": 20,
+     "coin": 10
+    },
+    {
+     "xp": 25,
+     "coin": 15
+    }
+   ]
+  },
+  {
+   "id": "ev_payslip",
+   "d": [
+    {
+     "coin": -40,
+     "mood": -5
+    },
+    {
+     "mood": -10,
+     "xp": 5
+    },
+    {
+     "xp": 30,
+     "coin": 20
+    }
+   ]
+  },
+  {
+   "id": "ev_overtime",
+   "d": [
+    {
+     "coin": -60,
+     "mood": -15
+    },
+    {
+     "xp": 25
+    },
+    {
+     "xp": 30,
+     "coin": 30
+    }
+   ]
+  },
+  {
+   "id": "ev_annualleave",
+   "d": [
+    {
+     "coin": -20,
+     "mood": -15
+    },
+    {
+     "xp": 25,
+     "mood": 10
+    }
+   ]
+  },
+  {
+   "id": "ev_noinsalba",
+   "d": [
+    {
+     "coin": -50,
+     "mood": -10
+    },
+    {
+     "xp": 30,
+     "coin": 20
+    },
+    {
+     "xp": 35,
+     "coin": 20
+    }
+   ]
+  },
+  {
+   "id": "ev_cankun",
+   "d": [
+    {
+     "coin": -150,
+     "mood": -25
+    },
+    {
+     "xp": 30
+    },
+    {
+     "xp": 35,
+     "coin": 10
+    }
+   ]
+  },
+  {
+   "id": "ev_usedcar",
+   "d": [
+    {
+     "coin": -140,
+     "mood": -25
+    },
+    {
+     "xp": 20
+    },
+    {
+     "xp": 35,
+     "coin": 10
+    }
+   ]
+  },
+  {
+   "id": "ev_familysmish",
+   "d": [
+    {
+     "coin": -150,
+     "mood": -25
+    },
+    {
+     "xp": 30
+    },
+    {
+     "xp": 30,
+     "coin": 10
+    }
+   ]
+  },
+  {
+   "id": "ev_subscription",
+   "d": [
+    {
+     "coin": -30,
+     "mood": -3
+    },
+    {
+     "xp": 25,
+     "coin": 10
+    },
+    {
+     "xp": 30,
+     "coin": 10
+    }
+   ]
+  },
+  {
+   "id": "ev_checkup",
+   "d": [
+    {
+     "coin": -20,
+     "mood": -5
+    },
+    {
+     "xp": 25,
+     "mood": 5
+    }
+   ]
+  },
+  {
+   "id": "ev_carins",
+   "d": [
+    {
+     "coin": -100,
+     "mood": -15
+    },
+    {
+     "xp": 30
+    },
+    {
+     "xp": 30,
+     "coin": 15
+    }
+   ]
+  },
+  {
+   "id": "ev_movein",
+   "d": [
+    {
+     "coin": -40,
+     "mood": -10
+    },
+    {
+     "xp": 30
+    }
+   ]
+  },
+  {
+   "id": "ev_trash",
+   "d": [
+    {
+     "coin": -60,
+     "mood": -10
+    },
+    {
+     "xp": 20
+    },
+    {
+     "xp": 25,
+     "coin": -10
+    }
+   ]
+  },
+  {
+   "id": "ev_gym",
+   "d": [
+    {
+     "coin": -100,
+     "mood": -10
+    },
+    {
+     "xp": 20
+    },
+    {
+     "xp": 30,
+     "coin": 10
+    }
+   ]
+  },
+  {
+   "id": "ev_autopay",
+   "d": [
+    {
+     "coin": -30,
+     "mood": -5
+    },
+    {
+     "xp": 25,
+     "coin": 10
+    },
+    {
+     "xp": 30,
+     "coin": 10
+    }
+   ]
+  },
+  {
+   "id": "ev_aircon",
+   "d": [
+    {
+     "coin": -70,
+     "mood": -10
+    },
+    {
+     "xp": 20,
+     "coin": 15
+    },
+    {
+     "xp": 25,
+     "coin": 15
+    }
+   ]
+  },
+  {
+   "id": "ev_holidaysmish",
+   "d": [
+    {
+     "coin": -80,
+     "mood": -15
+    },
+    {
+     "xp": 25
+    },
+    {
+     "xp": 30,
+     "coin": 10
+    }
+   ]
+  },
+  {
+   "id": "ev_newhire",
+   "d": [
+    {
+     "coin": -50,
+     "mood": -10
+    },
+    {
+     "xp": 30
+    },
+    {
+     "xp": 35,
+     "coin": 10
+    }
+   ]
+  },
+  {
+   "id": "ev_mover",
+   "d": [
+    {
+     "coin": -70,
+     "mood": -10
+    },
+    {
+     "xp": 30
+    },
+    {
+     "xp": 25,
+     "coin": 20
+    }
+   ]
+  }
+ ],
+ "MAP_LV": {
+  "town": 1,
+  "villa": 1,
+  "campus": 1,
+  "center": 2,
+  "market": 2,
+  "office": 3,
+  "station": 3,
+  "bank": 4
+ },
+ "TIER_DEP": [
+  0,
+  20,
+  50,
+  90,
+  140,
+  200,
+  280,
+  380,
+  500,
+  650,
+  830,
+  1040,
+  1280,
+  1550,
+  1850
+ ],
+ "TIERS": [
+  [
+   "노숙",
+   0,
+   0
+  ],
+  [
+   "움막",
+   6,
+   6
+  ],
+  [
+   "텐트",
+   12,
+   12
+  ],
+  [
+   "찜질방",
+   18,
+   18
+  ],
+  [
+   "고시원",
+   24,
+   26
+  ],
+  [
+   "반지하",
+   30,
+   34
+  ],
+  [
+   "원룸 월세",
+   36,
+   44
+  ],
+  [
+   "원룸 전세",
+   42,
+   58
+  ],
+  [
+   "투룸 전세",
+   48,
+   74
+  ],
+  [
+   "도시형생활주택",
+   54,
+   82
+  ],
+  [
+   "빌라 자가",
+   60,
+   88
+  ],
+  [
+   "오피스텔 자가",
+   66,
+   94
+  ],
+  [
+   "59㎡ 구축",
+   70,
+   102
+  ],
+  [
+   "84㎡ 구축",
+   74,
+   110
+  ],
+  [
+   "84㎡ 신축",
+   78,
+   120
+  ]
+ ],
+ "MQ_REWARD": {
+  "job": {
+   "xp": 250,
+   "coin": 250,
+   "stat": {
+    "jik": 10,
+    "ui": 4
+   },
+   "item": "mq_badge",
+   "unlock": [
+    "역 앞 지역",
+    "상점 출근복"
+   ]
+  },
+  "lease": {
+   "xp": 300,
+   "coin": 300,
+   "stat": {
+    "ju": 6,
+    "geum": 4
+   },
+   "item": "mq_lease",
+   "unlock": [
+    "대형 가전 세간"
+   ]
+  },
+  "card": {
+   "xp": 320,
+   "coin": 350,
+   "stat": {
+    "geum": 10,
+    "sik": 4
+   },
+   "item": "mq_card",
+   "unlock": [
+    "카드 장비",
+    "은행 창구 캐시백"
+   ]
+  },
+  "car": {
+   "xp": 380,
+   "coin": 500,
+   "stat": {
+    "geum": 6,
+    "ui": 6
+   },
+   "item": "mq_shades",
+   "unlock": [
+    "자동차 구매",
+    "고속도로와 강릉·전주·부산"
+   ]
+  },
+  "wedding": {
+   "xp": 420,
+   "coin": 600,
+   "stat": {
+    "ui": 6,
+    "geum": 6,
+    "sik": 4
+   },
+   "item": "mq_suit",
+   "unlock": [
+    "경주·대구 가는 길",
+    "신혼 세간"
+   ]
+  },
+  "home": {
+   "xp": 550,
+   "coin": 800,
+   "stat": {
+    "ju": 10,
+    "geum": 8
+   },
+   "item": "mq_homepants",
+   "unlock": [
+    "자가 거처",
+    "거실 세간"
+   ]
+  }
+ },
+ "FURNI_ORDER": [
+  "ramen",
+  "mat",
+  "fan",
+  "desk2",
+  "fridge",
+  "fridge2",
+  "bed",
+  "wash",
+  "tv",
+  "purifier",
+  "styler",
+  "sofa",
+  "bed2",
+  "table2",
+  "aircon",
+  "plant",
+  "shelf",
+  "dryer",
+  "robot",
+  "dish",
+  "massage",
+  "bigtv"
+ ],
+ "FOODS_N": 14,
+ "globals": [
+  "TIER_DEP",
+  "AD_CAP",
+  "AD_LIM",
+  "AD_DONE",
+  "AD_BUSY",
+  "TUT_STEPS",
+  "EPISODES",
+  "EP",
+  "EP_TIER",
+  "LEASE_TIERS",
+  "MQ_LEASE_WRAP",
+  "CHECK_ASOF",
+  "CHECKS",
+  "CHKOPEN",
+  "CHKWHY",
+  "SEASONS",
+  "LEASE_SRC",
+  "LEASE_CH",
+  "LEASE_ENDS",
+  "LEASE_WHERE",
+  "LEASE_STEP"
+ ]
+}

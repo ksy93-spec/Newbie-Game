@@ -1,0 +1,209 @@
+
+== worker/typical contentEnd 13 allEnd 22 equip {"weapon":"wallet","top":"windbrk","head":"shades","bottom":"train","pet":"dog","mount":"evcar"} bossPlans [["jeonse",2,7,11],["mlm",2,5,11],["fp",2,5,11]] earned 22713 spent {"dep":1700,"furni":13050,"gear":6650,"food":0} final {"lv":18,"tier":14,"peak":14,"coin":1313,"owned":51,"furni":18}
+src {"attend":4170,"ad_att":2089,"quest":2316,"ad_dbl":922,"daily_complete":1040,"egg":830,"life":540,"mq":2800,"ad_mq":2800,"streak_ms":700,"review":1041,"minigame":1455,"lease":200,"cashback":320,"boss":600,"ep":440,"dog":450}
+d1 lv3 tier2/2 ju29 coin414 +264 done5 open0 lock26 mq0 used10 slack0 cl90 mo100 atk4 def38 boss0 ep0 catOpen8090/25 cheap110 lockedCat26080 endfalse | sik1 sik2 ju1 ju2 geum2
+d2 lv5 tier3/3 ju29 coin999 +585 done8 open0 lock23 mq1 used9.9 slack0.1 cl0 mo12 atk4 def48 boss0 ep0 catOpen7560/24 cheap150 lockedCat25180 endfalse | MQ1 jik2 jik1 ui1
+d3 lv5 tier4/4 ju29 coin1209 +210 done11 open0 lock20 mq1 used8.4 slack1.6 cl0 mo31 atk13 def53 boss0 ep0 catOpen6120/19 cheap160 lockedCat24980 endfalse | geum1 ui2 geum3 quiz
+d4 lv6 tier5/5 ju39 coin940 +-269 done14 open0 lock17 mq1 used9.2 slack0.8 cl0 mo31 atk13 def81 boss0 ep0 catOpen5960/18 cheap180 lockedCat23640 endfalse | scam2 ju3 jik3 quiz
+d5 lv7 tier6/6 ju39 coin821 +-119 done17 open0 lock14 mq1 used9.2 slack0.8 cl0 mo31 atk21 def101 boss0 ep0 catOpen5560/16 cheap210 lockedCat23220 endfalse | sub1 job4 geum4 quiz
+d6 lv7 tier6/7 ju50 coin1269 +448 done20 open0 lock11 mq1 used9.5 slack0.5 cl52 mo31 atk20 def108 boss0 ep0 catOpen4950/14 cheap220 lockedCat23220 endfalse | ju4 job7 tax1 quiz
+d7 lv8 tier7/8 ju56 coin1003 +-266 done21 open2 lock8 mq1 used9.7 slack0.3 cl58 mo19 atk33 def126 boss0 ep0 catOpen4430/12 cheap230 lockedCat22660 endfalse | 전세계약 tax2
+d8 lv9 tier8/8 ju60 coin407 +-596 done22 open4 lock5 mq1 used9.7 slack0.3 cl56 mo43 atk33 def156 boss0 ep0 catOpen4880/11 cheap240 lockedCat20920 endfalse | 전세계약 scam1 review
+d9 lv9 tier8/8 ju66 coin586 +179 done24 open5 lock2 mq2 used9.5 slack0.5 cl56 mo43 atk39 def170 boss0 ep0 catOpen5460/11 cheap240 lockedCat19480 endfalse | MQ2 pen1 labor3
+d10 lv10 tier8/8 ju77 coin728 +142 done26 open5 lock0 mq3 used9.5 slack0.5 cl56 mo43 atk39 def183 boss0 ep0 catOpen4760/10 cheap260 lockedCat19120 endfalse | MQ3 rent1 fin1
+d11 lv11 tier8/8 ju77 coin983 +255 done28 open3 lock0 mq4 used9.5 slack0.5 cl56 mo43 atk42 def203 boss0 ep0 catOpen7100/10 cheap300 lockedCat15120 endfalse | MQ4 labor2 labor1
+d12 lv12 tier8/8 ju86 coin523 +-460 done30 open1 lock0 mq5 used9.5 slack0.5 cl56 mo43 atk42 def227 boss0 ep0 catOpen6800/9 cheap320 lockedCat13300 endfalse | MQ5 ju5 card1
+d13 lv13 tier10/10 ju96 coin453 +-70 done31 open0 lock0 mq6 used9.4 slack0.6 cl56 mo43 atk48 def265 boss0 ep0 catOpen9180/10 cheap360 lockedCat8900 endfalse | MQ6 ins1 quiz
+d14 lv13 tier11/11 ju100 coin993 +540 done31 open0 lock0 mq6 used9.1 slack0.9 cl58 mo39 atk54 def271 boss2 ep0 catOpen9660/9 cheap420 lockedCat7300 endfalse | quiz boss:jeonse+ boss:mlm+
+d16 lv14 tier13/13 ju100 coin670 +-288 done31 open0 lock0 mq6 used7.1 slack2.9 cl58 mo39 atk53 def299 boss3 ep2 catOpen13120/9 cheap520 lockedCat3000 endfalse | quiz ep:first-job
+d18 lv14 tier14/14 ju100 coin604 +367 done31 open0 lock0 mq6 used7.1 slack2.9 cl58 mo39 atk53 def309 boss3 ep4 catOpen15600/9 cheap900 lockedCat0 endtrue | quiz ep:job-hunt
+d21 lv15 tier14/14 ju100 coin795 +557 done35 open3 lock0 mq6 used9.6 slack0.4 cl52 mo51 atk58 def317 boss3 ep4 catOpen14700/8 cheap1300 lockedCat0 endtrue | car1 car2 trip1 trip2
+d25 lv16 tier14/14 ju100 coin788 +277 done38 open0 lock0 mq6 used4.4 slack5.6 cl58 mo39 atk64 def327 boss3 ep4 catOpen13400/7 cheap1300 lockedCat0 endtrue | quiz
+d30 lv16 tier14/14 ju100 coin708 +257 done38 open0 lock0 mq6 used4.4 slack5.6 cl58 mo39 atk64 def343 boss3 ep4 catOpen12000/6 cheap1300 lockedCat0 endtrue | quiz
+d35 lv17 tier14/14 ju100 coin648 +237 done38 open0 lock0 mq6 used4.4 slack5.6 cl58 mo39 atk65 def347 boss3 ep4 catOpen10700/5 cheap1600 lockedCat0 endtrue | quiz
+d40 lv18 tier14/14 ju100 coin183 +-1393 done38 open0 lock0 mq6 used3.9 slack6.1 cl58 mo39 atk73 def359 boss3 ep4 catOpen9100/4 cheap1800 lockedCat0 endtrue | quiz
+d45 lv18 tier14/14 ju100 coin1313 +202 done38 open0 lock0 mq6 used3.9 slack6.1 cl58 mo39 atk73 def359 boss3 ep4 catOpen9100/4 cheap1800 lockedCat0 endtrue | quiz
+events {"2":["메인 1장"],"3":["연속 3일 보상 100 + 주황 비니"],"7":["연속 7일 보상 200 + 출근 참새","전세 계약 → 원룸 전세"],"8":["전세 계약 → 투룸 전세"],"9":["메인 2장"],"10":["메인 3장"],"11":["메인 4장"],"12":["메인 5장"],"13":["메인 6장"],"14":["연속 14일 보상 400 + 전기자전거","보스 전세 먹튀 집주인 승","보스 다단계 선배 승"],"15":["보스 자칭 재무설계사 승"]}
+
+== worker/noad contentEnd 13 allEnd 37 equip {"weapon":"wallet","top":"windbrk","head":"shades","bottom":"train","pet":"dog","mount":"car"} bossPlans [["jeonse",2,7,9],["mlm",2,5,9],["fp",2,5,9]] earned 15361 spent {"dep":1700,"furni":7550,"gear":4940,"food":0} final {"lv":16,"tier":14,"peak":14,"coin":1171,"owned":50,"furni":14}
+src {"attend":4350,"quest":2281,"daily_complete":1040,"egg":620,"life":540,"mq":2800,"streak_ms":700,"review":1080,"lease":200,"cashback":320,"boss":600,"ep":440,"dog":390}
+d1 lv3 tier2/2 ju29 coin344 +194 done5 open0 lock26 mq0 used10 slack0 cl90 mo100 atk4 def38 boss0 ep0 catOpen8090/25 cheap110 lockedCat26080 endfalse | sik1 sik2 ju1 ju2 geum2
+d2 lv5 tier3/3 ju29 coin578 +234 done8 open0 lock23 mq1 used9.9 slack0.1 cl0 mo12 atk4 def48 boss0 ep0 catOpen7560/24 cheap150 lockedCat25180 endfalse | MQ1 jik2 jik1 ui1
+d3 lv5 tier4/4 ju29 coin691 +113 done11 open0 lock20 mq1 used7.9 slack2.1 cl0 mo31 atk13 def53 boss0 ep0 catOpen6120/19 cheap160 lockedCat24980 endfalse | geum1 ui2 geum3 quiz
+d4 lv6 tier5/5 ju36 coin223 +-468 done14 open0 lock17 mq1 used8.2 slack1.8 cl0 mo31 atk13 def81 boss0 ep0 catOpen5960/18 cheap180 lockedCat23640 endfalse | scam2 ju3 jik3 quiz
+d5 lv7 tier6/6 ju36 coin151 +-72 done17 open0 lock14 mq1 used8.2 slack1.8 cl0 mo31 atk13 def101 boss0 ep0 catOpen5740/17 cheap180 lockedCat23220 endfalse | sub1 job4 geum4 quiz
+d6 lv7 tier6/7 ju47 coin416 +265 done20 open0 lock11 mq1 used8.5 slack1.5 cl52 mo31 atk12 def108 boss0 ep0 catOpen4950/14 cheap220 lockedCat23220 endfalse | ju4 job7 tax1 quiz
+d7 lv8 tier7/8 ju53 coin597 +181 done21 open2 lock8 mq1 used8.7 slack1.3 cl58 mo19 atk16 def126 boss0 ep0 catOpen4990/13 cheap230 lockedCat22660 endfalse | 전세계약 tax2
+d8 lv8 tier8/8 ju57 coin273 +-324 done22 open4 lock5 mq1 used8.7 slack1.3 cl58 mo19 atk25 def142 boss0 ep0 catOpen5870/13 cheap230 lockedCat20920 endfalse | 전세계약 scam1
+d9 lv9 tier8/8 ju63 coin235 +-38 done24 open5 lock2 mq2 used9 slack1 cl56 mo43 atk25 def150 boss0 ep0 catOpen6690/14 cheap230 lockedCat19480 endfalse | MQ2 pen1 labor3
+d10 lv10 tier8/8 ju74 coin150 +-85 done26 open5 lock0 mq3 used9 slack1 cl56 mo43 atk25 def164 boss0 ep0 catOpen6290/14 cheap230 lockedCat19120 endfalse | MQ3 rent1 fin1
+d11 lv11 tier8/8 ju74 coin722 +572 done28 open3 lock0 mq4 used9 slack1 cl56 mo43 atk31 def170 boss0 ep0 catOpen9400/14 cheap240 lockedCat15120 endfalse | MQ4 labor2 labor1
+d12 lv12 tier8/8 ju83 coin648 +-74 done30 open1 lock0 mq5 used9 slack1 cl56 mo43 atk31 def179 boss0 ep0 catOpen10260/14 cheap260 lockedCat13300 endfalse | MQ5 ju5 card1
+d13 lv13 tier10/10 ju93 coin350 +-298 done31 open0 lock0 mq6 used9.4 slack0.6 cl54 mo47 atk31 def209 boss0 ep0 catOpen13340/16 cheap260 lockedCat8900 endfalse | MQ6 ins1 quiz review
+d14 lv13 tier11/11 ju100 coin852 +502 done31 open0 lock0 mq6 used8.1 slack1.9 cl58 mo39 atk34 def217 boss2 ep0 catOpen13920/15 cheap300 lockedCat7300 endfalse | quiz boss:jeonse+ boss:mlm+
+d16 lv13 tier13/13 ju100 coin521 +-313 done31 open0 lock0 mq6 used6.1 slack3.9 cl58 mo39 atk40 def233 boss3 ep2 catOpen17600/15 cheap360 lockedCat3000 endfalse | quiz ep:first-job
+d18 lv14 tier14/14 ju100 coin470 +302 done31 open0 lock0 mq6 used6.1 slack3.9 cl58 mo39 atk54 def243 boss3 ep4 catOpen20240/15 cheap420 lockedCat0 endtrue | quiz ep:job-hunt
+d21 lv14 tier14/14 ju100 coin216 +-228 done31 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk53 def255 boss3 ep4 catOpen19400/13 cheap520 lockedCat0 endtrue | quiz
+d25 lv14 tier14/14 ju100 coin394 +192 done31 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk53 def255 boss3 ep4 catOpen18880/12 cheap900 lockedCat0 endtrue | quiz
+d30 lv15 tier14/14 ju100 coin249 +172 done31 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk53 def273 boss3 ep4 catOpen17900/11 cheap900 lockedCat0 endtrue | quiz
+d35 lv15 tier14/14 ju100 coin174 +-738 done31 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk58 def281 boss3 ep4 catOpen17000/10 cheap1100 lockedCat0 endtrue | quiz
+d40 lv16 tier14/14 ju100 coin306 +147 done38 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk58 def297 boss3 ep4 catOpen15900/9 cheap1200 lockedCat0 endtrue | quiz
+d45 lv16 tier14/14 ju100 coin1171 +182 done38 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk58 def297 boss3 ep4 catOpen15900/9 cheap1200 lockedCat0 endtrue | quiz
+events {"2":["메인 1장"],"3":["연속 3일 보상 100 + 주황 비니"],"7":["연속 7일 보상 200 + 출근 참새","전세 계약 → 원룸 전세"],"8":["전세 계약 → 투룸 전세"],"9":["메인 2장"],"10":["메인 3장"],"11":["메인 4장"],"12":["메인 5장"],"13":["메인 6장"],"14":["연속 14일 보상 400 + 전기자전거","보스 전세 먹튀 집주인 승","보스 다단계 선배 승"],"15":["보스 자칭 재무설계사 승"]}
+
+== worker/farm contentEnd 13 allEnd 20 equip {"weapon":"wallet","top":"windbrk","head":"shades","bottom":"train","pet":"dog","mount":"sedan"} bossPlans [["jeonse",2,7,13],["mlm",1,5,13],["fp",2,5,13]] earned 33499 spent {"dep":1700,"furni":20350,"gear":8450,"food":0} final {"lv":18,"tier":14,"peak":14,"coin":2999,"owned":52,"furni":21}
+src {"attend":4170,"ad_att":2089,"quest":2304,"ad_dbl":910,"daily_complete":1040,"egg":830,"life":540,"mq":2800,"ad_mq":2800,"streak_ms":700,"review":1071,"minigame":1455,"lease":200,"cashback":500,"boss":11200,"ep":440,"dog":450}
+d1 lv3 tier2/2 ju29 coin414 +264 done5 open0 lock26 mq0 used10 slack0 cl90 mo100 atk4 def38 boss0 ep0 catOpen8090/25 cheap110 lockedCat26080 endfalse | sik1 sik2 ju1 ju2 geum2
+d2 lv5 tier3/3 ju29 coin999 +585 done8 open0 lock23 mq1 used9.9 slack0.1 cl0 mo12 atk4 def48 boss0 ep0 catOpen7560/24 cheap150 lockedCat25180 endfalse | MQ1 jik2 jik1 ui1
+d3 lv5 tier4/4 ju29 coin1209 +210 done11 open0 lock20 mq1 used8.4 slack1.6 cl0 mo31 atk13 def53 boss0 ep0 catOpen6120/19 cheap160 lockedCat24980 endfalse | geum1 ui2 geum3 quiz
+d4 lv6 tier5/5 ju39 coin940 +-269 done14 open0 lock17 mq1 used9.2 slack0.8 cl0 mo31 atk13 def81 boss0 ep0 catOpen5960/18 cheap180 lockedCat23640 endfalse | scam2 ju3 jik3 quiz
+d5 lv7 tier6/6 ju39 coin821 +-119 done17 open0 lock14 mq1 used9.2 slack0.8 cl0 mo31 atk21 def101 boss0 ep0 catOpen5560/16 cheap210 lockedCat23220 endfalse | sub1 job4 geum4 quiz
+d6 lv7 tier6/7 ju50 coin1269 +448 done20 open0 lock11 mq1 used9.5 slack0.5 cl52 mo31 atk20 def108 boss0 ep0 catOpen4950/14 cheap220 lockedCat23220 endfalse | ju4 job7 tax1 quiz
+d7 lv8 tier7/8 ju56 coin1003 +-266 done21 open2 lock8 mq1 used9.7 slack0.3 cl58 mo19 atk33 def126 boss0 ep0 catOpen4430/12 cheap230 lockedCat22660 endfalse | 전세계약 tax2
+d8 lv9 tier8/8 ju60 coin407 +-596 done22 open4 lock5 mq1 used9.7 slack0.3 cl56 mo43 atk33 def156 boss0 ep0 catOpen4880/11 cheap240 lockedCat20920 endfalse | 전세계약 scam1 review
+d9 lv9 tier8/8 ju66 coin586 +179 done24 open5 lock2 mq2 used9.5 slack0.5 cl56 mo43 atk39 def170 boss0 ep0 catOpen5460/11 cheap240 lockedCat19480 endfalse | MQ2 pen1 labor3
+d10 lv10 tier8/8 ju77 coin728 +142 done26 open5 lock0 mq3 used9.5 slack0.5 cl56 mo43 atk39 def183 boss0 ep0 catOpen4760/10 cheap260 lockedCat19120 endfalse | MQ3 rent1 fin1
+d11 lv11 tier8/8 ju77 coin983 +255 done28 open3 lock0 mq4 used9.5 slack0.5 cl56 mo43 atk42 def203 boss0 ep0 catOpen7100/10 cheap300 lockedCat15120 endfalse | MQ4 labor2 labor1
+d12 lv12 tier8/8 ju86 coin523 +-460 done30 open1 lock0 mq5 used9.5 slack0.5 cl56 mo43 atk42 def227 boss0 ep0 catOpen6800/9 cheap320 lockedCat13300 endfalse | MQ5 ju5 card1
+d13 lv13 tier10/10 ju96 coin453 +-70 done31 open0 lock0 mq6 used9.4 slack0.6 cl56 mo43 atk48 def265 boss0 ep0 catOpen9180/10 cheap360 lockedCat8900 endfalse | MQ6 ins1 quiz
+d14 lv13 tier11/11 ju100 coin993 +540 done31 open0 lock0 mq6 used9.1 slack0.9 cl58 mo39 atk54 def271 boss2 ep0 catOpen9660/9 cheap420 lockedCat7300 endfalse | quiz boss:jeonse+ boss:mlm+
+d16 lv14 tier13/13 ju100 coin870 +-88 done31 open0 lock0 mq6 used9.6 slack0.4 cl58 mo39 atk53 def299 boss3 ep2 catOpen13120/9 cheap520 lockedCat3000 endfalse | quiz ep:first-job farm:mlm
+d18 lv14 tier14/14 ju100 coin274 +-333 done31 open0 lock0 mq6 used9.6 slack0.4 cl58 mo39 atk58 def317 boss3 ep4 catOpen14700/8 cheap1300 lockedCat0 endtrue | quiz ep:job-hunt farm:mlm
+d21 lv15 tier14/14 ju100 coin741 +662 done38 open0 lock0 mq6 used9.4 slack0.6 cl58 mo39 atk64 def327 boss3 ep4 catOpen13400/7 cheap1300 lockedCat0 endtrue | quiz farm:mlm farm:mlm
+d25 lv16 tier14/14 ju100 coin369 +-943 done38 open0 lock0 mq6 used8.9 slack1.1 cl58 mo39 atk72 def355 boss3 ep4 catOpen10400/5 cheap1300 lockedCat0 endtrue | quiz farm:mlm farm:mlm
+d30 lv17 tier14/14 ju100 coin504 +-1263 done38 open0 lock0 mq6 used9.4 slack0.6 cl58 mo39 atk73 def377 boss3 ep4 catOpen7200/3 cheap1800 lockedCat0 endtrue | quiz farm:mlm farm:mlm
+d35 lv17 tier14/14 ju100 coin1344 +657 done38 open0 lock0 mq6 used9.4 slack0.6 cl58 mo39 atk73 def401 boss3 ep4 catOpen4800/2 cheap1800 lockedCat0 endtrue | quiz farm:mlm farm:mlm
+d40 lv18 tier14/14 ju100 coin2829 +657 done38 open0 lock0 mq6 used9.4 slack0.6 cl58 mo39 atk74 def405 boss3 ep4 catOpen3000/1 cheap3000 lockedCat0 endtrue | quiz farm:mlm farm:mlm
+d45 lv18 tier14/14 ju100 coin2999 +657 done38 open0 lock0 mq6 used9.4 slack0.6 cl58 mo39 atk90 def415 boss3 ep4 catOpen0/0 cheapnull lockedCat0 endtrue | quiz farm:mlm farm:mlm
+events {"2":["메인 1장"],"3":["연속 3일 보상 100 + 주황 비니"],"7":["연속 7일 보상 200 + 출근 참새","전세 계약 → 원룸 전세"],"8":["전세 계약 → 투룸 전세"],"9":["메인 2장"],"10":["메인 3장"],"11":["메인 4장"],"12":["메인 5장"],"13":["메인 6장"],"14":["연속 14일 보상 400 + 전기자전거","보스 전세 먹튀 집주인 승","보스 다단계 선배 승"],"15":["보스 자칭 재무설계사 승"]}
+
+== worker/long contentEnd 10 allEnd 23 equip {"weapon":"wallet","top":"windbrk","head":"shades","bottom":"train","pet":"dog","mount":"evcar"} bossPlans [["jeonse",2,7,12],["mlm",2,5,12],["fp",2,5,12]] earned 24607 spent {"dep":1700,"furni":14950,"gear":6420,"food":0} final {"lv":18,"tier":14,"peak":14,"coin":1537,"owned":51,"furni":19}
+src {"attend":4125,"ad_att":2066,"quest":2234,"ad_dbl":1832,"daily_complete":1760,"review":1265,"ep":440,"minigame":1530,"egg":830,"life":540,"mq":2800,"ad_mq":2800,"boss":600,"streak_ms":700,"lease":200,"cashback":420,"dog":465}
+d1 lv4 tier2/2 ju36 coin722 +572 done5 open0 lock26 mq0 used14.7 slack10.3 cl88 mo100 atk4 def38 boss0 ep1 catOpen8090/25 cheap110 lockedCat26080 endfalse | sik1 sik2 ju1 ju2 geum2 quiz ep:jeonse-day
+d2 lv6 tier3/3 ju51 coin1744 +1022 done8 open0 lock23 mq1 used17.6 slack7.4 cl0 mo16 atk4 def48 boss1 ep2 catOpen7640/24 cheap150 lockedCat25180 endfalse | MQ1 jik1 ui1 geum1 quiz boss:jeonse+ ep:first-job
+d3 lv7 tier3/3 ju51 coin2417 +673 done11 open0 lock20 mq1 used14.4 slack10.6 cl0 mo31 atk7 def45 boss1 ep3 catOpen6120/19 cheap160 lockedCat25180 endfalse | geum3 jik2 ui2 quiz boss:mlm- ep:first-pay
+d4 lv7 tier4/4 ju61 coin2877 +460 done14 open0 lock17 mq1 used11.9 slack13.1 cl0 mo31 atk13 def53 boss1 ep4 catOpen5960/18 cheap180 lockedCat24280 endfalse | scam2 ju3 jik3 quiz ep:job-hunt
+d5 lv8 tier4/4 ju61 coin3266 +389 done17 open0 lock14 mq1 used11.2 slack13.8 cl0 mo31 atk21 def53 boss1 ep4 catOpen5560/16 cheap210 lockedCat24280 endfalse | sub1 job4 geum4 quiz boss:fp-
+d6 lv9 tier5/5 ju68 coin3264 +-2 done20 open0 lock11 mq1 used11.7 slack13.3 cl0 mo31 atk20 def88 boss2 ep4 catOpen4950/14 cheap220 lockedCat23640 endfalse | ju4 job7 tax1 quiz boss:mlm+
+d7 lv9 tier6/6 ju68 coin3626 +362 done23 open0 lock8 mq1 used9.2 slack15.8 cl0 mo31 atk24 def112 boss2 ep4 catOpen4010/11 cheap230 lockedCat23220 endfalse | tax2 labor1 fin1 quiz
+d8 lv10 tier7/7 ju89 coin3145 +-481 done26 open0 lock5 mq2 used20.5 slack4.5 cl52 mo31 atk39 def152 boss3 ep4 catOpen3240/8 cheap240 lockedCat21220 endfalse | 전세계약 MQ2 scam1 labor2 ju5 quiz boss:fp+
+d9 lv11 tier8/8 ju93 coin2825 +-320 done29 open0 lock2 mq3 used18 slack7 cl52 mo51 atk39 def201 boss3 ep4 catOpen3360/8 cheap260 lockedCat19120 endfalse | 전세계약 MQ3 pen1 labor3 card1 quiz
+d10 lv12 tier8/8 ju100 coin4420 +1595 done31 open0 lock0 mq4 used11.2 slack13.8 cl54 mo47 atk42 def203 boss3 ep4 catOpen7100/10 cheap300 lockedCat15120 endfalse | MQ4 rent1 ins1 quiz
+d11 lv13 tier8/8 ju100 coin3850 +-570 done31 open0 lock0 mq5 used7.6 slack17.4 cl58 mo39 atk42 def227 boss3 ep4 catOpen6800/9 cheap320 lockedCat13300 endfalse | MQ5 quiz
+d12 lv14 tier10/10 ju100 coin675 +-3175 done31 open0 lock0 mq6 used7.1 slack17.9 cl58 mo39 atk54 def291 boss3 ep4 catOpen6480/8 cheap360 lockedCat8900 endfalse | MQ6 quiz
+d13 lv14 tier11/11 ju100 coin470 +-205 done31 open0 lock0 mq6 used4.4 slack20.6 cl58 mo39 atk60 def297 boss3 ep4 catOpen7720/8 cheap420 lockedCat7300 endfalse | quiz
+d14 lv14 tier12/12 ju100 coin550 +80 done31 open0 lock0 mq6 used4.4 slack20.6 cl58 mo39 atk62 def309 boss3 ep4 catOpen8440/7 cheap420 lockedCat5400 endfalse | quiz
+d16 lv14 tier14/14 ju100 coin129 +-468 done31 open0 lock0 mq6 used3.9 slack21.1 cl58 mo39 atk59 def335 boss3 ep4 catOpen13420/8 cheap520 lockedCat0 endtrue | quiz
+d18 lv15 tier14/14 ju100 coin178 +-218 done31 open0 lock0 mq6 used4.4 slack20.6 cl58 mo39 atk59 def335 boss3 ep4 catOpen12900/7 cheap900 lockedCat0 endtrue | quiz
+d21 lv15 tier14/14 ju100 coin914 +252 done31 open0 lock0 mq6 used3.9 slack21.1 cl58 mo39 atk59 def335 boss3 ep4 catOpen12900/7 cheap900 lockedCat0 endtrue | quiz
+d25 lv16 tier14/14 ju100 coin342 +237 done38 open0 lock0 mq6 used4.4 slack20.6 cl58 mo39 atk65 def347 boss3 ep4 catOpen10700/5 cheap1600 lockedCat0 endtrue | quiz
+d30 lv17 tier14/14 ju100 coin1437 +207 done38 open0 lock0 mq6 used3.9 slack21.1 cl58 mo39 atk65 def347 boss3 ep4 catOpen10700/5 cheap1600 lockedCat0 endtrue | quiz
+d35 lv17 tier14/14 ju100 coin967 +222 done38 open0 lock0 mq6 used3.9 slack21.1 cl58 mo39 atk73 def359 boss3 ep4 catOpen9100/4 cheap1800 lockedCat0 endtrue | quiz
+d40 lv18 tier14/14 ju100 coin307 +257 done38 open0 lock0 mq6 used4.4 slack20.6 cl58 mo39 atk73 def377 boss3 ep4 catOpen7200/3 cheap1800 lockedCat0 endtrue | quiz
+d45 lv18 tier14/14 ju100 coin1537 +252 done38 open0 lock0 mq6 used4.4 slack20.6 cl58 mo39 atk73 def377 boss3 ep4 catOpen7200/3 cheap1800 lockedCat0 endtrue | quiz
+events {"2":["메인 1장","보스 전세 먹튀 집주인 승"],"3":["연속 3일 보상 100 + 주황 비니","보스 다단계 선배 패"],"5":["보스 자칭 재무설계사 패"],"6":["보스 다단계 선배 승"],"7":["연속 7일 보상 200 + 출근 참새"],"8":["전세 계약 → 원룸 전세","메인 2장","보스 자칭 재무설계사 승"],"9":["전세 계약 → 투룸 전세","메인 3장"],"10":["메인 4장"],"11":["메인 5장"],"12":["메인 6장"],"14":["연속 14일 보상 400 + 전기자전거"]}
+
+== student/typical contentEnd 12 allEnd 28 equip {"weapon":"card","top":"windbrk","head":"shades","bottom":"cargo","pet":"dog","mount":"evcar"} bossPlans [["jeonse",2,7,11],["mlm",1,5,11],["fp",2,5,11]] earned 22382 spent {"dep":1700,"furni":11450,"gear":7850,"food":0} final {"lv":18,"tier":14,"peak":14,"coin":1382,"owned":51,"furni":17}
+src {"attend":4260,"ad_att":2135,"quest":1957,"ad_dbl":774,"daily_complete":1040,"egg":830,"life":540,"mq":2800,"ad_mq":2800,"streak_ms":700,"review":1106,"minigame":1380,"lease":200,"cashback":400,"boss":600,"ep":440,"dog":420}
+d1 lv3 tier1/1 ju17 coin394 +244 done5 open0 lock24 mq0 used10 slack0 cl90 mo100 atk6 def32 boss0 ep0 catOpen7710/25 cheap120 lockedCat26080 endfalse | job3 sik1 stu1 stu2 stu3
+d2 lv5 tier2/2 ju29 coin1111 +717 done8 open0 lock21 mq1 used9.9 slack0.1 cl0 mo12 atk6 def40 boss0 ep0 catOpen8200/26 cheap140 lockedCat25320 endfalse | MQ1 ju1 ui1 job1
+d3 lv5 tier3/3 ju40 coin1429 +318 done11 open0 lock18 mq1 used8.1 slack1.9 cl0 mo16 atk6 def50 boss0 ep0 catOpen7780/24 cheap150 lockedCat25180 endfalse | ju2 geum1 sik2 quiz
+d4 lv6 tier4/4 ju40 coin1580 +151 done14 open0 lock15 mq1 used8.9 slack1.1 cl0 mo31 atk15 def55 boss0 ep0 catOpen6940/21 cheap160 lockedCat24980 endfalse | ui2 geum2 job6 quiz
+d5 lv7 tier5/5 ju50 coin1278 +-302 done17 open0 lock12 mq1 used9.2 slack0.8 cl0 mo31 atk15 def83 boss0 ep0 catOpen6360/19 cheap180 lockedCat24340 endfalse | ju3 labor1 scam2 quiz
+d6 lv7 tier6/6 ju61 coin1126 +-152 done20 open0 lock9 mq1 used9.2 slack0.8 cl0 mo31 atk12 def107 boss0 ep0 catOpen5510/15 cheap230 lockedCat23920 endfalse | ju4 sub1 geum3 quiz
+d7 lv8 tier7/7 ju67 coin828 +-298 done21 open2 lock6 mq1 used9.7 slack0.3 cl58 mo19 atk25 def126 boss0 ep0 catOpen4980/13 cheap240 lockedCat23360 endfalse | 전세계약 wage1
+d8 lv8 tier8/8 ju71 coin453 +-375 done22 open4 lock3 mq1 used9.7 slack0.3 cl56 mo43 atk25 def156 boss0 ep0 catOpen5960/14 cheap240 lockedCat21620 endfalse | 전세계약 tax2 review
+d9 lv9 tier8/8 ju77 coin621 +168 done24 open5 lock0 mq2 used9.5 slack0.5 cl56 mo43 atk31 def170 boss0 ep0 catOpen6240/13 cheap240 lockedCat20180 endfalse | MQ2 fin1 scam1
+d10 lv10 tier8/8 ju88 coin731 +110 done26 open3 lock0 mq3 used9.5 slack0.5 cl56 mo43 atk31 def182 boss0 ep0 catOpen5780/12 cheap260 lockedCat19120 endfalse | MQ3 geum4 rent1
+d11 lv11 tier8/8 ju88 coin966 +235 done28 open1 lock0 mq4 used9.5 slack0.5 cl56 mo43 atk32 def201 boss0 ep0 catOpen8540/13 cheap300 lockedCat15120 endfalse | MQ4 card1 ins1
+d12 lv12 tier8/8 ju97 coin706 +-260 done29 open0 lock0 mq5 used8.9 slack1.1 cl56 mo43 atk32 def225 boss0 ep0 catOpen8240/12 cheap320 lockedCat13300 endfalse | MQ5 ju5 quiz
+d13 lv13 tier10/10 ju100 coin446 +-260 done29 open0 lock0 mq6 used9.6 slack0.4 cl58 mo39 atk38 def263 boss1 ep0 catOpen10620/13 cheap340 lockedCat8900 endfalse | MQ6 quiz boss:jeonse+
+d14 lv13 tier11/11 ju100 coin1026 +580 done29 open0 lock0 mq6 used9.1 slack0.9 cl58 mo39 atk54 def269 boss3 ep0 catOpen11120/12 cheap360 lockedCat7300 endfalse | quiz boss:mlm+ boss:fp+
+d16 lv13 tier13/13 ju100 coin601 +-235 done29 open0 lock0 mq6 used7.1 slack2.9 cl58 mo39 atk56 def285 boss3 ep2 catOpen14660/12 cheap420 lockedCat3000 endfalse | quiz ep:first-job
+d18 lv14 tier14/14 ju100 coin238 +-83 done29 open0 lock0 mq6 used6.6 slack3.4 cl58 mo39 atk55 def307 boss3 ep4 catOpen16820/11 cheap520 lockedCat0 endtrue | quiz ep:job-hunt
+d21 lv14 tier14/14 ju100 coin494 +232 done29 open0 lock0 mq6 used3.6 slack6.4 cl58 mo39 atk55 def307 boss3 ep4 catOpen16300/10 cheap700 lockedCat0 endtrue | quiz
+d25 lv15 tier14/14 ju100 coin907 +257 done29 open0 lock0 mq6 used3.6 slack6.4 cl58 mo39 atk65 def307 boss3 ep4 catOpen15600/9 cheap900 lockedCat0 endtrue | quiz
+d30 lv16 tier14/14 ju100 coin477 +227 done36 open0 lock0 mq6 used3.9 slack6.1 cl58 mo39 atk76 def325 boss3 ep4 catOpen13400/7 cheap1300 lockedCat0 endtrue | quiz
+d35 lv17 tier14/14 ju100 coin287 +237 done36 open0 lock0 mq6 used4.4 slack5.6 cl58 mo39 atk76 def341 boss3 ep4 catOpen12000/6 cheap1300 lockedCat0 endtrue | quiz
+d40 lv17 tier14/14 ju100 coin197 +-1043 done36 open0 lock0 mq6 used4.4 slack5.6 cl58 mo39 atk77 def345 boss3 ep4 catOpen10700/5 cheap1600 lockedCat0 endtrue | quiz
+d45 lv18 tier14/14 ju100 coin1382 +237 done36 open0 lock0 mq6 used4.4 slack5.6 cl58 mo39 atk77 def345 boss3 ep4 catOpen10700/5 cheap1600 lockedCat0 endtrue | quiz
+events {"2":["메인 1장"],"3":["연속 3일 보상 100 + 주황 비니"],"7":["연속 7일 보상 200 + 출근 참새","전세 계약 → 원룸 전세"],"8":["전세 계약 → 투룸 전세"],"9":["메인 2장"],"10":["메인 3장"],"11":["메인 4장"],"12":["메인 5장"],"13":["메인 6장","보스 전세 먹튀 집주인 승"],"14":["연속 14일 보상 400 + 전기자전거","보스 다단계 선배 승","보스 자칭 재무설계사 승"]}
+
+== student/noad contentEnd 12 allEnd null equip {"weapon":"card","top":"windbrk","head":"shades","bottom":"cargo","pet":"dog","mount":"bike"} bossPlans [["jeonse",2,7,9],["mlm",2,5,9],["fp",2,5,9]] earned 14950 spent {"dep":1700,"furni":7550,"gear":5650,"food":0} final {"lv":16,"tier":14,"peak":14,"coin":50,"owned":49,"furni":14}
+src {"attend":4845,"quest":1523,"daily_complete":1040,"egg":620,"life":540,"mq":2800,"streak_ms":700,"review":1097,"lease":200,"boss":600,"cashback":320,"ep":440,"dog":225}
+d1 lv3 tier1/1 ju17 coin329 +179 done5 open0 lock24 mq0 used10 slack0 cl90 mo100 atk6 def32 boss0 ep0 catOpen7710/25 cheap120 lockedCat26080 endfalse | job3 sik1 stu1 stu2 stu3
+d2 lv5 tier2/2 ju29 coin695 +366 done8 open0 lock21 mq1 used9.9 slack0.1 cl0 mo12 atk6 def40 boss0 ep0 catOpen8200/26 cheap140 lockedCat25320 endfalse | MQ1 ju1 ui1 job1
+d3 lv5 tier3/3 ju40 coin910 +215 done11 open0 lock18 mq1 used7.6 slack2.4 cl0 mo16 atk6 def50 boss0 ep0 catOpen7780/24 cheap150 lockedCat25180 endfalse | ju2 geum1 sik2 quiz
+d4 lv6 tier4/4 ju40 coin884 +-26 done14 open0 lock15 mq1 used7.9 slack2.1 cl0 mo31 atk15 def55 boss0 ep0 catOpen6940/21 cheap160 lockedCat24980 endfalse | ui2 geum2 job6 quiz
+d5 lv6 tier5/5 ju50 coin456 +-428 done17 open0 lock12 mq1 used8.2 slack1.8 cl0 mo31 atk15 def83 boss0 ep0 catOpen6360/19 cheap180 lockedCat24340 endfalse | ju3 labor1 scam2 quiz
+d6 lv7 tier6/6 ju61 coin356 +-100 done20 open0 lock9 mq1 used8.2 slack1.8 cl0 mo31 atk15 def103 boss0 ep0 catOpen5730/16 cheap220 lockedCat23920 endfalse | ju4 sub1 geum3 quiz
+d7 lv7 tier7/7 ju67 coin183 +-173 done21 open2 lock6 mq1 used8.7 slack1.3 cl58 mo19 atk28 def121 boss0 ep0 catOpen5430/15 cheap220 lockedCat23360 endfalse | 전세계약 wage1
+d8 lv8 tier8/8 ju71 coin415 +232 done22 open4 lock3 mq1 used8.7 slack1.3 cl58 mo39 atk28 def137 boss0 ep0 catOpen7170/17 cheap220 lockedCat21620 endfalse | 전세계약 tax2
+d9 lv9 tier8/8 ju77 coin370 +-45 done24 open5 lock0 mq2 used9 slack1 cl56 mo43 atk28 def145 boss0 ep0 catOpen7690/17 cheap220 lockedCat20180 endfalse | MQ2 fin1 scam1
+d10 lv10 tier8/8 ju88 coin267 +-103 done26 open3 lock0 mq3 used9 slack1 cl56 mo43 atk28 def159 boss0 ep0 catOpen7530/17 cheap220 lockedCat19120 endfalse | MQ3 geum4 rent1
+d11 lv11 tier8/8 ju88 coin232 +-35 done28 open1 lock0 mq4 used9 slack1 cl56 mo43 atk28 def171 boss0 ep0 catOpen10710/19 cheap220 lockedCat15120 endfalse | MQ4 card1 ins1
+d12 lv11 tier8/8 ju97 coin414 +182 done29 open0 lock0 mq5 used9.4 slack0.6 cl54 mo47 atk25 def183 boss0 ep0 catOpen11590/19 cheap230 lockedCat13300 endfalse | MQ5 ju5 quiz review
+d13 lv12 tier10/10 ju100 coin531 +117 done29 open0 lock0 mq6 used9.1 slack0.9 cl58 mo39 atk25 def202 boss1 ep0 catOpen15260/21 cheap240 lockedCat8900 endfalse | MQ6 quiz boss:jeonse+
+d14 lv12 tier10/10 ju100 coin138 +-393 done29 open0 lock0 mq6 used8.1 slack1.9 cl58 mo39 atk25 def220 boss2 ep0 catOpen13520/19 cheap240 lockedCat8900 endfalse | quiz boss:mlm- boss:fp+
+d16 lv13 tier12/12 ju100 coin537 +57 done29 open0 lock0 mq6 used6.1 slack3.9 cl58 mo39 atk25 def234 boss2 ep2 catOpen17020/21 cheap240 lockedCat5400 endfalse | quiz ep:first-job
+d18 lv13 tier14/14 ju100 coin276 +-258 done29 open0 lock0 mq6 used6.1 slack3.9 cl58 mo39 atk31 def258 boss3 ep4 catOpen21940/21 cheap260 lockedCat0 endtrue | quiz ep:job-hunt
+d21 lv14 tier14/14 ju100 coin362 +222 done29 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk32 def259 boss3 ep4 catOpen21380/19 cheap320 lockedCat0 endtrue | quiz
+d25 lv14 tier14/14 ju100 coin140 +-158 done29 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk54 def259 boss3 ep4 catOpen20360/16 cheap400 lockedCat0 endtrue | quiz
+d30 lv14 tier14/14 ju100 coin285 +-198 done29 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk58 def263 boss3 ep4 catOpen19540/14 cheap420 lockedCat0 endtrue | quiz
+d35 lv15 tier14/14 ju100 coin225 +-363 done29 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk55 def271 boss3 ep4 catOpen18600/12 cheap700 lockedCat0 endtrue | quiz
+d40 lv15 tier14/14 ju100 coin330 +147 done29 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk65 def271 boss3 ep4 catOpen17900/11 cheap900 lockedCat0 endtrue | quiz
+d45 lv16 tier14/14 ju100 coin50 +-918 done29 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk65 def287 boss3 ep4 catOpen16800/10 cheap900 lockedCat0 endtrue | quiz
+events {"2":["메인 1장"],"3":["연속 3일 보상 100 + 주황 비니"],"7":["연속 7일 보상 200 + 출근 참새","전세 계약 → 원룸 전세"],"8":["전세 계약 → 투룸 전세"],"9":["메인 2장"],"10":["메인 3장"],"11":["메인 4장"],"12":["메인 5장"],"13":["메인 6장","보스 전세 먹튀 집주인 승"],"14":["연속 14일 보상 400 + 전기자전거","보스 다단계 선배 패","보스 자칭 재무설계사 승"],"17":["보스 다단계 선배 승"]}
+
+== seeker/typical contentEnd 14 allEnd 25 equip {"weapon":"wallet","top":"windbrk","head":"shades","bottom":"train","pet":"dog","mount":"evcar"} bossPlans [["jeonse",2,7,11],["mlm",2,5,11],["fp",2,5,11]] earned 22973 spent {"dep":1700,"furni":13050,"gear":6560,"food":0} final {"lv":18,"tier":14,"peak":14,"coin":1663,"owned":52,"furni":18}
+src {"attend":4350,"ad_att":2181,"quest":2451,"ad_dbl":859,"daily_complete":1120,"egg":830,"life":540,"mq":2800,"ad_mq":2800,"streak_ms":700,"review":1007,"minigame":1365,"lease":200,"cashback":340,"boss":600,"ep":440,"dog":390}
+d1 lv3 tier2/2 ju17 coin382 +232 done5 open0 lock30 mq0 used10 slack0 cl90 mo100 atk4 def38 boss0 ep0 catOpen8110/27 cheap110 lockedCat26080 endfalse | job3 stu2 stu1 ju1 sik1
+d2 lv5 tier3/3 ju33 coin983 +601 done8 open0 lock27 mq1 used9.9 slack0.1 cl0 mo12 atk4 def48 boss0 ep0 catOpen8440/27 cheap140 lockedCat25180 endfalse | MQ1 job1 ju2 job2
+d3 lv5 tier4/4 ju33 coin1152 +169 done11 open0 lock24 mq1 used8.4 slack1.6 cl0 mo31 atk10 def56 boss0 ep0 catOpen7820/24 cheap150 lockedCat24280 endfalse | ui1 sik2 jik3 quiz
+d4 lv6 tier5/5 ju33 coin861 +-291 done14 open0 lock21 mq1 used9.2 slack0.8 cl0 mo31 atk13 def81 boss0 ep0 catOpen7150/22 cheap160 lockedCat23640 endfalse | ui2 scam2 geum1 quiz
+d5 lv7 tier6/6 ju43 coin721 +-140 done17 open0 lock18 mq1 used9.2 slack0.8 cl0 mo31 atk13 def101 boss0 ep0 catOpen6650/20 cheap180 lockedCat23220 endfalse | geum2 job4 ju3 quiz
+d6 lv7 tier7/7 ju49 coin269 +-452 done18 open2 lock15 mq1 used9.2 slack0.8 cl58 mo19 atk30 def115 boss0 ep0 catOpen6250/18 cheap210 lockedCat22660 endfalse | 전세계약 sub1
+d7 lv8 tier8/8 ju53 coin557 +288 done19 open4 lock12 mq1 used9.7 slack0.3 cl58 mo39 atk33 def142 boss0 ep0 catOpen7250/17 cheap220 lockedCat20920 endfalse | 전세계약 geum3
+d8 lv9 tier8/8 ju70 coin219 +-338 done21 open5 lock9 mq2 used9.5 slack0.5 cl56 mo43 atk33 def164 boss0 ep0 catOpen7310/17 cheap220 lockedCat19480 endfalse | MQ2 ju4 job7
+d9 lv10 tier8/8 ju70 coin309 +90 done23 open6 lock6 mq3 used9.5 slack0.5 cl56 mo43 atk33 def176 boss0 ep0 catOpen6400/15 cheap240 lockedCat19120 endfalse | MQ3 wage1 labor2
+d10 lv11 tier8/8 ju70 coin565 +256 done25 open7 lock3 mq4 used9.5 slack0.5 cl56 mo43 atk39 def200 boss0 ep0 catOpen9180/16 cheap240 lockedCat15120 endfalse | MQ4 tax2 fin1
+d11 lv12 tier8/8 ju77 coin387 +-178 done27 open8 lock0 mq5 used9.5 slack0.5 cl56 mo43 atk39 def224 boss0 ep0 catOpen8720/15 cheap240 lockedCat13300 endfalse | MQ5 geum4 rent1
+d12 lv13 tier10/10 ju87 coin434 +47 done29 open6 lock0 mq6 used9.5 slack0.5 cl56 mo43 atk39 def262 boss0 ep0 catOpen11120/16 cheap240 lockedCat8900 endfalse | MQ6 job5 scam1
+d13 lv13 tier11/11 ju96 coin830 +396 done33 open2 lock0 mq6 used9.6 slack0.4 cl52 mo51 atk39 def269 boss0 ep0 catOpen12060/15 cheap260 lockedCat7300 endfalse | ju5 ins1 labor1 job6
+d14 lv14 tier12/12 ju96 coin515 +-315 done35 open0 lock0 mq6 used8.7 slack1.3 cl52 mo51 atk45 def287 boss0 ep0 catOpen11500/13 cheap260 lockedCat5400 endfalse | tax1 card1 quiz review
+d16 lv14 tier14/14 ju100 coin770 +55 done35 open0 lock0 mq6 used9.9 slack0.1 cl58 mo39 atk48 def307 boss3 ep1 catOpen16340/13 cheap320 lockedCat0 endtrue | quiz boss:fp+ ep:jeonse-day
+d18 lv15 tier14/14 ju100 coin870 +10 done35 open0 lock0 mq6 used6.9 slack3.1 cl58 mo39 atk60 def307 boss3 ep3 catOpen15660/11 cheap420 lockedCat0 endtrue | quiz ep:first-pay
+d21 lv15 tier14/14 ju100 coin474 +-253 done35 open0 lock0 mq6 used4.4 slack5.6 cl58 mo39 atk59 def319 boss3 ep4 catOpen14300/8 cheap900 lockedCat0 endtrue | quiz
+d25 lv16 tier14/14 ju100 coin1153 +521 done42 open0 lock0 mq6 used9.8 slack0.2 cl52 mo51 atk64 def327 boss3 ep4 catOpen13400/7 cheap1300 lockedCat0 endtrue | trip3 trip4 trip5 quiz
+d30 lv17 tier14/14 ju100 coin1053 +237 done42 open0 lock0 mq6 used4.4 slack5.6 cl58 mo39 atk64 def343 boss3 ep4 catOpen12000/6 cheap1300 lockedCat0 endtrue | quiz
+d35 lv17 tier14/14 ju100 coin988 +252 done42 open0 lock0 mq6 used4.4 slack5.6 cl58 mo39 atk65 def347 boss3 ep4 catOpen10700/5 cheap1600 lockedCat0 endtrue | quiz
+d40 lv18 tier14/14 ju100 coin438 +202 done42 open0 lock0 mq6 used3.9 slack6.1 cl58 mo39 atk73 def359 boss3 ep4 catOpen9100/4 cheap1800 lockedCat0 endtrue | quiz
+d45 lv18 tier14/14 ju100 coin1663 +257 done42 open0 lock0 mq6 used4.4 slack5.6 cl58 mo39 atk73 def359 boss3 ep4 catOpen9100/4 cheap1800 lockedCat0 endtrue | quiz
+events {"2":["메인 1장"],"3":["연속 3일 보상 100 + 주황 비니"],"6":["전세 계약 → 원룸 전세"],"7":["연속 7일 보상 200 + 출근 참새","전세 계약 → 투룸 전세"],"8":["메인 2장"],"9":["메인 3장"],"10":["메인 4장"],"11":["메인 5장"],"12":["메인 6장"],"14":["연속 14일 보상 400 + 전기자전거"],"15":["보스 전세 먹튀 집주인 승","보스 다단계 선배 승"],"16":["보스 자칭 재무설계사 승"]}
+
+== seeker/noad contentEnd 14 allEnd 36 equip {"weapon":"wallet","top":"windbrk","head":"shades","bottom":"train","pet":"dog","mount":"car"} bossPlans [["jeonse",2,7,10],["mlm",2,5,10],["fp",2,5,10]] earned 15676 spent {"dep":1700,"furni":8750,"gear":5080,"food":0} final {"lv":17,"tier":14,"peak":14,"coin":146,"owned":51,"furni":15}
+src {"attend":4305,"quest":2493,"daily_complete":1120,"egg":620,"life":540,"mq":2800,"streak_ms":700,"review":1073,"lease":200,"cashback":380,"boss":600,"ep":440,"dog":405}
+d1 lv3 tier2/2 ju17 coin317 +167 done5 open0 lock30 mq0 used10 slack0 cl90 mo100 atk4 def38 boss0 ep0 catOpen8110/27 cheap110 lockedCat26080 endfalse | job3 stu2 stu1 ju1 sik1
+d2 lv5 tier3/3 ju33 coin567 +250 done8 open0 lock27 mq1 used9.9 slack0.1 cl0 mo12 atk4 def48 boss0 ep0 catOpen8440/27 cheap140 lockedCat25180 endfalse | MQ1 job1 ju2 job2
+d3 lv5 tier4/4 ju33 coin686 +119 done11 open0 lock24 mq1 used7.9 slack2.1 cl0 mo31 atk10 def56 boss0 ep0 catOpen7820/24 cheap150 lockedCat24280 endfalse | ui1 sik2 jik3 quiz
+d4 lv6 tier5/5 ju33 coin215 +-471 done14 open0 lock21 mq1 used8.2 slack1.8 cl0 mo31 atk13 def81 boss0 ep0 catOpen7150/22 cheap160 lockedCat23640 endfalse | ui2 scam2 geum1 quiz
+d5 lv6 tier6/6 ju43 coin123 +-92 done17 open0 lock18 mq1 used8.2 slack1.8 cl0 mo31 atk13 def101 boss0 ep0 catOpen6810/21 cheap160 lockedCat23220 endfalse | geum2 job4 ju3 quiz
+d6 lv7 tier7/7 ju49 coin280 +157 done18 open2 lock15 mq1 used9.7 slack0.3 cl56 mo23 atk13 def115 boss0 ep0 catOpen7150/21 cheap160 lockedCat22660 endfalse | 전세계약 sub1 review
+d7 lv8 tier8/8 ju53 coin512 +232 done19 open4 lock12 mq1 used9.7 slack0.3 cl56 mo23 atk17 def135 boss0 ep0 catOpen8200/20 cheap180 lockedCat20920 endfalse | 전세계약 geum3 review
+d8 lv8 tier8/8 ju70 coin361 +-151 done21 open5 lock9 mq2 used9 slack1 cl56 mo23 atk25 def142 boss0 ep0 catOpen8690/19 cheap220 lockedCat19480 endfalse | MQ2 ju4 job7
+d9 lv9 tier8/8 ju70 coin375 +14 done23 open6 lock6 mq3 used9 slack1 cl56 mo43 atk25 def150 boss0 ep0 catOpen8200/18 cheap220 lockedCat19120 endfalse | MQ3 wage1 labor2
+d10 lv10 tier8/8 ju70 coin440 +65 done25 open7 lock3 mq4 used9 slack1 cl56 mo43 atk25 def164 boss0 ep0 catOpen11440/20 cheap220 lockedCat15120 endfalse | MQ4 tax2 fin1
+d11 lv11 tier8/8 ju77 coin391 +-49 done27 open8 lock0 mq5 used9 slack1 cl56 mo43 atk25 def172 boss0 ep0 catOpen11860/19 cheap240 lockedCat13300 endfalse | MQ5 geum4 rent1
+d12 lv12 tier10/10 ju87 coin461 +70 done29 open6 lock0 mq6 used9 slack1 cl56 mo43 atk31 def196 boss0 ep0 catOpen15220/20 cheap240 lockedCat8900 endfalse | MQ6 job5 scam1
+d13 lv13 tier11/11 ju93 coin693 +232 done33 open2 lock0 mq6 used9.1 slack0.9 cl52 mo51 atk31 def203 boss0 ep0 catOpen16160/19 cheap260 lockedCat7300 endfalse | ju5 ins1 labor1 job6
+d14 lv13 tier12/12 ju93 coin393 +-300 done35 open0 lock0 mq6 used7.7 slack2.3 cl52 mo51 atk34 def225 boss0 ep0 catOpen15820/16 cheap300 lockedCat5400 endfalse | tax1 card1 quiz review
+d16 lv14 tier14/14 ju100 coin322 +-123 done35 open0 lock0 mq6 used8.6 slack1.4 cl58 mo39 atk40 def243 boss3 ep1 catOpen20600/16 cheap360 lockedCat0 endtrue | quiz boss:fp+ ep:jeonse-day
+d18 lv14 tier14/14 ju100 coin126 +-113 done35 open0 lock0 mq6 used6.1 slack3.9 cl58 mo39 atk56 def247 boss3 ep3 catOpen19820/14 cheap420 lockedCat0 endtrue | quiz ep:first-pay
+d21 lv14 tier14/14 ju100 coin372 +172 done35 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk53 def255 boss3 ep4 catOpen19400/13 cheap520 lockedCat0 endtrue | quiz
+d25 lv15 tier14/14 ju100 coin565 +197 done35 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk53 def255 boss3 ep4 catOpen18880/12 cheap900 lockedCat0 endtrue | quiz
+d30 lv15 tier14/14 ju100 coin405 +172 done35 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk53 def273 boss3 ep4 catOpen17900/11 cheap900 lockedCat0 endtrue | quiz
+d35 lv16 tier14/14 ju100 coin556 +393 done39 open3 lock0 mq6 used9.1 slack0.9 cl52 mo51 atk58 def281 boss3 ep4 catOpen17000/10 cheap1100 lockedCat0 endtrue | car1 car2 trip1 trip2
+d40 lv16 tier14/14 ju100 coin461 +147 done42 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk58 def297 boss3 ep4 catOpen15900/9 cheap1200 lockedCat0 endtrue | quiz
+d45 lv17 tier14/14 ju100 coin146 +-1018 done42 open0 lock0 mq6 used3.1 slack6.9 cl58 mo39 atk58 def317 boss3 ep4 catOpen14700/8 cheap1300 lockedCat0 endtrue | quiz
+events {"2":["메인 1장"],"3":["연속 3일 보상 100 + 주황 비니"],"6":["전세 계약 → 원룸 전세"],"7":["연속 7일 보상 200 + 출근 참새","전세 계약 → 투룸 전세"],"8":["메인 2장"],"9":["메인 3장"],"10":["메인 4장"],"11":["메인 5장"],"12":["메인 6장"],"14":["연속 14일 보상 400 + 전기자전거"],"15":["보스 전세 먹튀 집주인 승","보스 다단계 선배 승"],"16":["보스 자칭 재무설계사 승"]}
+errs []
