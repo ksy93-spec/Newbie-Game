@@ -1,0 +1,107 @@
+// 리뷰 1007(여섯 명 전수 점검)에서 고친 것들의 회귀 테스트.
+// 실행: node --test tests/sprintG.test.mjs
+import test, { before, after } from 'node:test';
+import assert from 'node:assert/strict';
+import path from 'node:path';
+import url from 'node:url';
+
+process.env.PLAYWRIGHT_BROWSERS_PATH ||= '/opt/pw-browsers';
+const { chromium } = await import('playwright');
+
+const here = path.dirname(url.fileURLToPath(import.meta.url));
+const GAME = url.pathToFileURL(path.resolve(here, '../prototype/newbie-quest-demo.html')).href + '#nointro';
+
+let browser;
+before(async () => { browser = await chromium.launch(); });
+after(async () => { await browser?.close(); });
+
+async function open({ w = 360, h = 640 } = {}) {
+  const ctx = await browser.newContext({ viewport: { width: w, height: h } });
+  const page = await ctx.newPage();
+  const logs = [];
+  page.on('pageerror', (e) => logs.push('pageerror: ' + e));
+  page.on('console', (m) => { if (m.type() === 'error') logs.push('error: ' + m.text()); });
+  await page.addInitScript(() => { try { if (!localStorage.getItem('nq_demo')) localStorage.setItem('nq_demo', '0'); } catch (e) {} });
+  await page.goto(GAME);
+  await page.waitForFunction(() => window.S && window.QUESTS, null, { polling: 100 });
+  await page.evaluate(() => {
+    Object.assign(S, { status: '직장인', years: 2, company: '중소기업', region: '수도권', age: 29 });
+    S.onboarded = true; S.tut = 1; S.tuts = ['intro', 'afterq', 'travel', 'check', 'needs', 'hungry', 'doors', 'room', 'gear', 'lv2', 'ep', 'pet', 'car', 'boss'];
+    save(); render('home');
+  });
+  return { ctx, page, logs };
+}
+
+test('1. 지도 위 메뉴 단추로 수집 노트에 들어가고, 처음부터 다시는 확인을 거친다', async () => {
+  const { ctx, page, logs } = await open();
+  await page.evaluate(() => { S.lv = 7; save(); });
+  await page.click('#hmenu');
+  await page.waitForFunction(() => document.getElementById('codex').classList.contains('on'));
+  assert.equal(await page.evaluate(() => [...document.querySelectorAll('#codex .devonly')].every((e) => e.hidden)), true, '개발용 칸은 숨김');
+  await page.evaluate(() => document.getElementById('reset').click());
+  assert.match(await page.textContent('#itipbox'), /되돌릴 수 없어요/);
+  assert.equal(await page.evaluate(() => S.lv), 7, '확인 전에는 지우지 않는다');
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
+
+test('2. 상점 장비는 확인 창에서 사기를 눌러야 산다', async () => {
+  const { ctx, page, logs } = await open();
+  const r = await page.evaluate(() => {
+    S.coin = 5000; save(); render('shop');
+    const names = Object.keys(ITEMS).filter((id) => ITEMS[id].cost > 0 && !ITEMS[id].special && !S.owned.includes(id)).map((id) => ITEMS[id].name);
+    const row = [...document.querySelectorAll('#shopbody .item')].find((b) => !b.disabled && names.some((n) => b.textContent.includes(n)));
+    const c0 = S.coin; row.click();
+    const mid = S.coin, open = !document.getElementById('itip').hidden;
+    const buy = [...document.querySelectorAll('#itip button')].find((b) => /에 사서 입기/.test(b.textContent)); buy.click();
+    return { c0, mid, open, after: S.coin };
+  });
+  assert.equal(r.mid, r.c0, '누르기만 해서는 사지 않는다');
+  assert.ok(r.open);
+  assert.ok(r.after < r.c0, '확인 뒤에 산다');
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
+
+test('3. 연속 출석 21일·30일 보상, 시간이 지나도 청결·기분은 40 아래로 안 떨어진다', async () => {
+  const { ctx, page, logs } = await open();
+  const r = await page.evaluate(() => {
+    S.ms = [3, 7, 14]; S.msNew = []; S.streak = 30; const c0 = S.coin; msCheck();
+    const got = S.coin - c0;
+    S.clean = 90; S.mood = 90; S._cleanAt = Date.now() - 48 * 3600000; S._moodAt = Date.now() - 48 * 3600000; needTick();
+    return { got, ms: S.ms.slice(), clean: S.clean, mood: S.mood };
+  });
+  assert.equal(r.got, 800);
+  assert.ok(r.ms.includes(21) && r.ms.includes(30));
+  assert.equal(r.clean, 40); assert.equal(r.mood, 40);
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
+
+test('4. 대학생도 첫 안내는 집 퀘스트다', async () => {
+  const { ctx, page, logs } = await open();
+  const t = await page.evaluate(() => {
+    S = fresh(); S.status = '대학생'; applyStarter();
+    Object.assign(S, { years: 0, living: '자취', region: '수도권', age: 22 });
+    S.onboarded = true; S.tut = 1; S.tuts = ['intro']; S.todayQ = pickDaily(); save();
+    const g = guideTarget(); return g && { theme: g.q.theme, open: qOpen(g.q) };
+  });
+  assert.deepEqual(t, { theme: 'ju', open: true });
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
+
+test('5. 걷는 동안 저장은 멈춘 뒤 한 번만 쓴다', async () => {
+  const { ctx, page, logs } = await open();
+  const n = await page.evaluate(async () => {
+    let k = 0; const orig = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = function (a, b) { if (a === 'nq.v8') k++; return orig(a, b); };
+    for (let i = 0; i < 8; i++) { ME.tx += (i % 2 ? 1 : -1); savePos(); }
+    const during = k; await new Promise((r) => setTimeout(r, 1700));
+    return { during, after: k };
+  });
+  assert.equal(n.during, 0);
+  assert.equal(n.after, 1);
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
