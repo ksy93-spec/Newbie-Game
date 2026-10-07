@@ -8460,15 +8460,14 @@ function itemRow(slot,id,mode){
 /* 상점은 한 번 눌러 바로 사지 않는다. 값·능력·사고 남는 코인을 보여 주고 "사기"를 눌러야 산다 */
 function shopConfirm(slot,id,it){
   var h='<div class="ih"><div class="ithumb"></div><div><span class="inm">'+esc(it.name)+'</span>'+
-    '<span class="isub">'+itemStat(it).replace(/<br>/g,' · ')+'</span></div></div><hr>'+
+    '<span class="isub">'+itemStat(it).replace(/(<br>)+$/,'').replace(/<br>/g,' · ')+'</span></div></div><hr>'+
     '<div class="iq">"'+it.desc+'"</div>'+
     '<div class="il"><i>◆</i>가진 코인 ￦'+S.coin+' → 산 뒤 ￦'+(S.coin-it.cost)+'</div>';
   openTip.thumb=thumbFor(slot,id);
   openTip(h,'#FFC53C',[{t:'￦'+it.cost+'에 사서 입기',f:function(){
       if(S.coin<it.cost||S.owned.indexOf(id)>=0){ closeTip(); return; }
       S.coin-=it.cost; S.owned.push(id); S.equip[slot]=id; sfx('coin');
-      ev('buy',{slot:slot,id:id,cost:it.cost}); save(); closeTip(); renderShop(); toast(it.name+' 샀어요 · 바로 입었어요'); }},
-    {t:'그만두기',f:function(){ closeTip(); }}]); }
+      ev('buy',{slot:slot,id:id,cost:it.cost}); save(); closeTip(); renderShop(); toast(it.name+' 샀어요 · 바로 입었어요'); }}]); }
 /* ── 캐릭터 상태창 ───────────────────────────────────────────────────
    장비·거처·세간을 한 화면에서 바꾼다. 몸 둘레의 칸을 누르면 아래 가방이 그 칸의 물건으로
    바뀌고, 물건을 누르면 능력치·비교·설명·얻는 곳이 담긴 상세 카드가 뜬다. */
