@@ -1,32 +1,32 @@
 [
  {
   "variant": "base",
-  "N": 10,
+  "N": 6,
   "before": {
-   "rendererMB": 150,
-   "gpuMB": 76
+   "rendererMB": 146,
+   "gpuMB": 74
   },
   "after": {
-   "rendererMB": 698,
-   "gpuMB": 479
+   "rendererMB": 154,
+   "gpuMB": 75
   },
-  "deltaRenderer": 548,
-  "deltaGpu": 403,
-  "heapMB": 3.8
+  "deltaRenderer": 8,
+  "deltaGpu": 1,
+  "heapMB": 3.7
  },
  {
   "variant": "fix",
-  "N": 10,
+  "N": 6,
   "before": {
    "rendererMB": 147,
-   "gpuMB": 73
-  },
-  "after": {
-   "rendererMB": 156,
    "gpuMB": 74
   },
-  "deltaRenderer": 9,
+  "after": {
+   "rendererMB": 154,
+   "gpuMB": 75
+  },
+  "deltaRenderer": 7,
   "deltaGpu": 1,
-  "heapMB": 3.8
+  "heapMB": 3.7
  }
 ]

@@ -99,33 +99,29 @@ test('1. 보스전 승리: 화면, 체력, 보상, 거처 해금과 보증금은
   await ctx.close();
 });
 
-test('2. 보스전 패배: 거처가 한 칸 내려가도 보증금은 다시 걷지 않고, 되찾을 때도 무료', async () => {
+test('2. 보스전 패배: 거처는 그대로이고 코인도 그대로. 다시 이기면 하루 한 번 ￦30만 받는다', async () => {
   const { ctx, page, logs } = await open();
   await page.evaluate(() => { S.stats.ju = 40; S.peak = 3; S.tier = 3; S.paid = 3; S.lastTier = 3; S.coin = 500; S.lv = 5; save(); });
   const before = await snap(page);
   await faceBoss(page);
   await fight(page, false);
   assert.equal(await page.textContent('#bebig'), '당했다');
-  assert.match(await page.innerText('#bebody'), /→/, '내려간 거처가 이전 → 이후로 표시된다');
+  assert.match(await page.innerText('#bebody'), /거처는 그대로/);
   const lost = await snap(page);
-  assert.equal(lost.peak, before.peak - 1);
-  assert.equal(lost.tier, before.tier - 1, '사는 곳도 함께 내려간다');
+  assert.equal(lost.peak, before.peak, '져도 거처는 내려가지 않는다');
+  assert.equal(lost.tier, before.tier);
   assert.equal(lost.coin, before.coin, '코인은 그대로');
-  assert.equal(lost.paid, before.paid, '낸 보증금 기록은 그대로');
   assert.deepEqual(lost.bd, [], '졌으니 격파 기록 없음');
   await page.click('#beback');
   await page.waitForFunction(() => document.getElementById('home').classList.contains('on'), null, { polling: 100 });
-  // 되찾을 때(스탯이 충분하면 다음 퀘스트·하루에 다시 열림) 이미 낸 곳은 무료다
-  const regain = await page.evaluate(() => { const c = S.coin; const g = tierGrow(); const mv = g && g.wasTop ? tierMove(S.peak) : null;
-    return { grew: !!g, cost: mv && mv.cost, ok: mv && mv.ok, coin: S.coin - c, tier: S.tier, peak: S.peak }; });
-  assert.deepEqual(regain, { grew: true, cost: 0, ok: 1, coin: 0, tier: 3, peak: 3 });
-  // 한 번 더 지면 (다시 3에서) 또 한 칸만 내려가고 코인은 그대로
-  await page.evaluate(() => { S.bossDone = []; S.full = 100; S.energy = 100; save(); });
-  await faceBoss(page);
-  await fight(page, false);
-  const again = await snap(page);
-  assert.equal(again.peak, 2);
-  assert.equal(again.coin, before.coin);
+  // 이미 이긴 보스를 다시 이기면 ￦30, 같은 날 또 이기면 0, 스탯은 그대로
+  const r = await page.evaluate(() => {
+    const B = BOSSES[0]; S.peak = S.tier = S.paid = TIERS.length - 1; S.bossDone = [B.id]; S.bossDay = {}; const c0 = S.coin, st0 = S.stats[B.stat];
+    FIGHT = { b: B }; bossEnd(true); const c1 = S.coin; FIGHT = { b: B }; bossEnd(true);
+    return { a: c1 - c0, b: S.coin - c1, st: S.stats[B.stat] - st0, need: BOSSES.map((b) => bossPlan(b).need <= b.qs.length) };
+  });
+  assert.deepEqual({ a: r.a, b: r.b, st: r.st }, { a: 30, b: 0, st: 0 });
+  assert.ok(r.need.every(Boolean), '어느 보스도 문항 수보다 많이 맞힐 필요가 없다');
   assert.deepEqual(logs, [], '콘솔 오류·경고 없음');
   await ctx.close();
 });
