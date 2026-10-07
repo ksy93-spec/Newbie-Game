@@ -1,0 +1,135 @@
+{
+ "W": 360,
+ "H": 640,
+ "DPR": 3,
+ "log": [
+  {
+   "t": 0.39,
+   "taps": 0,
+   "name": "opening_visible"
+  },
+  {
+   "t": 1.83,
+   "taps": 0,
+   "name": "menu_visible"
+  },
+  {
+   "t": 2.67,
+   "taps": 0,
+   "name": "menu_items",
+   "menuTxt": [
+    "시작하기",
+    "소리 켜짐"
+   ]
+  },
+  {
+   "t": 2.95,
+   "taps": 1,
+   "name": "tap_start"
+  },
+  {
+   "t": 4.05,
+   "taps": 1,
+   "name": "prologue_visible"
+  },
+  {
+   "t": 4.06,
+   "taps": 1,
+   "name": "prologue_info",
+   "panels": 7,
+   "chars": [
+    12,
+    51,
+    48,
+    85,
+    39,
+    58,
+    73
+   ],
+   "readSecAt16cps": 22.9
+  },
+  {
+   "t": 35.5,
+   "taps": 8,
+   "name": "prologue_done",
+   "extraTaps": 0
+  },
+  {
+   "t": 36.25,
+   "taps": 10,
+   "name": "ob_status",
+   "q": "지금 어떤 상황인가요?",
+   "status": "취준생"
+  },
+  {
+   "t": 37.14,
+   "taps": 14,
+   "name": "ob_questions_done"
+  },
+  {
+   "t": 38.64,
+   "taps": 16,
+   "name": "onboard_done",
+   "steps": 4
+  },
+  {
+   "t": 39.16,
+   "taps": 16,
+   "name": "home_visible"
+  },
+  {
+   "t": 39.36,
+   "taps": 16,
+   "name": "tutor_visible",
+   "lines": 4
+  },
+  {
+   "t": 47.57,
+   "taps": 20,
+   "name": "tutor_done"
+  },
+  {
+   "t": 49.51,
+   "taps": 20,
+   "name": "first_passive_reward",
+   "coin": 180,
+   "claimed": "2026-10-07",
+   "claimC": 30,
+   "toast": "출석 1일째 · ￦30"
+  },
+  {
+   "t": 49.51,
+   "taps": 20,
+   "name": "guide_chip",
+   "chip": "여기서 첫 상담오른쪽 부동산 전세 창구 · 눌러서 걷기"
+  },
+  {
+   "t": 56.2,
+   "taps": 21,
+   "name": "quest_screen",
+   "walkMs": 6539,
+   "q": "ju1 등기부등본 5분 만에 읽기 n=3"
+  },
+  {
+   "t": 63.4,
+   "taps": 28,
+   "name": "result_visible",
+   "big": "퀘스트 완료",
+   "xp": "+80 XP · ￦70",
+   "coin": 230,
+   "lv": 1
+  },
+  {
+   "t": 66.26,
+   "taps": 29,
+   "name": "back_home",
+   "tut": null
+  }
+ ],
+ "obTimes": [
+  84,
+  61,
+  123
+ ],
+ "errs": []
+}

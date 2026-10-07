@@ -1,0 +1,1930 @@
+[
+ {
+  "dev": "s360",
+  "throttle": 4,
+  "info": {
+   "canvas": "704x796",
+   "RES": 4,
+   "SH": 199,
+   "map": "town"
+  },
+  "phases": [
+   {
+    "name": "home-idle",
+    "wallMs": 12002,
+    "cpuBusyPct": 12.8,
+    "scriptMs": 484.9,
+    "layoutMs": 45.2,
+    "styleMs": 251.7,
+    "frames": 719,
+    "fps": 59.9,
+    "frameP50": 16.7,
+    "frameP95": 16.7,
+    "frameMax": 33.3,
+    "over33": 0,
+    "over50": 0,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 55,
+      "avg": 6.76,
+      "p95": 10.1,
+      "max": 11.8,
+      "totalMs": 372
+     },
+     "drawMini": {
+      "n": 55,
+      "avg": 0.82,
+      "p95": 1.9,
+      "max": 2,
+      "totalMs": 45
+     },
+     "guideSync": {
+      "n": 55,
+      "avg": 0.02,
+      "p95": 0.1,
+      "max": 0.8,
+      "totalMs": 1
+     },
+     "heroTop": {
+      "n": 55,
+      "avg": 0.04,
+      "p95": 0.3,
+      "max": 0.8,
+      "totalMs": 2
+     }
+    }
+   },
+   {
+    "name": "home-walk-hold",
+    "wallMs": 12062,
+    "cpuBusyPct": 26.9,
+    "scriptMs": 1589,
+    "layoutMs": 159.7,
+    "styleMs": 290,
+    "frames": 723,
+    "fps": 59.9,
+    "frameP50": 16.7,
+    "frameP95": 16.8,
+    "frameMax": 16.8,
+    "over33": 0,
+    "over50": 0,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 141,
+    "lsWritesPerSec": 11.7,
+    "lsKB": 2037,
+    "lsMs": 73.6,
+    "fn": {
+     "drawScene": {
+      "n": 204,
+      "avg": 6.51,
+      "p95": 10.2,
+      "max": 15.7,
+      "totalMs": 1329
+     },
+     "drawMini": {
+      "n": 204,
+      "avg": 0.89,
+      "p95": 1.9,
+      "max": 4.5,
+      "totalMs": 182
+     },
+     "save": {
+      "n": 141,
+      "avg": 0.99,
+      "p95": 1.8,
+      "max": 3.3,
+      "totalMs": 140
+     },
+     "guideSync": {
+      "n": 204,
+      "avg": 0.02,
+      "p95": 0,
+      "max": 0.9,
+      "totalMs": 4
+     },
+     "personTopCv": {
+      "n": 14,
+      "avg": 2.51,
+      "p95": 4.3,
+      "max": 4.3,
+      "totalMs": 35
+     },
+     "heroTop": {
+      "n": 204,
+      "avg": 0.15,
+      "p95": 1.3,
+      "max": 4.4,
+      "totalMs": 31
+     }
+    }
+   },
+   {
+    "name": "home-walk-tap",
+    "wallMs": 12086,
+    "cpuBusyPct": 22,
+    "scriptMs": 1160.3,
+    "layoutMs": 134.6,
+    "styleMs": 262.9,
+    "frames": 715,
+    "fps": 59.2,
+    "frameP50": 16.7,
+    "frameP95": 16.8,
+    "frameMax": 83.3,
+    "over33": 4,
+    "over50": 2,
+    "longN": 1,
+    "longSum": 57,
+    "longMax": 57,
+    "gameRafPerSec": 0,
+    "lsWrites": 4,
+    "lsWritesPerSec": 0.3,
+    "lsKB": 58,
+    "lsMs": 2.1,
+    "fn": {
+     "drawScene": {
+      "n": 165,
+      "avg": 6.4,
+      "p95": 10.1,
+      "max": 57.3,
+      "totalMs": 1056
+     },
+     "drawMini": {
+      "n": 165,
+      "avg": 0.75,
+      "p95": 1.7,
+      "max": 5.2,
+      "totalMs": 124
+     },
+     "save": {
+      "n": 4,
+      "avg": 0.72,
+      "p95": 1.1,
+      "max": 1.1,
+      "totalMs": 3
+     },
+     "guideSync": {
+      "n": 165,
+      "avg": 0.01,
+      "p95": 0,
+      "max": 0.9,
+      "totalMs": 2
+     },
+     "personTopCv": {
+      "n": 5,
+      "avg": 1.84,
+      "p95": 2.7,
+      "max": 2.7,
+      "totalMs": 9
+     },
+     "heroTop": {
+      "n": 165,
+      "avg": 0.09,
+      "p95": 0.7,
+      "max": 2.7,
+      "totalMs": 15
+     }
+    }
+   },
+   {
+    "name": "room-idle-pet",
+    "wallMs": 8001,
+    "cpuBusyPct": 13.6,
+    "scriptMs": 312.4,
+    "layoutMs": 44.2,
+    "styleMs": 176.2,
+    "frames": 481,
+    "fps": 60.1,
+    "frameP50": 16.7,
+    "frameP95": 16.7,
+    "frameMax": 16.8,
+    "over33": 0,
+    "over50": 0,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 56,
+      "avg": 4.4,
+      "p95": 8,
+      "max": 9.1,
+      "totalMs": 246
+     },
+     "drawMini": {
+      "n": 56,
+      "avg": 0.33,
+      "p95": 1,
+      "max": 1.1,
+      "totalMs": 18
+     },
+     "guideSync": {
+      "n": 56,
+      "avg": 0.01,
+      "p95": 0,
+      "max": 0.4,
+      "totalMs": 0
+     },
+     "heroTop": {
+      "n": 56,
+      "avg": 0.06,
+      "p95": 0.3,
+      "max": 2.2,
+      "totalMs": 4
+     }
+    }
+   },
+   {
+    "name": "cutscene-mq",
+    "wallMs": 8001,
+    "cpuBusyPct": 97.7,
+    "scriptMs": 255.1,
+    "layoutMs": 15.6,
+    "styleMs": 85.4,
+    "frames": 130,
+    "fps": 16.2,
+    "frameP50": 66.6,
+    "frameP95": 83.3,
+    "frameMax": 83.4,
+    "over33": 127,
+    "over50": 94,
+    "longN": 119,
+    "longSum": 7145,
+    "longMax": 84,
+    "gameRafPerSec": 16.4,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 19,
+      "avg": 5.81,
+      "p95": 9.6,
+      "max": 9.6,
+      "totalMs": 110
+     },
+     "drawMini": {
+      "n": 19,
+      "avg": 1.01,
+      "p95": 4.1,
+      "max": 4.1,
+      "totalMs": 19
+     },
+     "guideSync": {
+      "n": 19,
+      "avg": 0.02,
+      "p95": 0.4,
+      "max": 0.4,
+      "totalMs": 0
+     },
+     "heroTop": {
+      "n": 19,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 0
+     },
+     "castCv": {
+      "n": 131,
+      "avg": 0.02,
+      "p95": 0.1,
+      "max": 1,
+      "totalMs": 3
+     }
+    }
+   },
+   {
+    "name": "drive-loading",
+    "wallMs": 2660,
+    "cpuBusyPct": 30,
+    "scriptMs": 299.8,
+    "layoutMs": 8.7,
+    "styleMs": 23.7,
+    "frames": 36,
+    "fps": 13.5,
+    "frameP50": 66.7,
+    "frameP95": 116.6,
+    "frameMax": 116.7,
+    "over33": 36,
+    "over50": 32,
+    "longN": 1,
+    "longSum": 65,
+    "longMax": 65,
+    "gameRafPerSec": 25.2,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 5,
+      "avg": 6.98,
+      "p95": 13.9,
+      "max": 13.9,
+      "totalMs": 35
+     },
+     "drawMini": {
+      "n": 5,
+      "avg": 0.78,
+      "p95": 2.7,
+      "max": 2.7,
+      "totalMs": 4
+     },
+     "guideSync": {
+      "n": 5,
+      "avg": 0,
+      "p95": 0,
+      "max": 0,
+      "totalMs": 0
+     },
+     "personTopCv": {
+      "n": 31,
+      "avg": 1.54,
+      "p95": 3.1,
+      "max": 6.5,
+      "totalMs": 48
+     },
+     "heroTop": {
+      "n": 5,
+      "avg": 1.18,
+      "p95": 5.8,
+      "max": 5.8,
+      "totalMs": 6
+     },
+     "castCv": {
+      "n": 37,
+      "avg": 0.02,
+      "p95": 0.1,
+      "max": 0.3,
+      "totalMs": 1
+     }
+    }
+   },
+   {
+    "name": "cutscene-prologue",
+    "wallMs": 6000,
+    "cpuBusyPct": 21.1,
+    "scriptMs": 193.5,
+    "layoutMs": 10.7,
+    "styleMs": 41.1,
+    "frames": 92,
+    "fps": 15.3,
+    "frameP50": 66.7,
+    "frameP95": 83.3,
+    "frameMax": 83.4,
+    "over33": 92,
+    "over50": 82,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 31,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 12,
+      "avg": 5.39,
+      "p95": 6.8,
+      "max": 6.8,
+      "totalMs": 65
+     },
+     "drawMini": {
+      "n": 12,
+      "avg": 0.47,
+      "p95": 1.4,
+      "max": 1.4,
+      "totalMs": 6
+     },
+     "guideSync": {
+      "n": 12,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 0
+     },
+     "heroTop": {
+      "n": 12,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 0
+     },
+     "castCv": {
+      "n": 93,
+      "avg": 0.02,
+      "p95": 0.1,
+      "max": 0.6,
+      "totalMs": 1
+     }
+    }
+   }
+  ],
+  "breakdown": {
+   "full": 5.1,
+   "noTiles": 3.35,
+   "noMini": 4.66,
+   "miniOnly": 1.65,
+   "noGuideSync": 6.59,
+   "guideSyncOnly": 0,
+   "fitScene": 0.13
+  },
+  "cineInfo": "800x1420",
+  "errors": []
+ },
+ {
+  "dev": "s360",
+  "throttle": 4,
+  "info": "800x1420",
+  "phases": [
+   {
+    "name": "opening-title",
+    "wallMs": 8000,
+    "cpuBusyPct": 99.4,
+    "scriptMs": 1307,
+    "layoutMs": 0,
+    "styleMs": 0,
+    "frames": 245,
+    "fps": 30.6,
+    "frameP50": 33.3,
+    "frameP95": 50,
+    "frameMax": 50.1,
+    "over33": 54,
+    "over50": 7,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 30.8,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "personTopCv": {
+      "n": 492,
+      "avg": 1.2,
+      "p95": 2.4,
+      "max": 4.6,
+      "totalMs": 590
+     }
+    }
+   }
+  ]
+ },
+ {
+  "dev": "s390",
+  "throttle": 4,
+  "info": {
+   "canvas": "704x1108",
+   "RES": 4,
+   "SH": 277,
+   "map": "town"
+  },
+  "phases": [
+   {
+    "name": "home-idle",
+    "wallMs": 12000,
+    "cpuBusyPct": 14.2,
+    "scriptMs": 616.6,
+    "layoutMs": 44.6,
+    "styleMs": 252.3,
+    "frames": 718,
+    "fps": 59.8,
+    "frameP50": 16.7,
+    "frameP95": 16.8,
+    "frameMax": 33.4,
+    "over33": 0,
+    "over50": 0,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 55,
+      "avg": 9.26,
+      "p95": 14.7,
+      "max": 15.8,
+      "totalMs": 509
+     },
+     "drawMini": {
+      "n": 55,
+      "avg": 0.91,
+      "p95": 2.4,
+      "max": 2.9,
+      "totalMs": 50
+     },
+     "guideSync": {
+      "n": 55,
+      "avg": 0.02,
+      "p95": 0.1,
+      "max": 0.6,
+      "totalMs": 1
+     },
+     "heroTop": {
+      "n": 55,
+      "avg": 0.07,
+      "p95": 0.7,
+      "max": 1.2,
+      "totalMs": 4
+     }
+    }
+   },
+   {
+    "name": "home-walk-hold",
+    "wallMs": 12062,
+    "cpuBusyPct": 29.2,
+    "scriptMs": 1865.5,
+    "layoutMs": 142.1,
+    "styleMs": 250.8,
+    "frames": 720,
+    "fps": 59.7,
+    "frameP50": 16.7,
+    "frameP95": 16.8,
+    "frameMax": 33.4,
+    "over33": 0,
+    "over50": 0,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 140,
+    "lsWritesPerSec": 11.6,
+    "lsKB": 2022,
+    "lsMs": 90.4,
+    "fn": {
+     "drawScene": {
+      "n": 203,
+      "avg": 7.8,
+      "p95": 12.5,
+      "max": 15.5,
+      "totalMs": 1584
+     },
+     "drawMini": {
+      "n": 203,
+      "avg": 0.76,
+      "p95": 1.7,
+      "max": 3.9,
+      "totalMs": 155
+     },
+     "save": {
+      "n": 140,
+      "avg": 1.14,
+      "p95": 2.3,
+      "max": 4.1,
+      "totalMs": 160
+     },
+     "guideSync": {
+      "n": 203,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.8,
+      "totalMs": 3
+     },
+     "personTopCv": {
+      "n": 14,
+      "avg": 2.06,
+      "p95": 4.1,
+      "max": 4.1,
+      "totalMs": 29
+     },
+     "heroTop": {
+      "n": 203,
+      "avg": 0.15,
+      "p95": 0.6,
+      "max": 4.1,
+      "totalMs": 30
+     }
+    }
+   },
+   {
+    "name": "home-walk-tap",
+    "wallMs": 12165,
+    "cpuBusyPct": 27.2,
+    "scriptMs": 1686.5,
+    "layoutMs": 135.3,
+    "styleMs": 256.9,
+    "frames": 712,
+    "fps": 58.5,
+    "frameP50": 16.7,
+    "frameP95": 16.8,
+    "frameMax": 33.4,
+    "over33": 10,
+    "over50": 0,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 3,
+    "lsWritesPerSec": 0.2,
+    "lsKB": 43,
+    "lsMs": 1.2,
+    "fn": {
+     "drawScene": {
+      "n": 165,
+      "avg": 9.58,
+      "p95": 14.9,
+      "max": 20,
+      "totalMs": 1580
+     },
+     "drawMini": {
+      "n": 165,
+      "avg": 0.92,
+      "p95": 2.3,
+      "max": 4.1,
+      "totalMs": 152
+     },
+     "save": {
+      "n": 3,
+      "avg": 1.5,
+      "p95": 2.3,
+      "max": 2.3,
+      "totalMs": 5
+     },
+     "guideSync": {
+      "n": 165,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.9,
+      "totalMs": 2
+     },
+     "personTopCv": {
+      "n": 5,
+      "avg": 1.7,
+      "p95": 2.4,
+      "max": 2.4,
+      "totalMs": 8
+     },
+     "heroTop": {
+      "n": 165,
+      "avg": 0.07,
+      "p95": 0.1,
+      "max": 2.4,
+      "totalMs": 11
+     }
+    }
+   },
+   {
+    "name": "room-idle-pet",
+    "wallMs": 8002,
+    "cpuBusyPct": 13.1,
+    "scriptMs": 307.1,
+    "layoutMs": 44.9,
+    "styleMs": 145.6,
+    "frames": 480,
+    "fps": 60,
+    "frameP50": 16.7,
+    "frameP95": 16.7,
+    "frameMax": 16.8,
+    "over33": 0,
+    "over50": 0,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 57,
+      "avg": 4.38,
+      "p95": 7.4,
+      "max": 11.6,
+      "totalMs": 249
+     },
+     "drawMini": {
+      "n": 57,
+      "avg": 0.39,
+      "p95": 1.3,
+      "max": 4,
+      "totalMs": 22
+     },
+     "guideSync": {
+      "n": 57,
+      "avg": 0.02,
+      "p95": 0.1,
+      "max": 0.6,
+      "totalMs": 1
+     },
+     "heroTop": {
+      "n": 57,
+      "avg": 0.03,
+      "p95": 0.3,
+      "max": 0.6,
+      "totalMs": 2
+     }
+    }
+   },
+   {
+    "name": "cutscene-mq",
+    "wallMs": 8001,
+    "cpuBusyPct": 100.2,
+    "scriptMs": 87.5,
+    "layoutMs": 5.7,
+    "styleMs": 20.8,
+    "frames": 45,
+    "fps": 5.6,
+    "frameP50": 183.3,
+    "frameP95": 216.6,
+    "frameMax": 216.7,
+    "over33": 45,
+    "over50": 45,
+    "longN": 46,
+    "longSum": 8299,
+    "longMax": 194,
+    "gameRafPerSec": 5.7,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 8,
+      "avg": 5.29,
+      "p95": 7.8,
+      "max": 7.8,
+      "totalMs": 42
+     },
+     "drawMini": {
+      "n": 8,
+      "avg": 0.46,
+      "p95": 1,
+      "max": 1,
+      "totalMs": 4
+     },
+     "guideSync": {
+      "n": 8,
+      "avg": 0,
+      "p95": 0,
+      "max": 0,
+      "totalMs": 0
+     },
+     "heroTop": {
+      "n": 8,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 0
+     },
+     "castCv": {
+      "n": 46,
+      "avg": 0.03,
+      "p95": 0.1,
+      "max": 0.8,
+      "totalMs": 1
+     }
+    }
+   },
+   {
+    "name": "drive-loading",
+    "wallMs": 6244,
+    "cpuBusyPct": 12.2,
+    "scriptMs": 174.9,
+    "layoutMs": 4,
+    "styleMs": 11.8,
+    "frames": 69,
+    "fps": 11.1,
+    "frameP50": 183.3,
+    "frameP95": 216.7,
+    "frameMax": 266.7,
+    "over33": 69,
+    "over50": 69,
+    "longN": 11,
+    "longSum": 1648,
+    "longMax": 201,
+    "gameRafPerSec": 13.3,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 1,
+      "avg": 13.4,
+      "p95": 13.4,
+      "max": 13.4,
+      "totalMs": 13
+     },
+     "drawMini": {
+      "n": 1,
+      "avg": 0.1,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 0
+     },
+     "guideSync": {
+      "n": 1,
+      "avg": 0,
+      "p95": 0,
+      "max": 0,
+      "totalMs": 0
+     },
+     "personTopCv": {
+      "n": 14,
+      "avg": 1.37,
+      "p95": 2.3,
+      "max": 2.3,
+      "totalMs": 19
+     },
+     "heroTop": {
+      "n": 1,
+      "avg": 5,
+      "p95": 5,
+      "max": 5,
+      "totalMs": 5
+     },
+     "castCv": {
+      "n": 70,
+      "avg": 0,
+      "p95": 0,
+      "max": 0.1,
+      "totalMs": 0
+     }
+    }
+   },
+   {
+    "name": "cutscene-prologue",
+    "wallMs": 6000,
+    "cpuBusyPct": 15.1,
+    "scriptMs": 49,
+    "layoutMs": 0,
+    "styleMs": 13.6,
+    "frames": 114,
+    "fps": 19,
+    "frameP50": 200,
+    "frameP95": 233.3,
+    "frameMax": 316.7,
+    "over33": 114,
+    "over50": 114,
+    "longN": 3,
+    "longSum": 483,
+    "longMax": 164,
+    "gameRafPerSec": 38.3,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 1,
+      "avg": 8.9,
+      "p95": 8.9,
+      "max": 8.9,
+      "totalMs": 9
+     },
+     "drawMini": {
+      "n": 1,
+      "avg": 0.8,
+      "p95": 0.8,
+      "max": 0.8,
+      "totalMs": 1
+     },
+     "guideSync": {
+      "n": 1,
+      "avg": 0,
+      "p95": 0,
+      "max": 0,
+      "totalMs": 0
+     },
+     "heroTop": {
+      "n": 1,
+      "avg": 0,
+      "p95": 0,
+      "max": 0,
+      "totalMs": 0
+     },
+     "castCv": {
+      "n": 115,
+      "avg": 0.02,
+      "p95": 0.1,
+      "max": 0.7,
+      "totalMs": 2
+     }
+    }
+   }
+  ],
+  "breakdown": {
+   "full": 6.36,
+   "noTiles": 2.39,
+   "noMini": 6.83,
+   "miniOnly": 1.72,
+   "noGuideSync": 6.63,
+   "guideSyncOnly": 0.01,
+   "fitScene": 0.11
+  },
+  "cineInfo": "1280x2768",
+  "errors": []
+ },
+ {
+  "dev": "s390",
+  "throttle": 4,
+  "info": "1280x2768",
+  "phases": [
+   {
+    "name": "opening-title",
+    "wallMs": 8001,
+    "cpuBusyPct": 99.8,
+    "scriptMs": 567.8,
+    "layoutMs": 0,
+    "styleMs": 0,
+    "frames": 107,
+    "fps": 13.4,
+    "frameP50": 66.8,
+    "frameP95": 83.4,
+    "frameMax": 116.7,
+    "over33": 107,
+    "over50": 105,
+    "longN": 108,
+    "longSum": 7930,
+    "longMax": 110,
+    "gameRafPerSec": 13.5,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "personTopCv": {
+      "n": 216,
+      "avg": 1.19,
+      "p95": 2.3,
+      "max": 5.1,
+      "totalMs": 258
+     }
+    }
+   }
+  ]
+ },
+ {
+  "dev": "s360",
+  "throttle": 6,
+  "info": {
+   "canvas": "704x796",
+   "RES": 4,
+   "SH": 199,
+   "map": "town"
+  },
+  "phases": [
+   {
+    "name": "home-idle",
+    "wallMs": 12000,
+    "cpuBusyPct": 20,
+    "scriptMs": 762.3,
+    "layoutMs": 84.8,
+    "styleMs": 387.3,
+    "frames": 712,
+    "fps": 59.3,
+    "frameP50": 16.7,
+    "frameP95": 16.8,
+    "frameMax": 49.9,
+    "over33": 1,
+    "over50": 0,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 55,
+      "avg": 10.7,
+      "p95": 16.7,
+      "max": 17.5,
+      "totalMs": 589
+     },
+     "drawMini": {
+      "n": 55,
+      "avg": 1.47,
+      "p95": 2.9,
+      "max": 4,
+      "totalMs": 81
+     },
+     "guideSync": {
+      "n": 55,
+      "avg": 0.06,
+      "p95": 0.5,
+      "max": 1.5,
+      "totalMs": 4
+     },
+     "heroTop": {
+      "n": 55,
+      "avg": 0.09,
+      "p95": 0.4,
+      "max": 2.8,
+      "totalMs": 5
+     }
+    }
+   },
+   {
+    "name": "home-walk-hold",
+    "wallMs": 12142,
+    "cpuBusyPct": 47.4,
+    "scriptMs": 2826.4,
+    "layoutMs": 299.1,
+    "styleMs": 454.3,
+    "frames": 611,
+    "fps": 50.3,
+    "frameP50": 16.7,
+    "frameP95": 33.4,
+    "frameMax": 66.7,
+    "over33": 34,
+    "over50": 11,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 141,
+    "lsWritesPerSec": 11.6,
+    "lsKB": 2037,
+    "lsMs": 124.4,
+    "fn": {
+     "drawScene": {
+      "n": 204,
+      "avg": 11.71,
+      "p95": 18.6,
+      "max": 23.3,
+      "totalMs": 2389
+     },
+     "drawMini": {
+      "n": 204,
+      "avg": 1.5,
+      "p95": 3.6,
+      "max": 5.4,
+      "totalMs": 306
+     },
+     "save": {
+      "n": 141,
+      "avg": 1.7,
+      "p95": 3.3,
+      "max": 6,
+      "totalMs": 240
+     },
+     "guideSync": {
+      "n": 204,
+      "avg": 0.03,
+      "p95": 0.1,
+      "max": 1.5,
+      "totalMs": 6
+     },
+     "personTopCv": {
+      "n": 14,
+      "avg": 3.48,
+      "p95": 5.5,
+      "max": 5.5,
+      "totalMs": 49
+     },
+     "heroTop": {
+      "n": 204,
+      "avg": 0.27,
+      "p95": 2.6,
+      "max": 7,
+      "totalMs": 54
+     }
+    }
+   },
+   {
+    "name": "home-walk-tap",
+    "wallMs": 12305,
+    "cpuBusyPct": 36.5,
+    "scriptMs": 2008.2,
+    "layoutMs": 206.9,
+    "styleMs": 438.5,
+    "frames": 690,
+    "fps": 56.1,
+    "frameP50": 16.7,
+    "frameP95": 33.3,
+    "frameMax": 50.1,
+    "over33": 17,
+    "over50": 4,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 4,
+    "lsWritesPerSec": 0.3,
+    "lsKB": 58,
+    "lsMs": 4.1,
+    "fn": {
+     "drawScene": {
+      "n": 167,
+      "avg": 11.05,
+      "p95": 18.7,
+      "max": 31.6,
+      "totalMs": 1846
+     },
+     "drawMini": {
+      "n": 167,
+      "avg": 1.22,
+      "p95": 2.6,
+      "max": 6.2,
+      "totalMs": 204
+     },
+     "save": {
+      "n": 4,
+      "avg": 2.2,
+      "p95": 3.4,
+      "max": 3.4,
+      "totalMs": 9
+     },
+     "guideSync": {
+      "n": 167,
+      "avg": 0.01,
+      "p95": 0,
+      "max": 1.3,
+      "totalMs": 2
+     },
+     "personTopCv": {
+      "n": 5,
+      "avg": 3.06,
+      "p95": 4.2,
+      "max": 4.2,
+      "totalMs": 15
+     },
+     "heroTop": {
+      "n": 167,
+      "avg": 0.09,
+      "p95": 0.1,
+      "max": 4.4,
+      "totalMs": 15
+     }
+    }
+   },
+   {
+    "name": "room-idle-pet",
+    "wallMs": 8001,
+    "cpuBusyPct": 19.9,
+    "scriptMs": 467.9,
+    "layoutMs": 69.2,
+    "styleMs": 220.4,
+    "frames": 478,
+    "fps": 59.7,
+    "frameP50": 16.7,
+    "frameP95": 16.7,
+    "frameMax": 33.4,
+    "over33": 1,
+    "over50": 0,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 60,
+      "avg": 6.29,
+      "p95": 11,
+      "max": 12.2,
+      "totalMs": 377
+     },
+     "drawMini": {
+      "n": 60,
+      "avg": 0.29,
+      "p95": 1.4,
+      "max": 2,
+      "totalMs": 18
+     },
+     "guideSync": {
+      "n": 60,
+      "avg": 0.01,
+      "p95": 0,
+      "max": 0.5,
+      "totalMs": 1
+     },
+     "heroTop": {
+      "n": 60,
+      "avg": 0.03,
+      "p95": 0.1,
+      "max": 0.5,
+      "totalMs": 2
+     }
+    }
+   },
+   {
+    "name": "cutscene-mq",
+    "wallMs": 8000,
+    "cpuBusyPct": 97.8,
+    "scriptMs": 262.2,
+    "layoutMs": 14.3,
+    "styleMs": 70.5,
+    "frames": 86,
+    "fps": 10.8,
+    "frameP50": 83.4,
+    "frameP95": 116.7,
+    "frameMax": 183.3,
+    "over33": 86,
+    "over50": 85,
+    "longN": 87,
+    "longSum": 7717,
+    "longMax": 178,
+    "gameRafPerSec": 10.9,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 14,
+      "avg": 8.07,
+      "p95": 13,
+      "max": 13,
+      "totalMs": 113
+     },
+     "drawMini": {
+      "n": 14,
+      "avg": 1.1,
+      "p95": 2.4,
+      "max": 2.4,
+      "totalMs": 15
+     },
+     "guideSync": {
+      "n": 14,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 0
+     },
+     "heroTop": {
+      "n": 14,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 0
+     },
+     "castCv": {
+      "n": 87,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 1
+     }
+    }
+   },
+   {
+    "name": "drive-loading",
+    "wallMs": 2687,
+    "cpuBusyPct": 31.7,
+    "scriptMs": 321.6,
+    "layoutMs": 9.1,
+    "styleMs": 15,
+    "frames": 25,
+    "fps": 9.3,
+    "frameP50": 100,
+    "frameP95": 150,
+    "frameMax": 166.7,
+    "over33": 25,
+    "over50": 25,
+    "longN": 1,
+    "longSum": 85,
+    "longMax": 85,
+    "gameRafPerSec": 17.9,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 3,
+      "avg": 11.53,
+      "p95": 19.8,
+      "max": 19.8,
+      "totalMs": 35
+     },
+     "drawMini": {
+      "n": 3,
+      "avg": 1.6,
+      "p95": 2.5,
+      "max": 2.5,
+      "totalMs": 5
+     },
+     "guideSync": {
+      "n": 3,
+      "avg": 0,
+      "p95": 0,
+      "max": 0,
+      "totalMs": 0
+     },
+     "personTopCv": {
+      "n": 23,
+      "avg": 2.17,
+      "p95": 3.5,
+      "max": 4.2,
+      "totalMs": 50
+     },
+     "heroTop": {
+      "n": 3,
+      "avg": 4.17,
+      "p95": 12.5,
+      "max": 12.5,
+      "totalMs": 13
+     },
+     "castCv": {
+      "n": 26,
+      "avg": 0.02,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 0
+     }
+    }
+   },
+   {
+    "name": "cutscene-prologue",
+    "wallMs": 6001,
+    "cpuBusyPct": 21.9,
+    "scriptMs": 207.9,
+    "layoutMs": 7.1,
+    "styleMs": 51,
+    "frames": 65,
+    "fps": 10.8,
+    "frameP50": 99.9,
+    "frameP95": 133.4,
+    "frameMax": 150.1,
+    "over33": 63,
+    "over50": 61,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 22,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 9,
+      "avg": 8.29,
+      "p95": 10.6,
+      "max": 10.6,
+      "totalMs": 75
+     },
+     "drawMini": {
+      "n": 9,
+      "avg": 1.07,
+      "p95": 1.8,
+      "max": 1.8,
+      "totalMs": 10
+     },
+     "guideSync": {
+      "n": 9,
+      "avg": 0.1,
+      "p95": 0.9,
+      "max": 0.9,
+      "totalMs": 1
+     },
+     "heroTop": {
+      "n": 9,
+      "avg": 0.23,
+      "p95": 1.5,
+      "max": 1.5,
+      "totalMs": 2
+     },
+     "castCv": {
+      "n": 66,
+      "avg": 0.02,
+      "p95": 0.1,
+      "max": 0.7,
+      "totalMs": 2
+     }
+    }
+   }
+  ],
+  "breakdown": {
+   "full": 8.26,
+   "noTiles": 4.15,
+   "noMini": 5.97,
+   "miniOnly": 2.46,
+   "noGuideSync": 8.53,
+   "guideSyncOnly": 0,
+   "fitScene": 0.13
+  },
+  "cineInfo": "800x1420",
+  "errors": []
+ },
+ {
+  "dev": "s360",
+  "throttle": 6,
+  "info": "800x1420",
+  "phases": [
+   {
+    "name": "opening-title",
+    "wallMs": 8001,
+    "cpuBusyPct": 99.3,
+    "scriptMs": 1279.1,
+    "layoutMs": 0,
+    "styleMs": 0,
+    "frames": 177,
+    "fps": 22.1,
+    "frameP50": 50,
+    "frameP95": 66.7,
+    "frameMax": 100,
+    "over33": 123,
+    "over50": 25,
+    "longN": 35,
+    "longSum": 1888,
+    "longMax": 61,
+    "gameRafPerSec": 22.2,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "personTopCv": {
+      "n": 356,
+      "avg": 1.54,
+      "p95": 5.3,
+      "max": 8.7,
+      "totalMs": 547
+     }
+    }
+   }
+  ]
+ },
+ {
+  "dev": "s390",
+  "throttle": 6,
+  "info": {
+   "canvas": "704x1108",
+   "RES": 4,
+   "SH": 277,
+   "map": "town"
+  },
+  "phases": [
+   {
+    "name": "home-idle",
+    "wallMs": 12000,
+    "cpuBusyPct": 21.4,
+    "scriptMs": 897.1,
+    "layoutMs": 80.3,
+    "styleMs": 333,
+    "frames": 695,
+    "fps": 57.9,
+    "frameP50": 16.7,
+    "frameP95": 16.8,
+    "frameMax": 50.1,
+    "over33": 6,
+    "over50": 1,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 54,
+      "avg": 13.1,
+      "p95": 22.2,
+      "max": 27.2,
+      "totalMs": 707
+     },
+     "drawMini": {
+      "n": 54,
+      "avg": 1.42,
+      "p95": 5.5,
+      "max": 7.1,
+      "totalMs": 77
+     },
+     "guideSync": {
+      "n": 54,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.2,
+      "totalMs": 0
+     },
+     "heroTop": {
+      "n": 54,
+      "avg": 0.02,
+      "p95": 0.1,
+      "max": 0.6,
+      "totalMs": 1
+     }
+    }
+   },
+   {
+    "name": "home-walk-hold",
+    "wallMs": 12198,
+    "cpuBusyPct": 47,
+    "scriptMs": 2974.4,
+    "layoutMs": 250.9,
+    "styleMs": 442.3,
+    "frames": 566,
+    "fps": 46.4,
+    "frameP50": 16.7,
+    "frameP95": 33.4,
+    "frameMax": 83.4,
+    "over33": 47,
+    "over50": 9,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 143,
+    "lsWritesPerSec": 11.7,
+    "lsKB": 2066,
+    "lsMs": 120,
+    "fn": {
+     "drawScene": {
+      "n": 206,
+      "avg": 12.6,
+      "p95": 18.7,
+      "max": 26,
+      "totalMs": 2595
+     },
+     "drawMini": {
+      "n": 206,
+      "avg": 1.31,
+      "p95": 3.2,
+      "max": 5.8,
+      "totalMs": 269
+     },
+     "save": {
+      "n": 143,
+      "avg": 1.55,
+      "p95": 2.9,
+      "max": 7.2,
+      "totalMs": 222
+     },
+     "guideSync": {
+      "n": 206,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.5,
+      "totalMs": 2
+     },
+     "personTopCv": {
+      "n": 14,
+      "avg": 3.26,
+      "p95": 6,
+      "max": 6,
+      "totalMs": 46
+     },
+     "heroTop": {
+      "n": 206,
+      "avg": 0.25,
+      "p95": 2,
+      "max": 6.7,
+      "totalMs": 52
+     }
+    }
+   },
+   {
+    "name": "home-walk-tap",
+    "wallMs": 12291,
+    "cpuBusyPct": 39.3,
+    "scriptMs": 2385.7,
+    "layoutMs": 185.2,
+    "styleMs": 421.6,
+    "frames": 623,
+    "fps": 50.7,
+    "frameP50": 16.7,
+    "frameP95": 33.4,
+    "frameMax": 66.7,
+    "over33": 32,
+    "over50": 7,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 3,
+    "lsWritesPerSec": 0.2,
+    "lsKB": 43,
+    "lsMs": 1.7,
+    "fn": {
+     "drawScene": {
+      "n": 171,
+      "avg": 13.14,
+      "p95": 21,
+      "max": 27.7,
+      "totalMs": 2247
+     },
+     "drawMini": {
+      "n": 171,
+      "avg": 1.22,
+      "p95": 2.6,
+      "max": 4,
+      "totalMs": 209
+     },
+     "save": {
+      "n": 3,
+      "avg": 1,
+      "p95": 1.6,
+      "max": 1.6,
+      "totalMs": 3
+     },
+     "guideSync": {
+      "n": 171,
+      "avg": 0.03,
+      "p95": 0,
+      "max": 2.6,
+      "totalMs": 5
+     },
+     "personTopCv": {
+      "n": 5,
+      "avg": 3.58,
+      "p95": 4.3,
+      "max": 4.3,
+      "totalMs": 18
+     },
+     "heroTop": {
+      "n": 171,
+      "avg": 0.12,
+      "p95": 0.1,
+      "max": 4.4,
+      "totalMs": 20
+     }
+    }
+   },
+   {
+    "name": "room-idle-pet",
+    "wallMs": 8001,
+    "cpuBusyPct": 23,
+    "scriptMs": 575.5,
+    "layoutMs": 72.8,
+    "styleMs": 252.7,
+    "frames": 481,
+    "fps": 60.1,
+    "frameP50": 16.7,
+    "frameP95": 16.7,
+    "frameMax": 16.8,
+    "over33": 0,
+    "over50": 0,
+    "longN": 0,
+    "longSum": 0,
+    "longMax": 0,
+    "gameRafPerSec": 0,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 69,
+      "avg": 7.07,
+      "p95": 11.7,
+      "max": 13.1,
+      "totalMs": 488
+     },
+     "drawMini": {
+      "n": 69,
+      "avg": 0.56,
+      "p95": 1.7,
+      "max": 4.3,
+      "totalMs": 39
+     },
+     "guideSync": {
+      "n": 69,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 0
+     },
+     "heroTop": {
+      "n": 69,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 1
+     }
+    }
+   },
+   {
+    "name": "cutscene-mq",
+    "wallMs": 8001,
+    "cpuBusyPct": 97.8,
+    "scriptMs": 106.3,
+    "layoutMs": 9.6,
+    "styleMs": 32,
+    "frames": 30,
+    "fps": 3.7,
+    "frameP50": 266.7,
+    "frameP95": 350,
+    "frameMax": 350,
+    "over33": 30,
+    "over50": 30,
+    "longN": 31,
+    "longSum": 8024,
+    "longMax": 347,
+    "gameRafPerSec": 3.9,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 6,
+      "avg": 7.37,
+      "p95": 11.5,
+      "max": 11.5,
+      "totalMs": 44
+     },
+     "drawMini": {
+      "n": 6,
+      "avg": 1.27,
+      "p95": 5.5,
+      "max": 5.5,
+      "totalMs": 8
+     },
+     "guideSync": {
+      "n": 6,
+      "avg": 0,
+      "p95": 0,
+      "max": 0,
+      "totalMs": 0
+     },
+     "heroTop": {
+      "n": 6,
+      "avg": 0.02,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 0
+     },
+     "castCv": {
+      "n": 31,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.2,
+      "totalMs": 0
+     }
+    }
+   },
+   {
+    "name": "drive-loading",
+    "wallMs": 8040,
+    "cpuBusyPct": 21.4,
+    "scriptMs": 205.8,
+    "layoutMs": 2.1,
+    "styleMs": 23.7,
+    "frames": 58,
+    "fps": 7.2,
+    "frameP50": 249.9,
+    "frameP95": 583.4,
+    "frameMax": 716.7,
+    "over33": 58,
+    "over50": 58,
+    "longN": 12,
+    "longSum": 2821,
+    "longMax": 497,
+    "gameRafPerSec": 8.1,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "drawScene": {
+      "n": 1,
+      "avg": 7.7,
+      "p95": 7.7,
+      "max": 7.7,
+      "totalMs": 8
+     },
+     "drawMini": {
+      "n": 1,
+      "avg": 0.1,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 0
+     },
+     "guideSync": {
+      "n": 1,
+      "avg": 0.1,
+      "p95": 0.1,
+      "max": 0.1,
+      "totalMs": 0
+     },
+     "personTopCv": {
+      "n": 7,
+      "avg": 0.69,
+      "p95": 2.8,
+      "max": 2.8,
+      "totalMs": 5
+     },
+     "heroTop": {
+      "n": 1,
+      "avg": 5.5,
+      "p95": 5.5,
+      "max": 5.5,
+      "totalMs": 6
+     },
+     "castCv": {
+      "n": 59,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.2,
+      "totalMs": 1
+     }
+    }
+   },
+   {
+    "name": "cutscene-prologue",
+    "wallMs": 6001,
+    "cpuBusyPct": 14,
+    "scriptMs": 41.8,
+    "layoutMs": 0,
+    "styleMs": 13.6,
+    "frames": 98,
+    "fps": 16.3,
+    "frameP50": 283.3,
+    "frameP95": 366.6,
+    "frameMax": 416.7,
+    "over33": 98,
+    "over50": 98,
+    "longN": 4,
+    "longSum": 562,
+    "longMax": 238,
+    "gameRafPerSec": 33,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "castCv": {
+      "n": 99,
+      "avg": 0.01,
+      "p95": 0.1,
+      "max": 0.8,
+      "totalMs": 1
+     }
+    }
+   }
+  ],
+  "breakdown": {
+   "full": 10.13,
+   "noTiles": 3.85,
+   "noMini": 8.05,
+   "miniOnly": 2.73,
+   "noGuideSync": 12.4,
+   "guideSyncOnly": 0,
+   "fitScene": 0.4
+  },
+  "cineInfo": "1280x2768",
+  "errors": []
+ },
+ {
+  "dev": "s390",
+  "throttle": 6,
+  "info": "1280x2768",
+  "phases": [
+   {
+    "name": "opening-title",
+    "wallMs": 8001,
+    "cpuBusyPct": 99.6,
+    "scriptMs": 559.7,
+    "layoutMs": 0,
+    "styleMs": 0,
+    "frames": 73,
+    "fps": 9.1,
+    "frameP50": 116.6,
+    "frameP95": 150,
+    "frameMax": 166.8,
+    "over33": 72,
+    "over50": 72,
+    "longN": 73,
+    "longSum": 7988,
+    "longMax": 160,
+    "gameRafPerSec": 9.2,
+    "lsWrites": 0,
+    "lsWritesPerSec": 0,
+    "lsKB": 0,
+    "lsMs": 0,
+    "fn": {
+     "personTopCv": {
+      "n": 148,
+      "avg": 1.91,
+      "p95": 4.2,
+      "max": 38.9,
+      "totalMs": 283
+     }
+    }
+   }
+  ]
+ }
+]

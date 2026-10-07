@@ -1,0 +1,148 @@
+{
+ "map": {
+  "idleDrawsPerSec": 4.5,
+  "geo": {
+   "cssW": 390,
+   "cssH": 614,
+   "SW": 176,
+   "SH": 277,
+   "TS": 16,
+   "scale": 2.215909090909091,
+   "res": 4
+  },
+  "walk": {
+   "tiles": 10,
+   "ms": 2157,
+   "draws": 31,
+   "fps": 14.4,
+   "msPerTile": 216,
+   "screenPxPerSec": 164
+  },
+  "lat": {
+   "firstMoveMs": 60
+  },
+  "mapSwitch": {
+   "enterMapMs": 1,
+   "fade": false
+  },
+  "css": {
+   "hxpTransition": "width 0.8s steps(12)",
+   "screenTransition": "all",
+   "btnActiveRule": 17
+  }
+ },
+ "quest_360": {
+  "q": "stu1",
+  "introChars": 29,
+  "tScreen": 452,
+  "tIntroTyped": 942,
+  "fold": {
+   "vh": 640,
+   "firstChoiceTop": 582,
+   "lastChoiceBottom": 742,
+   "tipShown": true,
+   "tipH": 120,
+   "choicesVisible": false,
+   "firstChoiceVisible": true
+  },
+  "fin": {
+   "onResult": true,
+   "sfx": [
+    "coin",
+    "tap",
+    "good",
+    "tap",
+    "good",
+    "tap",
+    "good",
+    "tap",
+    "win"
+   ]
+  },
+  "resFold": {
+   "backBottom": 583,
+   "adBtn": 471,
+   "vh": 640
+  }
+ },
+ "quest_390": {
+  "q": "stu1",
+  "introChars": 29,
+  "tScreen": 453,
+  "tIntroTyped": 944,
+  "fold": {
+   "vh": 844,
+   "firstChoiceTop": 563,
+   "lastChoiceBottom": 723,
+   "tipShown": true,
+   "tipH": 101,
+   "choicesVisible": true,
+   "firstChoiceVisible": true
+  },
+  "fin": {
+   "onResult": true,
+   "sfx": [
+    "coin",
+    "tap",
+    "good",
+    "tap",
+    "good",
+    "tap",
+    "good",
+    "tap",
+    "win"
+   ]
+  },
+  "resFold": {
+   "backBottom": 685,
+   "adBtn": 573,
+   "vh": 844
+  }
+ },
+ "quest_412": {
+  "q": "stu1",
+  "introChars": 29,
+  "tScreen": 454,
+  "tIntroTyped": 944,
+  "fold": {
+   "vh": 915,
+   "firstChoiceTop": 563,
+   "lastChoiceBottom": 723,
+   "tipShown": true,
+   "tipH": 101,
+   "choicesVisible": true,
+   "firstChoiceVisible": true
+  },
+  "fin": {
+   "onResult": true,
+   "sfx": [
+    "coin",
+    "tap",
+    "good",
+    "tap",
+    "good",
+    "tap",
+    "good",
+    "tap",
+    "win"
+   ]
+  },
+  "resFold": {
+   "backBottom": 721,
+   "adBtn": 609,
+   "vh": 915
+  }
+ },
+ "opening": {
+  "tDomMs": 237,
+  "tCanvasMs": 274,
+  "tMenuMs": 2112,
+  "skip": {
+   "w": 65,
+   "h": 29
+  },
+  "menuBtn": {
+   "note": "menu shown after 1400ms timer"
+  }
+ }
+}

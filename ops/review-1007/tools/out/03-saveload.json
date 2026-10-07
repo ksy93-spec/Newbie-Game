@@ -1,0 +1,641 @@
+{
+ "A_midquest": {
+  "before": {
+   "scr": "home",
+   "lv": 1,
+   "xp": 0,
+   "coin": 180,
+   "full": 100,
+   "energy": 100,
+   "done": 0,
+   "mq": "{}",
+   "cur": null,
+   "i": 0,
+   "chip": null,
+   "toast": null,
+   "opening": false,
+   "mqp": false
+  },
+  "mid": {
+   "scr": "quest",
+   "lv": 1,
+   "xp": 0,
+   "coin": 180,
+   "full": 85,
+   "energy": 90,
+   "done": 0,
+   "mq": "{}",
+   "cur": null,
+   "i": 0,
+   "chip": null,
+   "toast": "출석 1일째 · ￦30",
+   "opening": false,
+   "mqp": false
+  },
+  "after": {
+   "scr": "home",
+   "lv": 1,
+   "xp": 0,
+   "coin": 180,
+   "full": 85,
+   "energy": 90,
+   "done": 0,
+   "mq": "{}",
+   "cur": null,
+   "i": 0,
+   "chip": null,
+   "toast": null,
+   "opening": false,
+   "mqp": false
+  },
+  "logs": []
+ },
+ "B_midboss": {
+  "mid": {
+   "scr": "boss",
+   "lv": 5,
+   "xp": 0,
+   "coin": 180,
+   "full": 70,
+   "energy": 80,
+   "done": 0,
+   "mq": "{}",
+   "cur": null,
+   "i": 0,
+   "chip": null,
+   "toast": "출석 1일째 · ￦30",
+   "opening": false,
+   "mqp": false
+  },
+  "after": {
+   "scr": "home",
+   "lv": 5,
+   "xp": 0,
+   "coin": 180,
+   "full": 70,
+   "energy": 80,
+   "done": 0,
+   "mq": "{}",
+   "cur": null,
+   "i": 0,
+   "chip": null,
+   "toast": "싸우던 도중에 나갔어요. 체력만 쓰고 결과는 없어요. 다시 붙을 수 있어요.",
+   "opening": false,
+   "mqp": false
+  },
+  "fightId": null,
+  "logs": []
+ },
+ "C_midep": {
+  "mid": {
+   "scr": "ep",
+   "lv": 1,
+   "xp": 0,
+   "coin": 180,
+   "full": 75,
+   "energy": 85,
+   "done": 0,
+   "mq": "{}",
+   "cur": null,
+   "i": 0,
+   "chip": null,
+   "toast": null,
+   "opening": false,
+   "mqp": false
+  },
+  "after": {
+   "scr": "home",
+   "lv": 1,
+   "xp": 0,
+   "coin": 180,
+   "full": 75,
+   "energy": 85,
+   "done": 0,
+   "mq": "{}",
+   "cur": null,
+   "i": 0,
+   "chip": null,
+   "toast": null,
+   "opening": false,
+   "mqp": false
+  },
+  "logs": []
+ },
+ "D_cine": {
+  "mid": {
+   "scr": "home",
+   "lv": 1,
+   "xp": 0,
+   "coin": 180,
+   "full": 100,
+   "energy": 100,
+   "done": 3,
+   "mq": "{}",
+   "cur": "job",
+   "i": 6,
+   "chip": "메인 1장 첫 취업 눌러서 시작",
+   "toast": "출석 1일째 · ￦30",
+   "opening": true,
+   "mqp": true
+  },
+  "after": {
+   "scr": "home",
+   "lv": 1,
+   "xp": 0,
+   "coin": 180,
+   "full": 100,
+   "energy": 100,
+   "done": 3,
+   "mq": "{}",
+   "cur": "job",
+   "i": 6,
+   "chip": "메인 1장 첫 취업 눌러서 이어 보기",
+   "toast": null,
+   "opening": false,
+   "mqp": false
+  },
+  "chip": "메인 1장 첫 취업\n눌러서 이어 보기",
+  "resumeFrom": {
+   "from": 6,
+   "ok": 2,
+   "n": 2,
+   "resume": true
+  },
+  "atReward": {
+   "scr": "home",
+   "lv": 2,
+   "xp": 150,
+   "coin": 430,
+   "full": 100,
+   "energy": 100,
+   "done": 3,
+   "mq": "{\"job\":\"good\"}",
+   "cur": null,
+   "i": 0,
+   "chip": "메인 1장 첫 취업 눌러서 이어 보기",
+   "toast": null,
+   "opening": true,
+   "mqp": true
+  },
+  "afterReward": {
+   "scr": "home",
+   "lv": 2,
+   "xp": 150,
+   "coin": 430,
+   "full": 100,
+   "energy": 100,
+   "done": 3,
+   "mq": "{\"job\":\"good\"}",
+   "cur": null,
+   "i": 0,
+   "chip": "다음 메인 2장 첫 전세 계약 원룸 전세까지 주 스탯 37 더",
+   "toast": null,
+   "opening": false,
+   "mqp": false
+  },
+  "afterReward2": {
+   "scr": "home",
+   "lv": 2,
+   "xp": 150,
+   "coin": 430,
+   "full": 100,
+   "energy": 100,
+   "done": 3,
+   "mq": "{\"job\":\"good\"}",
+   "cur": null,
+   "i": 0,
+   "chip": "다음 메인 2장 첫 전세 계약 원룸 전세까지 주 스탯 37 더",
+   "toast": null,
+   "opening": false,
+   "mqp": false
+  },
+  "logs": []
+ },
+ "E_wipe": {
+  "p1": {
+   "scr": "onboard",
+   "lv": 1,
+   "xp": 0,
+   "coin": 150,
+   "full": 100,
+   "energy": 100,
+   "done": 0,
+   "mq": "{}",
+   "cur": null,
+   "i": 0,
+   "chip": null,
+   "toast": null,
+   "opening": true,
+   "mqp": false
+  },
+  "ob": {
+   "scr": "onboard",
+   "step": 0,
+   "status": null,
+   "pos": {
+    "map": "town",
+    "tx": 2,
+    "ty": 4,
+    "dir": 0
+   },
+   "ME": "town_estate"
+  },
+  "home": {
+   "scr": "home",
+   "map": "town",
+   "lv": 1,
+   "coin": 180,
+   "tut": "부동산 사장"
+  },
+  "afterReset": {
+   "scr": "onboard",
+   "lv": 1,
+   "coin": 150,
+   "confirm": false
+  },
+  "logs": []
+ },
+ "F_oldsaves": [
+  {
+   "c": "6c47a55",
+   "nm": "09-27 펫",
+   "made": {
+    "ok": 1,
+    "keys": 45,
+    "mq": false,
+    "pos": {
+     "map": "bank",
+     "tx": 5,
+     "ty": 5,
+     "dir": 0
+    },
+    "ver": "2026.09.2",
+    "avatar": "stuM"
+   },
+   "now": {
+    "scr": "home",
+    "lv": 6,
+    "map": "bank",
+    "pos": {
+     "map": "bank",
+     "tx": 5,
+     "ty": 5,
+     "dir": 0
+    },
+    "mqgf": {
+     "job": 1
+    },
+    "chip": "메인 1장 첫 취업 눌러서 시작",
+    "avatar": "stuM",
+    "hero": "newbie",
+    "tier": 5,
+    "peak": 6,
+    "drip": 13,
+    "open": 5
+   },
+   "tabs": {
+    "char": "ok",
+    "shop": "ok",
+    "wiki": "ok",
+    "codex": "ok",
+    "home": "ok"
+   },
+   "q": "result",
+   "oldLogs": [],
+   "logs": []
+  },
+  {
+   "c": "434a3b4",
+   "nm": "09-28 프롤로그",
+   "made": {
+    "ok": 1,
+    "keys": 50,
+    "mq": false,
+    "pos": {
+     "map": "korea",
+     "tx": 5,
+     "ty": 5,
+     "dir": 0
+    },
+    "ver": "2026.09.2",
+    "avatar": "stuM"
+   },
+   "now": {
+    "scr": "home",
+    "lv": 6,
+    "map": "korea",
+    "pos": {
+     "map": "korea",
+     "tx": 5,
+     "ty": 6,
+     "dir": 0
+    },
+    "mqgf": {
+     "job": 1,
+     "car": 1,
+     "wedding": 1
+    },
+    "chip": "메인 1장 첫 취업 눌러서 시작",
+    "avatar": "stuM",
+    "hero": "newbie",
+    "tier": 5,
+    "peak": 6,
+    "drip": 13,
+    "open": 5
+   },
+   "tabs": {
+    "char": "ok",
+    "shop": "ok",
+    "wiki": "ok",
+    "codex": "ok",
+    "home": "ok"
+   },
+   "q": "result",
+   "oldLogs": [],
+   "logs": []
+  },
+  {
+   "c": "ae95edb",
+   "nm": "09-29 A·B",
+   "made": {
+    "ok": 1,
+    "keys": 61,
+    "mq": false,
+    "pos": {
+     "map": "korea",
+     "tx": 5,
+     "ty": 5,
+     "dir": 0
+    },
+    "ver": "2026.09.2",
+    "avatar": "stuM"
+   },
+   "now": {
+    "scr": "home",
+    "lv": 6,
+    "map": "korea",
+    "pos": {
+     "map": "korea",
+     "tx": 5,
+     "ty": 6,
+     "dir": 0
+    },
+    "mqgf": {
+     "job": 1,
+     "car": 1,
+     "wedding": 1
+    },
+    "chip": "메인 1장 첫 취업 눌러서 시작",
+    "avatar": "stuM",
+    "hero": "newbie",
+    "tier": 5,
+    "peak": 6,
+    "drip": 13,
+    "open": 5
+   },
+   "tabs": {
+    "char": "ok",
+    "shop": "ok",
+    "wiki": "ok",
+    "codex": "ok",
+    "home": "ok"
+   },
+   "q": "result",
+   "oldLogs": [],
+   "logs": []
+  },
+  {
+   "c": "14e838e",
+   "nm": "09-30 D(메인 전)",
+   "made": {
+    "ok": 1,
+    "keys": 61,
+    "mq": false,
+    "pos": {
+     "map": "korea",
+     "tx": 5,
+     "ty": 5,
+     "dir": 0
+    },
+    "ver": "2026.09.2",
+    "avatar": "stuM"
+   },
+   "now": {
+    "scr": "home",
+    "lv": 6,
+    "map": "korea",
+    "pos": {
+     "map": "korea",
+     "tx": 5,
+     "ty": 6,
+     "dir": 0
+    },
+    "mqgf": {
+     "job": 1,
+     "car": 1,
+     "wedding": 1
+    },
+    "chip": "메인 1장 첫 취업 눌러서 시작",
+    "avatar": "stuM",
+    "hero": "newbie",
+    "tier": 5,
+    "peak": 6,
+    "drip": 13,
+    "open": 5
+   },
+   "tabs": {
+    "char": "ok",
+    "shop": "ok",
+    "wiki": "ok",
+    "codex": "ok",
+    "home": "ok"
+   },
+   "q": "result",
+   "oldLogs": [],
+   "logs": []
+  },
+  {
+   "c": "5da4288",
+   "nm": "10-01 메인 QA",
+   "made": {
+    "ok": 1,
+    "keys": 62,
+    "mq": true,
+    "pos": {
+     "map": "korea",
+     "tx": 5,
+     "ty": 5,
+     "dir": 0
+    },
+    "ver": "2026.09.2",
+    "avatar": "stuM"
+   },
+   "now": {
+    "scr": "home",
+    "lv": 6,
+    "map": "korea",
+    "pos": {
+     "map": "korea",
+     "tx": 5,
+     "ty": 6,
+     "dir": 0
+    },
+    "mqgf": {},
+    "chip": "메인 1장 첫 취업 눌러서 시작",
+    "avatar": "stuM",
+    "hero": "newbie",
+    "tier": 5,
+    "peak": 6,
+    "drip": 13,
+    "open": 5
+   },
+   "tabs": {
+    "char": "ok",
+    "shop": "ok",
+    "wiki": "ok",
+    "codex": "ok",
+    "home": "ok"
+   },
+   "q": "result",
+   "oldLogs": [],
+   "logs": []
+  },
+  {
+   "c": "b7e0955",
+   "nm": "10-02 그림 주인공",
+   "made": {
+    "ok": 1,
+    "keys": 62,
+    "mq": true,
+    "pos": {
+     "map": "korea",
+     "tx": 5,
+     "ty": 5,
+     "dir": 0
+    },
+    "ver": "2026.09.2",
+    "avatar": "h_doyun"
+   },
+   "now": {
+    "scr": "home",
+    "lv": 6,
+    "map": "korea",
+    "pos": {
+     "map": "korea",
+     "tx": 5,
+     "ty": 6,
+     "dir": 0
+    },
+    "mqgf": {},
+    "chip": "메인 1장 첫 취업 눌러서 시작",
+    "avatar": "stuM",
+    "hero": "newbie",
+    "tier": 5,
+    "peak": 6,
+    "drip": 13,
+    "open": 5
+   },
+   "tabs": {
+    "char": "ok",
+    "shop": "ok",
+    "wiki": "ok",
+    "codex": "ok",
+    "home": "ok"
+   },
+   "q": "result",
+   "oldLogs": [],
+   "logs": []
+  }
+ ],
+ "G_badsaves": [
+  {
+   "nm": "unknown map",
+   "r": {
+    "scr": "home",
+    "map": "town"
+   },
+   "tabs": {
+    "char": "ok",
+    "shop": "ok",
+    "codex": "ok",
+    "home": "ok"
+   },
+   "logs": []
+  },
+  {
+   "nm": "unknown items",
+   "r": {
+    "scr": "home",
+    "map": "town"
+   },
+   "tabs": {
+    "char": "Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'name')",
+    "shop": "ok",
+    "codex": "ok",
+    "home": "ok"
+   },
+   "logs": []
+  },
+  {
+   "nm": "unknown quests",
+   "r": {
+    "scr": "home",
+    "map": "town"
+   },
+   "tabs": {
+    "char": "ok",
+    "shop": "ok",
+    "codex": "ok",
+    "home": "ok"
+   },
+   "logs": []
+  },
+  {
+   "nm": "tier out of range",
+   "r": {
+    "scr": "onboard",
+    "map": "town"
+   },
+   "tabs": {
+    "char": "Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'def')",
+    "shop": "ok",
+    "codex": "Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'def')",
+    "home": "Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'def')"
+   },
+   "logs": [
+    "pageerror: TypeError: Cannot read properties of undefined (reading 'def') |     at totals (file:///home/user/Newbie-Game/prototype/newbie-quest-demo.html:3684:47) |     at renderHome (file:///home/user/Newbie-Game/prototype/newbie-quest-demo.html:7735:23)",
+    "pageerror: TypeError: Cannot read properties of undefined (reading 'def') |     at totals (file:///home/user/Newbie-Game/prototype/newbie-quest-demo.html:3684:47) |     at hudRefresh (file:///home/user/Newbie-Game/prototype/newbie-quest-demo.html:6309:23)"
+   ]
+  },
+  {
+   "nm": "null stats",
+   "r": {
+    "scr": "onboard",
+    "map": "town"
+   },
+   "tabs": {
+    "char": "ok",
+    "shop": "Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'filter')",
+    "codex": "Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'forEach')",
+    "home": "Error: page.evaluate: TypeError: Cannot read properties of null (reading 'ju')"
+   },
+   "logs": [
+    "pageerror: TypeError: Cannot read properties of null (reading 'ju') |     at tierGrow (file:///home/user/Newbie-Game/prototype/newbie-quest-demo.html:2345:46) |     at rollDay (file:///home/user/Newbie-Game/prototype/newbie-quest-demo.html:3463:27)"
+   ]
+  },
+  {
+   "nm": "corrupt json",
+   "r": {
+    "scr": "onboard",
+    "map": "town"
+   },
+   "tabs": {
+    "char": "ok",
+    "shop": "ok",
+    "codex": "ok",
+    "home": "ok"
+   },
+   "logs": []
+  }
+ ]
+}

@@ -1,0 +1,820 @@
+{
+ "runs": [
+  {
+   "scenario": "returning",
+   "throttle": 1,
+   "rep": 0,
+   "wallLoad": 439,
+   "responseEnd": 26.2,
+   "domInteractive": 434.7,
+   "dcl": 434.8,
+   "load": 435.7,
+   "tti": 434.8,
+   "longTasks": 2,
+   "longSum": 193,
+   "longTop": [
+    [
+     296,
+     100
+    ],
+    [
+     159,
+     93
+    ]
+   ],
+   "castLeft": 0,
+   "screen": "home",
+   "opening": false,
+   "lsWrites": 3,
+   "lsBytes": 86668,
+   "heap": 10051384,
+   "ScriptDuration": 112.5,
+   "TaskDuration": 726.7,
+   "LayoutDuration": 40.9,
+   "JSHeapUsedMB": 5.2,
+   "nodes": 1165,
+   "jsListeners": 397,
+   "trace": {
+    "ParseHTML": 224.7,
+    "EvaluateScript": 181.4,
+    "v8.compile": 38,
+    "v8.run": 126.8,
+    "FunctionCall": 64,
+    "TimerFire": 65.4,
+    "Decode Image": 4.6,
+    "Decode LazyPixelRef": 5.2,
+    "Layout": 40.1,
+    "UpdateLayoutTree": 52.4,
+    "Paint": 11.8,
+    "MinorGC": 3,
+    "V8.GC_SCAVENGER": 2.7,
+    "CommitLoad": 0.1,
+    "byScript": {
+     "EvaluateScript@939": 84.2,
+     "v8.compile@939": 11.1,
+     "EvaluateScript@2745": 80.9,
+     "v8.compile@2745": 26.9,
+     "EvaluateScript@?": 16.3
+    }
+   },
+   "errors": []
+  },
+  {
+   "scenario": "returning",
+   "throttle": 1,
+   "rep": 1,
+   "wallLoad": 258,
+   "responseEnd": 22.6,
+   "domInteractive": 254,
+   "dcl": 254.1,
+   "load": 254.7,
+   "tti": 254.1,
+   "longTasks": 2,
+   "longSum": 133,
+   "longTop": [
+    [
+     48,
+     68
+    ],
+    [
+     177,
+     65
+    ]
+   ],
+   "castLeft": 0,
+   "screen": "home",
+   "opening": false,
+   "lsWrites": 3,
+   "lsBytes": 86668,
+   "heap": 10004156,
+   "ScriptDuration": 82.9,
+   "TaskDuration": 473.1,
+   "LayoutDuration": 24.4,
+   "JSHeapUsedMB": 5.1,
+   "nodes": 1152,
+   "jsListeners": 397,
+   "trace": null,
+   "errors": []
+  },
+  {
+   "scenario": "first-opening",
+   "throttle": 1,
+   "rep": 0,
+   "wallLoad": 233,
+   "responseEnd": 26.3,
+   "domInteractive": 230.6,
+   "dcl": 230.7,
+   "load": 231.2,
+   "tti": 230.7,
+   "longTasks": 1,
+   "longSum": 66,
+   "longTop": [
+    [
+     54,
+     66
+    ]
+   ],
+   "castLeft": 0,
+   "screen": "onboard",
+   "opening": true,
+   "lsWrites": 2,
+   "lsBytes": 5148,
+   "heap": 8966544,
+   "ScriptDuration": 349.7,
+   "TaskDuration": 2099.5,
+   "LayoutDuration": 9.3,
+   "JSHeapUsedMB": 4.2,
+   "nodes": 1319,
+   "jsListeners": 379,
+   "trace": {
+    "ParseHTML": 116.8,
+    "EvaluateScript": 85.5,
+    "v8.compile": 22.5,
+    "v8.run": 55.8,
+    "FunctionCall": 335.1,
+    "TimerFire": 0.9,
+    "Decode Image": 0.2,
+    "Decode LazyPixelRef": 0.3,
+    "Layout": 9.3,
+    "UpdateLayoutTree": 3.2,
+    "Paint": 0.9,
+    "MinorGC": 6.1,
+    "MajorGC": 5.2,
+    "V8.GC_SCAVENGER": 4.7,
+    "V8.GC_MARK_COMPACTOR": 5,
+    "FireAnimationFrame": 342.3,
+    "CommitLoad": 0,
+    "byScript": {
+     "EvaluateScript@939": 46.5,
+     "v8.compile@939": 8.8,
+     "EvaluateScript@2745": 31.8,
+     "v8.compile@2745": 13.6,
+     "EvaluateScript@?": 7.2
+    }
+   },
+   "errors": []
+  },
+  {
+   "scenario": "returning-opening",
+   "throttle": 1,
+   "rep": 0,
+   "wallLoad": 270,
+   "responseEnd": 26.2,
+   "domInteractive": 263.9,
+   "dcl": 264,
+   "load": 265,
+   "tti": 264,
+   "longTasks": 2,
+   "longSum": 123,
+   "longTop": [
+    [
+     65,
+     67
+    ],
+    [
+     183,
+     56
+    ]
+   ],
+   "castLeft": 0,
+   "screen": "home",
+   "opening": true,
+   "lsWrites": 3,
+   "lsBytes": 86668,
+   "heap": 10578600,
+   "ScriptDuration": 442.6,
+   "TaskDuration": 2390.8,
+   "LayoutDuration": 27.5,
+   "JSHeapUsedMB": 5.7,
+   "nodes": 1366,
+   "jsListeners": 405,
+   "trace": null,
+   "errors": []
+  },
+  {
+   "scenario": "returning",
+   "throttle": 4,
+   "rep": 0,
+   "wallLoad": 1072,
+   "responseEnd": 82.9,
+   "domInteractive": 1065.1,
+   "dcl": 1065.2,
+   "load": 1069.9,
+   "tti": 1065.2,
+   "longTasks": 2,
+   "longSum": 514,
+   "longTop": [
+    [
+     340,
+     274
+    ],
+    [
+     754,
+     240
+    ]
+   ],
+   "castLeft": 0,
+   "screen": "home",
+   "opening": false,
+   "lsWrites": 3,
+   "lsBytes": 86668,
+   "heap": 9920028,
+   "ScriptDuration": 497.6,
+   "TaskDuration": 2655.6,
+   "LayoutDuration": 131.8,
+   "JSHeapUsedMB": 5,
+   "nodes": 1298,
+   "jsListeners": 397,
+   "trace": {
+    "ParseHTML": 606.3,
+    "EvaluateScript": 491.1,
+    "v8.compile": 117.2,
+    "v8.run": 346.6,
+    "FunctionCall": 351.9,
+    "TimerFire": 368.3,
+    "Decode Image": 16.9,
+    "Decode LazyPixelRef": 17.1,
+    "Layout": 129.7,
+    "UpdateLayoutTree": 251.2,
+    "Paint": 84.9,
+    "MinorGC": 8.6,
+    "V8.GC_SCAVENGER": 8.4,
+    "CommitLoad": 0.6,
+    "byScript": {
+     "EvaluateScript@939": 237.6,
+     "v8.compile@939": 42.1,
+     "EvaluateScript@2745": 228.2,
+     "v8.compile@2745": 75.1,
+     "EvaluateScript@?": 25.3
+    }
+   },
+   "errors": []
+  },
+  {
+   "scenario": "returning",
+   "throttle": 4,
+   "rep": 1,
+   "wallLoad": 845,
+   "responseEnd": 70.2,
+   "domInteractive": 837.7,
+   "dcl": 837.8,
+   "load": 843.5,
+   "tti": 837.8,
+   "longTasks": 2,
+   "longSum": 395,
+   "longTop": [
+    [
+     553,
+     218
+    ],
+    [
+     258,
+     177
+    ]
+   ],
+   "castLeft": 0,
+   "screen": "home",
+   "opening": false,
+   "lsWrites": 3,
+   "lsBytes": 86668,
+   "heap": 9849808,
+   "ScriptDuration": 450.2,
+   "TaskDuration": 2048.5,
+   "LayoutDuration": 94,
+   "JSHeapUsedMB": 5,
+   "nodes": 1256,
+   "jsListeners": 397,
+   "trace": null,
+   "errors": []
+  },
+  {
+   "scenario": "first-opening",
+   "throttle": 4,
+   "rep": 0,
+   "wallLoad": 889,
+   "responseEnd": 84.4,
+   "domInteractive": 885.6,
+   "dcl": 886,
+   "load": 887.4,
+   "tti": 6326,
+   "longTasks": 5,
+   "longSum": 574,
+   "longTop": [
+    [
+     351,
+     265
+    ],
+    [
+     682,
+     137
+    ],
+    [
+     821,
+     63
+    ],
+    [
+     6267,
+     59
+    ],
+    [
+     2613,
+     50
+    ]
+   ],
+   "castLeft": 0,
+   "screen": "onboard",
+   "opening": true,
+   "lsWrites": 2,
+   "lsBytes": 5148,
+   "heap": 10739272,
+   "ScriptDuration": 1387.8,
+   "TaskDuration": 8881.7,
+   "LayoutDuration": 48.5,
+   "JSHeapUsedMB": 5.9,
+   "nodes": 1395,
+   "jsListeners": 379,
+   "trace": {
+    "ParseHTML": 459.8,
+    "EvaluateScript": 397.4,
+    "v8.compile": 83.9,
+    "v8.run": 282.4,
+    "FunctionCall": 1300.1,
+    "TimerFire": 4.1,
+    "Decode Image": 0.9,
+    "Decode LazyPixelRef": 1,
+    "Layout": 48.2,
+    "UpdateLayoutTree": 15.3,
+    "Paint": 7.6,
+    "MinorGC": 19.8,
+    "MajorGC": 17.1,
+    "V8.GC_SCAVENGER": 17,
+    "V8.GC_MARK_COMPACTOR": 16.9,
+    "FireAnimationFrame": 1339.6,
+    "CommitLoad": 0,
+    "byScript": {
+     "EvaluateScript@939": 237.8,
+     "v8.compile@939": 34.7,
+     "EvaluateScript@2745": 128.6,
+     "v8.compile@2745": 49.3,
+     "EvaluateScript@?": 31
+    }
+   },
+   "errors": []
+  },
+  {
+   "scenario": "returning-opening",
+   "throttle": 4,
+   "rep": 0,
+   "wallLoad": 1004,
+   "responseEnd": 76.5,
+   "domInteractive": 999.2,
+   "dcl": 999.3,
+   "load": 1002.6,
+   "tti": 4063,
+   "longTasks": 5,
+   "longSum": 656,
+   "longTop": [
+    [
+     632,
+     250
+    ],
+    [
+     319,
+     218
+    ],
+    [
+     890,
+     77
+    ],
+    [
+     4007,
+     56
+    ],
+    [
+     1097,
+     55
+    ]
+   ],
+   "castLeft": 0,
+   "screen": "home",
+   "opening": true,
+   "lsWrites": 3,
+   "lsBytes": 86668,
+   "heap": 11069536,
+   "ScriptDuration": 1589.8,
+   "TaskDuration": 8905.6,
+   "LayoutDuration": 88.4,
+   "JSHeapUsedMB": 6.2,
+   "nodes": 1338,
+   "jsListeners": 405,
+   "trace": null,
+   "errors": []
+  },
+  {
+   "scenario": "returning",
+   "throttle": 6,
+   "rep": 0,
+   "wallLoad": 1581,
+   "responseEnd": 122.9,
+   "domInteractive": 1574.4,
+   "dcl": 1574.6,
+   "load": 1575.5,
+   "tti": 1574.6,
+   "longTasks": 4,
+   "longSum": 908,
+   "longTop": [
+    [
+     1042,
+     406
+    ],
+    [
+     429,
+     385
+    ],
+    [
+     356,
+     66
+    ],
+    [
+     1466,
+     51
+    ]
+   ],
+   "castLeft": 0,
+   "screen": "home",
+   "opening": false,
+   "lsWrites": 3,
+   "lsBytes": 86668,
+   "heap": 9084067,
+   "ScriptDuration": 1042,
+   "TaskDuration": 5104,
+   "LayoutDuration": 258.2,
+   "JSHeapUsedMB": 4.3,
+   "nodes": 980,
+   "jsListeners": 396,
+   "trace": {
+    "ParseHTML": 882.5,
+    "EvaluateScript": 760.8,
+    "v8.compile": 176.4,
+    "v8.run": 539.3,
+    "FunctionCall": 847.9,
+    "TimerFire": 886.2,
+    "Decode Image": 27.7,
+    "Decode LazyPixelRef": 29.8,
+    "Layout": 249.7,
+    "UpdateLayoutTree": 663.8,
+    "Paint": 173.3,
+    "MinorGC": 10.8,
+    "MajorGC": 12.4,
+    "V8.GC_SCAVENGER": 10.4,
+    "V8.GC_MARK_COMPACTOR": 12.2,
+    "CommitLoad": 2.7,
+    "byScript": {
+     "EvaluateScript@939": 329,
+     "v8.compile@939": 60.4,
+     "EvaluateScript@2745": 386.8,
+     "v8.compile@2745": 116,
+     "EvaluateScript@?": 45
+    }
+   },
+   "errors": []
+  },
+  {
+   "scenario": "returning",
+   "throttle": 6,
+   "rep": 1,
+   "wallLoad": 1546,
+   "responseEnd": 115.6,
+   "domInteractive": 1536.5,
+   "dcl": 1537.4,
+   "load": 1543.9,
+   "tti": 1537.4,
+   "longTasks": 3,
+   "longSum": 776,
+   "longTop": [
+    [
+     501,
+     372
+    ],
+    [
+     1084,
+     349
+    ],
+    [
+     442,
+     55
+    ]
+   ],
+   "castLeft": 0,
+   "screen": "home",
+   "opening": false,
+   "lsWrites": 3,
+   "lsBytes": 86668,
+   "heap": 9009335,
+   "ScriptDuration": 973.2,
+   "TaskDuration": 4537.4,
+   "LayoutDuration": 216.6,
+   "JSHeapUsedMB": 4.2,
+   "nodes": 972,
+   "jsListeners": 396,
+   "trace": null,
+   "errors": []
+  },
+  {
+   "scenario": "first-opening",
+   "throttle": 6,
+   "rep": 0,
+   "wallLoad": 1451,
+   "responseEnd": 111.5,
+   "domInteractive": 1441,
+   "dcl": 1441.1,
+   "load": 1444.2,
+   "tti": 13654,
+   "longTasks": 49,
+   "longSum": 3261,
+   "longTop": [
+    [
+     478,
+     340
+    ],
+    [
+     1117,
+     211
+    ],
+    [
+     1330,
+     108
+    ],
+    [
+     9618,
+     84
+    ],
+    [
+     3233,
+     80
+    ]
+   ],
+   "castLeft": 0,
+   "screen": "onboard",
+   "opening": true,
+   "lsWrites": 2,
+   "lsBytes": 5148,
+   "heap": 9132924,
+   "ScriptDuration": 2217.9,
+   "TaskDuration": 13274,
+   "LayoutDuration": 92.8,
+   "JSHeapUsedMB": 4.4,
+   "nodes": 1433,
+   "jsListeners": 379,
+   "trace": {
+    "ParseHTML": 653.8,
+    "EvaluateScript": 554.2,
+    "v8.compile": 141.8,
+    "v8.run": 364.6,
+    "FunctionCall": 2105.2,
+    "TimerFire": 0.9,
+    "Decode Image": 1.5,
+    "Decode LazyPixelRef": 3.7,
+    "Layout": 92.7,
+    "UpdateLayoutTree": 18.3,
+    "Paint": 6.9,
+    "MinorGC": 29.7,
+    "MajorGC": 30,
+    "V8.GC_SCAVENGER": 28.2,
+    "V8.GC_MARK_COMPACTOR": 29.8,
+    "FireAnimationFrame": 2165,
+    "CommitLoad": 0,
+    "byScript": {
+     "EvaluateScript@939": 298.9,
+     "v8.compile@939": 45.8,
+     "EvaluateScript@2745": 207.5,
+     "v8.compile@2745": 95.9,
+     "EvaluateScript@?": 47.7
+    }
+   },
+   "errors": []
+  },
+  {
+   "scenario": "returning-opening",
+   "throttle": 6,
+   "rep": 0,
+   "wallLoad": 1335,
+   "responseEnd": 96.2,
+   "domInteractive": 1328.7,
+   "dcl": 1328.8,
+   "load": 1329.5,
+   "tti": 13463,
+   "longTasks": 71,
+   "longSum": 4527,
+   "longTop": [
+    [
+     845,
+     323
+    ],
+    [
+     449,
+     258
+    ],
+    [
+     1179,
+     106
+    ],
+    [
+     1330,
+     91
+    ],
+    [
+     1486,
+     89
+    ]
+   ],
+   "castLeft": 0,
+   "screen": "home",
+   "opening": true,
+   "lsWrites": 3,
+   "lsBytes": 86668,
+   "heap": 9539460,
+   "ScriptDuration": 2451.8,
+   "TaskDuration": 13121.8,
+   "LayoutDuration": 129.9,
+   "JSHeapUsedMB": 4.8,
+   "nodes": 1465,
+   "jsListeners": 405,
+   "trace": null,
+   "errors": []
+  }
+ ],
+ "decode": [
+  {
+   "throttle": 1,
+   "n": 149,
+   "art": 146,
+   "totalMs": 290,
+   "decodedMB": 14.6,
+   "artMB": 14.6,
+   "base64MB": 1.5,
+   "top": [
+    [
+     "bg_livingroom",
+     "499x194",
+     8
+    ],
+    [
+     "npc_gma",
+     "144x256",
+     6.5
+    ],
+    [
+     "npc_partnerF",
+     "144x256",
+     6
+    ],
+    [
+     "bg_bank",
+     "499x184",
+     5.4
+    ],
+    [
+     "ho_3",
+     "277x178",
+     5.4
+    ],
+    [
+     "ho_12",
+     "258x246",
+     5
+    ],
+    [
+     "ho_5",
+     "251x207",
+     4.6
+    ],
+    [
+     "bg_town",
+     "499x194",
+     4.3
+    ]
+   ],
+   "castCvCachedAtBoot": 6,
+   "castCvCachedMB": 0.3,
+   "castCvAll": {
+    "n": 149,
+    "ms": 16
+   }
+  },
+  {
+   "throttle": 4,
+   "n": 149,
+   "art": 146,
+   "totalMs": 1293,
+   "decodedMB": 14.6,
+   "artMB": 14.6,
+   "base64MB": 1.5,
+   "top": [
+    [
+     "ho_2",
+     "243x164",
+     52.7
+    ],
+    [
+     "npc_deskf",
+     "144x256",
+     36.5
+    ],
+    [
+     "bg_hometown",
+     "498x194",
+     31.6
+    ],
+    [
+     "hp_jachwi",
+     "176x192",
+     31.2
+    ],
+    [
+     "npc_peerm",
+     "144x256",
+     25.9
+    ],
+    [
+     "bg_phone",
+     "499x203",
+     24.1
+    ],
+    [
+     "ho_7",
+     "261x238",
+     24
+    ],
+    [
+     "bg_bank",
+     "499x184",
+     22.9
+    ]
+   ],
+   "castCvCachedAtBoot": 6,
+   "castCvCachedMB": 0.3,
+   "castCvAll": {
+    "n": 149,
+    "ms": 75
+   }
+  },
+  {
+   "throttle": 6,
+   "n": 149,
+   "art": 146,
+   "totalMs": 1882,
+   "decodedMB": 14.6,
+   "artMB": 14.6,
+   "base64MB": 1.5,
+   "top": [
+    [
+     "bg_station",
+     "498x185",
+     53.6
+    ],
+    [
+     "npc_boss",
+     "144x256",
+     52.1
+    ],
+    [
+     "bg_carlot",
+     "498x184",
+     41.3
+    ],
+    [
+     "ho_14",
+     "267x258",
+     38.2
+    ],
+    [
+     "bg_town",
+     "499x194",
+     31.2
+    ],
+    [
+     "fu_massage",
+     "108x120",
+     30.4
+    ],
+    [
+     "bg_weddinghall",
+     "499x185",
+     29.9
+    ],
+    [
+     "ho_2",
+     "243x164",
+     29.3
+    ]
+   ],
+   "castCvCachedAtBoot": 6,
+   "castCvCachedMB": 0.3,
+   "castCvAll": {
+    "n": 149,
+    "ms": 92
+   }
+  }
+ ]
+}

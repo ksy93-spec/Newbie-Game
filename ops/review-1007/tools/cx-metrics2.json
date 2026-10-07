@@ -1,0 +1,163 @@
+{
+ "map-360": {
+  "canvasW": 704,
+  "cssW": 360,
+  "dpr": 2,
+  "cssPerArtPx": 2.045,
+  "devPerArtPx": 4.091,
+  "devPerCanvasPx": 1.023,
+  "RES": 4,
+  "SW": 176,
+  "SH": 199
+ },
+ "tab-360": {
+  "ms": 112,
+  "transition": "all",
+  "animation": "none",
+  "on": true
+ },
+ "result-360": [
+  {
+   "id": "rchar",
+   "y": 57,
+   "h": 160,
+   "anim": "none",
+   "txt": ""
+  },
+  {
+   "id": "rbig",
+   "y": 233,
+   "h": 38,
+   "anim": "pop",
+   "txt": "레벨 업!"
+  },
+  {
+   "id": "rxp",
+   "y": 287,
+   "h": 32,
+   "anim": "none",
+   "txt": "+50 XP · ￦44"
+  },
+  {
+   "id": "rgains",
+   "y": 335,
+   "h": 120,
+   "anim": "none",
+   "txt": "옷 · 매력13정답3 / 3획득필살기 정장"
+  },
+  {
+   "id": "rdbl",
+   "y": 471,
+   "h": 44,
+   "anim": "none",
+   "txt": "광고 보고 ￦44 더 받기 (오늘 3회 남음)"
+  },
+  {
+   "id": "rback",
+   "y": 539,
+   "h": 44,
+   "anim": "none",
+   "txt": "돌아가기"
+  }
+ ],
+ "sheettoast-360": {
+  "toastZ": "40",
+  "sheetZ": "50",
+  "topAtToast": "itipbox",
+  "toastRect": [
+   128,
+   520,
+   104,
+   28
+  ]
+ },
+ "map-390": {
+  "canvasW": 704,
+  "cssW": 390,
+  "dpr": 2,
+  "cssPerArtPx": 2.216,
+  "devPerArtPx": 4.432,
+  "devPerCanvasPx": 1.108,
+  "RES": 4,
+  "SW": 176,
+  "SH": 277
+ },
+ "tab-390": {
+  "ms": 102.8,
+  "transition": "all",
+  "animation": "none",
+  "on": true
+ },
+ "result-390": [
+  {
+   "id": "rchar",
+   "y": 159,
+   "h": 160,
+   "anim": "none",
+   "txt": ""
+  },
+  {
+   "id": "rbig",
+   "y": 335,
+   "h": 38,
+   "anim": "pop",
+   "txt": "레벨 업!"
+  },
+  {
+   "id": "rxp",
+   "y": 389,
+   "h": 32,
+   "anim": "none",
+   "txt": "+50 XP · ￦44"
+  },
+  {
+   "id": "rgains",
+   "y": 437,
+   "h": 120,
+   "anim": "none",
+   "txt": "옷 · 매력13정답3 / 3획득필살기 정장"
+  },
+  {
+   "id": "rdbl",
+   "y": 573,
+   "h": 44,
+   "anim": "none",
+   "txt": "광고 보고 ￦44 더 받기 (오늘 3회 남음)"
+  },
+  {
+   "id": "rback",
+   "y": 641,
+   "h": 44,
+   "anim": "none",
+   "txt": "돌아가기"
+  }
+ ],
+ "sheettoast-390": {
+  "toastZ": "40",
+  "sheetZ": "50",
+  "topAtToast": "itipbox",
+  "toastRect": [
+   143,
+   724,
+   104,
+   28
+  ]
+ },
+ "map-412": {
+  "canvasW": 704,
+  "cssW": 412,
+  "dpr": 2.625,
+  "cssPerArtPx": 2.341,
+  "devPerArtPx": 6.145,
+  "devPerCanvasPx": 1.536,
+  "RES": 4,
+  "SW": 176,
+  "SH": 293
+ },
+ "tab-412": {
+  "ms": 94.5,
+  "transition": "all",
+  "animation": "none",
+  "on": true
+ }
+}

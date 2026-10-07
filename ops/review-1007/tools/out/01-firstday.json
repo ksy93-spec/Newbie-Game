@@ -1,0 +1,63 @@
+{
+ "대학생": {
+  "steps": [
+   "opening menu new,snd",
+   "prologue taps 17 in 2666ms",
+   "screen after prologue onboard",
+   "after onboard: home S.onboarded=true",
+   "intro talk taps 7",
+   "guide chip: 여기서 첫 상담오른쪽 편의점 먹는 자리 창구 · 눌러서 걷기",
+   "toast: 출석 1일째 · ￦30",
+   "quest end screen result",
+   "result {\"big\":\"퀘스트 완료\",\"xp\":\"+50 XP · ￦42\",\"ad\":true}",
+   "after-quest talk taps 0",
+   "no more open quests today; done=5",
+   "end of day1 {\"lv\":3,\"coin\":456,\"done\":5,\"full\":4,\"energy\":20,\"tier\":2,\"open\":0,\"locked\":24,\"mq\":\"job\",\"mqReady\":true,\"chip\":\"메인 1장 첫 취업\\n눌러서 시작\"}",
+   "overlay at end {\"tut\":null,\"tip\":false}"
+  ],
+  "issues": [],
+  "logs": []
+ },
+ "취준생": {
+  "steps": [
+   "opening menu new,snd",
+   "prologue taps 17 in 2393ms",
+   "screen after prologue onboard",
+   "after onboard: home S.onboarded=true",
+   "intro talk taps 7",
+   "guide chip: 여기서 첫 상담오른쪽 부동산 전세 창구 · 눌러서 걷기",
+   "toast: 출석 1일째 · ￦30",
+   "quest end screen result",
+   "result {\"big\":\"퀘스트 완료\",\"xp\":\"+53 XP · ￦47\",\"ad\":true}",
+   "after-quest talk taps 0",
+   "walk sik1 -> not started: 배가 고파서 집중이 안 된다 · 포만감 15 필요 (지금 10). 편의점이나 푸드트럭에서 뭘 좀 먹자.",
+   "end of day1 {\"lv\":2,\"coin\":447,\"done\":4,\"full\":10,\"energy\":40,\"tier\":1,\"open\":1,\"locked\":30,\"mq\":\"job\",\"mqReady\":true,\"chip\":\"메인 1장 첫 취업\\n눌러서 시작\"}",
+   "overlay at end {\"tut\":null,\"tip\":false}"
+  ],
+  "issues": [
+   "walk sik1 not started: 배가 고파서 집중이 안 된다 · 포만감 15 필요 (지금 10). 편의점이나 푸드트럭에서 뭘 좀 먹자."
+  ],
+  "logs": []
+ },
+ "직장인": {
+  "steps": [
+   "opening menu new,snd",
+   "prologue taps 17 in 2459ms",
+   "screen after prologue onboard",
+   "after onboard: home S.onboarded=true",
+   "intro talk taps 7",
+   "guide chip: 여기서 첫 상담오른쪽 부동산 전세 창구 · 눌러서 걷기",
+   "toast: 출석 1일째 · ￦30",
+   "quest end screen result",
+   "result {\"big\":\"퀘스트 완료\",\"xp\":\"+67 XP · ￦64\",\"ad\":true}",
+   "after-quest talk taps 0",
+   "walk sik2 -> not started: 배가 고파서 집중이 안 된다 · 포만감 15 필요 (지금 10). 편의점이나 푸드트럭에서 뭘 좀 먹자.",
+   "end of day1 {\"lv\":3,\"coin\":366,\"done\":4,\"full\":10,\"energy\":40,\"tier\":2,\"open\":1,\"locked\":26,\"mq\":\"job\",\"mqReady\":true,\"chip\":\"메인 1장 첫 취업\\n눌러서 시작\"}",
+   "overlay at end {\"tut\":null,\"tip\":false}"
+  ],
+  "issues": [
+   "walk sik2 not started: 배가 고파서 집중이 안 된다 · 포만감 15 필요 (지금 10). 편의점이나 푸드트럭에서 뭘 좀 먹자."
+  ],
+  "logs": []
+ }
+}

@@ -1,0 +1,130 @@
+{
+ "status": "직장인",
+ "days": [
+  {
+   "d": 0,
+   "quests": 5,
+   "notes": [
+    "quiz"
+   ],
+   "state": {
+    "lv": 4,
+    "coin": 885,
+    "tier": 2,
+    "peak": 2,
+    "ju": 51,
+    "done": 5,
+    "mq": "job",
+    "boss": "jeonse",
+    "eps": 1,
+    "streak": 1,
+    "open": 0,
+    "locked": 26,
+    "map": "town_estate",
+    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
+   },
+   "mem": 6,
+   "counts": {
+    "dom": 537,
+    "canv": 21,
+    "log": 67,
+    "saveKB": 8
+   }
+  },
+  {
+   "d": 1,
+   "quests": 3,
+   "notes": [
+    "quiz"
+   ],
+   "state": {
+    "lv": 5,
+    "coin": 1322,
+    "tier": 3,
+    "peak": 3,
+    "ju": 51,
+    "done": 8,
+    "mq": "job",
+    "boss": "jeonse,mlm",
+    "eps": 1,
+    "streak": 2,
+    "open": 0,
+    "locked": 23,
+    "map": "bank",
+    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
+   },
+   "mem": 6.3,
+   "counts": {
+    "dom": 1477,
+    "canv": 122,
+    "log": 112,
+    "saveKB": 12
+   }
+  },
+  {
+   "d": 2,
+   "quests": 3,
+   "notes": [
+    "sheet:오늘 할 일 연속 3일 · 최고 3일 ◆연속 3일 한정 보상 · ￦100 · 주황 비니 ◆풀 수 있는 새 퀘스트 3개 · 내일 3개 더 열려요 ",
+    "quiz"
+   ],
+   "state": {
+    "lv": 5,
+    "coin": 1890,
+    "tier": 4,
+    "peak": 4,
+    "ju": 51,
+    "done": 11,
+    "mq": "job",
+    "boss": "jeonse,mlm",
+    "eps": 2,
+    "streak": 3,
+    "open": 0,
+    "locked": 20,
+    "map": "campus_cafe",
+    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
+   },
+   "mem": 6.4,
+   "counts": {
+    "dom": 1477,
+    "canv": 121,
+    "log": 157,
+    "saveKB": 16
+   }
+  },
+  {
+   "d": 3,
+   "quests": 3,
+   "notes": [
+    "quiz"
+   ],
+   "state": {
+    "lv": 6,
+    "coin": 2268,
+    "tier": 5,
+    "peak": 5,
+    "ju": 58,
+    "done": 14,
+    "mq": "job",
+    "boss": "jeonse,mlm",
+    "eps": 2,
+    "streak": 4,
+    "open": 0,
+    "locked": 17,
+    "map": "campus_cafe",
+    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
+   },
+   "mem": 6.5,
+   "counts": {
+    "dom": 1477,
+    "canv": 121,
+    "log": 193,
+    "saveKB": 19
+   }
+  }
+ ],
+ "issues": [],
+ "errors": [],
+ "mem": [],
+ "secs": 169
+}
