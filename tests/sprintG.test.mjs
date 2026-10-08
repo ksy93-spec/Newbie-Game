@@ -125,3 +125,19 @@ test('5. 걷는 동안 저장은 멈춘 뒤 한 번만 쓴다', async () => {
   assert.deepEqual(logs, []);
   await ctx.close();
 });
+
+test('7. 밥·옷·일 스탯의 쓸모: 음식값 할인, 청결 천천히, 경험치 보너스. 캐릭터 탭에 다섯 스탯이 보인다', async () => {
+  const { ctx, page, logs } = await open();
+  const r = await page.evaluate(() => {
+    S.stats.sik = 0; const p0 = foodPrice({ cost: 100 }); S.stats.sik = 100; const p1 = foodPrice({ cost: 100 });
+    S.stats.ui = 100; S.stats.jik = 55;
+    renderChar();
+    return { p0, p1, ui: statPct('ui'), jik: statPct('jik'), rows: document.querySelectorAll('#pstats .pst').length, txt: document.getElementById('pstats').textContent };
+  });
+  assert.equal(r.p0, 100); assert.equal(r.p1, 80);
+  assert.equal(r.ui, 30); assert.equal(r.jik, 10);
+  assert.equal(r.rows, 5);
+  assert.match(r.txt, /음식값 20% 할인/);
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});

@@ -685,6 +685,11 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
 .mapfade{position:absolute;inset:0;z-index:7;background:#0E1022;opacity:0;pointer-events:none;transition:opacity .22s ease-out;}
 .mapfade.on{opacity:1;transition:none;}
 .btn.btn--danger{color:#C0392B;border-color:#E3A69C;}
+.pstats{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.pst{display:grid;grid-template-columns:28px 1fr 30px;grid-template-rows:auto auto;column-gap:8px;align-items:center;font-size:13px;}
+.pst b{font-weight:700;} .pst em{font-style:normal;text-align:right;}
+.pst .pbar{height:8px;background:rgba(0,0,0,.12);border-radius:4px;overflow:hidden;} .pst .pbar i{display:block;height:100%;}
+.pst small{grid-column:2/4;font-size:11px;color:var(--s2);}
 </style>
 
 <div id="app">
@@ -882,6 +887,8 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
         <div class="baggrid" id="baggrid"></div>
       </div>
       <div class="bag" style="padding-top:0">
+        <div class="sectlab">생활 스탯 <span class="micro">· 그 주제 퀘스트를 풀면 올라요</span></div>
+        <div id="pstats" class="pstats"></div>
         <div class="sectlab">주인공</div>
         <div class="pickrow" id="pavatar"></div>
         <div class="sectlab">머리 색</div><div class="pickrow" id="phaircol"></div>
@@ -2703,7 +2710,7 @@ function hasPlaced(id){ var o=furniOf(id); return !!(o&&o.x!=null&&ROOMSPEC[S.ti
 function needTick(){
   fullTick();
   if(S.energy==null){ S.energy=100; S.clean=100; S.mood=100; }
-  tickStat('energy',6,1); tickStat('clean',15,-1); tickStat('mood',hasPlaced('fan')?24:12,-1); }
+  tickStat('energy',6,1); tickStat('clean',15*(1+statPct('ui')/100),-1); tickStat('mood',hasPlaced('fan')?24:12,-1); }
 function addNeeds(d){
   needTick();
   if(d.full) S.full=Math.max(0,Math.min(fullMax(),S.full+d.full));
@@ -2716,7 +2723,17 @@ function useFull(kind){
   if(S.energy<ec){ sfx('bad'); toast('체력이 모자라요 · '+ec+' 필요 (지금 '+S.energy+'). 집이나 공원 벤치에서 쉬면 차고, 가만히 있어도 조금씩 차요.'); hudRefresh(); return false; }
   if(S.full<c){ sfx('bad'); toast('배가 고파 집중이 안 돼요 · 포만감 '+c+' 필요 (지금 '+S.full+'). 편의점이나 푸드트럭에서 먹으면 차요.'); hudRefresh(); return false; }
   S.full-=c; S.energy-=ec; S.clean=Math.max(0,S.clean-2); save(); hudRefresh(); return true; }
-function foodPrice(f){ return Math.max(1,Math.round(f.cost*(1-perkSum('foodDisc')/100))); }
+/* 밥·옷·일 스탯의 쓸모. 10마다 조금씩, 상한이 있다. 집은 거처, 돈은 보스를 연다 */
+function statPct(k){ var v=(S&&S.stats&&S.stats[k])||0;
+  return k==='sik'?Math.min(20,Math.floor(v/10)*2):k==='ui'?Math.min(30,Math.floor(v/10)*3):k==='jik'?Math.min(20,Math.floor(v/10)*2):0; }
+function statNow(k){
+  if(k==='sik') return '음식값 '+statPct('sik')+'% 할인';
+  if(k==='ui') return '청결이 '+statPct('ui')+'% 천천히 줄어요';
+  if(k==='jik') return '퀘스트 경험치 +'+statPct('jik')+'%';
+  if(k==='ju'){ var nx=S.peak<TIERS.length-1?TIERS[S.peak+1]:null; return nx?(S.stats.ju>=nx.need?nx.name+' 열 수 있어요':nx.name+'까지 '+(nx.need-S.stats.ju)):'모든 거처를 열었어요'; }
+  if(k==='geum'){ var b=BOSSES.filter(function(x){ return x.stat==='geum'&&S.stats.geum<x.need; })[0]; return b?b.name+' 도전까지 '+(b.need-S.stats.geum):'금융 보스에 모두 도전할 수 있어요'; }
+  return ''; }
+function foodPrice(f){ return Math.max(1,Math.round(f.cost*(1-(perkSum('foodDisc')+statPct('sik'))/100))); }
 function eatFood(f){
   var pr=foodPrice(f); fullTick();
   if(S.coin<pr) return '코인이 모자라요. ￦'+pr+' 필요.';
@@ -2755,10 +2772,10 @@ function petWhyNot(){ return S.tier===0?'방이 없어 맡겨 둠':TIERS[S.tier]
 
 var THEMES={
  ju:  {k:'집',full:'집',color:P.k3,role:'오를수록 더 좋은 거처가 열려요',desc:'월세·전세 계약, 전세사기, 기숙사와 자취. 집 퀘스트를 풀면 올라요.'},
- sik: {k:'밥',full:'밥',color:P.g1,role:'식비·자취 살림 지식이에요',desc:'식비, 배달, 자취 살림. 밥 퀘스트를 풀면 올라요.'},
- ui:  {k:'옷',full:'옷',color:P.v1,role:'옷값·면접 복장 지식이에요',desc:'면접 복장, 옷값, 관리. 옷 퀘스트를 풀면 올라요.'},
+ sik: {k:'밥',full:'밥',color:P.g1,role:'오를수록 음식값이 싸져요',desc:'식비, 배달, 자취 살림. 밥 퀘스트를 풀면 올라요.'},
+ ui:  {k:'옷',full:'옷',color:P.v1,role:'오를수록 청결이 천천히 줄어요',desc:'면접 복장, 옷값, 관리. 옷 퀘스트를 풀면 올라요.'},
  geum:{k:'돈',full:'돈',color:P.y1,role:'오를수록 금융 보스에게 도전해요',desc:'학자금, 앱테크, 청약통장, 신용점수, 첫 투자. 돈 퀘스트를 풀면 올라요.'},
- jik: {k:'일',full:'일',color:P.r1,role:'근로계약·4대보험 지식이에요',desc:'주휴수당, 연차, 4대보험, 근로계약, 실업급여. 일 퀘스트를 풀면 올라요.'}
+ jik: {k:'일',full:'일',color:P.r1,role:'오를수록 퀘스트 경험치가 늘어요',desc:'주휴수당, 연차, 4대보험, 근로계약, 실업급여. 일 퀘스트를 풀면 올라요.'}
 };
 var THEME_ORDER=['ju','sik','ui','geum','jik'];
 </script>
@@ -8551,6 +8568,10 @@ function renderChar(){
     (own?'방에 '+placed+' · 창고 '+(own-placed):'상점에서 사요')+'</span>';
   fbn.appendChild(ft); fbn.onclick=function(){ CHARSEL='furni'; sfx('pick'); renderChar(); }; B.appendChild(fbn);
   renderBag();
+  /* 다섯 스탯과 지금 해 주는 일 */
+  var ps=document.getElementById('pstats');
+  if(ps) ps.innerHTML=['ju','sik','ui','geum','jik'].map(function(k){ var v=S.stats[k]||0;
+    return '<div class="pst"><b style="color:'+THEMES[k].color+'">'+THEMES[k].full+'</b><span class="pbar"><i style="width:'+Math.min(100,v)+'%;background:'+THEMES[k].color+'"></i></span><em>'+v+'</em><small>'+esc(statNow(k))+'</small></div>'; }).join('');
   var pa=document.getElementById('pavatar'); pa.innerHTML='';
   pa.style.cssText='display:grid;grid-template-columns:repeat(4,1fr);gap:6px';
   HEROES.forEach(function(h){
@@ -9199,7 +9220,7 @@ function finish(failed){
      다시 도전할 수 있어야 배우는 장치가 되지, 한 번 막히고 끝나면 그냥 벽이다. */
   needTick();
   var dirty=S.clean<30,blue=S.mood<30;                    /* 지저분하면 코인이, 기분이 처지면 경험치가 깎인다 */
-  var xp=failed?0:Math.round(q.xp*(0.5+0.5*ratio)*(1+perkSum('xp')/100)*(blue?0.8:1)),coin=failed?0:Math.round(q.coin*(0.5+0.5*ratio)*(1+perkSum('coin')/100)*(dirty?0.8:1));
+  var xp=failed?0:Math.round(q.xp*(0.5+0.5*ratio)*(1+(perkSum('xp')+statPct('jik'))/100)*(blue?0.8:1)),coin=failed?0:Math.round(q.coin*(0.5+0.5*ratio)*(1+perkSum('coin')/100)*(dirty?0.8:1));
   if(!failed) S.mood=Math.min(100,S.mood+4);
   var before={lv:S.lv,peak:S.peak,tier:S.tier};
   S.xp+=xp; S.coin+=coin;

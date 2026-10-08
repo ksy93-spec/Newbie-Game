@@ -1,0 +1,14 @@
+process.env.PLAYWRIGHT_BROWSERS_PATH ||= '/opt/pw-browsers';
+const { chromium } = await import('playwright');
+import path from 'node:path'; import url from 'node:url';
+const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '../../..');
+const b = await chromium.launch(); const ctx = await b.newContext({ viewport: { width: 360, height: 640 }, deviceScaleFactor: 2 });
+const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
+await page.addInitScript(() => { try { localStorage.setItem('nq_demo', '0'); } catch (e) {} });
+await page.goto(url.pathToFileURL(path.join(ROOT, 'prototype/newbie-quest-demo.html')).href + '#nointro');
+await page.waitForFunction(() => window.S && window.QUESTS);
+await page.evaluate(() => { Object.assign(S, { status: '직장인', years: 2, company: '중소기업', region: '수도권', age: 29 }); S.onboarded = true; S.tut = 1; S.tuts = ['intro','afterq','travel','check','needs','hungry','doors','room','gear','lv2','ep','pet','car','boss']; S.stats = { ju: 38, sik: 24, ui: 12, geum: 31, jik: 47 }; S.peak = 5; S.tier = 5; save(); });
+await page.evaluate(() => render('char')); await page.waitForTimeout(500);
+await page.evaluate(() => document.getElementById('pstats').scrollIntoView({ block: 'center' })); await page.waitForTimeout(300);
+await page.screenshot({ path: path.join(ROOT, 'ops/review-1008/img/stat-panel.png') });
+console.log(JSON.stringify(errs)); await b.close();
