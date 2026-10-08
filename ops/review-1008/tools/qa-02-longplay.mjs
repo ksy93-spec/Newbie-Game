@@ -175,6 +175,7 @@ for (let d = 0; d < DAYS; d++) {
   if (d > 0) {
     await page.evaluate((ms) => window.__shift(ms), d * DAY);
     // 탭을 눌러 새 하루를 연다(render → rollDay)
+    await clearOverlays(page);
     const scr = await screen(page);
     await page.click(`#tab-${scr === 'home' ? 'home' : scr} .tab >> nth=0`).catch(async () => { await page.evaluate(() => render('home')); });
     await sleep(2500);
@@ -193,6 +194,8 @@ for (let d = 0; d < DAYS; d++) {
     const ids = await openQuests(page);
     if (!ids.length) break;
     await refill(page);
+    if (await page.evaluate(() => !!window.MQP)) { D.notes.push('autocine'); await playMQ(); }
+    await clearOverlays(page);
     const res = await walkToQuest(page, ids[0]);
     if (res !== 'ok') { D.notes.push('walk ' + ids[0] + ' ' + res); issue('day' + d + ' walk ' + ids[0] + ' -> ' + res); await clearOverlays(page); break; }
     const end = await playQuest(page, { acc: 0.8 });

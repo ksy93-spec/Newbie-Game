@@ -1,0 +1,286 @@
+{
+ "status": "대학생",
+ "days": [
+  {
+   "d": 0,
+   "quests": 7,
+   "notes": [
+    "quiz"
+   ],
+   "state": {
+    "lv": 4,
+    "coin": 620,
+    "tier": 2,
+    "peak": 2,
+    "ju": 28,
+    "done": 6,
+    "mq": "job",
+    "boss": "",
+    "eps": 1,
+    "streak": 1,
+    "open": 0,
+    "locked": 23,
+    "map": "town_estate",
+    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세까지 집 스탯 14 더"
+   },
+   "mem": 6,
+   "counts": {
+    "dom": 522,
+    "canv": 21,
+    "log": 79,
+    "saveKB": 9
+   }
+  },
+  {
+   "d": 1,
+   "quests": 3,
+   "notes": [
+    "quiz"
+   ],
+   "state": {
+    "lv": 4,
+    "coin": 816,
+    "tier": 3,
+    "peak": 3,
+    "ju": 28,
+    "done": 9,
+    "mq": "job",
+    "boss": "",
+    "eps": 1,
+    "streak": 2,
+    "open": 0,
+    "locked": 20,
+    "map": "bank",
+    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세까지 집 스탯 14 더"
+   },
+   "mem": 6.3,
+   "counts": {
+    "dom": 1480,
+    "canv": 122,
+    "log": 120,
+    "saveKB": 13
+   }
+  },
+  {
+   "d": 2,
+   "quests": 3,
+   "notes": [
+    "sheet:오늘 할 일 연속 3일 · 최고 3일 ◆연속 3일 한정 보상 · ￦100 · 주황 비니 ◆풀 수 있는 새 퀘스트 3개 · 내일 3개 더 열려요 ",
+    "quiz"
+   ],
+   "state": {
+    "lv": 5,
+    "coin": 1626,
+    "tier": 4,
+    "peak": 4,
+    "ju": 44,
+    "done": 12,
+    "mq": "job",
+    "boss": "mlm",
+    "eps": 2,
+    "streak": 3,
+    "open": 0,
+    "locked": 17,
+    "map": "campus_cafe",
+    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
+   },
+   "mem": 6.5,
+   "counts": {
+    "dom": 1480,
+    "canv": 121,
+    "log": 120,
+    "saveKB": 13
+   }
+  },
+  {
+   "d": 3,
+   "quests": 3,
+   "notes": [
+    "quiz"
+   ],
+   "state": {
+    "lv": 6,
+    "coin": 2146,
+    "tier": 5,
+    "peak": 5,
+    "ju": 66,
+    "done": 15,
+    "mq": "job",
+    "boss": "mlm,jeonse",
+    "eps": 2,
+    "streak": 4,
+    "open": 0,
+    "locked": 14,
+    "map": "bank",
+    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
+   },
+   "mem": 6.6,
+   "counts": {
+    "dom": 1480,
+    "canv": 121,
+    "log": 120,
+    "saveKB": 13
+   }
+  },
+  {
+   "d": 4,
+   "quests": 3,
+   "notes": [
+    "autocine",
+    "quiz"
+   ],
+   "state": {
+    "lv": 7,
+    "coin": 2866,
+    "tier": 6,
+    "peak": 6,
+    "ju": 66,
+    "done": 18,
+    "mq": "job",
+    "boss": "mlm,jeonse,fp",
+    "eps": 3,
+    "streak": 5,
+    "open": 0,
+    "locked": 11,
+    "map": "office_lobby",
+    "chip": "다음 메인 2장 첫 전세 계약 원룸 전세가 열리면"
+   },
+   "mem": 6.8,
+   "counts": {
+    "dom": 1468,
+    "canv": 122,
+    "log": 120,
+    "saveKB": 13
+   }
+  },
+  {
+   "d": 5,
+   "quests": 3,
+   "notes": [
+    "halbae",
+    "quiz"
+   ],
+   "state": {
+    "lv": 8,
+    "coin": 3284,
+    "tier": 7,
+    "peak": 7,
+    "ju": 77,
+    "done": 21,
+    "mq": "job,lease",
+    "boss": "mlm,jeonse,fp",
+    "eps": 3,
+    "streak": 6,
+    "open": 0,
+    "locked": 8,
+    "map": "town_hall",
+    "chip": "다음 메인 3장 첫 신용카드 내일 열려요"
+   },
+   "mem": 6.7,
+   "counts": {
+    "dom": 1480,
+    "canv": 121,
+    "log": 120,
+    "saveKB": 13
+   }
+  },
+  {
+   "d": 6,
+   "quests": 3,
+   "notes": [
+    "sheet:오늘 할 일 연속 7일 · 최고 7일 ◆연속 7일 한정 보상 · ￦200 · 출근 참새 ◆풀 수 있는 새 퀘스트 3개 · 내일 3개 더 열려요 ",
+    "halbae",
+    "sheet:3장 클리어! 첫 신용카드 3장 · 첫 신용카드 ◆열림 · 카드 장비 ◆열림 · 은행 창구 캐시백 ◆다음은 4장 첫 차 · 내일 열려요 광고 보",
+    "quiz"
+   ],
+   "state": {
+    "lv": 8,
+    "coin": 4104,
+    "tier": 7,
+    "peak": 8,
+    "ju": 83,
+    "done": 24,
+    "mq": "job,lease,card",
+    "boss": "mlm,jeonse,fp",
+    "eps": 4,
+    "streak": 7,
+    "open": 0,
+    "locked": 5,
+    "map": "center_lobby",
+    "chip": "다음 메인 4장 첫 차 내일 열려요"
+   },
+   "mem": 6.9,
+   "counts": {
+    "dom": 1475,
+    "canv": 121,
+    "log": 120,
+    "saveKB": 14
+   }
+  },
+  {
+   "d": 7,
+   "quests": 3,
+   "notes": [
+    "autocine",
+    "quiz"
+   ],
+   "state": {
+    "lv": 9,
+    "coin": 4902,
+    "tier": 7,
+    "peak": 8,
+    "ju": 83,
+    "done": 27,
+    "mq": "job,lease,card,car",
+    "boss": "mlm,jeonse,fp",
+    "eps": 4,
+    "streak": 8,
+    "open": 0,
+    "locked": 2,
+    "map": "bank_branch",
+    "chip": "다음 메인 5장 결혼 준비 Lv.10이 되면"
+   },
+   "mem": 6.9,
+   "counts": {
+    "dom": 1460,
+    "canv": 122,
+    "log": 120,
+    "saveKB": 14
+   }
+  },
+  {
+   "d": 8,
+   "quests": 2,
+   "notes": [
+    "quiz"
+   ],
+   "state": {
+    "lv": 9,
+    "coin": 5370,
+    "tier": 7,
+    "peak": 8,
+    "ju": 90,
+    "done": 29,
+    "mq": "job,lease,card,car",
+    "boss": "mlm,jeonse,fp",
+    "eps": 4,
+    "streak": 9,
+    "open": 0,
+    "locked": 0,
+    "map": "office_lobby",
+    "chip": "다음 메인 5장 결혼 준비 Lv.10이 되면"
+   },
+   "mem": 6.9,
+   "counts": {
+    "dom": 1453,
+    "canv": 121,
+    "log": 120,
+    "saveKB": 14
+   }
+  }
+ ],
+ "issues": [],
+ "errors": [],
+ "mem": [],
+ "secs": 401
+}
