@@ -702,6 +702,11 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
 .mapfade{position:absolute;inset:0;z-index:7;background:#0E1022;opacity:0;pointer-events:none;transition:opacity .22s ease-out;}
 .mapfade.on{opacity:1;transition:none;}
 .btn.btn--danger{color:#C0392B;border-color:#E3A69C;}
+.pstats{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.pst{display:grid;grid-template-columns:28px 1fr 30px;grid-template-rows:auto auto;column-gap:8px;align-items:center;font-size:13px;}
+.pst b{font-weight:700;} .pst em{font-style:normal;text-align:right;}
+.pst .pbar{height:8px;background:rgba(0,0,0,.12);border-radius:4px;overflow:hidden;} .pst .pbar i{display:block;height:100%;}
+.pst small{grid-column:2/4;font-size:11px;color:var(--s2);}
 </style>
 
 <div id="app">
@@ -899,6 +904,8 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
         <div class="baggrid" id="baggrid"></div>
       </div>
       <div class="bag" style="padding-top:0">
+        <div class="sectlab">생활 스탯 <span class="micro">· 그 주제 퀘스트를 풀면 올라요</span></div>
+        <div id="pstats" class="pstats"></div>
         <div class="sectlab">주인공</div>
         <div class="pickrow" id="pavatar"></div>
         <div class="sectlab">머리 색</div><div class="pickrow" id="phaircol"></div>
@@ -2720,7 +2727,7 @@ function hasPlaced(id){ var o=furniOf(id); return !!(o&&o.x!=null&&ROOMSPEC[S.ti
 function needTick(){
   fullTick();
   if(S.energy==null){ S.energy=100; S.clean=100; S.mood=100; }
-  tickStat('energy',6,1); tickStat('clean',15,-1); tickStat('mood',hasPlaced('fan')?24:12,-1); }
+  tickStat('energy',6,1); tickStat('clean',15*(1+statPct('ui')/100),-1); tickStat('mood',hasPlaced('fan')?24:12,-1); }
 function addNeeds(d){
   needTick();
   if(d.full) S.full=Math.max(0,Math.min(fullMax(),S.full+d.full));
@@ -2733,7 +2740,17 @@ function useFull(kind){
   if(S.energy<ec){ sfx('bad'); toast('체력이 모자라요 · '+ec+' 필요 (지금 '+S.energy+'). 집이나 공원 벤치에서 쉬면 차고, 가만히 있어도 조금씩 차요.'); hudRefresh(); return false; }
   if(S.full<c){ sfx('bad'); toast('배가 고파 집중이 안 돼요 · 포만감 '+c+' 필요 (지금 '+S.full+'). 편의점이나 푸드트럭에서 먹으면 차요.'); hudRefresh(); return false; }
   S.full-=c; S.energy-=ec; S.clean=Math.max(0,S.clean-2); save(); hudRefresh(); return true; }
-function foodPrice(f){ return Math.max(1,Math.round(f.cost*(1-perkSum('foodDisc')/100))); }
+/* 밥·옷·일 스탯의 쓸모. 10마다 조금씩, 상한이 있다. 집은 거처, 돈은 보스를 연다 */
+function statPct(k){ var v=(S&&S.stats&&S.stats[k])||0;
+  return k==='sik'?Math.min(20,Math.floor(v/10)*2):k==='ui'?Math.min(30,Math.floor(v/10)*3):k==='jik'?Math.min(20,Math.floor(v/10)*2):0; }
+function statNow(k){
+  if(k==='sik') return '음식값 '+statPct('sik')+'% 할인';
+  if(k==='ui') return '청결이 '+statPct('ui')+'% 천천히 줄어요';
+  if(k==='jik') return '퀘스트 경험치 +'+statPct('jik')+'%';
+  if(k==='ju'){ var nx=S.peak<TIERS.length-1?TIERS[S.peak+1]:null; return nx?(S.stats.ju>=nx.need?nx.name+' 열 수 있어요':nx.name+'까지 '+(nx.need-S.stats.ju)):'모든 거처를 열었어요'; }
+  if(k==='geum'){ var b=BOSSES.filter(function(x){ return x.stat==='geum'&&S.stats.geum<x.need; })[0]; return b?b.name+' 도전까지 '+(b.need-S.stats.geum):'금융 보스에 모두 도전할 수 있어요'; }
+  return ''; }
+function foodPrice(f){ return Math.max(1,Math.round(f.cost*(1-(perkSum('foodDisc')+statPct('sik'))/100))); }
 function eatFood(f){
   var pr=foodPrice(f); fullTick();
   if(S.coin<pr) return '코인이 모자라요. ￦'+pr+' 필요.';
@@ -2772,10 +2789,10 @@ function petWhyNot(){ return S.tier===0?'방이 없어 맡겨 둠':TIERS[S.tier]
 
 var THEMES={
  ju:  {k:'집',full:'집',color:P.k3,role:'오를수록 더 좋은 거처가 열려요',desc:'월세·전세 계약, 전세사기, 기숙사와 자취. 집 퀘스트를 풀면 올라요.'},
- sik: {k:'밥',full:'밥',color:P.g1,role:'식비·자취 살림 지식이에요',desc:'식비, 배달, 자취 살림. 밥 퀘스트를 풀면 올라요.'},
- ui:  {k:'옷',full:'옷',color:P.v1,role:'옷값·면접 복장 지식이에요',desc:'면접 복장, 옷값, 관리. 옷 퀘스트를 풀면 올라요.'},
+ sik: {k:'밥',full:'밥',color:P.g1,role:'오를수록 음식값이 싸져요',desc:'식비, 배달, 자취 살림. 밥 퀘스트를 풀면 올라요.'},
+ ui:  {k:'옷',full:'옷',color:P.v1,role:'오를수록 청결이 천천히 줄어요',desc:'면접 복장, 옷값, 관리. 옷 퀘스트를 풀면 올라요.'},
  geum:{k:'돈',full:'돈',color:P.y1,role:'오를수록 금융 보스에게 도전해요',desc:'학자금, 앱테크, 청약통장, 신용점수, 첫 투자. 돈 퀘스트를 풀면 올라요.'},
- jik: {k:'일',full:'일',color:P.r1,role:'근로계약·4대보험 지식이에요',desc:'주휴수당, 연차, 4대보험, 근로계약, 실업급여. 일 퀘스트를 풀면 올라요.'}
+ jik: {k:'일',full:'일',color:P.r1,role:'오를수록 퀘스트 경험치가 늘어요',desc:'주휴수당, 연차, 4대보험, 근로계약, 실업급여. 일 퀘스트를 풀면 올라요.'}
 };
 var THEME_ORDER=['ju','sik','ui','geum','jik'];
 </script>
@@ -7214,7 +7231,7 @@ var MAPT=null;                       /* 애니메이션 타이머 */
 function curMap(){ return (ME.map==='room'?roomMap():MAPS[ME.map])||MAPS.town; }
 function mePx(){
   var x=ME.tx*TS,y=ME.ty*TS;
-  if(MOVE){ var k=MOVE.t/MOVE.dur;
+  if(MOVE){ var k=Math.min(1,(MOVE.t+MOVEK)/MOVE.dur);
     x=(MOVE.fx+(MOVE.tx-MOVE.fx)*k)*TS; y=(MOVE.fy+(MOVE.ty-MOVE.fy)*k)*TS; }
   return {x:x,y:y};
 }
@@ -7380,6 +7397,15 @@ function mapFade(){
   var f=document.getElementById('hfade'); if(!f) return;
   if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   f.classList.add('on'); void f.offsetWidth; requestAnimationFrame(function(){ f.classList.remove('on'); }); }
+var TCACHE=null;
+function tileCache(m){
+  var k=(m.tint?'-':S.tier)+'|'+RES;
+  if(TCACHE&&TCACHE.m===m&&TCACHE.k===k) return TCACHE;
+  /* 화면과 같은 해상도(RES배)로 그려 둔다. 1배로 두면 나무 그림자 같은 둥근 모양이 각진다 */
+  var cv=mkcv(m.w*TS*RES,m.h*TS*RES),c=cv.getContext('2d'),anim=[],x,y,ch;
+  c.imageSmoothingEnabled=false; c.setTransform(RES,0,0,RES,0,0);
+  for(y=0;y<m.h;y++) for(x=0;x<m.w;x++){ ch=tileAt(m,x,y); drawTile(c,m,ch,x*TS,y*TS,x,y); if(ch==='w') anim.push(x,y); }
+  return (TCACHE={m:m,k:k,cv:cv,anim:anim}); }
 /* ── 그리기 ──────────────────────────────────────────────────────────── */
 function drawScene(){
   var cv=document.getElementById('scene'); if(!cv) return;
@@ -7392,7 +7418,12 @@ function drawScene(){
   ctx.save(); ctx.scale(cam.z,cam.z); ctx.translate(-cam.x,-cam.y);
   var x0=Math.max(0,Math.floor(cam.x/TS)),x1=Math.min(m.w-1,Math.ceil((cam.x+SW/cam.z)/TS));
   var y0=Math.max(0,Math.floor(cam.y/TS)),y1=Math.min(m.h-1,Math.ceil((cam.y+SH/cam.z)/TS));
-  for(y=y0;y<=y1;y++) for(x=x0;x<=x1;x++) drawTile(ctx,m,tileAt(m,x,y),x*TS,y*TS,x,y);
+  /* 변하지 않는 타일은 지도마다 한 번 그려 둔 캔버스에서 옮긴다. 물만 매번 다시 그린다 */
+  if(cam.z>=1&&!window.NOTC){ var tc=tileCache(m),sx0=x0*TS,sy0=y0*TS,sw0=(x1-x0+1)*TS,sh0=(y1-y0+1)*TS;
+    ctx.drawImage(tc.cv,sx0*RES,sy0*RES,sw0*RES,sh0*RES,sx0,sy0,sw0,sh0);
+    for(var ai=0;ai<tc.anim.length;ai+=2){ x=tc.anim[ai]; y=tc.anim[ai+1];
+      if(x>=x0&&x<=x1&&y>=y0&&y<=y1) drawTile(ctx,m,'w',x*TS,y*TS,x,y); } }
+  else for(y=y0;y<=y1;y++) for(x=x0;x<=x1;x++) drawTile(ctx,m,tileAt(m,x,y),x*TS,y*TS,x,y);
   if(!m.interior&&ME.map!=='room'){                 /* 지도 아래로 내려다본 자리는 풀밭으로 이어 그린다 */
     var ye=Math.ceil((cam.y+SH/cam.z)/TS);
     for(y=m.h;y<=ye;y++) for(x=x0;x<=x1;x++){ var lc=m.pad||m.rows[m.h-1].charAt(x);
@@ -7625,20 +7656,27 @@ function startWalk(){
   if(S.pos&&mapById(S.pos.map)){ ME.map=S.pos.map; ME.tx=S.pos.tx; ME.ty=S.pos.ty; ME.dir=S.pos.dir||0; }
   if(!walkable(curMap(),ME.tx,ME.ty)) enterMap(ME.map,ME.tx,ME.ty);
   drawScene();
-  MAPT=setInterval(function(){
-    TICK++;
-    if(!MOVE){ if(HOLD.dir!==null) return stepDir(HOLD.dir);
-      if(TICK%180===0) checkTutor();
-      if(TICK%4===0||(PETW&&(PETW.mv||PETW.heart))) drawScene(); return; }
-    MOVE.t++;
-    if(MOVE.t>=MOVE.dur){ ME.step=(ME.step+1)%2; nextStep(); }
-    else drawScene();
-  },55);
+  MAPT=1; MAPLAST=MAPIDLE=performance.now(); MAPACC=0; MAPRAF=requestAnimationFrame(mapFrame);
 }
-function stopWalk(){ if(MAPT){ clearInterval(MAPT); MAPT=null; } MOVE=null; savePosNow(); }
+/* 걷는 속도·깜빡임은 55ms 틱으로 세고, 그리기는 화면 프레임마다 하며 칸 사이 위치를 보간한다(초당 14번 → 60번) */
+var TICKMS=55,MAPRAF=0,MAPLAST=0,MAPACC=0,MAPIDLE=0,MOVEK=0;
+function mapTick(){
+  TICK++;
+  if(!MOVE){ if(HOLD.dir!==null){ stepDir(HOLD.dir); return; }
+    if(TICK%180===0) checkTutor(); return; }
+  MOVE.t++;
+  if(MOVE.t>=MOVE.dur){ ME.step=(ME.step+1)%2; nextStep(); } }
+function mapFrame(now){
+  if(!MAPT) return;
+  var dt=Math.min(250,now-MAPLAST); MAPLAST=now; MAPACC+=dt;
+  while(MAPACC>=TICKMS){ MAPACC-=TICKMS; mapTick(); if(!MAPT) return; }
+  MOVEK=MOVE&&MOVE.dur?MAPACC/TICKMS:0;
+  if(MOVE||(PETW&&(PETW.mv||PETW.heart))||now-MAPIDLE>=220){ MAPIDLE=now; drawScene(); }
+  MAPRAF=requestAnimationFrame(mapFrame); }
+function stopWalk(){ if(MAPT){ cancelAnimationFrame(MAPRAF); MAPT=null; } MOVE=null; MOVEK=0; savePosNow(); }
 /* 앱이 뒤로 가면 지도 루프와 소리를 멈추고 저장을 마친다. 돌아오면 홈일 때만 다시 켠다 */
 document.addEventListener('visibilitychange',function(){
-  if(document.hidden){ savePosNow(); if(MAPT){ clearInterval(MAPT); MAPT=null; MOVE=null; } try{ if(AC&&AC.state==='running') AC.suspend(); }catch(e){} }
+  if(document.hidden){ savePosNow(); if(MAPT){ cancelAnimationFrame(MAPRAF); MAPT=null; MOVE=null; MOVEK=0; } try{ if(AC&&AC.state==='running') AC.suspend(); }catch(e){} }
   else { var hm=document.getElementById('home'); if(hm&&hm.classList.contains('on')&&!MAPT) startWalk(); try{ if(AC&&AC.state==='suspended') AC.resume(); }catch(e){} } });
 addEventListener('pagehide',function(){ savePosNow(); });
 function sceneTile(ev){
@@ -8568,6 +8606,10 @@ function renderChar(){
     (own?'방에 '+placed+' · 창고 '+(own-placed):'상점에서 사요')+'</span>';
   fbn.appendChild(ft); fbn.onclick=function(){ CHARSEL='furni'; sfx('pick'); renderChar(); }; B.appendChild(fbn);
   renderBag();
+  /* 다섯 스탯과 지금 해 주는 일 */
+  var ps=document.getElementById('pstats');
+  if(ps) ps.innerHTML=['ju','sik','ui','geum','jik'].map(function(k){ var v=S.stats[k]||0;
+    return '<div class="pst"><b style="color:'+THEMES[k].color+'">'+THEMES[k].full+'</b><span class="pbar"><i style="width:'+Math.min(100,v)+'%;background:'+THEMES[k].color+'"></i></span><em>'+v+'</em><small>'+esc(statNow(k))+'</small></div>'; }).join('');
   var pa=document.getElementById('pavatar'); pa.innerHTML='';
   pa.style.cssText='display:grid;grid-template-columns:repeat(4,1fr);gap:6px';
   HEROES.forEach(function(h){
@@ -9216,7 +9258,7 @@ function finish(failed){
      다시 도전할 수 있어야 배우는 장치가 되지, 한 번 막히고 끝나면 그냥 벽이다. */
   needTick();
   var dirty=S.clean<30,blue=S.mood<30;                    /* 지저분하면 코인이, 기분이 처지면 경험치가 깎인다 */
-  var xp=failed?0:Math.round(q.xp*(0.5+0.5*ratio)*(1+perkSum('xp')/100)*(blue?0.8:1)),coin=failed?0:Math.round(q.coin*(0.5+0.5*ratio)*(1+perkSum('coin')/100)*(dirty?0.8:1));
+  var xp=failed?0:Math.round(q.xp*(0.5+0.5*ratio)*(1+(perkSum('xp')+statPct('jik'))/100)*(blue?0.8:1)),coin=failed?0:Math.round(q.coin*(0.5+0.5*ratio)*(1+perkSum('coin')/100)*(dirty?0.8:1));
   if(!failed) S.mood=Math.min(100,S.mood+4);
   var before={lv:S.lv,peak:S.peak,tier:S.tier};
   S.xp+=xp; S.coin+=coin;
