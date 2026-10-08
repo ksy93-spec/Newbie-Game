@@ -43,7 +43,7 @@ test('1. 약력 생성기: 같은 인생 번호는 같은 사람, 칸이 다 채
   assert.ok(r.same, '같은 번호 같은 사람');
   assert.equal(r.missing, 0);
   assert.ok(r.coin[0] >= 50 && r.coin[1] <= 400, JSON.stringify(r.coin));
-  assert.ok(r.statMax <= 20, '스탯 머리 출발 ' + r.statMax);
+  assert.ok(r.statMax <= 26, '스탯 머리 출발 ' + r.statMax);   // 지방 출신 집 +10 보정 포함
   assert.ok(r.cap > 0.35 && r.cap < 0.65, '수도권 비율 ' + r.cap);
   assert.ok(r.heroOk);
   assert.deepEqual(logs, []);
@@ -86,6 +86,27 @@ test('2. 인생 모드 한 판: 카드 삼세판 → 태어남 → 나이 → �
   assert.equal(end.album, 1);
   assert.ok(end.title);
   assert.equal(end.normal, 7, '일반 모드 기록은 그대로');
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
+
+test('3. 거처가 카드와 맞는다: 본가는 본가 방, 기숙사는 기숙사, 노숙·움막으로 저절로 옮기지 않는다', async () => {
+  const { ctx, page, logs } = await open();
+  const r = await page.evaluate(() => {
+    const out = {};
+    const find = (want) => { for (let i = 0; i < 3000; i++) { const p = lifeGen(lifeSeedNew()); if (want(p)) return p; } return null; };
+    for (const [k, want] of [['home', (p) => p.living === '본가'], ['dorm', (p) => p.living === '기숙사'], ['solo', (p) => p.living === '자취' && p.income !== '넉넉']]) {
+      lifeNew(); const p = find(want); S.life.prof = p; S.life.seed = p.seed; birthApply();
+      S.onboarded = true; S.stats.ju = 30; const g = tierGrow(); render('home');
+      out[k] = { tier: S.tier, peak: S.peak, name: TIERS[S.tier].name, moved: !!(g && g.wasTop), room: !!ROOMSPEC[S.tier], htier: document.getElementById('htier').textContent };
+    }
+    switchSlot('normal'); out.normal0 = TIERS[0].name;
+    return out; });
+  assert.equal(r.home.name, '본가 방'); assert.equal(r.home.tier, 0); assert.equal(r.home.moved, false); assert.ok(r.home.peak >= 4, '본가에서 다음 칸은 고시원부터(움막·텐트·찜질방 건너뜀) ' + r.home.peak);
+  assert.ok(r.home.room); assert.match(r.home.htier, /본가 방/);
+  assert.equal(r.dorm.name, '기숙사'); assert.equal(r.dorm.moved, false);
+  assert.equal(r.solo.name, '고시원');
+  assert.equal(r.normal0, '노숙', '일반 모드 이름은 그대로');
   assert.deepEqual(logs, []);
   await ctx.close();
 });
