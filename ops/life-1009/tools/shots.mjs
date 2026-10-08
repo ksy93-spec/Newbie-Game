@@ -17,7 +17,7 @@ await page.evaluate(() => { S.life.prof = lifeGen(process_seed()); function proc
 await page.waitForTimeout(400); await shot(page, 'card');
 await page.evaluate(() => { document.getElementById('obbody').scrollTop = 9999; const sc = document.querySelector('#onboard .scroll') || document.getElementById('obbody'); sc.scrollTop = 9999; });
 await page.waitForTimeout(300); await shot(page, 'card2');
-await page.click('#obnext'); await page.click('#obnext');
+await page.click('#obnext');
 await page.waitForFunction(() => !!window.MQP, null, { timeout: 8000 });
 for (let i = 0; i < 2; i++) await page.evaluate(() => MQP.next({ type: 'test' }));
 await page.waitForTimeout(2600); await shot(page, 'birth-doc');

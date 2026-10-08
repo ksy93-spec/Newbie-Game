@@ -901,7 +901,7 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
       <div class="bag" style="padding-top:0">
         <div class="sectlab">생활 스탯 <span class="micro">· 그 주제 퀘스트를 풀면 올라요</span></div>
         <div id="pstats" class="pstats"></div>
-        <div class="sectlab">주인공</div>
+        <div class="sectlab" id="pavatarlab">주인공</div>
         <div class="pickrow" id="pavatar"></div>
         <div class="sectlab">머리 색</div><div class="pickrow" id="phaircol"></div>
         <button class="btn btn--wide pix" id="sharebtn">캐릭터 카드 내보내기</button>
@@ -4298,7 +4298,7 @@ var OB={
   o:[['수도권','수도권','서울·경기·인천'],['광역시','광역시','부산·대구·대전 등'],['그 외','그 외 지역','시·군 지역']]}};
 /* 온보딩은 세 문항까지만 받는다. 나이·회사는 첫 퀘스트를 끝낸 뒤 홈에서 채우게 미룬다.
    재미를 먼저 보여주고 질문은 나중에 하는 편이 이탈이 적다. */
-function obSteps(){ if(lifeOn()) return ['birth','avatar'];
+function obSteps(){ if(lifeOn()) return ['birth'];   /* 인생 모드: 겉모습은 카드가 정한다 */
   return S.status==='대학생'?['status','living','region','avatar']
   :S.status==='취준생'?['status','prep','region','avatar']
   :S.status==='직장인'?['status','years','region','avatar']:['status']; }
@@ -9155,6 +9155,7 @@ function renderChar(){
   if(ps) ps.innerHTML=['ju','sik','ui','geum','jik'].map(function(k){ var v=S.stats[k]||0;
     return '<div class="pst"><b style="color:'+THEMES[k].color+'">'+THEMES[k].full+'</b><span class="pbar"><i style="width:'+Math.min(100,v)+'%;background:'+THEMES[k].color+'"></i></span><em>'+v+'</em><small>'+esc(statNow(k))+'</small></div>'; }).join('');
   var pa=document.getElementById('pavatar'); pa.innerHTML='';
+  var lo=lifeOn(); pa.hidden=lo; document.getElementById('pavatarlab').hidden=lo;   /* 인생 모드: 카드의 사람이라 고르지 않는다 */
   pa.style.cssText='display:grid;grid-template-columns:repeat(4,1fr);gap:6px';
   HEROES.forEach(function(h){
     var b=heroCard(h,58,S.hero===h.id);
@@ -9162,7 +9163,7 @@ function renderChar(){
     pa.appendChild(b); });
   var phl=document.getElementById('phline');
   if(!phl){ phl=document.createElement('div'); phl.id='phline'; phl.className='micro'; phl.style.cssText='margin-top:6px'; pa.parentNode.insertBefore(phl,pa.nextSibling); }
-  phl.textContent=heroOf().name+' · '+heroOf().line;
+  var lp=lo&&S.life&&S.life.prof; phl.textContent=lp?lp.name+' · '+lp.mbti+' · '+lp.intro:heroOf().name+' · '+heroOf().line;
   document.getElementById('sharebtn').onclick=shareCardOut; syncShareBtn();
   var pc=document.getElementById('phaircol'); pc.innerHTML='';
   var ob=document.createElement('button'); ob.className='swatchpick pix';

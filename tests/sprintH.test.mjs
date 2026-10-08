@@ -59,8 +59,7 @@ test('2. 인생 모드 한 판: 카드 삼세판 → 태어남 → 나이 → �
   for (let i = 0; i < 2; i++) await page.click('#obbody button:has-text("다시 태어나기")');
   assert.equal(await page.evaluate(() => S.life.rolls), 3);
   assert.equal(await page.locator('#obbody button:has-text("마지막 카드")').isDisabled(), true);
-  await page.click('#obnext');                        // 이 인생으로 살기
-  await page.click('#obnext');                        // 주인공 고르기 → 시작
+  await page.click('#obnext');                        // 이 인생으로 살기 → 바로 시작(겉모습은 카드가 정한다)
   await playCine(page, [], { timeout: 30000 });       // 태어남 컷신
   const h = await page.evaluate(() => ({ hud: document.getElementById('hnm').textContent, mode: S.mode, coin: S.coin, slot: SLOT }));
   assert.match(h.hud, /20살/);
