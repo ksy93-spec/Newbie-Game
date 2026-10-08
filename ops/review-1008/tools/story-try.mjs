@@ -1,4 +1,4 @@
-// 제안한 짧은 컷신 12편을 지금 엔진(playMQ)에 그대로 넣어 본다: 줄 접힘, 길이 추정, 장면 캡처
+// 제안한 짧은 컷신 11편을 지금 엔진(playMQ)에 그대로 넣어 본다: 줄 접힘, 길이 추정, 장면 캡처
 process.env.PLAYWRIGHT_BROWSERS_PATH ||= '/opt/pw-browsers';
 import path from 'node:path'; import url from 'node:url'; import fs from 'node:fs';
 const { chromium } = await import('playwright');
@@ -40,6 +40,6 @@ await play('home4', 0, 'story-try-gosiwon-missing.png');
 await play('streak7', 1, 'story-try-bird.png');
 await play('boss1', 0, 'story-try-boss-mlm.png');
 await play('memory', 3, 'story-try-memory.png');
-await play('lv2', 2, 'story-try-lv2-doc.png');
+await play('firstq', 4, 'story-try-firstq-doc.png');
 console.log(JSON.stringify({ stats, logs }, null, 1));
 await b.close();

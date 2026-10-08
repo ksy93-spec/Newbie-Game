@@ -141,7 +141,7 @@ test('1. 새 사용자: 온보딩 → 첫 상담 표시 → 첫 퀘스트 → �
   // 돌아가면 안내는 사라진다
   await tap(page.locator('#rback'));
   await page.waitForFunction(() => document.getElementById('home').classList.contains('on'));
-  await page.waitForFunction(() => document.getElementById('hguide').hidden);
+  await page.waitForFunction(() => { const g = document.getElementById('hguide'); return g.hidden || /다음 퀘스트/.test(g.textContent); });   // 첫 상담 안내는 끝나고, 다음 퀘스트 안내로 바뀐다
   // 3분: 탭당 평균 4초로 잡아도 첫 보상까지 180초 안. 온보딩 7 + 대사 4 + 칩 1 + 퀘스트 7 + 결과 1
   console.log(`[C2] 첫 보상까지 ${firstRewardTaps}탭 (탭당 4초 가정 ${firstRewardTaps * 4}초), 돌아가기까지 ${taps}탭`);
   assert.ok(firstRewardTaps <= 40, `첫 보상까지 ${firstRewardTaps}탭`);
