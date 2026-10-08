@@ -1,0 +1,121 @@
+{
+ "throttle": 4,
+ "dev": "s390",
+ "econ": {
+  "nQuest": 47,
+  "quest": {
+   "ju": 91,
+   "sik": 50,
+   "ui": 47,
+   "geum": 188,
+   "jik": 156
+  },
+  "ep": {
+   "ju": 12,
+   "sik": 0,
+   "ui": 0,
+   "geum": 12,
+   "jik": 24
+  },
+  "boss": {
+   "ju": 15,
+   "sik": 0,
+   "ui": 0,
+   "geum": 30,
+   "jik": 0
+  },
+  "mq": {
+   "ju": 16,
+   "sik": 8,
+   "ui": 16,
+   "geum": 34,
+   "jik": 10
+  },
+  "leaseJu": 10,
+  "questXp": 3510,
+  "lvFromQuestXpOnly": 10,
+  "tiersNeed": [
+   0,
+   6,
+   12,
+   18,
+   24,
+   30,
+   36,
+   42,
+   48,
+   54,
+   60,
+   66,
+   70,
+   74,
+   78
+  ],
+  "bossNeed": [
+   [
+    "jeonse",
+    "ju",
+    30
+   ],
+   [
+    "mlm",
+    "geum",
+    20
+   ],
+   [
+    "fp",
+    "geum",
+    40
+   ]
+  ],
+  "grades": {
+   "good": 1,
+   "ok": 0.6,
+   "bad": 0.3
+  },
+  "nCast": 149,
+  "castB64MB": 1.574632
+ },
+ "walk": {
+  "drawsPerSec": 14,
+  "msPerDraw": 9.626190476181884,
+  "tileShare": 0.6559485530549888,
+  "RES": 4,
+  "SW": 176,
+  "SH": 273,
+  "pos": [
+   "town",
+   8,
+   14
+  ],
+  "goal": {
+   "x": 16,
+   "y": 18,
+   "len": 30
+  },
+  "moving": true
+ },
+ "idle": {
+  "drawsPerSec": 13.666666666666666,
+  "msPerDraw": 8.180487804874357
+ },
+ "tileCache": {
+  "map": "town",
+  "w": 22,
+  "h": 20,
+  "buildMs": 18.29999999998836,
+  "loopMs": 9.5,
+  "cachedMs": 2.1033333333325572,
+  "water": 8
+ },
+ "logo": {
+  "R": 4,
+  "liveMs": 11.669999999998254,
+  "buildMs": 1.400000000023283,
+  "cachedMs": 0.7149999999994179
+ },
+ "castImg": {
+  "n": 149,
+  "ms": 37.20000000001164
+ }
+}

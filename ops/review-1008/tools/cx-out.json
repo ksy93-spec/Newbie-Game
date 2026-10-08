@@ -1,0 +1,194 @@
+{
+ "newPlayer": {
+  "onboardTaps": 4,
+  "onboardMs": 3255,
+  "cineSkip": 0,
+  "screenAfterOnboard": "home",
+  "tutTaps": 7,
+  "guideVisible": true,
+  "guideText": "여기서 첫 상담오른쪽 부동산 전세 창구 · 눌러서 걷기",
+  "guideWalkMs": 6473,
+  "afterGuide": "quest",
+  "questScreen": "quest",
+  "questTaps": 9,
+  "afterQuest": "result",
+  "resultGains": [
+   "집 · 방어력17",
+   "정답3 / 3",
+   "획득무소음 마우스"
+  ],
+  "afterFirstTalkTaps": 0,
+  "guideAfterFirst": false,
+  "mqChip": "다음 메인 1장 첫 취업퀘스트 2개 더",
+  "tierLine": "움막다음 퀘스트를 깨면 해금"
+ },
+ "day5": {
+  "where": "room",
+  "guideVisible": false,
+  "mq": "메인 1장 첫 취업눌러서 시작",
+  "tier": "움막다음 거처까지 집 스탯 4",
+  "sub": "직장인 · 1~3년차 · 수도권",
+  "tinyText": [
+   "10px 직장인 · 1~3년차 · ",
+   "10px NEXT Lv.6",
+   "10px 120 / 340 XP",
+   "9px 포만",
+   "9px 30/100",
+   "9px 체력",
+   "9px 70",
+   "9px 청결",
+   "9px 60",
+   "9px 기분",
+   "9px 70",
+   "10px 첫 취업",
+   "10px 메인 1장",
+   "9px 눌러서 시작",
+   "10px 다음 거처까지 집 스탯 4",
+   "11px 오늘 할 일",
+   "9px 홈",
+   "9px 백과",
+   "9px 캐릭터",
+   "9px 상점"
+  ],
+  "todayButtons": [
+   "광고 보고 하나 더 열기 · 오늘 2회 남음",
+   "광고 보고 출석 보너스 +￦30",
+   "닫기"
+  ],
+  "travelRows": [
+   "움막내 방·",
+   "동네1 · 집 앞할 일 3",
+   "주택가1 · 동네 남쪽·",
+   "학교 앞2 · 알바와 학자금할 일 2",
+   "고용센터 앞3 · 취업 준비할 일 1",
+   "전통시장3 · 고용센터 남쪽·",
+   "회사 앞4 · 첫 출근 이후할 일 2",
+   "역 앞메인 1장을 마치면잠김",
+   "은행 골목5 · 계약과 돈·",
+   "닫기"
+  ],
+  "questSpots": [
+   {
+    "map": "town_mart",
+    "desk": "먹는 자리",
+    "q": "식비를 고정비로 만들기",
+    "tilesOut": 6,
+    "tilesIn": 3,
+    "sec": 2
+   },
+   {
+    "map": "rest",
+    "desk": "트럭 기사",
+    "q": "장거리 운전 안전",
+    "tilesOut": 0,
+    "tilesIn": 7,
+    "sec": 1.5
+   },
+   {
+    "map": "rest",
+    "desk": "주유소",
+    "q": "기름값 아끼는 운전",
+    "tilesOut": 0,
+    "tilesIn": 15,
+    "sec": 3.3
+   },
+   {
+    "map": "gangneung",
+    "desk": "관광안내소",
+    "q": "바가지 안 당하는 법",
+    "tilesOut": 0,
+    "tilesIn": 0,
+    "sec": 0
+   },
+   {
+    "map": "gangneung",
+    "desk": "안전요원",
+    "q": "물놀이 안전",
+    "tilesOut": 0,
+    "tilesIn": 13,
+    "sec": 2.9
+   },
+   {
+    "map": "busan",
+    "desk": "렌터카",
+    "q": "렌터카와 택시",
+    "tilesOut": 0,
+    "tilesIn": 1,
+    "sec": 0.2
+   },
+   {
+    "map": "jeonju_inn",
+    "desk": "게스트하우스",
+    "q": "숙소 예약 사기 피하기",
+    "tilesOut": 4,
+    "tilesIn": 3,
+    "sec": 1.5
+   }
+  ],
+  "eat": {
+   "tilesTown": 6,
+   "tilesMart": 3
+  },
+  "eatTapsToMenu": 0,
+  "eatOpts": [
+   "먹을 것 사기",
+   "넌센스 퀴즈 풀기",
+   "이야기 듣기",
+   "그냥 갈게요"
+  ],
+  "eatTapsMenu": 2,
+  "eatFullAfter": 50,
+  "eatCloseTaps": 5,
+  "homeRow": 0,
+  "settings": {
+   "y": 4292,
+   "vh": 512,
+   "total": 4921
+  }
+ },
+ "equipMove": {
+  "charText": "공격 4\n방어 27\n￦ 880\n거처 6 · 장비 21 · 세간 0 = 방어 27",
+  "houseOpen": {
+   "tip": false,
+   "text": "머리\n비어 있음\n상의\n사원증 목걸이\n하의\n검정 슬랙스\n공격 4\n방어 27\n￦ 880\n거처 6 · 장비 21 · 세간 0 = 방어 27\n무기\n3색 볼펜\n탈것\n비어 있음\n펫\n비어 있음\n거처\n움막\n방어 +6\n세간\n아직 없음\n상점에서 사요",
+   "btns": [
+    "거처움막방어 +6",
+    "움막✓",
+    "텐트￦30"
+   ]
+  },
+  "houseRow": "텐트￦30",
+  "houseTipBtns": [
+   "￦30 내고 여기서 살기",
+   "닫기"
+  ],
+  "houseConfirm": null,
+  "tierAfter": 1,
+  "extraBtns": [
+   "￦30 내고 여기서 살기",
+   "닫기"
+  ],
+  "gearView": {
+   "tip": false,
+   "bag": "머리 가방",
+   "items": 7,
+   "hint": "눌러서 자세히 · 장착"
+  },
+  "shop": {
+   "rows": 63,
+   "firstBuyableY": 228,
+   "scrollH": 5909,
+   "vh": 391,
+   "sections": [
+    "세간 · 방에 들이면 능력치가 올라요",
+    "무기",
+    "상의",
+    "머리",
+    "하의",
+    "펫",
+    "탈것"
+   ]
+  },
+  "bossToast": "집 스탯 30부터 붙을 수 있어요 · 지금 14"
+ }
+}
