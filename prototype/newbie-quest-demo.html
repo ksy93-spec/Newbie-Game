@@ -684,6 +684,7 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
 .chkchip{right:60px;}
 .mapfade{position:absolute;inset:0;z-index:7;background:#0E1022;opacity:0;pointer-events:none;transition:opacity .22s ease-out;}
 .mapfade.on{opacity:1;transition:none;}
+.btn.btn--danger{color:#C0392B;border-color:#E3A69C;}
 </style>
 
 <div id="app">
@@ -4994,7 +4995,7 @@ function furniRow(id){
     drawObj(x,{id:id},0,0); x.restore(); }
   var right=(id==='ramen')
     ? '<span>'+(S.ramen||0)+'봉지</span>'
-    : (it.atk?'<span class="a">공 +'+it.atk+'</span><br>':'')+(it.def?'<span class="d">방 +'+it.def+'</span>':'');
+    : (it.atk?'<span class="a">공격 +'+it.atk+'</span><br>':'')+(it.def?'<span class="d">방어 +'+it.def+'</span>':'');
   var wrap=document.createElement('span');
   wrap.innerHTML='<span class="inm">'+it.name+(it.w?' <span class="sz">'+it.w+'×'+it.h+'</span>':'')+'</span>'+
     '<span class="idesc">'+it.desc+'</span>'+
@@ -7954,7 +7955,7 @@ var TUT_STEPS=[
    '차를 샀구나! 차는 찻길과 주차장으로만 다녀. 보도 쪽을 누르면 가까운 주차장(P)에 세우고 걸어가.',
    '다시 타려면 세워 둔 차를 눌러. 차 자리로 가서 타게 돼.',
    '동네 왼쪽 끝 찻길로 나가면 고속도로야. 휴게소에 들렀다가 전국 어디든 가 봐. 기름값은 들지만.']},
- {id:'boss',when:function(){ return BOSSES.some(function(b){ return bossReady(b)&&!bossCleared(b.id); }); },lines:[
+ {id:'boss',when:function(){ return mapOpen('bank')&&BOSSES.some(function(b){ return bossReady(b)&&!bossCleared(b.id); }); },   /* 은행 골목이 잠겼으면 아직 안내하지 않는다 */lines:[
    '은행 골목에 네가 붙어 볼 만한 상대가 나타났어. 자물쇠가 풀린 사람을 찾아 봐.',
    '보스는 여러 문항을 연달아 묻고, 틀리면 체력이 깎여. 장비가 좋을수록 오래 버텨.']}
 ];
@@ -8603,8 +8604,8 @@ function openTip(html,rc,buttons){
   var bk=document.getElementById('itip'),bx=document.getElementById('itipbox');
   bx.style.setProperty('--rc',rc||'#C9C3D6'); bx.innerHTML=html;
   var row=document.createElement('div'); row.className='ibtns';
-  (buttons||[]).concat([{t:'닫기',plain:1,f:closeTip}]).forEach(function(bt){
-    var b=document.createElement('button'); b.className='btn pix'+(bt.plain?' btn--plain':''); b.textContent=bt.t;
+  (buttons||[]).concat(buttons&&buttons.noClose?[]:[{t:'닫기',plain:1,f:closeTip}]).forEach(function(bt){
+    var b=document.createElement('button'); b.className='btn pix'+(bt.plain?' btn--plain':'')+(bt.danger?' btn--danger':''); b.textContent=bt.t;
     if(bt.off) b.disabled=true; else b.onclick=function(){ sfx('pick'); bt.f(); };
     row.appendChild(b); });
   bx.appendChild(row);
@@ -8724,7 +8725,7 @@ function renderCodex(){
       cp.appendChild(b); }); });
   var eb='';
   EPISODES.forEach(function(e){ var bst=epBestOf(e.id); eb+='<b>사건</b><span>'+e.title+' · '+(bst===null?'아직':bst===0?'최고 결말':'결말 '+(bst+1)+'단계')+'</span>'; });
-  BOSSES.forEach(function(b){ eb+='<b>보스</b><span>'+b.name+' · '+(bossCleared(b.id)?'격파':bossReady(b)?'도전 가능':'잠김')+'</span>'; });
+  BOSSES.forEach(function(b){ eb+='<b>보스</b><span>'+b.name+' · '+(bossCleared(b.id)?'격파':!bossReady(b)?'잠김':mapOpen('bank')?'도전 가능':'Lv.'+MAP_LV.bank+'에 은행 골목에서')+'</span>'; });
   var rv=(S.review||[]).filter(function(r){ return !r.done; }).length;
   eb+='<b>복습</b><span>'+(rv?rv+'문항 대기 · 내 방 책상':'없음')+'</span>';
   document.getElementById('cepboss').innerHTML=eb;
@@ -9235,7 +9236,7 @@ function finish(failed){
   var rxp=document.getElementById('rxp');
   rxp.textContent=failed?'보상 없음 · 틀린 문항은 복습에 담았어요':'+'+xp+' XP · ￦'+coin;
   rxp.style.color=failed?P.s2:''; rxp.style.fontSize=failed?'14px':'';
-  if(!failed) countUp(rxp,xp,coin);
+  if(!failed){ if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)) rxp.textContent='+0 XP · ￦0'; countUp(rxp,xp,coin); }
   paintHero(document.getElementById('rchar'),failed?'idle':'cheer',0);
   var g=document.getElementById('rgains'); g.innerHTML='';
   Object.keys(q.stat).forEach(function(k){ var d=document.createElement('div'); d.className='gain';
@@ -9421,7 +9422,8 @@ document.getElementById('eeback').onclick=function(){ render('home'); if(MQ_OUTR
 document.getElementById('reset').onclick=function(){
   openTip('<div class="ih"><div><span class="inm">처음부터 할까요?</span></div></div><hr>'+
     '<div class="il warn"><i>◆</i>레벨, 코인, 거처, 메인 퀘스트 진행이 모두 지워지고 되돌릴 수 없어요.</div>','#F4705A',
-    [{t:'돌아가기',f:closeTip},{t:'지우고 처음부터',f:function(){ closeTip(); S=fresh(); save(); obStep=0; stopWalk(); obRender(); go('onboard'); }}]); };
+    nc([{t:'돌아가기',f:closeTip},{t:'지우고 처음부터',danger:1,plain:1,f:function(){ closeTip(); S=fresh(); save(); obStep=0; stopWalk(); obRender(); go('onboard'); }}])); };
+function nc(a){ a.noClose=1; return a; }   /* 되돌릴 수 없는 확인 창은 "돌아가기"가 닫기 역할이다 */
 window.addEventListener('resize',function(){
   if(document.getElementById('home').classList.contains('on')){ fitScene(); drawScene(); } });
 
@@ -11613,7 +11615,7 @@ function renderCheck(){
   sh.onclick=function(){ shareCheck(c); };
   var rs=document.createElement('button'); rs.className='btn btn--plain'; rs.textContent='체크 모두 지우기';
   rs.onclick=function(){ openTip('<div class="ih"><div><span class="inm">체크를 모두 지울까요?</span></div></div><hr><div class="il warn"><i>◆</i>이 목록에서 체크한 항목이 모두 지워져요.</div>','#F4705A',
-    [{t:'돌아가기',f:closeTip},{t:'모두 지우기',f:function(){ closeTip(); st.done={}; save(); renderCheck(); }}]); };
+    nc([{t:'돌아가기',f:closeTip},{t:'모두 지우기',danger:1,plain:1,f:function(){ closeTip(); st.done={}; save(); renderCheck(); }}])); };
   foot.appendChild(sh); foot.appendChild(rs); box.appendChild(foot);
   var nt=document.createElement('div'); nt.className='micro';
   nt.innerHTML='기준일 '+CHECK_ASOF+' · 참고: <a href="'+c.src[1]+'" target="_blank" rel="noopener">'+esc(c.src[0])+'</a><br>'+
