@@ -6,13 +6,14 @@
    {중괄호}는 lifeFill이 재생 직전에 채운다. 채울 값이 없으면 그대로 남으니 값은 꼭 넣는다.
      {name}      주인공 이름 (HEROES.name, 3자)
      {region}    출신 지역 글자: 수도권 / 광역시 / 지방 소도시
+     {birth} 생년월일, {dong} 출생지(시 구 동), {school} 출신 고교, {major} 전공, {mbti}, {blood} 혈액형(A·B·O·AB),
+     {food} 좋아하는 음식, {hobby} 취미, {birthMD} 생일 월일  (모두 생성된 약력 카드에서)
      {household} 집안 형편 글자: 넉넉한 편 / 보통 / 빠듯한 편
-     {trait}     성향 글자 (6자 안쪽)
      {home}      첫 거처 이름 (TIERS.name 또는 '본가 방', 6자 안쪽)
      {start}     LIFE_START[region]  (엔딩 "막 ___ 누군가")
      {startBg}   LIFE_START_BG[region] (엔딩 마지막 장면 배경)
      {title}     인생 칭호 이름 (LIFE_TITLES[id].name)
-   열쇠 값: region = 'cap' | 'metro' | 'etc', household = 'rich' | 'mid' | 'tight'
+   열쇠 값: region = 'cap' | 'metro' | 'etc', household = 'rich' | 'mid' | 'tight', dialect = 'gs' | 'jl' | 'cc' | null
    재생: playMQ({kicker:'LIFE', title, sub, scenes:lifeFill(...), endScenes:function(){return [];}, onDone})
    선택지(choice)는 없다. 큰 결정 갈림길은 2단계. */
 
@@ -21,15 +22,16 @@ var LIFE_START_BG = { cap: 'station', metro: 'station', etc: 'hometown' };
 /* 할배가 기억하는 고향. 할배 = 이 판의 주인공이므로 카드에 따라 바뀐다 (story.md 3절) */
 var LIFE_HOMETOWN = { cap: '광역버스 첫차 서는 동네', metro: '지하철 종점 동네', etc: '버스가 하루 네 번 서는 마을' };
 
-/* (a) 태어남: 태어남 카드를 확정한 뒤 1번. 약 26초 */
+/* (a) 태어남: 태어남 카드(생성된 약력)를 확정한 뒤 1번. 약 29초
+   조립: head 2 + 지역 풍경 1 + 할배 등장 1(사투리 지역은 dialect) + 지역 1 + 형편 1 + 맛 1(MBTI/음식, 같은 카드면 same) + tail 2 */
 var LIFE_BIRTH = {
  title: '태어남', sub: '스무 살, 카드 한 장',
  head: [
   { bg: 'night', fx: 'fade',
     text: ['지구에 80억 명.', '그중 한 명으로', '태어났다.'] },
   { bg: 'night',
-    doc: { t: '태어남 카드', rows: [['이름', '{name}'], ['출신', '{region}'], ['집안', '{household}'], ['성향', '{trait}']], bad: [] },
-    text: ['스무 살, 대학생.', '이게 내 카드다.'] } ],
+    doc: { t: '태어남 카드', rows: [['생일', '{birth}'], ['출생', '{dong}'], ['학교', '{school}'], ['나', '{mbti} · {blood}형']], bad: [] },
+    text: ['{dong}에서', '태어난 {name}.', '지금은 {major} 1학년.'] } ],
  /* 지역마다 하나: 그 동네 풍경 */
  place: {
   cap:   { bg: 'station', cast: [['hero', 'C']],
@@ -57,17 +59,49 @@ var LIFE_BIRTH = {
            text: ['보통이 제일 많지.', '그만큼 물어볼 사람도', '많다는 뜻이야.'] },
   tight: { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
            text: ['빠듯하게 자라면', '돈 귀한 걸 알지.', '그게 자네 무기야.'] } },
- /* 그 외 + 빠듯: 할배가 걸어온 첫 인생과 같은 카드. 형편 장면 뒤에 하나 더 */
+ /* 맛 한 칸: MBTI(E/I) 또는 음식 1장면. lifeBirthScenes가 고른다 */
+ mbti: {
+  E: { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+       text: ['{mbti}라. 허허,', '사람 많은 데서', '힘 나는 쪽이구먼.'] },
+  I: { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+       text: ['{mbti}라. 허허,', '혼자 서류 읽는 건', '자네가 잘하겠네.'] } },
+ food: { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+         text: ['{food} 좋아하나?', '허허, 그건 평생', '안 바뀌더군.'] },
+ /* 사투리: 출생 시도가 경상·전라·충청이면 할배 등장(meet) 장면을 이것으로 바꾼다.
+    할배가 저도 모르게 자네 고향 말씨로 말을 걸고, 표준어로 고쳐 말한다(복선). 가볍게, 놀리지 않게 */
+ dialect: {
+  gs: { bg: 'town', fx: 'fade', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+        text: ['허허, 카드 받았나?', '어디 함 보자...', '...흠, 좀 보세.'] },
+  jl: { bg: 'town', fx: 'fade', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+        text: ['허허, 카드 받았는가?', '어디 한번 보세잉...', '...흠, 좀 보세.'] },
+  cc: { bg: 'town', fx: 'fade', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+        text: ['허허, 카드 받았슈?', '어디 한번 봐유...', '...흠, 좀 보세.'] } },
+ /* 그 외 + 빠듯: 할배가 걸어온 첫 인생과 같은 카드. 이때는 MBTI·음식 대신 이 장면 */
  same: { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
          text: ['...이 카드는', '어째 낯이 익구먼.'] },
  tail: [
-  { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '나',
-    text: ['그럼 저는', '뭐부터 해요?'] },
   { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
     text: ['카드는 정해졌어도', '사는 건 자네가', '정하는 거야.'] },
   { bg: 'town', fx: 'confetti', cast: [['hero', 'C']],
     text: ['스무 살 봄.', '{home}에서', '인생이 시작됐다.'] } ]
 };
+
+/* TMI: 플레이 중 홈 말풍선이나 토스트로 가끔 뜨는 한 줄. 하루 1번, 같은 줄은 30일에 1번 (제안)
+   need의 칸이 비면 뜨지 않는다. when은 띄울 때(제안) */
+var LIFE_TMI = [
+ { id: 'food',  need: ['food'],  when: '월급날 또는 메인 장을 깬 날', who: '나',
+   text: ['오늘 저녁은 {food}.', '이건 못 참지.'] },
+ { id: 'mbti',  need: ['mbti'],  when: '아무 날', who: '나',
+   text: ['MBTI 검사를 또 했다.', '역시 {mbti}.'] },
+ { id: 'blood', need: ['blood'], when: '퀘스트를 틀린 날', who: '나',
+   text: ['{blood}형이라 그렇대.', '...그런가?'] },
+ { id: 'birth', need: ['birthMD'], when: '게임 날짜가 생일({birthMD})인 날', who: '귀인 할배',
+   text: ['허허, 오늘 자네', '생일 아닌가.', '미역국은 먹었나?'] },
+ { id: 'hobby', need: ['hobby'], when: '주말', who: '나',
+   text: ['주말엔 {hobby}.', '통장은 조금 울었다.'] },
+ { id: 'school', need: ['school'], when: '세월 컷신 다음 날', who: null,
+   text: ['{school} 단톡방이', '오랜만에 울렸다.'] }
+];
 
 /* (b) 세월: 메인 장 사이 나이 건너뛰기. 각 10~15초. age는 제안값(story.md 2절), 바꾸면 text도 같이 바꾼다 */
 var LIFE_YEARS = {
@@ -156,7 +190,7 @@ var LIFE_END = {
  title: '예순', sub: '인생 결산',
  part1: [
   { bg: 'livingroom', fx: 'fade', cast: [['hero', 'L'], ['partner', 'R']],
-    text: ['예순 번째 생일.', '큰 초 여섯 개.'] },
+    text: ['예순 번째 생일.', '큰 초 여섯 개,', '상 위엔 {food}.'] },
   { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'R']], who: '배우자',
     text: ['서랍 정리하다가', '이게 다 나왔어.'] },
   { bg: 'livingroom',
@@ -222,14 +256,24 @@ function lifeFill(scenes, f) {
     if (q.doc) q.doc.rows = q.doc.rows.map(function (r) { return r.map(function (c) { return lifeRp(c, f); }); });
     return q; });
 }
-/* card = {region:'cap'|'metro'|'etc', household:'rich'|'mid'|'tight', regionText, householdText, traitText, home} */
-function lifeBirthScenes(card, name) {
-  var B = LIFE_BIRTH, sc = B.head.concat([B.place[card.region]], B.meet, [B.region[card.region], B.household[card.household]]);
+/* card = 생성된 약력. 열쇠: region 'cap'|'metro'|'etc', household 'rich'|'mid'|'tight',
+   dialect 'gs'|'jl'|'cc'|null(출생 시도: 경상·부산·대구·울산 gs / 전라·광주 jl / 충청·대전·세종 cc)
+   글자: regionText householdText home name birth dong school major mbti blood food hobby birthMD */
+function lifeBirthScenes(card) {
+  var B = LIFE_BIRTH, f = card, meet = (card.dialect && B.dialect[card.dialect]) ? [B.dialect[card.dialect]] : B.meet;
+  var sc = B.head.concat([B.place[card.region]], meet, [B.region[card.region], B.household[card.household]]);
   if (card.region === 'etc' && card.household === 'tight') sc.push(B.same);
+  else if (card.mbti && (!card.food || (card.birth || '').length % 2)) sc.push(B.mbti[card.mbti.charAt(0) === 'E' ? 'E' : 'I']);
+  else if (card.food) sc.push(B.food);
   sc = sc.concat(B.tail);
-  return lifeFill(sc, { name: name, region: card.regionText, household: card.householdText, trait: card.traitText, home: card.home });
+  return lifeFill(sc, Object.assign({}, f, { region: f.regionText, household: f.householdText }));
 }
 function lifeEndScenes(part, card, titleId) {
-  return lifeFill(LIFE_END[part], { title: (LIFE_TITLES[titleId] || LIFE_TITLES.light).name,
+  return lifeFill(LIFE_END[part], { title: (LIFE_TITLES[titleId] || LIFE_TITLES.light).name, food: card.food || '미역국',
     start: LIFE_START[card.region], startBg: LIFE_START_BG[card.region] });
+}
+function lifeTmi(id, card) {
+  var t = LIFE_TMI.filter(function (x) { return x.id === id; })[0];
+  if (!t || t.need.some(function (k) { return !card[k]; })) return null;
+  return { who: t.who, text: t.text.map(function (l) { return lifeRp(l, card); }) };
 }
