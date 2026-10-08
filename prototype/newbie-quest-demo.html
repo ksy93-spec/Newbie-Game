@@ -690,6 +690,18 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
 .pst b{font-weight:700;} .pst em{font-style:normal;text-align:right;}
 .pst .pbar{height:8px;background:rgba(0,0,0,.12);border-radius:4px;overflow:hidden;} .pst .pbar i{display:block;height:100%;}
 .pst small{grid-column:2/4;font-size:11px;color:var(--s2);}
+/* 인생 모드: 태어남 카드, 결산 카드 */
+.bcard{background:#FFFDF6;color:#2E2740;border:3px solid #2E2740;border-radius:10px;padding:10px 12px;margin-top:8px;font-size:12px;line-height:1.45;}
+.bch{display:flex;flex-direction:column;gap:2px;margin-bottom:4px;} .bch b{font-size:18px;} .bch span{font-size:11px;color:#6B6380;}
+.bcl{font-size:12px;color:#3A3350;}
+.bcr{display:grid;grid-template-columns:34px 1fr auto;gap:6px;align-items:baseline;border-top:1px dashed #D8D2E4;padding:4px 0;}
+.bcr span{color:#6B6380;font-size:11px;} .bcr small{color:#3A9B5A;font-size:10px;text-align:right;}
+.bcs{background:#2E2740;color:#FFE79B;border-radius:6px;padding:5px 8px;margin:6px 0;font-size:11px;}
+.bcg{display:grid;grid-template-columns:1fr 1fr;gap:3px 8px;} .bct{display:flex;flex-direction:column;} .bct span{font-size:10px;color:#6B6380;} .bct b{font-weight:400;font-size:12px;}
+.bcq{margin-top:6px;color:#2E2740;} .bci{font-size:11px;color:#57517A;margin-top:2px;} .bcf{font-size:10px;color:#9A9AA0;margin-top:6px;}
+.lcard{display:flex;flex-direction:column;gap:6px;} .lch{font-size:11px;color:#9B93A8;} .lct{font-size:20px;color:#FFE79B;} .lcl{font-size:12px;color:#CDEEFF;}
+.lcn{font-size:13px;} .lcp{font-size:11px;color:#9B93A8;} .lcg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center;}
+.lcg span{display:block;font-size:10px;color:#9B93A8;} .lcg b{font-size:12px;} .lcs{font-size:11px;} .lcf{font-size:10px;color:#6B6380;}
 </style>
 
 <div id="app">
@@ -2361,7 +2373,7 @@ var TIERS=[
 var TIER_DEP=[0,20,50,90,140,200,280,380,500,650,830,1040,1280,1550,1850];
 /* 새 거처는 하루에 하나(설치 첫날만 둘)까지만 열린다. 15단계를 퀘스트 15개로 다 오르던 것을 막는다.
    스탯이 앞서 가도 열리는 속도는 하루 한 칸이라, 매일 성실히 하면 신축이 열리는 것은 2주째다. */
-function upLeft(){ var t=dayKey(); if(S.upDay!==t){ S.upDay=t; S.upN=0; }
+function upLeft(){ if(lifeOn()) return 9; var t=dayKey(); if(S.upDay!==t){ S.upDay=t; S.upN=0; }
   return ((S.first&&dayGap(S.first,t)===0)?2:1)-(S.upN||0); }
 function upUse(){ upLeft(); S.upN=(S.upN||0)+1; }
 /* 스탯이 충분하고 오늘 몫이 남았으면 거처를 한 칸 연다. 퀘스트를 끝낼 때와 새 하루를 열 때 부른다
@@ -3437,7 +3449,7 @@ function ev(n,p){
 
 /* ══════════ 상태 ══════════ */
 var KEY='nq.v8';
-function fresh(){ return {onboarded:false,status:null,age:null,years:null,company:null,living:null,prep:null,region:null,
+function fresh(){ return {mode:SLOT==='life'?'life':'normal',life:SLOT==='life'?lifeFresh():null,onboarded:false,status:null,age:null,years:null,company:null,living:null,prep:null,region:null,
  lv:1,xp:0,coin:150,tier:0,peak:0,done:[],bossCleared:false,bossDone:[],epBest:{},
  pos:{map:'town',tx:2,ty:4,dir:0},
  furni:[],ramen:0,redecorate:0,lastTier:0,econ:2,tut:0,
@@ -3456,7 +3468,7 @@ function fresh(){ return {onboarded:false,status:null,age:null,years:null,compan
  equip:{weapon:'pen',top:'shirt',head:'hnone',bottom:'beige',pet:'pnone',mount:'mnone'}}; }
 var S=null;
 function load(){ var o=null;
-  try{ var r=localStorage.getItem(KEY); if(r) o=JSON.parse(r); }catch(e){}
+  try{ var r=localStorage.getItem(slotKey()); if(r) o=JSON.parse(r); }catch(e){}
   if(!o) return fresh();
   var f=fresh(),legacy=(o.mq===undefined)&&!!o.onboarded;   /* 메인 퀘스트 전의 저장인지 메우기 전에 본다 */
   Object.keys(f).forEach(function(k){ if(o[k]===undefined) o[k]=f[k]; });
@@ -3471,7 +3483,545 @@ function load(){ var o=null;
   if(o.avatar==='imgM') o.avatar='stuM';
   if(o.avatar==='imgF') o.avatar='stuF';
   return o; }
-function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+function save(){ try{ localStorage.setItem(slotKey(),JSON.stringify(S)); }catch(e){} }
+
+/* ══════════ 인생 모드 ══════════
+   "미리 살아보는 인생". 스무 살에 태어남 카드(한 사람의 약력)를 받아 시작하고, 메인 장을 지나며 나이를 먹고,
+   예순에 인생 결산 카드를 받는다. 일반 모드와 저장 칸을 따로 쓴다(nq.v8 / nq.life.v1).
+   통계 비율은 기획 문서(ops/life-1009/design.md)의 대략값이고 모두 출시 전 검증이 필요하다. */
+var KEY_LIFE='nq.life.v1',KEY_ALBUM='nq.album.v1',SLOT='normal';
+try{ if(localStorage.getItem('nq.slot')==='life') SLOT='life'; }catch(e){}
+function slotKey(){ return SLOT==='life'?KEY_LIFE:KEY; }
+function setSlot(s){ SLOT=s; try{ localStorage.setItem('nq.slot',s); }catch(e){} }
+function peekSlot(k){ try{ var r=localStorage.getItem(k); return r?JSON.parse(r):null; }catch(e){ return null; } }
+function lifeOn(){ return !!(S&&S.mode==='life'); }
+function lifeFresh(){ return {v:1,rolls:0,seed:null,prof:null,prev:[],t0:Date.now(),age:20,anch:{age:20,done:0},yrs:{},over:false,title:null,applied:false}; }
+
+/* ── 약력 생성기 표 ── */
+var LIFE_AGES={job:24,lease:26,card:27,car:29,wedding:32,home:37,end:60};
+var LIFE_YEAR=2026;
+var SEED_ABC='23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+var LIFE_SIDO=[
+ {s:'서울',p:18.2,band:'수도권',dia:'std',g:[['강남구',['역삼동','대치동','개포동']],['송파구',['잠실동','가락동','문정동']],['관악구',['신림동','봉천동']],['노원구',['상계동','중계동','공릉동']],['마포구',['망원동','성산동','합정동']],['은평구',['불광동','응암동']],['강서구',['화곡동','등촌동','가양동']],['성북구',['정릉동','길음동']]]},
+ {s:'경기',p:26.7,band:'수도권',dia:'std',g:[['수원시 영통구',['영통동','매탄동']],['성남시 분당구',['정자동','서현동']],['고양시 일산동구',['장항동','마두동']],['화성시',['병점동','봉담읍']],['용인시 수지구',['풍덕천동','죽전동']],['부천시',['중동','상동']],['안산시 단원구',['고잔동','초지동']],['의정부시',['의정부동','호원동']],['평택시',['비전동','합정동']]]},
+ {s:'인천',p:5.9,band:'수도권',dia:'std',g:[['남동구',['구월동','논현동']],['부평구',['부평동','산곡동']],['연수구',['송도동','연수동']],['서구',['청라동','가정동']]]},
+ {s:'부산',p:6.4,band:'광역시',dia:'gs',g:[['사상구',['학장동','엄궁동','주례동']],['해운대구',['우동','좌동','반여동']],['부산진구',['부전동','전포동']],['동래구',['온천동','사직동']],['사하구',['하단동','괴정동']]]},
+ {s:'대구',p:4.6,band:'광역시',dia:'gs',g:[['수성구',['범어동','만촌동']],['달서구',['상인동','월성동']],['북구',['침산동','산격동']]]},
+ {s:'광주',p:2.7,band:'광역시',dia:'jl',g:[['북구',['용봉동','운암동']],['서구',['치평동','풍암동']],['광산구',['수완동','쌍암동']]]},
+ {s:'대전',p:2.8,band:'광역시',dia:'cc',g:[['서구',['둔산동','월평동']],['유성구',['봉명동','노은동']]]},
+ {s:'울산',p:2.1,band:'광역시',dia:'gs',g:[['남구',['삼산동','무거동']],['중구',['성안동','우정동']]]},
+ {s:'세종',p:0.8,band:'그 외',dia:'cc',g:[['세종시',['도담동','아름동']]]},
+ {s:'강원',p:3.0,band:'그 외',dia:'std',g:[['춘천시',['석사동','퇴계동']],['원주시',['단구동','무실동']],['강릉시',['교동','포남동']]]},
+ {s:'충북',p:3.1,band:'그 외',dia:'cc',g:[['청주시 흥덕구',['복대동','가경동']],['충주시',['연수동','호암동']]]},
+ {s:'충남',p:4.1,band:'그 외',dia:'cc',g:[['천안시 서북구',['불당동','쌍용동']],['아산시',['온천동','용화동']]]},
+ {s:'전북',p:3.4,band:'그 외',dia:'jl',g:[['전주시 완산구',['효자동','삼천동']],['익산시',['영등동','모현동']],['군산시',['나운동','수송동']]]},
+ {s:'전남',p:3.5,band:'그 외',dia:'jl',g:[['순천시',['왕조동','연향동']],['여수시',['여서동','문수동']],['목포시',['상동','옥암동']]]},
+ {s:'경북',p:5.0,band:'그 외',dia:'gs',g:[['포항시 남구',['대잠동','효곡동']],['구미시',['인동동','송정동']],['경주시',['황성동','동천동']]]},
+ {s:'경남',p:6.3,band:'그 외',dia:'gs',g:[['창원시 성산구',['상남동','중앙동']],['김해시',['내외동','장유동']],['진주시',['평거동','가호동']]]},
+ {s:'제주',p:1.3,band:'그 외',dia:'std',g:[['제주시',['노형동','연동','이도동']],['서귀포시',['동홍동','대륜동']]]}];
+var LIFE_FX={
+ band:{'수도권':{coin:-10,stat:{jik:3}},'광역시':{coin:0,stat:{sik:3}},'그 외':{coin:20,stat:{ju:4}}},
+ income:[{v:'빠듯',p:20,coin:80,stat:{geum:4}},{v:'보통',p:60,coin:150,stat:{sik:2}},{v:'넉넉',p:20,coin:240,stat:{ui:2}}],
+ path:[{v:'4년제',p:51,stat:{ui:2,geum:1}},{v:'전문대',p:24,stat:{jik:4}},{v:'고졸',p:25,stat:{jik:3},coin:30}],
+ living:{'본가':{tier:0,coin:60,home:'본가 방'},'기숙사':{tier:3,coin:0,home:'기숙사'},'자취':{tier:4,coin:-40,home:'자취방'}},
+ byBand:{'수도권':[{v:'본가',p:60},{v:'기숙사',p:15},{v:'자취',p:25}],'광역시':[{v:'본가',p:45},{v:'기숙사',p:20},{v:'자취',p:35}],'그 외':[{v:'본가',p:30},{v:'기숙사',p:25},{v:'자취',p:45}]},
+ trait:{'알뜰':{geum:5},'살림':{ju:5},'미식':{sik:5},'꾸밈':{ui:5},'성실':{jik:5}}};
+var LIFE_T={
+ month:[9.1,8.0,8.9,8.2,8.3,7.9,8.4,8.4,8.6,8.3,8.1,7.8],
+ parents:[{v:'부모님 두 분',p:84},{v:'엄마와 나',p:8},{v:'아빠와 나',p:3},{v:'조부모님과',p:2},{v:'새 가족(재혼 가정)',p:3}],
+ sibs:[{v:'외동',p:28},{v:'첫째',p:30},{v:'둘째(막내)',p:30},{v:'셋 중 하나',p:12}],
+ multi:[{v:'엄마가 베트남 출신',p:30},{v:'엄마가 중국 출신',p:30},{v:'엄마가 필리핀 출신',p:12},{v:'아빠가 다른 나라 출신',p:12},{v:'엄마가 일본 출신',p:8},{v:'엄마가 태국 출신',p:8}],
+ pet:[{v:'',p:72},{v:'강아지',p:19},{v:'고양이',p:7},{v:'거북이',p:2}],
+ hs:{'4년제':[{v:'일반고',p:80},{v:'자율형 사립고',p:8},{v:'특목고',p:5},{v:'특성화고',p:7}],'전문대':[{v:'일반고',p:70},{v:'특성화고',p:27},{v:'자율형 사립고',p:3}],'고졸':[{v:'일반고',p:50},{v:'특성화고',p:45},{v:'마이스터고',p:5}]},
+ hsPool:['새솔','한빛','늘푸른','다솜','가온','해오름','미리내','누리','솔내','한울','온누리','청솔','한결','바름','새봄'],
+ hsSpec:['정보','공업','상업','디자인'],
+ uniStay:{'수도권':88,'광역시':65,'그 외':45},
+ uniPool:['한누리','새길','가람','온빛','해솔','미르','다온','한마루','늘봄','푸른숲'],
+ major:[{f:'공학',p:25,st:'jik',o:['기계공학','전자공학','컴퓨터공학','건축공학','화학공학'],c:['기계과','전기과','컴퓨터정보과','건축과','화공과']},
+  {f:'사회',p:26,st:'geum',o:['경영학','경제학','행정학','사회복지학','미디어커뮤니케이션'],c:['세무회계과','경영과','사회복지과','관광과','광고홍보과']},
+  {f:'인문',p:10,st:'ui',o:['국어국문학','영어영문학','사학','철학','중어중문학'],c:['관광영어과','중국어과','문예창작과','일본어과','항공서비스과']},
+  {f:'자연',p:11,st:'sik',o:['생명과학','수학','화학','식품영양학','통계학'],c:['식품영양과','바이오과','환경과','조리과','제과제빵과']},
+  {f:'의약',p:10,st:'sik',o:['간호학','물리치료학','치위생학','약학','보건행정학'],c:['간호과','물리치료과','치위생과','응급구조과','보건행정과']},
+  {f:'예체능',p:13,st:'ui',o:['시각디자인','실용음악','체육학','패션디자인','영상연출'],c:['시각디자인과','실용음악과','생활체육과','패션디자인과','영상제작과']},
+  {f:'교육',p:5,st:'ju',o:['초등교육','유아교육','수학교육','체육교육'],c:['유아교육과','유아교육과','보육과','보육과']}],
+ mbti:{ISTJ:14,ESTJ:10,ISFJ:8,ESFJ:6,ISTP:7,ISFP:7,ESTP:5,ESFP:5,INFP:7,ENFP:7,INFJ:4,ENFJ:4,INTP:5,INTJ:4,ENTP:4,ENTJ:3},
+ mbtiTrait:{ISTJ:['성실','알뜰'],ESTJ:['성실','알뜰'],ISFJ:['살림','알뜰'],ESFJ:['살림','미식'],ISTP:['살림','성실'],ISFP:['꾸밈','미식'],ESTP:['미식','꾸밈'],ESFP:['꾸밈','미식'],
+  INFP:['꾸밈','살림'],ENFP:['미식','꾸밈'],INFJ:['살림','성실'],ENFJ:['성실','꾸밈'],INTP:['알뜰','살림'],INTJ:['알뜰','성실'],ENTP:['미식','성실'],ENTJ:['성실','알뜰']},
+ blood:[{v:'A',p:34},{v:'O',p:28},{v:'B',p:27},{v:'AB',p:11}],
+ height:{M:[174,5.8],F:[161,5.2]},
+ build:[{v:'마른 편',p:18},{v:'보통',p:52},{v:'다부진 편',p:15},{v:'듬직한 편',p:15}],
+ food:['떡볶이','김치찌개','치킨','삼겹살','마라탕','돈가스','라멘','제육볶음','초밥','순대국','엄마표 김밥','삼각김밥','짜장면','냉면','파스타','쌀국수'],
+ foodLocal:{'부산':['돼지국밥','밀면','어묵'],'대구':['막창','납작만두','찜갈비'],'광주':['상추튀김','오리탕'],'대전':['칼국수','두부두루치기'],'울산':['언양불고기'],'강원':['닭갈비','막국수','감자옹심이'],
+  '전북':['비빔밥','콩나물국밥'],'전남':['꼬막비빔밥','떡갈비'],'경북':['찜닭','고등어구이'],'경남':['진주냉면','충무김밥'],'충북':['올갱이국'],'충남':['호두과자','칼국수'],'제주':['고기국수','몸국'],
+  '서울':['평양냉면','곱창'],'경기':['부대찌개','갈비'],'인천':['쫄면','닭강정'],'세종':['복숭아']},
+ hobby:['헬스','러닝','배드민턴','보드게임','웹툰 정주행','아이돌 덕질','필름 카메라','뜨개질','캠핑 영상 보기','게임','노래방','베이킹','식물 키우기','등산','플리마켓 구경','클라이밍','독서 모임','유튜브 편집'],
+ habit:['영수증을 지갑에 꼭 챙긴다','알람을 다섯 개 맞춘다','메모 앱에 뭐든 적는다','엘리베이터 닫힘 버튼을 누른다','음식 사진부터 찍는다','신발 끈을 두 번 묶는다','긴장하면 귤을 깐다','길고양이를 보면 멈춘다','이어폰 한쪽만 낀다','택배 상자를 바로 접는다','펜을 딸깍거린다','잠들기 전 내일 날씨를 본다'],
+ phone:[{v:'아이폰',p:62},{v:'갤럭시',p:36},{v:'중고폰',p:2}],
+ phoneState:['액정에 금 간','3년째 쓰는','지난달 새로 산','형제에게 물려받은','케이스가 두꺼운'],
+ firstJob:[{v:'편의점',p:22},{v:'카페',p:18},{v:'음식점 서빙',p:16},{v:'패스트푸드',p:10},{v:'학원 보조',p:8},{v:'물류센터 상하차',p:8},{v:'영화관',p:5},{v:'과외',p:5,uni:1},{v:'행사 스태프',p:4},{v:'아직 없음',p:4}],
+ surname:[{v:'김',p:21.5},{v:'이',p:14.7},{v:'박',p:8.4},{v:'최',p:4.7},{v:'정',p:4.3},{v:'강',p:2.3},{v:'조',p:2.1},{v:'윤',p:2.1},{v:'장',p:2.0},{v:'임',p:1.6},{v:'한',p:1.5},{v:'오',p:1.5},{v:'서',p:1.5},{v:'신',p:1.5},{v:'권',p:1.4},{v:'황',p:1.4},{v:'안',p:1.4},{v:'송',p:1.3},{v:'전',p:1.1},{v:'홍',p:1.1},{v:'문',p:1.0},{v:'양',p:1.0},{v:'손',p:1.0},{v:'배',p:0.9},{v:'백',p:0.8},{v:'허',p:0.7},{v:'유',p:0.7},{v:'남',p:0.6},{v:'심',p:0.6},{v:'노',p:0.6}],
+ given:{M:['민준','현우','동현','준혁','민재','도현','지훈','승민','건우','유준','시우','우진','성민','준서'],F:['서연','민지','수빈','서현','예은','지원','유진','지민','하은','채원','지은','윤서','다은','예린']},
+ dialect:{std:['일단 해 보고 생각할게요.','오늘도 무사히 지나가면 됐어요.'],gs:['마, 일단 해 보는 기다.','오늘도 무사히 넘어가모 됐다 아이가.'],
+  jl:['일단 해 보고 생각해 볼라고요.','오늘도 무사히 넘어가믄 된당께.'],cc:['일단 해 보고 생각해 봐유.','오늘도 무사히 지나가면 된 거여.']},
+ mbtiLine:{E:'처음 보는 사람과도 금방 말을 트고',I:'말수는 적지만 듣는 건 잘하고',J:'계획표가 있어야 마음이 놓이는',P:'그날 기분 따라 움직이는'},
+ tti:['원숭이','닭','개','돼지','쥐','소','호랑이','토끼','용','뱀','말','양'],
+ zodiac:[[1,20,'염소자리'],[2,19,'물병자리'],[3,21,'물고기자리'],[4,20,'양자리'],[5,21,'황소자리'],[6,22,'쌍둥이자리'],[7,23,'게자리'],[8,23,'사자자리'],[9,23,'처녀자리'],[10,23,'천칭자리'],[11,23,'전갈자리'],[12,22,'사수자리'],[12,32,'염소자리']],
+ traitHero:{M:{'알뜰':'wolse','살림':'wolse','미식':'newbie','꾸밈':'newbie','성실':'spec'},F:{'알뜰':'alttle','살림':'jachwi','미식':'mukbang','꾸밈':'kaltoe','성실':'alttle'}}};
+
+function lifeSeedNew(){ var s='',i; for(i=0;i<6;i++) s+=SEED_ABC[Math.floor(Math.random()*31)]; return 'v1-'+s; }
+/* 칸마다 따로 흐르는 난수. 같은 시드면 언제나 같은 사람 */
+function lifeRng(seed,field){ var h=2166136261,i,s=seed+'|'+field;
+  for(i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); }
+  return function(){ h|=0; h=h+0x6D2B79F5|0; var t=Math.imul(h^h>>>15,1|h); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function wpick(r,o,key){ key=key||'p'; var tot=0,i,x; for(i=0;i<o.length;i++) tot+=o[i][key]; x=r()*tot;
+  for(i=0;i<o.length;i++){ x-=o[i][key]; if(x<0) return o[i]; } return o[o.length-1]; }
+function upick(r,a){ return a[Math.floor(r()*a.length)%a.length]; }
+function gauss(r){ var u=Math.max(1e-9,r()),v=r(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+function lifeGen(seed){
+  var m=/^v1-([0-9A-Z]{6})$/.exec(seed||''); if(!m) return null;
+  var R=function(f){ return lifeRng(seed,f); },T=LIFE_T,p={seed:seed};
+  p.sex=R('sex')()<0.515?'M':'F';
+  var rm=R('birth'),mo=wpick(rm,T.month.map(function(v,i){ return {v:i+1,p:v}; })).v,dim=[31,28,31,30,31,30,31,31,30,31,30,31][mo-1],dd=1+Math.floor(rm()*dim),yy=LIFE_YEAR-20;
+  p.birth=yy+'.'+(mo<10?'0':'')+mo+'.'+(dd<10?'0':'')+dd; p.birthMD=mo+'월 '+dd+'일';
+  p.tti=T.tti[(mo<2||(mo===2&&dd<4)?yy-1:yy)%12];
+  p.zodiac=T.zodiac.filter(function(z){ return mo<z[0]||(mo===z[0]&&dd<z[1]); })[0][2];
+  var rg=R('geo'),sd=wpick(rg,LIFE_SIDO),sg=upick(rg,sd.g),dong=upick(rg,sg[1]);
+  p.sido=sd.s; p.sgg=sg[0]; p.dong=dong; p.band=sd.band; p.dia=sd.dia;
+  var rf=R('family'); p.parents=wpick(rf,T.parents).v; p.sibs=wpick(rf,T.sibs).v; p.multi=rf()<0.03?wpick(rf,T.multi).v:''; p.pet=wpick(rf,T.pet).v;
+  p.income=wpick(R('income'),LIFE_FX.income).v;
+  var rp=R('path'); p.path=wpick(rp,LIFE_FX.path).v;
+  var ht=wpick(rp,T.hs[p.path]).v,stem=dong.replace(/[0-9]+동$|동$|읍$/,'');
+  var hn=(stem.length>=2&&rp()<0.5)?stem:upick(rp,T.hsPool);
+  p.hs=ht==='특성화고'?hn+upick(rp,T.hsSpec)+'고':ht==='마이스터고'?hn+'마이스터고':ht==='특목고'?hn+(rp()<0.5?'외고':'예고'):hn+'고';
+  p.hsType=ht;
+  if(p.path!=='고졸'){ var ru=R('uni'),stay=ru()*100<T.uniStay[p.band],city=stay?sd.s:(ru()<0.8?'서울':'경기'),mj=wpick(ru,T.major),k=Math.floor(ru()*mj.o.length);
+    p.uni=city+' '+upick(ru,T.uniPool)+(p.path==='전문대'?'전문대':'대'); p.major=p.path==='전문대'?mj.c[k%mj.c.length]:mj.o[k]+'과'; p.majorSt=mj.st; p.away=!stay;
+    p.living=p.away?wpick(ru,[{v:'자취',p:60},{v:'기숙사',p:40}]).v:wpick(ru,LIFE_FX.byBand[p.band]).v; }
+  else { p.uni=''; p.major=''; p.majorSt=null; p.living=wpick(R('uni'),[{v:'본가',p:70},{v:'자취',p:30}]).v; }
+  var rb=R('mbti'),mb=wpick(rb,Object.keys(T.mbti).map(function(k){ return {v:k,p:T.mbti[k]}; })).v;
+  p.mbti=mb; p.trait=upick(rb,T.mbtiTrait[mb]);
+  var rx=R('body'); p.blood=wpick(rx,T.blood).v; var hh=T.height[p.sex]; p.height=Math.round(hh[0]+hh[1]*Math.max(-2.5,Math.min(2.5,gauss(rx)))); p.build=wpick(rx,T.build).v; p.glasses=rx()<0.55;
+  var rt=R('tmi'),loc=T.foodLocal[sd.s]; p.food=(loc&&rt()<0.3)?upick(rt,loc):upick(rt,T.food); p.hobby=upick(rt,T.hobby); p.habit=upick(rt,T.habit);
+  p.phone=upick(rt,T.phoneState)+' '+wpick(rt,T.phone).v;
+  var jobs=T.firstJob.filter(function(j){ return !j.uni||p.path!=='고졸'; }); p.firstJob=wpick(rt,jobs).v;
+  var rn=R('name'); p.name=wpick(rn,T.surname).v+upick(rn,T.given[p.sex]);
+  var rd=R('dia'),dk=(p.dia!=='std'&&rd()<0.5)?p.dia:'std'; p.say=upick(rd,T.dialect[dk]);
+  p.intro=T.mbtiLine[mb.charAt(0)]+', '+T.mbtiLine[mb.charAt(3)]+' 사람. 주말엔 '+p.hobby+', 버릇은 '+p.habit+'.';
+  var th=T.traitHero[p.sex][p.trait]; p.hero=(p.glasses&&th!=='spec'&&th!=='alttle'&&rd()<0.5)?(p.sex==='M'?'spec':'alttle'):th;
+  return p; }
+/* 약력이 게임 수치에 닿는 몫. 어느 카드도 못 깨는 판이 되지 않게 작게 */
+function lifeFx(p){
+  var b=LIFE_FX.band[p.band],inc=LIFE_FX.income.filter(function(x){ return x.v===p.income; })[0],pa=LIFE_FX.path.filter(function(x){ return x.v===p.path; })[0],lv=LIFE_FX.living[p.living];
+  var st={ju:0,sik:0,ui:0,geum:0,jik:0},add=function(o){ Object.keys(o||{}).forEach(function(k){ st[k]+=o[k]; }); };
+  add(b.stat); add(inc.stat); add(pa.stat); add(LIFE_FX.trait[p.trait]); if(p.majorSt) st[p.majorSt]+=2;
+  return {coin:Math.max(50,inc.coin+b.coin+(pa.coin||0)+lv.coin),stat:st,tier:lv.tier,home:lv.home,
+    status:p.path==='고졸'?'취준생':'대학생'}; }
+function birthRoll(){
+  var L=S.life; if(L.rolls>=3) return;
+  if(L.prof) L.prev.push({name:L.prof.name,line:L.prof.sido+' '+L.prof.sgg+' · '+L.prof.mbti});
+  L.seed=lifeSeedNew(); L.prof=lifeGen(L.seed); L.rolls++; save(); }
+function birthApply(){
+  var L=S.life,p=L.prof,fx=lifeFx(p); if(!p||L.applied) return;
+  L.applied=true; S.coin=fx.coin;
+  Object.keys(fx.stat).forEach(function(k){ S.stats[k]=(S.stats[k]||5)+fx.stat[k]; });
+  S.tier=S.peak=S.paid=S.lastTier=fx.tier; S.status=fx.status; S.living=p.living; S.region=p.band; S.age=24;
+  S.years=null; S.prep=(fx.status==='취준생')?'공채':null; S.company=null;
+  S.avatar=p.sex==='F'?'stuF':'stuM';
+  if(HEROMAP[p.hero]) pickHero(p.hero);
+  L.t0=Date.now(); save(); }
+function lifeKeys(p){ return {region:p.band==='수도권'?'cap':p.band==='광역시'?'metro':'etc',household:p.income==='넉넉'?'rich':p.income==='빠듯'?'tight':'mid',
+  dialect:p.dia==='std'?null:p.dia}; }
+
+/* ── 태어남 카드 화면 ── */
+function fxText(o){ var a=[]; if(o.coin) a.push('코인 '+(o.coin>0?'+':'')+o.coin);
+  Object.keys(o.stat||{}).forEach(function(k){ a.push(THEMES[k].full+' +'+o.stat[k]); }); return a.join(' · '); }
+function birthRender(body){
+  var L=S.life; if(!L.prof) birthRoll();
+  var p=L.prof,fx=lifeFx(p),left=3-L.rolls;
+  var row=function(k,v,e){ return '<div class="bcr"><span>'+k+'</span><b>'+esc(v)+'</b><small>'+esc(e||'')+'</small></div>'; };
+  var tmi=function(k,v){ return v?'<div class="bct"><span>'+k+'</span><b>'+esc(v)+'</b></div>':''; };
+  var b=LIFE_FX.band[p.band],inc=LIFE_FX.income.filter(function(x){ return x.v===p.income; })[0],pa=LIFE_FX.path.filter(function(x){ return x.v===p.path; })[0],lv=LIFE_FX.living[p.living];
+  body.innerHTML='<div class="ob-q">스무 살, 카드 한 장</div><div class="micro">실제 통계 비율로 태어나요. 다시 태어나기는 삼세판.</div>'+
+   '<div class="bcard pix"><div class="bch"><b>'+esc(p.name)+'</b><span>'+(p.sex==='M'?'남':'여')+' · '+p.birth+'생 · '+p.tti+'띠 · '+p.zodiac+'</span></div>'+
+   '<div class="bcl">'+esc(p.sido+' '+p.sgg+' '+p.dong)+' 출생 · '+esc(p.hs)+' 졸업</div>'+
+   '<div class="bcl">'+(p.path==='고졸'?'대학 대신 바로 일 찾기':esc(p.uni+' '+p.major)+' 1학년')+'</div>'+
+   row('출신',p.band,fxText(b))+row('형편',p.income,fxText({coin:0,stat:inc.stat}))+row('학교',p.path,fxText({coin:pa.coin||0,stat:pa.stat}))+
+   row('거처',p.living,'첫 집 '+TIERS[lv.tier].name)+row('성향',p.trait+' · '+p.mbti,fxText({stat:LIFE_FX.trait[p.trait]}))+
+   '<div class="bcs">시작 코인 ￦'+fx.coin+' · 첫 거처 '+TIERS[fx.tier].name+' · 스탯 합 +'+Object.keys(fx.stat).reduce(function(a,k){ return a+fx.stat[k]; },0)+'</div>'+
+   '<div class="bcg">'+tmi('혈액형',p.blood+'형')+tmi('키',p.height+'cm · '+p.build)+tmi('안경',p.glasses?'씀':'안 씀')+tmi('가족',p.parents+' · '+p.sibs+(p.multi?' · '+p.multi:''))+
+   tmi('반려동물',p.pet?'본가에 '+p.pet:'')+tmi('좋아하는 음식',p.food)+tmi('취미',p.hobby)+tmi('버릇',p.habit)+tmi('휴대폰',p.phone)+tmi('첫 알바',p.firstJob)+'</div>'+
+   '<div class="bcq">"'+esc(p.say)+'"</div><div class="bci">'+esc(p.intro)+'</div>'+
+   '<div class="bcf">인생 번호 '+p.seed+' · 가상의 인물입니다</div></div>';
+  if(L.prev.length) body.innerHTML+='<div class="micro" style="margin-top:6px">지난 카드 · '+L.prev.map(function(x){ return esc(x.name+' ('+x.line+')'); }).join(' · ')+'</div>';
+  var rb=document.createElement('button'); rb.className='btn btn--plain btn--wide pix'; rb.style.marginTop='8px';
+  rb.textContent=left>0?'다시 태어나기 (남은 '+left+'번)':'마지막 카드예요'; rb.disabled=left<=0;
+  rb.onclick=function(){ sfx('pick'); birthRoll(); obRender(); };
+  body.appendChild(rb); }
+
+/* ── 나이 ── */
+function lifeChAge(id){ return LIFE_AGES[id]||null; }
+function lifeAgeCalc(){
+  var L=S.life,a=L.anch,nx=(typeof mqNext==='function')?mqNext():null,cap=nx?lifeChAge(nx.id)-1:59;
+  return Math.max(a.age,Math.min(cap,a.age+Math.floor((S.done.length-a.done)/3))); }
+function lifeTick(){
+  if(!lifeOn()||!S.life||!S.onboarded||S.life.over) return;
+  var L=S.life,n=lifeAgeCalc(),p=L.prof||{},before=[L.age,S.status,S.years,S.age].join('|');
+  if(n>L.age){ var jump=n-L.age; L.age=n; setTimeout(function(){ toast(jump>1?n+'살 · '+jump+'년이 흘렀어요':n+'살이 됐어요'); },700); }
+  if(S.status==='대학생'&&((p.path==='전문대'&&L.age>=22)||L.age>=24)){ S.status='취준생'; S.prep='공채'; setTimeout(function(){ toast('졸업했어요 · 이제 취준생'); },1400); }
+  if(S.status!=='직장인'&&typeof mqDone==='function'&&mqDone('job')){ S.status='직장인'; S.company=S.company||'중소기업'; }
+  if(S.status==='직장인'){ var y=L.age-LIFE_AGES.job; S.years=y<1?0:y<=3?2:5; }
+  S.age=L.age<=24?24:L.age<=29?29:L.age<=34?34:40;
+  if([L.age,S.status,S.years,S.age].join('|')!==before) save(); }
+function hudName(){ lifeTick(); return lifeOn()&&S.life?S.life.age+'살 · Lv.'+S.lv:S.status+' Lv.'+S.lv; }   /* 신분은 아래 줄(hsub)에 있다 */
+/* 장을 시작하면 그 장의 나이가 된다. 처음이면 세월 컷신을 먼저 튼다 */
+var LIFE_YKEY={job:'y24',lease:'y26',card:'y27',car:'y29',wedding:'y32',home:'y37'};
+function lifeBeforeCh(id,go){
+  if(!lifeOn()||!S.life||S.life.yrs[id]) return false;
+  S.life.yrs[id]=1; var age=lifeChAge(id);
+  if(age&&S.life.anch.age<age){ S.life.anch={age:age,done:S.done.length}; }
+  lifeTick(); save();
+  var y=LIFE_YEARS[LIFE_YKEY[id]]; if(!y) return false;
+  playMQ({kicker:'LIFE',title:y.title,sub:y.sub,scenes:lifeFill(y.scenes,lifeFillVals()),endScenes:function(){ return []; },onDone:function(){ setTimeout(go,300); }});
+  return true; }
+function lifeFillVals(){ var p=(S.life&&S.life.prof)||{},k=lifeKeys(p.sido?p:{band:'수도권',income:'보통',dia:'std'});
+  return {name:p.name||heroOf().name,birth:p.birth||'',birthMD:p.birthMD||'',dong:(p.sido||'')+' '+(p.sgg||'')+' '+(p.dong||''),school:p.hs||'',major:p.major||'',
+    mbti:p.mbti||'',blood:p.blood||'',food:p.food||'미역국',hobby:p.hobby||'',
+    regionText:p.band==='그 외'?'지방 소도시':(p.band||''),householdText:p.income==='넉넉'?'넉넉한 편':p.income==='빠듯'?'빠듯한 편':'보통',
+    home:p.living?LIFE_FX.living[p.living].home:'방',region:k.region,household:k.household,dialect:k.dialect,
+    start:LIFE_START[k.region],startBg:LIFE_START_BG[k.region]}; }
+function lifeBirthPlay(){
+  var f=lifeFillVals(),sc=lifeBirthScenes(f);
+  if(S.life.prof&&S.life.prof.path==='고졸') sc.forEach(function(q){ q.text=q.text.map(function(t){ return /1학년/.test(t)?'지금은 첫 일자리를 찾는 중.':t.replace(/ 1학년/,''); }); });
+  playMQ({kicker:'LIFE',title:LIFE_BIRTH.title,sub:LIFE_BIRTH.sub,scenes:sc,endScenes:function(){ return []; },onDone:function(){ render('home'); hudRefresh(); }}); }
+
+/* ── 예순, 인생 결산 ── */
+function lifeTitleId(){
+  var p=S.life.prof||{},own=!!(TIERS[S.tier]&&TIERS[S.tier].own),wed=typeof mqDone==='function'&&mqDone('wedding');
+  var boss=BOSSES.every(function(b){ return bossCleared(b.id); }),sum=['ju','sik','ui','geum','jik'].reduce(function(a,k){ return a+(S.stats[k]||0); },0);
+  if(wed&&own) return 'family'; if(p.income==='빠듯'&&own) return 'bloom'; if(boss) return 'shield'; if(own) return 'home';
+  if(S.coin>=3000) return 'saver'; if(sum>=350) return 'scholar'; if((S.best||0)>=7) return 'steady'; return 'light'; }
+function lifeSummary(stopped){
+  var p=S.life.prof||{},tid=stopped?'stop':lifeTitleId();
+  return {v:1,at:dayKey(),stopped:!!stopped,seed:p.seed,name:p.name,birth:p.birth,place:(p.sido||'')+' '+(p.sgg||'')+' '+(p.dong||''),mbti:p.mbti,
+    line:[p.band,p.income,p.path,p.living,p.trait].join(' · '),title:tid,titleName:stopped?'중간에 멈춘 인생':(LIFE_TITLES[tid]||LIFE_TITLES.light).name,
+    age:S.life.age,tier:TIERS[S.tier].name,coin:S.coin,lv:S.lv,stats:JSON.parse(JSON.stringify(S.stats)),
+    ch:MQ_LIST.filter(function(c){ return mqDone(c.id); }).length,boss:BOSSES.filter(function(b){ return bossCleared(b.id); }).length,
+    mins:Math.round((Date.now()-(S.life.t0||Date.now()))/60000)}; }
+function albumLoad(){ try{ return JSON.parse(localStorage.getItem(KEY_ALBUM)||'[]'); }catch(e){ return []; } }
+function albumAdd(sum){ var a=albumLoad(); a.unshift(sum); a=a.slice(0,30); try{ localStorage.setItem(KEY_ALBUM,JSON.stringify(a)); }catch(e){} }
+function lifeCardHtml(sm){
+  var T=LIFE_TITLES[sm.title],st=sm.stats||{};
+  return '<div class="lcard"><div class="lch">인생 결산 · 20 → '+(sm.stopped?sm.age:60)+'살</div>'+
+   '<div class="lct">'+esc(sm.titleName)+'</div>'+(T?'<div class="lcl">'+T.lines.map(esc).join('<br>')+'</div>':'')+
+   '<div class="lcn">'+esc(sm.name||'')+' · '+esc(sm.birth||'')+'생 · '+esc(sm.mbti||'')+'</div><div class="lcp">'+esc(sm.place)+' 출생 · '+esc(sm.line)+'</div>'+
+   '<div class="lcg"><div><span>사는 곳</span><b>'+esc(sm.tier)+'</b></div><div><span>모은 코인</span><b>￦'+sm.coin+'</b></div><div><span>메인</span><b>'+sm.ch+'/6</b></div><div><span>보스</span><b>'+sm.boss+'/3</b></div></div>'+
+   '<div class="lcs">'+['ju','sik','ui','geum','jik'].map(function(k){ return THEMES[k].full+' '+(st[k]||0); }).join(' · ')+'</div>'+
+   '<div class="lcf">인생 번호 '+esc(sm.seed||'')+' · '+sm.mins+'분 · 가상의 인물입니다</div></div>'; }
+function lifeEnd(){
+  if(!lifeOn()||S.life.over) return;
+  closeTip();
+  var y=LIFE_YEARS.y60,tid=lifeTitleId(),f=lifeFillVals(); f.title=(LIFE_TITLES[tid]||LIFE_TITLES.light).name;
+  lifeTick(); S.life.anch={age:60,done:S.done.length}; S.life.age=60; S.life.over=true; S.life.title=tid; save();
+  var sm=lifeSummary(false); albumAdd(sm); ev('life_end',{title:tid,mins:sm.mins});
+  playMQ({kicker:'LIFE',title:y.title,sub:y.sub,scenes:lifeFill(y.scenes,f).concat(lifeFill(LIFE_END.part1,f)),endScenes:function(){ return []; },onDone:function(){
+    render('home');
+    setTimeout(function(){ openTip(lifeCardHtml(sm),'#FFC53C',nc([{t:'계속',f:function(){ closeTip();
+      playMQ({kicker:'LIFE',title:LIFE_END.title,sub:LIFE_END.sub,scenes:lifeFill(LIFE_END.part2,f),endScenes:function(){ return []; },onDone:function(){ render('home'); lifeAfter(sm); }}); }}])); },400); }}); }
+function lifeAfter(sm){
+  openTip(lifeCardHtml(sm),'#FFC53C',[
+    {t:'친구에게 공유하기',f:function(){ shareTextOut('뉴비 퀘스트 인생 모드 · 예순 결산 "'+sm.titleName+'" · '+sm.tier+'\n인생 번호 '+sm.seed+'\n'+SHARE_BASE,'뉴비 퀘스트',function(m){ if(m) toast(m); }); }},
+    {t:'다시 태어나기',f:function(){ closeTip(); lifeNew(true); obStep=0; stopWalk(); obRender(); go('onboard'); }}]); }
+/* 새 인생: 인생 칸을 새로 시작한다. 진행 중이던 인생은 앨범에 "중간에 멈춘 인생"으로 */
+function lifeNew(skipAlbum){
+  var old=(SLOT==='life'&&S&&S.mode==='life')?S:peekSlot(KEY_LIFE),keep={snd:S?S.snd:true,vib:S?S.vib:true};
+  if(!skipAlbum&&old&&old.onboarded&&old.life&&!old.life.over&&old.life.prof){ var S0=S; S=old; try{ albumAdd(lifeSummary(true)); }catch(e){} S=S0; }
+  setSlot('life'); S=fresh(); S.mode='life'; S.life=lifeFresh(); S.prologue=1; S.snd=keep.snd; S.vib=keep.vib; save(); }
+function switchSlot(s){
+  if(SLOT===s&&S) return;
+  setSlot(s); S=load(); stopWalk();
+  if(S.onboarded){ render('home'); hudRefresh(); } else { obStep=0; obRender(); go('onboard'); } }
+
+/* 인생 모드 대본(스토리, ops/life-1009/life-scenes.js) */
+/* 인생 모드 1단계 대본 (스토리 리드, 2026-10-09)
+   장면 모양은 CS_STORY · MQ 장면과 같다: {bg, cast:[[열쇠,'L'|'C'|'R']], who, text:[..], doc:{t,rows,bad}, fx, sfx}
+   배경은 지금 있는 bg_ 그림 15장만 쓴다: apartment bank cafe carlot hometown livingroom meeting
+   modelhouse night office phone road station town weddinghall
+   인물 열쇠: hero, halbae, partner (portraitSrc가 바로 꺼낸다)
+   {중괄호}는 lifeFill이 재생 직전에 채운다. 채울 값이 없으면 그대로 남으니 값은 꼭 넣는다.
+     {name}      주인공 이름 (HEROES.name, 3자)
+     {region}    출신 지역 글자: 수도권 / 광역시 / 지방 소도시
+     {birth} 생년월일, {dong} 출생지(시 구 동), {school} 출신 고교, {major} 전공, {mbti}, {blood} 혈액형(A·B·O·AB),
+     {food} 좋아하는 음식, {hobby} 취미, {birthMD} 생일 월일  (모두 생성된 약력 카드에서)
+     {household} 집안 형편 글자: 넉넉한 편 / 보통 / 빠듯한 편
+     {home}      첫 거처 이름 (TIERS.name 또는 '본가 방', 6자 안쪽)
+     {start}     LIFE_START[region]  (엔딩 "막 ___ 누군가")
+     {startBg}   LIFE_START_BG[region] (엔딩 마지막 장면 배경)
+     {title}     인생 칭호 이름 (LIFE_TITLES[id].name)
+   열쇠 값: region = 'cap' | 'metro' | 'etc', household = 'rich' | 'mid' | 'tight', dialect = 'gs' | 'jl' | 'cc' | null
+   재생: playMQ({kicker:'LIFE', title, sub, scenes:lifeFill(...), endScenes:function(){return [];}, onDone})
+   선택지(choice)는 없다. 큰 결정 갈림길은 2단계. */
+
+var LIFE_START    = { cap: '독립한', metro: '상경한', etc: '상경한' };
+var LIFE_START_BG = { cap: 'station', metro: 'station', etc: 'hometown' };
+/* 할배가 기억하는 고향. 할배 = 이 판의 주인공이므로 카드에 따라 바뀐다 (story.md 3절) */
+var LIFE_HOMETOWN = { cap: '광역버스 첫차 서는 동네', metro: '지하철 종점 동네', etc: '버스가 하루 네 번 서는 마을' };
+
+/* (a) 태어남: 태어남 카드(생성된 약력)를 확정한 뒤 1번. 약 29초
+   조립: head 2 + 지역 풍경 1 + 할배 등장 1(사투리 지역은 dialect) + 지역 1 + 형편 1 + 맛 1(MBTI/음식, 같은 카드면 same) + tail 2 */
+var LIFE_BIRTH = {
+ title: '태어남', sub: '스무 살, 카드 한 장',
+ head: [
+  { bg: 'night', fx: 'fade',
+    text: ['지구에 80억 명.', '그중 한 명으로', '태어났다.'] },
+  { bg: 'night',
+    doc: { t: '태어남 카드', rows: [['생일', '{birth}'], ['출생', '{dong}'], ['학교', '{school}'], ['나', '{mbti} · {blood}형']], bad: [] },
+    text: ['{dong}에서', '태어난 {name}.', '지금은 {major} 1학년.'] } ],
+ /* 지역마다 하나: 그 동네 풍경 */
+ place: {
+  cap:   { bg: 'station', cast: [['hero', 'C']],
+           text: ['수도권 토박이.', '노선도는 눈 감고도', '그릴 수 있다.'] },
+  metro: { bg: 'town', cast: [['hero', 'C']],
+           text: ['광역시 아파트 단지.', '서울은 KTX로', '두세 시간.'] },
+  etc:   { bg: 'hometown', cast: [['hero', 'C']],
+           text: ['산 너머 버스가', '하루 네 번 서는', '마을.'] } },
+ meet: [
+  { bg: 'town', fx: 'fade', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+    text: ['허허, 카드 한 장', '받았구먼.', '어디 좀 보세.'] } ],
+ /* 지역마다 하나: 할배가 출신 칸을 읽는다 */
+ region: {
+  cap:   { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+           text: ['집이 가까운 게', '큰 밑천이야.', '아낀 월세는 모으게.'] },
+  metro: { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+           text: ['서울 안 가도', '길은 있네.', '가는 것도 자네 몫이고.'] },
+  etc:   { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+           text: ['...하루 네 번 버스라.', '허허, 잘 알지.', '아주 잘 알아.'] } },
+ /* 형편마다 하나: 할배가 집안 칸을 읽는다 */
+ household: {
+  rich:  { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+           text: ['집안 덕은', '출발선까지야.', '그다음은 자네 걸음이네.'] },
+  mid:   { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+           text: ['보통이 제일 많지.', '그만큼 물어볼 사람도', '많다는 뜻이야.'] },
+  tight: { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+           text: ['빠듯하게 자라면', '돈 귀한 걸 알지.', '그게 자네 무기야.'] } },
+ /* 맛 한 칸: MBTI(E/I) 또는 음식 1장면. lifeBirthScenes가 고른다 */
+ mbti: {
+  E: { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+       text: ['{mbti}라. 허허,', '사람 많은 데서', '힘 나는 쪽이구먼.'] },
+  I: { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+       text: ['{mbti}라. 허허,', '혼자 서류 읽는 건', '자네가 잘하겠네.'] } },
+ food: { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+         text: ['{food} 좋아하나?', '허허, 그건 평생', '안 바뀌더군.'] },
+ /* 사투리: 출생 시도가 경상·전라·충청이면 할배 등장(meet) 장면을 이것으로 바꾼다.
+    할배가 저도 모르게 자네 고향 말씨로 말을 걸고, 표준어로 고쳐 말한다(복선). 가볍게, 놀리지 않게 */
+ dialect: {
+  gs: { bg: 'town', fx: 'fade', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+        text: ['허허, 카드 받았나?', '어디 함 보자...', '...흠, 좀 보세.'] },
+  jl: { bg: 'town', fx: 'fade', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+        text: ['허허, 카드 받았는가?', '어디 한번 보세잉...', '...흠, 좀 보세.'] },
+  cc: { bg: 'town', fx: 'fade', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+        text: ['허허, 카드 받았슈?', '어디 한번 봐유...', '...흠, 좀 보세.'] } },
+ /* 그 외 + 빠듯: 할배가 걸어온 첫 인생과 같은 카드. 이때는 MBTI·음식 대신 이 장면 */
+ same: { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+         text: ['...이 카드는', '어째 낯이 익구먼.'] },
+ tail: [
+  { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+    text: ['카드는 정해졌어도', '사는 건 자네가', '정하는 거야.'] },
+  { bg: 'town', fx: 'confetti', cast: [['hero', 'C']],
+    text: ['스무 살 봄.', '{home}에서', '인생이 시작됐다.'] } ]
+};
+
+/* TMI: 플레이 중 홈 말풍선이나 토스트로 가끔 뜨는 한 줄. 하루 1번, 같은 줄은 30일에 1번 (제안)
+   need의 칸이 비면 뜨지 않는다. when은 띄울 때(제안) */
+var LIFE_TMI = [
+ { id: 'food',  need: ['food'],  when: '월급날 또는 메인 장을 깬 날', who: '나',
+   text: ['오늘 저녁은 {food}.', '이건 못 참지.'] },
+ { id: 'mbti',  need: ['mbti'],  when: '아무 날', who: '나',
+   text: ['MBTI 검사를 또 했다.', '역시 {mbti}.'] },
+ { id: 'blood', need: ['blood'], when: '퀘스트를 틀린 날', who: '나',
+   text: ['{blood}형이라 그렇대.', '...그런가?'] },
+ { id: 'birth', need: ['birthMD'], when: '게임 날짜가 생일({birthMD})인 날', who: '귀인 할배',
+   text: ['허허, 오늘 자네', '생일 아닌가.', '미역국은 먹었나?'] },
+ { id: 'hobby', need: ['hobby'], when: '주말', who: '나',
+   text: ['주말엔 {hobby}.', '통장은 조금 울었다.'] },
+ { id: 'school', need: ['school'], when: '세월 컷신 다음 날', who: null,
+   text: ['{school} 단톡방이', '오랜만에 울렸다.'] }
+];
+
+/* (b) 세월: 메인 장 사이 나이 건너뛰기. 각 10~15초. age는 제안값(story.md 2절), 바꾸면 text도 같이 바꾼다 */
+var LIFE_YEARS = {
+ y24: { age: 24, before: 'job', title: '세월', sub: '스물넷',
+  scenes: [
+   { bg: 'phone', fx: 'fade', cast: [['hero', 'C']],
+     text: ['스물넷.', '첫 출근 한 달 전.'] },
+   { bg: 'phone', cast: [['hero', 'C']],
+     text: ['졸업장을 받았다.', '학자금 고지서도', '같이 왔다.'] },
+   { bg: 'office', cast: [['hero', 'C']],
+     text: ['다음 달부터는', '여기가 내 자리다.'] },
+   { bg: 'phone', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+     text: ['허허, 정장보다', '근로계약서를', '먼저 챙기게.'] } ] },
+
+ y26: { age: 26, before: 'lease', title: '세월', sub: '스물여섯',
+  scenes: [
+   { bg: 'town', fx: 'fade', cast: [['hero', 'C']],
+     text: ['스물여섯.', '월세 계약이', '석 달 남았다.'] },
+   { bg: 'town', cast: [['hero', 'C']],
+     text: ['통장에 모인 돈,', '보증금 하나만큼.', '거의 전부다.'] },
+   { bg: 'town', cast: [['hero', 'C']], who: '나',
+     text: ['이번엔 전세로', '가 볼까?'] },
+   { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+     text: ['큰돈이 내 손을', '떠나는 날이', '제일 위험하네.'] } ] },
+
+ y27: { age: 27, before: 'card', title: '세월', sub: '스물일곱',
+  scenes: [
+   { bg: 'bank', fx: 'fade', cast: [['hero', 'C']],
+     text: ['스물일곱.', '카드 만들라는 전화가', '이번 주만 세 통.'] },
+   { bg: 'bank', cast: [['hero', 'C']], who: '나',
+     text: ['연회비 없대요.', '포인트도 준대요.'] },
+   { bg: 'bank', cast: [['hero', 'C']],
+     text: ['지갑에 카드 한 장이', '더 들어오려 한다.'] },
+   { bg: 'bank', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+     text: ['허허, 한도는', '자네 돈이 아니야.', '빌린 돈이지.'] } ] },
+
+ y29: { age: 29, before: 'car', title: '세월', sub: '스물아홉',
+  scenes: [
+   { bg: 'road', fx: 'fade', cast: [['hero', 'C']],
+     text: ['스물아홉.', '자기 전마다', '중고차 앱을 연다.'] },
+   { bg: 'road', cast: [['hero', 'C']], who: '나',
+     text: ['서른 전에', '한 대는 있어야', '하지 않나?'] },
+   { bg: 'carlot', cast: [['hero', 'C']],
+     text: ['주말엔 매매단지를', '세 바퀴 돌았다.'] },
+   { bg: 'road', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+     text: ['차값보다', '한 달 유지비를', '먼저 세어 보게.'] } ] },
+
+ y32: { age: 32, before: 'wedding', title: '세월', sub: '서른둘',
+  scenes: [
+   { bg: 'cafe', fx: 'fade', cast: [['hero', 'L'], ['partner', 'R']],
+     text: ['서른둘.', '이번 청첩장엔', '내 이름이 있다.'] },
+   { bg: 'cafe', cast: [['hero', 'L'], ['partner', 'R']], who: '나',
+     text: ['식장은 어디로', '할까?'] },
+   { bg: 'weddinghall', cast: [['hero', 'L'], ['partner', 'R']],
+     text: ['식장 견적서는', '생각보다 길었다.'] },
+   { bg: 'cafe', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+     text: ['허허, 식장 전에', '서로 통장부터', '보여 주게.'] } ] },
+
+ y37: { age: 37, before: 'home', title: '세월', sub: '서른일곱',
+  scenes: [
+   { bg: 'apartment', fx: 'fade', cast: [['hero', 'L'], ['partner', 'R']],
+     text: ['서른일곱.', '전세 만기를', '세 번째 맞는다.'] },
+   { bg: 'apartment', cast: [['hero', 'L'], ['partner', 'R']], who: '나',
+     text: ['이번엔 이사 말고', '우리 집 볼까?'] },
+   { bg: 'modelhouse', cast: [['hero', 'C']],
+     text: ['모델하우스는', '언제나 밝다.'] },
+   { bg: 'modelhouse', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+     text: ['집은 사는 곳이자', '제일 큰 빚이야.', '둘 다 보게.'] } ] },
+
+ /* 6장 뒤 → 결산. 가장 긴 건너뛰기. 할배가 점점 말이 없어지는 것이 복선 */
+ y60: { age: 60, before: 'end', title: '세월', sub: '마흔, 쉰, 그리고',
+  scenes: [
+   { bg: 'livingroom', fx: 'fade', cast: [['hero', 'L'], ['partner', 'R']],
+     text: ['마흔, 쉰.', '대출은 줄고', '흰머리는 늘었다.'] },
+   { bg: 'station', cast: [['hero', 'C']],
+     text: ['회사를 나왔다.', '명함 대신', '버스카드가 남았다.'] },
+   { bg: 'night', cast: [['hero', 'C']],
+     text: ['할배는 갈수록', '말이 줄었다.', '가끔 나를 오래 봤다.'] },
+   { bg: 'night', fx: 'fade',
+     text: ['그리고,', '예순.'] } ] }
+};
+
+/* (c) 예순 엔딩. part1(약 17초) → 인생 결산 카드(화면) → part2(약 36초) → THE END → 공유.
+   지금 ENDING(playCinema)의 줄을 살리고, 나이가 같아진 뒤의 이야기로 옮겼다 (story.md 3절) */
+var LIFE_END = {
+ title: '예순', sub: '인생 결산',
+ part1: [
+  { bg: 'livingroom', fx: 'fade', cast: [['hero', 'L'], ['partner', 'R']],
+    text: ['예순 번째 생일.', '큰 초 여섯 개,', '상 위엔 {food}.'] },
+  { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'R']], who: '배우자',
+    text: ['서랍 정리하다가', '이게 다 나왔어.'] },
+  { bg: 'livingroom',
+    doc: { t: '서랍 속 종이', rows: [['스물넷', '근로계약서'], ['스물여섯', '전세 계약서'], ['서른둘', '혼인신고서'], ['서른일곱', '등기권리증']], bad: [] },
+    who: '나', text: ['종이는 한곳에.', '누가 그랬더라.'] },
+  { bg: 'night', fx: 'fade', cast: [['hero', 'C']],
+    text: ['그날 밤,', '그 사람이', '마지막으로 왔다.'] } ],
+ /* 여기서 인생 결산 카드를 띄운다. 닫으면 part2 */
+ part2: [
+  { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+    text: ['허허, 이게 자네', '예순 해구먼.', '칭호도 받았네.'] },
+  { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+    text: ['{title}.', '...내 카드보다', '훨씬 낫구먼.'] },
+  { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+    text: ['사실 자네한테', '숨긴 게 하나 있네.'] },
+  { bg: 'night', fx: 'flash', sfx: 'win', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+    text: ['나는...', '마흔 해 뒤의', '자네라네.'] },
+  { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+    text: ['그때 아무도', '안 알려 줘서', '참 많이 잃었거든.'] },
+  { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '나',
+    text: ['...그럼 마흔 해 동안', '알려 준 건 전부,', '당신이 겪은 일?'] },
+  { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
+    text: ['허허, 이제야', '우리 나이가', '같아졌구먼.'] },
+  { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '미래의 나',
+    text: ['이제 자네 차례일세.', '언젠가 막 {start}', '누군가를 만나면,'] },
+  { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '미래의 나',
+    text: ['그 사람의 귀인이', '되어 주게.'] },
+  { bg: 'night', fx: 'fade', cast: [['hero', 'C']],
+    text: ['창에 비친 얼굴이', '그 사람을', '닮아 있었다.'] },
+  /* 마지막: 예순의 나(halbae 그림)가 스무 살 누군가(hero 그림)를 만난다. 프롤로그 첫 대사를 그대로 */
+  { bg: '{startBg}', fx: 'fade', cast: [['halbae', 'L'], ['hero', 'R']], who: '나',
+    text: ['허허, 그 얼굴 보니', '딱 옛날 생각이', '나는구먼.'] },
+  { bg: '{startBg}', fx: 'confetti', sfx: 'win', cast: [['halbae', 'L'], ['hero', 'R']],
+    text: ['그리고 오늘도,', '누군가의 귀인이', '된다.'] } ]
+};
+
+/* (d) 인생 칭호. cond는 제안(디자인 리드가 수치 확정). lines는 결산 카드에 2~3줄, 첫 줄은 해설, 마지막 줄은 할배 한마디 */
+var LIFE_TITLES = {
+ home:    { name: '내 집의 주인', cond: '거처가 자가(TIERS.own)',
+            lines: ['전세 만기 알림이', '더는 오지 않는다.', '"허허, 문패 한번 좋구먼."'] },
+ saver:   { name: '티끌 태산', cond: '모은 돈 상위',
+            lines: ['커피 한 잔을 아껴', '예순 해를 쌓았다.', '"작은 돈이 큰 돈 지키네."'] },
+ scholar: { name: '살림 박사', cond: '스탯 다섯 합 상위',
+            lines: ['집, 밥, 옷, 돈, 일.', '모르는 서류가 없다.', '"이제 자네가 가르치게."'] },
+ shield:  { name: '사기 불패', cond: '보스 전부 처음에 이김',
+            lines: ['목소리 큰 사람에게', '한 번도 지지 않았다.', '"종이 한 장의 힘이야."'] },
+ steady:  { name: '하루 한 걸음', cond: '출석·복습 많음',
+            lines: ['빠진 날보다', '나온 날이 많았다.', '"꾸준함이 이기더군."'] },
+ family:  { name: '한 지붕 두 이름', cond: '결혼 + 자가',
+            lines: ['계약서마다', '이름이 둘이었다.', '"둘이 고르면 덜 틀리네."'] },
+ bloom:   { name: '늦게 핀 꽃', cond: '형편 빠듯 출신이 자가 도달',
+            lines: ['출발은 늦었지만', '끝은 남 못지않았다.', '"카드는 패일 뿐이야."'] },
+ light:   { name: '가벼운 발걸음', cond: '어디에도 안 걸릴 때(기본값)',
+            lines: ['큰 집은 없어도', '큰 빚도 없었다.', '"잃지 않은 것도 버는 걸세."'] }
+};
+
+/* 채우기. csFill과 같은 방식: {키}를 f[키]로 바꾼다 */
+function lifeRp(s, f) { return String(s).replace(/\{(\w+)\}/g, function (m, k) { return f[k] != null ? f[k] : m; }); }
+function lifeFill(scenes, f) {
+  return scenes.map(function (p) {
+    var q = JSON.parse(JSON.stringify(p));
+    q.bg = lifeRp(q.bg, f); q.text = q.text.map(function (t) { return lifeRp(t, f); });
+    if (q.doc) q.doc.rows = q.doc.rows.map(function (r) { return r.map(function (c) { return lifeRp(c, f); }); });
+    return q; });
+}
+/* card = 생성된 약력. 열쇠: region 'cap'|'metro'|'etc', household 'rich'|'mid'|'tight',
+   dialect 'gs'|'jl'|'cc'|null(출생 시도: 경상·부산·대구·울산 gs / 전라·광주 jl / 충청·대전·세종 cc)
+   글자: regionText householdText home name birth dong school major mbti blood food hobby birthMD */
+function lifeBirthScenes(card) {
+  var B = LIFE_BIRTH, f = card, meet = (card.dialect && B.dialect[card.dialect]) ? [B.dialect[card.dialect]] : B.meet;
+  var sc = B.head.concat([B.place[card.region]], meet, [B.region[card.region], B.household[card.household]]);
+  if (card.region === 'etc' && card.household === 'tight') sc.push(B.same);
+  else if (card.mbti && (!card.food || (card.birth || '').length % 2)) sc.push(B.mbti[card.mbti.charAt(0) === 'E' ? 'E' : 'I']);
+  else if (card.food) sc.push(B.food);
+  sc = sc.concat(B.tail);
+  return lifeFill(sc, Object.assign({}, f, { region: f.regionText, household: f.householdText }));
+}
+function lifeEndScenes(part, card, titleId) {
+  return lifeFill(LIFE_END[part], { title: (LIFE_TITLES[titleId] || LIFE_TITLES.light).name, food: card.food || '미역국',
+    start: LIFE_START[card.region], startBg: LIFE_START_BG[card.region] });
+}
+function lifeTmi(id, card) {
+  var t = LIFE_TMI.filter(function (x) { return x.id === id; })[0];
+  if (!t || t.need.some(function (k) { return !card[k]; })) return null;
+  return { who: t.who, text: t.text.map(function (l) { return lifeRp(l, card); }) };
+}
+
 
 /* ══════════ 하루 루프 ══════════ */
 var DAILY_N=3;
@@ -3554,6 +4104,9 @@ function dripEnsure(){
   var d=S.drip; if(!d||!Array.isArray(d.u)) d=S.drip={v:0,u:[],g:0,d0:null,at:null};
   var t=dayKey();
   if(d.v!==1) dripInit(d);
+  /* 인생 모드: 날짜 대신 "열린 채 안 푼 퀘스트가 다섯 밑이면 더 연다" */
+  if(lifeOn()){ var op=QUESTS.filter(function(q){ return !q.trip&&fits(q)&&S.done.indexOf(q.id)<0&&d.u.indexOf(q.id)>=0; }).length;
+    if(op<5&&dripOpen(5-op).length) save(); return; }
   if(d.at===t) return;
   d.at=t;
   var owed=DRIP_FIRST+DRIP_DAILY*Math.max(0,dayGap(d.d0,t))-(d.g||0);
@@ -3745,7 +4298,8 @@ var OB={
   o:[['수도권','수도권','서울·경기·인천'],['광역시','광역시','부산·대구·대전 등'],['그 외','그 외 지역','시·군 지역']]}};
 /* 온보딩은 세 문항까지만 받는다. 나이·회사는 첫 퀘스트를 끝낸 뒤 홈에서 채우게 미룬다.
    재미를 먼저 보여주고 질문은 나중에 하는 편이 이탈이 적다. */
-function obSteps(){ return S.status==='대학생'?['status','living','region','avatar']
+function obSteps(){ if(lifeOn()) return ['birth','avatar'];
+  return S.status==='대학생'?['status','living','region','avatar']
   :S.status==='취준생'?['status','prep','region','avatar']
   :S.status==='직장인'?['status','years','region','avatar']:['status']; }
 /* 신분에 맞는 기본 아바타. 대학생은 가방 멘 쪽, 나머지는 정장 쪽이다. */
@@ -3804,6 +4358,11 @@ var obStep=0;
 function obRender(){
   var steps=obSteps(),key=steps[Math.min(obStep,steps.length-1)];
   var body=document.getElementById('obbody');
+  if(key==='birth'){
+    birthRender(body);
+    var pp=document.getElementById('obpips'); pp.innerHTML=''; steps.forEach(function(_,i){ var e=document.createElement('i'); if(i<=obStep) e.className='on'; pp.appendChild(e); });
+    var bn=document.getElementById('obnext'); bn.disabled=false; bn.textContent='이 인생으로 살기';
+    paintHero(document.getElementById('obchar'),'idle',0); return; }
   if(key==='avatar'){
     if(!HEROMAP[S.hero]) pickHero('newbie');
     body.innerHTML='<div class="ob-q">누구로 시작할까요?</div>'+
@@ -3847,9 +4406,11 @@ function obRender(){
 document.getElementById('hmenu').onclick=function(){ render('codex'); };
 document.getElementById('obnext').onclick=function(){
   var steps=obSteps();
+  if(steps[obStep]==='birth'){ birthApply(); ev('life_birth',{seed:S.life.seed,rolls:S.life.rolls}); }
   if(obStep<steps.length-1){ obStep++; ev('onboard_step',{i:obStep,k:steps[obStep]}); obRender(); return; }
   S.onboarded=true; S.todayQ=pickDaily(); ev('onboard_done',{status:S.status,steps:steps.length});
-  save(); render('home'); };
+  save(); render('home');
+  if(lifeOn()) setTimeout(lifeBirthPlay,400); };
 
 function fits(q){ var f=q.fit||{};
   if(f.status&&f.status.indexOf(S.status)<0) return false;
@@ -6356,7 +6917,7 @@ function grant(o){
 function MAP_LV_OPEN(lv){ var r=null; Object.keys(MAP_LV).forEach(function(k){ if(MAP_LV[k]===lv) r=MAPS[k].name; }); return r; }
 function hudRefresh(){
   var n=need(S.lv),tt=totals(),e;
-  if((e=document.getElementById('hnm'))) e.textContent=S.status+' Lv.'+S.lv;
+  if((e=document.getElementById('hnm'))) e.textContent=hudName();
   if((e=document.getElementById('hcoin'))) e.textContent=S.coin;
   if((e=document.getElementById('hatk'))) e.textContent=tt.atk;
   if((e=document.getElementById('hdefc'))) e.textContent=tt.def;
@@ -7826,7 +8387,7 @@ function renderHome(){
   autoClaim(); setTimeout(hudRefresh,80);
   setTimeout(checkTutor,700);
   var n=need(S.lv),tt=totals();
-  document.getElementById('hnm').textContent=S.status+' Lv.'+S.lv;
+  document.getElementById('hnm').textContent=hudName();
   document.getElementById('hsub').textContent=whyLine();
   document.getElementById('hatk').textContent=tt.atk;
   document.getElementById('hdefc').textContent=tt.def;
@@ -8656,7 +9217,7 @@ function openTip(html,rc,buttons){
   bk.onclick=function(e){ if(e.target===bk) closeTip(); }; }
 function closeTip(){ var bk=document.getElementById('itip'); if(bk) bk.hidden=true; mqRetry(); }
 /* 시트나 대화에 가려 못 뜬 할배 알림을 창이 닫힌 뒤 한 번 더 시도한다. 하루에 한 번만 뜨는 것은 MQ_SAID(알린 날)가 지킨다 */
-function mqRetry(){ if(typeof mqAnnounce!=='function') return; setTimeout(function(){ if(typeof csTick==='function'&&csTick()) return; if(MQ_SAID!==dayKey()&&S&&S.onboarded) mqAnnounce(); },900); }
+function mqRetry(){ if(typeof mqAnnounce!=='function') return; setTimeout(function(){ if(typeof csTick==='function'&&csTick()) return; if(MQ_SAID!==mqSaidKey()&&S&&S.onboarded) mqAnnounce(); },900); }
 function statLine(k,v,cmp){
   if(!v&&!cmp) return '';
   var d=(cmp==null)?0:v-cmp;
@@ -9685,15 +10246,31 @@ function openingStart(){
   /* 시작 메뉴. 로고가 내려오면 뜬다. 이어하기 · 처음부터 하기 · 프롤로그 다시 보기 · 소리 */
   var menu=document.createElement('div'); menu.className='omenu'; menu.hidden=true; wrap.appendChild(menu);
   var MI=0;
+  /* 두 칸(일반·인생)을 훑어 이어하기를 보여 준다. 인생 모드를 앞에 둔다 */
+  function slots(){ var n=(SLOT==='normal')?S:peekSlot(KEY),l=(SLOT==='life')?S:peekSlot(KEY_LIFE);
+    return {n:n&&n.onboarded?n:null,l:l&&l.onboarded&&l.life?l:null}; }
   function menuItems(){
-    var has=!!(S&&S.onboarded),a=[];
-    if(has) a.push({k:'cont',t:'이어하기',s:'Lv.'+S.lv+' · '+TIERS[S.tier].name+(S.mq&&S.mq.done?' · 메인 '+Object.keys(S.mq.done).length+'/6':'')});
-    a.push({k:'new',t:has?'처음부터 하기':'시작하기',s:has?'기록을 지우고 새로 시작':''});
+    var sl=slots(),a=[],al=albumLoad().length;
+    if(sl.l&&!sl.l.life.over) a.push({k:'lcont',t:'이어하기 · 인생',s:(sl.l.life.prof?sl.l.life.prof.name+' · ':'')+sl.l.life.age+'살 · '+sl.l.status+' · 메인 '+Object.keys((sl.l.mq&&sl.l.mq.done)||{}).length+'/6'});
+    if(sl.n) a.push({k:'cont',t:sl.l?'이어하기 · 일반':'이어하기',s:'Lv.'+sl.n.lv+' · '+TIERS[sl.n.tier].name+(sl.n.mq&&sl.n.mq.done?' · 메인 '+Object.keys(sl.n.mq.done).length+'/6':'')});
+    a.push({k:'life',t:'인생 모드 (추천)',s:'스무 살 카드 한 장으로 예순까지'});
+    a.push({k:'new',t:sl.n?'처음부터 하기':'일반 모드',s:sl.n?'일반 기록을 지우고 새로 시작':'하루 한 장, 천천히'});
+    if(al) a.push({k:'album',t:'인생 앨범',s:al+'번의 인생'});
     if(S&&S.prologue) a.push({k:'pro',t:'프롤로그 다시 보기'});
     a.push({k:'snd',t:'소리 '+(S&&S.snd===false?'꺼짐':'켜짐')});
     return a; }
   function drawMenu(confirmNew){
     menu.innerHTML='';
+    if(confirmNew==='life'){
+      var sl=slots(),q0=document.createElement('div'); q0.className='omq';
+      q0.innerHTML='<b>새로 태어날까요?</b><span>지금 인생('+sl.l.life.age+'살)은 앨범에 "중간에 멈춘 인생"으로 남아요.</span>';
+      menu.appendChild(q0);
+      [{k:'lnew',t:'새로 태어나기'},{k:'back',t:'돌아가기'}].forEach(function(it,i){ menu.appendChild(menuBtn(it,i)); });
+      MI=1; focusMenu(); return; }
+    if(confirmNew==='album'){
+      albumLoad().slice(0,8).forEach(function(sm,i){ var b=document.createElement('div'); b.className='omq';
+        b.innerHTML='<b>'+esc(sm.titleName)+'</b><span>'+esc((sm.name||'')+' · '+sm.place+' · '+sm.tier+' · '+sm.at)+'</span>'; menu.appendChild(b); });
+      menu.appendChild(menuBtn({k:'back',t:'돌아가기'},0)); MI=0; focusMenu(); return; }
     if(confirmNew){
       var q=document.createElement('div'); q.className='omq';
       q.innerHTML='<b>처음부터 할까요?</b><span>레벨, 코인, 거처, 메인 퀘스트 진행이 모두 지워지고 되돌릴 수 없어요.</span>';
@@ -9703,7 +10280,8 @@ function openingStart(){
     menuItems().forEach(function(it,i){ menu.appendChild(menuBtn(it,i)); });
     MI=0; focusMenu(); }
   function menuBtn(it,i){
-    var b=document.createElement('button'); b.type='button'; b.className='omb'+(it.k==='cont'||(it.k==='new'&&!(S&&S.onboarded))?' main':'');
+    var sl0=slots(),b=document.createElement('button'); b.type='button';
+    b.className='omb'+(it.k==='lcont'||(it.k==='cont'&&!sl0.l)||(it.k==='life'&&!sl0.l&&!sl0.n)?' main':'');
     b.dataset.k=it.k; b.innerHTML='<span>'+it.t+'</span>'+(it.s?'<small>'+esc(it.s)+'</small>':'');
     b.onclick=function(e){ e.stopPropagation(); pick(it.k); };
     b.onpointerenter=function(){ MI=i; focusMenu(); }; return b; }
@@ -9720,8 +10298,12 @@ function openingStart(){
   function pick(k){
     if(!OPEN||OPEN.go) return;
     var a=actx(); if(a&&a.state==='suspended') a.resume();
-    if(k==='cont') return begin();
-    if(k==='new'){ if(S&&S.onboarded){ sfx('pick'); return drawMenu(true); } return begin(); }
+    if(k==='cont'){ switchSlot('normal'); return begin(); }
+    if(k==='lcont'){ switchSlot('life'); return begin(); }
+    if(k==='life'){ var sl=slots(); if(sl.l&&!sl.l.life.over){ sfx('pick'); return drawMenu('life'); } k='lnew'; }
+    if(k==='lnew'){ ev('life_new',{}); lifeNew(); obStep=0; stopWalk(); obRender(); go('onboard'); return begin(); }
+    if(k==='album'){ sfx('pick'); return drawMenu('album'); }
+    if(k==='new'){ switchSlot('normal'); if(S&&S.onboarded){ sfx('pick'); return drawMenu(true); } return begin(); }
     if(k==='back'){ sfx('pick'); return drawMenu(false); }
     if(k==='wipe'){ ev('opening_reset',{lv:S.lv});
       S=fresh(); save(); obStep=0; stopWalk(); obRender(); go('onboard'); return begin(); }
@@ -9926,6 +10508,7 @@ function playPrologue(host,done){ S.prologue=1; save(); ev('prologue',{}); playC
 /* 최종 클리어: 보스를 모두 이기고 거처가 맨 위(84㎡ 신축)에 닿은 뒤 처음 홈으로 돌아왔을 때 */
 function endingReady(){ return !S.ending&&S.peak>=TIERS.length-1&&mqOk('home')&&BOSSES.every(function(b){ return bossCleared(b.id); }); }
 function checkEnding(){
+  if(lifeOn()) return;
   if(!endingReady()||document.getElementById('opening')) return;
   S.ending=dayKey(); save(); ev('ending',{lv:S.lv});
   playCinema(ENDING,function(){ endingShareSheet(); });
@@ -11016,9 +11599,11 @@ function playMQ(o){
    2장(첫 전세 계약)은 스프린트 D의 전세 계약 사건을 그대로 쓰고, 앞뒤에 컷신을 붙인다.
    진행은 S.mq에 남는다: done[id]=최고 등급, at[id]=처음 깬 날, cur·i·ok·n=보다 만 장면,
    ann[id]=할배가 알린 날, gf=메인 퀘스트 전 저장이 이미 쓰던 잠금(장을 깬 것으로 치지는 않는다). */
-var MQ_T0=Date.now(),MQ_SAID=0,MQ_T3=0;                          /* 이번 세션 시작, 할배가 알린 날(dayKey), 첫날 3분 뒤 다시 시도 타이머 */
+var MQ_T0=Date.now(),MQ_SAID=0,MQ_T3=0;
+/* 할배 알림은 하루 한 번. 인생 모드는 장마다 한 번 */
+function mqSaidKey(){ return lifeOn()?'L'+((mqNext()||{}).id||'end'):dayKey(); }                          /* 이번 세션 시작, 할배가 알린 날(dayKey), 첫날 3분 뒤 다시 시도 타이머 */
 function leaseDoneAny(){ return !!(S.leaseDone&&(S.leaseDone[7]||S.leaseDone[8]))||(S.paid||0)>=7; }
-function mqDay(id){ return !(S.mq&&S.mq.at&&S.mq.at[id]===dayKey()); }   /* 앞 장을 깬 날이 오늘이 아니다: 하루 한 장 */
+function mqDay(id){ return lifeOn()||!(S.mq&&S.mq.at&&S.mq.at[id]===dayKey()); }   /* 앞 장을 깬 날이 오늘이 아니다: 하루 한 장 */
 var MQ_LIST=[
  {id:'job',key:'MQ_JOB',no:1,title:'첫 취업',
   open:function(){ return (S.done||[]).length>=3; },
@@ -11085,6 +11670,7 @@ function mqIdle(){
 function mqStart(id){
   var c=mqById(id); if(!c||MQP) return;
   MOVE=null; HOLD.dir=null;
+  if(lifeBeforeCh(c.id,function(){ mqStart(id); })) return;   /* 인생 모드: 장 앞의 세월 컷신 */
   if(c.id==='lease') return mqLeaseStart(c);
   var d=mqData(c); if(!d){ toast('대본을 불러오지 못했어요.'); return; }
   var M=mqS(),resume=(M.cur===c.id&&M.i>0&&M.i<d.scenes.length);
@@ -11133,7 +11719,7 @@ function mqAfter(c){
       (last?(R.unlock||[]).map(function(u){ return '<div class="il good"><i>◆</i>열림 · '+esc(u)+'</div>'; }).join(''):'')+
       '<div class="il"><i>◆</i>'+(nx?'다음은 '+nx.no+'장 '+esc(nx.title)+' · '+esc(mqReady(nx)?'지도 왼쪽 위 메인 표시를 누르세요':mqWait(nx)):'메인 퀘스트를 모두 마쳤어요')+'</div>','#FFC53C',bt);
     sheetStack();
-    if(c.id==='home') setTimeout(function(){ if(typeof checkEnding==='function') checkEnding(); },300); },600); }
+    if(c.id==='home') setTimeout(function(){ if(lifeOn()) lifeEnd(); else if(typeof checkEnding==='function') checkEnding(); },lifeOn()?1800:300); },600); }
 /* ── 2장: 전세 계약 사건을 감싼다 ──
    가. 할배 알림으로 시작: 앞 컷신 → 계약 사건을 열고 부동산 중개사 앞에 세운다.
    나. 이사부터 시도해 계약 사건이 먼저 열림: 첫 계약 장면 앞에서 앞 컷신을 한 번 튼다(leaseShow).
@@ -11161,18 +11747,18 @@ function mqLeaseOutro(pre){
 /* 할배의 알림. 하루 한 번(장마다), 세션마다 한 번, 홈에서 한가할 때만 */
 function mqEodPending(){ return !!(S.eodArm===dayKey()&&S.eodDay!==dayKey()&&typeof openLeft==='function'&&openLeft()===0); }
 function mqAnnounce(){
-  if(!mqIdle()||MQ_SAID===dayKey()||mqEodPending()||TD_WAIT) return false;
+  if(!mqIdle()||MQ_SAID===mqSaidKey()||mqEodPending()||TD_WAIT) return false;
   var M=mqS(),c=mqNext();
   if(M.adPend&&adLeft('mq')>0&&M.adPend.day!==dayKey()&&!(c&&mqReady(c))){          /* 어제 못 받은 광고 보상 */
-    var ap=M.adPend; MQ_SAID=dayKey();
+    var ap=M.adPend; MQ_SAID=mqSaidKey();
     talkTo({name:'귀인 할배',face:'halbae',lines:['어제 '+mqById(ap.id).no+'장 보상, 하나 덜 받았지?',{q:'광고 보고 ￦'+ap.coin+' 받기',a:['받는다','괜찮아요'],choose:function(k){
       if(k===0){ setTimeout(function(){ endTalk(); adGo('mq',function(){ S.coin+=ap.coin; M.adPend=null; save(); hudRefresh(); sfx('coin'); toast('광고 보상 ￦'+ap.coin); }); },60); return []; }
       M.adPend=null; save(); return ['그래, 다음에 또 보세.']; }}]}); return true; }
   if(!mqReady(c)||M.ann[c.id]===dayKey()) return false;
   if(c.id==='job'&&S.first===dayKey()&&Date.now()-MQ_T0<180000){                    /* 첫날 첫 3분은 방해하지 않고, 지나면 다시 시도한다 */
-    clearTimeout(MQ_T3); MQ_T3=setTimeout(function(){ if(MQ_SAID!==dayKey()) mqAnnounce(); },180000-(Date.now()-MQ_T0)+500); return false; }
+    clearTimeout(MQ_T3); MQ_T3=setTimeout(function(){ if(MQ_SAID!==mqSaidKey()) mqAnnounce(); },180000-(Date.now()-MQ_T0)+500); return false; }
   if(mqLeasing()) return false;                                                      /* 계약 중이면 표시만 */
-  M.ann[c.id]=dayKey(); MQ_SAID=dayKey(); save(); ev('mq_announce',{id:c.id});
+  M.ann[c.id]=dayKey(); MQ_SAID=mqSaidKey(); save(); ev('mq_announce',{id:c.id});
   var resume=M.cur===c.id&&M.i>0,recap=c.id==='lease'&&leaseDoneAny()&&!S.lease;
   var lines=recap?['자네는 전세 계약을 벌써 해 봤지?','그때 얘기를 짧게 하고 넘어가세.']:c.ann;
   talkTo({name:'귀인 할배',face:'halbae',lines:lines.concat([{q:c.q,a:[resume?'이어서 보기':recap?'지금 보기':'지금 시작','나중에'],choose:function(k){

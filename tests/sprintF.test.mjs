@@ -74,7 +74,7 @@ test('3. 시작 메뉴: 기록이 있으면 이어하기·처음부터 하기가
   await page.reload();
   await page.waitForSelector('#opening .omb[data-k="cont"]', { timeout: 8000 });
   const keys = await page.$$eval('#opening .omb', (bs) => bs.map((b) => b.dataset.k));
-  assert.deepEqual(keys, ['cont', 'new', 'pro', 'snd']);
+  assert.deepEqual(keys, ['cont', 'life', 'new', 'pro', 'snd']);
   await page.click('#opening .omb[data-k="new"]');
   await page.waitForSelector('#opening .omb[data-k="wipe"]');
   await page.click('#opening .omb[data-k="back"]');
