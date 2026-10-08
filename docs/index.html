@@ -738,7 +738,7 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
         </div>
       </div>
       <div class="xpbar"><i id="hxp"></i></div>
-      <div class="xpmeta"><span id="hnext">NEXT Lv.2</span><span id="hxpv">0 / 100 XP</span></div>
+      <div class="xpmeta"><span id="hnext">다음 Lv.2</span><span id="hxpv">0 / 100 XP</span></div>
       <div class="needs">
         <div class="nd"><span>포만</span><div class="fullbar"><i id="hfull"></i></div><b id="hfullv">100</b></div>
         <div class="nd"><span>체력</span><div class="fullbar en"><i id="hen"></i></div><b id="henv">100</b></div>
@@ -944,11 +944,11 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
       <div class="card pix"><div class="kv" id="cepboss"></div></div>
       <div class="sectlab" id="cgearlab">장비 도감</div>
       <div class="baggrid" id="cgear"></div>
-      <div class="sectlab" id="chouselab">거처 도감 · 사는 곳은 캐릭터 창에서 골라요</div>
+      <div class="sectlab" id="chouselab">거처 도감 · 사는 곳은 캐릭터 탭에서 골라요</div>
       <div class="baggrid" id="chouses"></div>
       <div class="sectlab" id="ceggslab">숨은 것들</div>
       <div class="card pix"><div class="kv" id="ceggs"></div></div>
-      <div class="sectlab">테마 다섯</div>
+      <div class="sectlab">생활 스탯 다섯</div>
       <div style="display:flex;flex-direction:column;gap:var(--u2)" id="cthemes"></div>
       <div class="sectlab">내 정보</div><div class="card pix"><div class="kv" id="mekv"></div></div>
       <div class="sectlab">큐레이션</div><div class="card pix"><div class="micro" id="mewhy">—</div></div>
@@ -2769,11 +2769,11 @@ function petHome(){ return !!ROOMSPEC[S.tier]&&!PET_NO[S.tier]; }
 function petWhyNot(){ return S.tier===0?'방이 없어 맡겨 둠':TIERS[S.tier].name+'엔 못 데려감'; }
 
 var THEMES={
- ju:  {k:'주',full:'집',color:P.k3,role:'방어력',desc:'월세·전세 계약, 전세사기, 기숙사와 자취. 찬바람과 더위를 막아주는 갑옷.'},
- sik: {k:'식',full:'밥',color:P.g1,role:'체력',  desc:'식비, 배달, 자취 살림. 버티는 힘을 만드는 자원.'},
- ui:  {k:'의',full:'옷',color:P.v1,role:'매력',  desc:'면접 복장, 옷값, 관리. 회당 비용으로 따지는 습관.'},
- geum:{k:'금',full:'돈',color:P.y1,role:'자금',  desc:'학자금, 앱테크, 청약통장, 신용점수, 첫 투자.'},
- jik: {k:'직',full:'일',color:P.r1,role:'경험',  desc:'주휴수당, 연차, 4대보험, 근로계약, 실업급여.'}
+ ju:  {k:'집',full:'집',color:P.k3,role:'오를수록 더 좋은 거처가 열려요',desc:'월세·전세 계약, 전세사기, 기숙사와 자취. 집 퀘스트를 풀면 올라요.'},
+ sik: {k:'밥',full:'밥',color:P.g1,role:'식비·자취 살림 지식이에요',desc:'식비, 배달, 자취 살림. 밥 퀘스트를 풀면 올라요.'},
+ ui:  {k:'옷',full:'옷',color:P.v1,role:'옷값·면접 복장 지식이에요',desc:'면접 복장, 옷값, 관리. 옷 퀘스트를 풀면 올라요.'},
+ geum:{k:'돈',full:'돈',color:P.y1,role:'오를수록 금융 보스에게 도전해요',desc:'학자금, 앱테크, 청약통장, 신용점수, 첫 투자. 돈 퀘스트를 풀면 올라요.'},
+ jik: {k:'일',full:'일',color:P.r1,role:'근로계약·4대보험 지식이에요',desc:'주휴수당, 연차, 4대보험, 근로계약, 실업급여. 일 퀘스트를 풀면 올라요.'}
 };
 var THEME_ORDER=['ju','sik','ui','geum','jik'];
 </script>
@@ -3677,6 +3677,8 @@ function todaySheet(eod){
     h+='<div class="il warn"><i>◆</i>어제 하루를 걸렀어요. 연속 '+S.restore.prev+'일이 끊겼어요.</div>';
     if(adLeft('rst')>0) bt.push({t:'광고 보고 연속 출석 지키기 · 연속 '+(S.restore.prev+1)+'일',f:restoreStreak});
     else h+='<div class="il warn"><i>◆</i>'+AD_DONE+'</div>'; }
+  /* 첫 버튼은 퀘스트로 바로 가기. 광고 버튼만 있던 시트 */
+  var gt=guideTarget(); if(gt) bt.unshift({t:'다음 퀘스트로 가기 · '+MAPS[gt.map].name+' '+gt.spot.label,f:function(){ closeTip(); if(!document.getElementById('home').classList.contains('on')) render('home'); setTimeout(guideGo,120); }});
   h+='<div class="il" style="color:#9A9AA0"><i>◆</i>연속 보상 '+MILESTONES.map(function(m){ return m.d+'일 '+(S.ms.indexOf(m.d)>=0?'받음':'대기'); }).join(' · ')+'</div>';
   openTip(h,'#FFC53C',bt); sheetStack(); todayBtn(); }
 function todayBtn(){
@@ -6354,7 +6356,7 @@ function hudRefresh(){
   if((e=document.getElementById('hcoin'))) e.textContent=S.coin;
   if((e=document.getElementById('hatk'))) e.textContent=tt.atk;
   if((e=document.getElementById('hdefc'))) e.textContent=tt.def;
-  if((e=document.getElementById('hnext'))) e.textContent='NEXT Lv.'+(S.lv+1);
+  if((e=document.getElementById('hnext'))) e.textContent='다음 Lv.'+(S.lv+1);
   if((e=document.getElementById('hxpv'))) e.textContent=S.xp+' / '+n+' XP';
   if((e=document.getElementById('hxp'))) e.style.width=Math.min(100,Math.round(S.xp/n*100))+'%';
   needTick(); var fm=fullMax();
@@ -7273,7 +7275,7 @@ function goTo(gx,gy,then){
   if(carOn()&&!walkable(m,gx,gy,0,'car')){
     var r=carRoute(m,gx,gy);
     if(!r){ toast('차는 찻길과 주차장에서만 달려요. 근처에 세울 주차장(P)이 없어요.'); if(then) then(); return false; }
-    var after=function(){ parkHere(); toast('주차장에 차를 세우고 내렸다.'); drawScene();
+    var after=function(){ parkHere(); toast('주차장에 차를 세우고 내렸어요.'); drawScene();
       if(!(gx===ME.tx&&gy===ME.ty)) goTo(gx,gy,then); else if(then) then(); };
     if(!r.car.length){ after(); return true; }
     MOVE={path:r.car,pi:-1,then:after};
@@ -7659,7 +7661,7 @@ function stepDir(d){
     if((E.north&&ny<0)||(E.south&&ny>=m.h)){ ME.ty=Math.max(0,Math.min(m.h-1,ny)); checkWarp(); return; }
     /* 차를 탄 채 보도 쪽으로 가려 하면: 주차장이면 내려서 걷고, 아니면 막는다 */
     if(carOn()&&walkable(m,nx,ny,1,'foot')){
-      if(tileAt(m,ME.tx,ME.ty)==='Q'){ parkHere(); toast('주차장에 차를 세우고 내렸다.'); MOVE={path:[{x:nx,y:ny}],pi:-1,then:null}; nextStep(); return; }
+      if(tileAt(m,ME.tx,ME.ty)==='Q'){ parkHere(); toast('주차장에 차를 세우고 내렸어요.'); MOVE={path:[{x:nx,y:ny}],pi:-1,then:null}; nextStep(); return; }
       if(Date.now()-CARTIP>4000){ CARTIP=Date.now(); toast('차는 찻길과 주차장에서만 달려요. 주차장(P)에 세우고 걸어가세요.'); } }
     savePos(); drawScene(); return; }
   MOVE={path:[{x:nx,y:ny}],pi:-1,then:null};
@@ -7747,7 +7749,10 @@ function toast(msg){
   var el=document.getElementById('htoast'); if(!el) return;
   el.textContent=msg; el.hidden=false;
   /* 홈에서는 하단의 거처 줄·배너·탭을 덮지 않도록 지도 아래쪽 가운데(십자키와 미니맵 사이)에 띄운다 */
-  el.style.bottom='';
+  el.style.bottom=''; el.style.top='';
+  /* 시트나 이동 목록이 열려 있으면 그 위를 덮지 않게 화면 위쪽에 띄운다 */
+  var tip=document.getElementById('itip'),tv=document.getElementById('htravel');
+  if((tip&&!tip.hidden)||(tv&&!tv.hidden)){ el.style.top='calc(12px + env(safe-area-inset-top))'; el.style.bottom='auto'; clearTimeout(toast.t); toast.t=setTimeout(function(){ el.hidden=true; },Math.min(7000,1800+70*String(msg).length)); return; }
   try{ var hm=document.getElementById('home'),ap=document.getElementById('app'),sb=hm&&hm.classList.contains('on')&&hm.querySelector('.stagebox');
     if(sb&&ap){ var d=ap.getBoundingClientRect().bottom-sb.getBoundingClientRect().bottom+8; if(d>0&&d<400) el.style.bottom=Math.round(d)+'px'; } }catch(e){}
   clearTimeout(toast.t); toast.t=setTimeout(function(){ el.hidden=true; },Math.min(7000,1800+70*String(msg).length));   /* 긴 안내는 읽을 시간만큼 */
@@ -7801,13 +7806,16 @@ function renderHome(){
   document.getElementById('hatk').textContent=tt.atk;
   document.getElementById('hdefc').textContent=tt.def;
   document.getElementById('hcoin').textContent=S.coin;
-  document.getElementById('hnext').textContent='NEXT Lv.'+(S.lv+1);
+  document.getElementById('hnext').textContent='다음 Lv.'+(S.lv+1);
   document.getElementById('hxpv').textContent=S.xp+' / '+n+' XP';
   setTimeout(function(){ document.getElementById('hxp').style.width=Math.min(100,Math.round(S.xp/n*100))+'%'; },60);
   paintHudFace();
   var nx=(S.peak<TIERS.length-1)?TIERS[S.peak+1].need-S.stats.ju:null,hold=nx!==null&&S.peak>=tierCap();
-  document.getElementById('htier').innerHTML=TIERS[S.tier].name+
-   (nx===null?'<span class="micro">최종 단계</span>'
+  var ht=document.getElementById('htier'),canMove=S.peak>S.tier&&!S.lease;
+  ht.onclick=canMove?function(){ sfx('pick'); houseTip(S.peak); }:null; ht.style.cursor=canMove?'pointer':'';
+  ht.innerHTML=TIERS[S.tier].name+
+   (canMove?'<span class="micro" style="color:var(--y2)">'+TIERS[S.peak].name+' 열림 · 눌러서 이사</span>'
+    :nx===null?'<span class="micro">최종 단계</span>'
     :hold?'<span class="micro">자가는 메인 6장 뒤에 열림</span>'
     :nx>0?'<span class="micro">다음 거처까지 집 스탯 '+nx+'</span>'
     :'<span class="micro">'+(upLeft()>0?'다음 퀘스트를 깨면 해금':'새 거처는 내일 해금')+'</span>');
@@ -8346,7 +8354,7 @@ function epEnd(){
   body.appendChild(card);
   var g=document.createElement('div'); g.className='card pix';
   g.innerHTML=better
-    ? '<span class="lbold">+'+gain.xp+' XP \u00B7 \uFFE6'+gain.coin+' \u00B7 '+THEMES[e.stat].k+' +'+gain.stat+'</span>'+
+    ? '<span class="lbold">+'+gain.xp+' XP \u00B7 \uFFE6'+gain.coin+' \u00B7 '+THEMES[e.stat].full+' 스탯 +'+gain.stat+'</span>'+
       '<span class="micro" style="display:block;margin-top:4px">'+(was===null?'이 사건의 첫 기록이에요. 더 나은 결말을 내면 차액이 더 들어와요.':'이 사건의 최고 기록을 새로 세웠어요.')+'</span>'
     : '<span class="lbold">이번 판은 보상이 없어요</span>'+
       '<span class="micro" style="display:block;margin-top:4px">이미 \u300C'+e.ends[was].big+'\u300D까지 가 봤어요. 더 나은 결말을 내면 그 차액만 들어와요.</span>';
@@ -8581,7 +8589,7 @@ function renderBag(){
   if(CHARSEL==='house'){
     lab.textContent='거처 · 해금 '+(S.peak+1)+'/'+TIERS.length; hint.textContent='해금한 곳 중 골라서 살아요';
     TIERS.forEach(function(tr,i){ g.appendChild(bagCell(houseThumb(i,40),tr.name,{off:i>S.peak,on:S.tier===i,
-      lock:i>S.peak?'주 '+tr.need:(tierCost(i)>0?'￦'+tierCost(i):null),color:null,tap:function(){ houseTip(i); }})); });
+      lock:i>S.peak?'집 '+tr.need:(tierCost(i)>0?'￦'+tierCost(i):null),color:null,tap:function(){ houseTip(i); }})); });
     return; }
   if(CHARSEL==='furni'){
     lab.textContent='세간'; hint.textContent='놓인 것은 방에서 자리를 바꿀 수 있어요';
@@ -8635,8 +8643,8 @@ function gearTip(slot,id){
   else if(!have&&it.special) h+='<div class="iq">어딘가에 숨어 있다. 동네를 구석구석 돌아다녀 보자.</div>';
   else {
     h+=statLine('공격',it.atk||0,cmp?(cmp.atk||0):null)+statLine('방어',it.def||0,cmp?(cmp.def||0):null);
-    if(!it.atk&&!it.def) h+='<div class="il"><i>◆</i>능력치 없음</div>';
-    if(slot==='pet'&&it.kind) h+='<div class="il '+(petHome()?'good':'warn')+'"><i>◆</i>'+(petHome()?'집에서 키워요. 방 안을 돌아다녀요.':'지금은 '+petWhyNot()+' · 능력치가 붙지 않아요')+'</div>';
+    if(!it.atk&&!it.def) h+='<div class="il"><i>◆</i>공격·방어 없음</div>';
+    if(slot==='pet'&&it.kind) h+='<div class="il '+(petHome()?'good':'warn')+'"><i>◆</i>'+(petHome()?'집에서 키워요. 방 안을 돌아다녀요.':'지금은 '+petWhyNot()+' · 공격·방어가 붙지 않아요')+'</div>';
     if(slot==='mount'&&it.kind) h+='<div class="il good"><i>◆</i>지도에서 타고 다녀요. 방 안에서는 내려요.</div>';
     perkLines(it.perk).forEach(function(l){ h+='<div class="il" style="color:#D9B8FF"><i>✦</i>'+l+'</div>'; });
     h+='<div class="iq">"'+it.desc+'"</div>'; }
@@ -8683,7 +8691,7 @@ function furniTip(id){
     (id==='ramen'?'<div class="il good"><i>◆</i>남은 라면 '+(S.ramen||0)+'개 · 퀘스트에서 목숨 하나</div>':'')+
     perkLines(it.perk).map(function(l){ return '<div class="il" style="color:#D9B8FF"><i>✦</i>'+l+'</div>'; }).join('')+
     (it.need?'<div class="il '+(S.tier>=it.need?'good':'warn')+'"><i>◆</i>'+TIERS[it.need].name+'부터 놓을 수 있음</div>':'')+
-    (o&&o.x==null?'<div class="il warn"><i>◆</i>창고에 있음 · 방에 놓아야 능력치가 붙어요</div>':'')+
+    (o&&o.x==null?'<div class="il warn"><i>◆</i>창고에 있음 · 방에 놓아야 공격·방어가 붙어요</div>':'')+
     '<div class="iq">"'+it.desc+'"</div><div class="isrc">상점 · ￦'+it.cost+'</div>';
   openTip.thumb=furniThumb(id);
   var bt=[];
@@ -8697,7 +8705,7 @@ function renderShop(){
   /* 시연 안내 카드는 걷었다. 이제 코인으로 산다. */
   var fbox=document.createElement('div'); fbox.style.cssText='display:flex;flex-direction:column;gap:8px';
   var flab=document.createElement('div'); flab.className='sectlab';
-  flab.innerHTML='세간 · 방에 들이면 능력치가 올라요'+
+  flab.innerHTML='세간 · 방에 들이면 공격·방어가 올라요'+
     (ROOMSPEC[S.tier]?'':' <span class="micro">— 지금은 들어갈 방이 없어요</span>');
   fbox.appendChild(flab);
   FURNI_ORDER.forEach(function(id){ fbox.appendChild(furniRow(id)); });
@@ -8742,7 +8750,7 @@ function renderCodex(){
       tap:function(){ gearTip(a[0],a[1]); }})); });
   document.getElementById('cgearlab').textContent='장비 도감 · '+got+'/'+all.length;
   var ch=document.getElementById('chouses'); ch.innerHTML='';
-  TIERS.forEach(function(tr,i){ ch.appendChild(bagCell(houseThumb(i,40),tr.name,{off:i>S.peak,on:S.tier===i,lock:i>S.peak?'주 '+tr.need:null,
+  TIERS.forEach(function(tr,i){ ch.appendChild(bagCell(houseThumb(i,40),tr.name,{off:i>S.peak,on:S.tier===i,lock:i>S.peak?'집 '+tr.need:null,
     tap:function(){ houseTip(i); }})); });
   var ek=document.getElementById('ceggs'),tot=0,fd=0,rows='';
   EGG_AREAS.forEach(function(a){ var n=0,f=0;
@@ -8754,7 +8762,7 @@ function renderCodex(){
   THEME_ORDER.forEach(function(key){ var t=THEMES[key];
     var d=document.createElement('div'); d.className='codex-row pix';
     d.innerHTML='<span class="tag" style="background:'+t.color+';font-size:12px;padding:3px 7px">'+t.k+'</span>'+
-     '<span><span class="cn">'+t.full+' · '+t.role+'</span><br><span class="cd">'+t.desc+'</span></span>';
+     '<span><span class="cn">'+t.full+' 스탯 '+S.stats[key]+' · '+t.role+'</span><br><span class="cd">'+t.desc+'</span></span>';
     ct.appendChild(d); });
   var mid=S.status==='대학생'?'거주 '+S.living
    :S.status==='취준생'?'준비 '+['6개월 미만','6개월~1년','1년 이상'][S.prep]
@@ -9245,7 +9253,7 @@ function finish(failed){
   paintHero(document.getElementById('rchar'),failed?'idle':'cheer',0);
   var g=document.getElementById('rgains'); g.innerHTML='';
   Object.keys(q.stat).forEach(function(k){ var d=document.createElement('div'); d.className='gain';
-    d.innerHTML='<span>'+THEMES[k].full+' · '+THEMES[k].role+'</span><b>'+S.stats[k]+'</b>'; g.appendChild(d); });
+    d.innerHTML='<span>'+THEMES[k].full+' 스탯</span><b>'+(failed?'':'+'+Math.round(q.stat[k]*ratio)+' → ')+S.stats[k]+'</b>'; g.appendChild(d); });
   var d2=document.createElement('div'); d2.className='gain';
   d2.innerHTML='<span>정답</span><b>'+RUN.correct+' / '+shown+'</b>'; g.appendChild(d2);
   var wrong=RUN.marks.filter(function(m){ return m===false; }).length;
@@ -9348,7 +9356,7 @@ function bossAnswer(idx,btn){
     blinkEl(document.getElementById('bossspr'));
     damagePop(stage,FIGHT.dmg,P.y1); }
   else { FIGHT.my-=FIGHT.take; row.className='hit hurt';
-    row.innerHTML='<span>당했다 · 내 체력</span><b>-'+FIGHT.take+'</b>';
+    row.innerHTML='<span>당했다 · 내 HP</span><b>-'+FIGHT.take+'</b>';
     damagePop(document.querySelector('#boss .qhead')||stage,FIGHT.take,P.r1);   /* 내가 맞은 숫자는 내 체력 쪽에 */
     stage.classList.add('shake');
     setTimeout(function(){ stage.classList.remove('shake'); },700); }
@@ -9410,7 +9418,7 @@ function bossEnd(win){
   body.appendChild(box);
   var pl=bossPlan(B),note=document.createElement('div'); note.className='micro'; note.style.textAlign='center';
   note.innerHTML=win?(B.win+(first?'<br>'+THEMES[B.stat].full+' 스탯 +15':''))
-   :(B.lose+'<br>틀린 문항의 해설을 다시 읽어보세요. 지금 공격력이면 '+pl.need+'개를 맞혀야 이겨요.');
+   :(B.lose+'<br>틀린 문항의 해설을 다시 읽어보세요. 지금 공격이면 '+pl.need+'개를 맞혀야 이겨요.');
   body.appendChild(note); go('bossend'); }
 
 document.getElementById('qback').onclick=function(){ render('home'); };
@@ -11792,7 +11800,8 @@ function guideMapOf(q){ var did=QPLACE[q.id],mk=null; if(!did) return null;
   Object.keys(MAPS).forEach(function(k){ (MAPS[k].spots||[]).forEach(function(s){ if(s.kind==='desk'&&s.id===did) mk=k; }); }); return mk; }
 function guideReach(q){ var mk=guideMapOf(q); return !!mk&&(mk==='town'||(MAPS.town.warps||[]).some(function(x){ return x.to===mk; })); }
 function guideQuest(){
-  if(!S||!S.onboarded||S.done.length||!S.tut) return null;
+  if(!S||!S.onboarded||!S.tut) return null;
+  if(S.done.length) return guideNext();
   var ok=function(x){ return x&&QPLACE[x.id]&&fits(x)&&qOpen(x)&&!x.keys&&guideReach(x); };
   var q=QMAP.ju1;
   if(!ok(q)) q=QUESTS.filter(function(x){ return x.theme==='ju'&&ok(x); })[0];
@@ -11801,6 +11810,11 @@ function guideQuest(){
     if(ju){ dripEnsure(); if(S.drip.u.indexOf(ju.id)<0){ S.drip.u.push(ju.id); save(); } q=ju; } }
   if(!q) q=QUESTS.filter(ok)[0];
   return q||null; }
+/* 첫 퀘스트 뒤에도 칩이 다음 할 일을 가리킨다. 오늘 목록 → 열린 퀘스트 순으로, 동네에서 걸어서 닿는 창구만 */
+function guideNext(){
+  var ok=function(x){ return x&&QPLACE[x.id]&&fits(x)&&qOpen(x)&&!x.keys&&!x.trip&&S.done.indexOf(x.id)<0&&guideReach(x); };
+  var t=(S.todayQ||[]).map(function(id){ return QMAP[id]; }).filter(ok)[0];
+  return t||QUESTS.filter(ok)[0]||null; }
 function guideTarget(){
   var q=guideQuest(); if(!q) return null;
   var did=QPLACE[q.id],mk=null,sp=null,w=null;
@@ -11829,7 +11843,7 @@ function guideSync(){
   if(!t){ el.hidden=true; return; }
   var here=(ME.map===t.map),dir=(!here&&ME.map==='town'&&t.warp)?(t.warp.x>ME.tx?'오른쪽 ':'왼쪽 '):'';   /* 문이 화면 밖에 있어도 어느 쪽인지 알게 */
   el.hidden=false;
-  el.innerHTML='<b>여기서 첫 상담</b>'+dir+esc(MAPS[t.map].name)+' '+esc(t.spot.label)+' 창구 · '+(here?'눌러서 상담':'눌러서 걷기');
+  el.innerHTML='<b>'+(S.done.length?'다음 퀘스트':'여기서 첫 상담')+'</b>'+dir+esc(MAPS[t.map].name)+' '+esc(t.spot.label)+' 창구 · '+(here?'눌러서 상담':'눌러서 걷기');
   el.onclick=guideGo; }
 function guideGo(){
   var t=guideTarget(); if(!t||TUT||MOVE||PLACE) return;
@@ -12152,11 +12166,11 @@ function leaseEnd(){
   body.appendChild(c);
   if(pick==='A') body.appendChild(leaseCalc());
   var mvc=document.createElement('div'); mvc.className='card pix';
-  mvc.innerHTML='<span class="lbold">'+(mv.ok?TIERS[from].name+' → '+TIERS[L.to].name+' 이사 완료':'아직 못 옮겼다')+'</span>'+
+  mvc.innerHTML='<span class="lbold">'+(mv.ok?TIERS[from].name+' → '+TIERS[L.to].name+' 이사 완료':'아직 못 옮겼어요')+'</span>'+
     '<span class="micro" style="display:block;margin-top:4px">'+(mv.ok?(mv.cost?'입주 보증금 ￦'+mv.cost+'을 냈어요':'보증금 없이 옮겼어요'):'입주 보증금 ￦'+mv.cost+'이 모자라요. 캐릭터 탭의 거처에서 옮기세요.')+'</span>';
   body.appendChild(mvc);
   var g=document.createElement('div'); g.className='card pix';
-  g.innerHTML=better?'<span class="lbold">+'+gain.xp+' XP · ￦'+gain.coin+' · 주 +'+gain.stat+'</span>'
+  g.innerHTML=better?'<span class="lbold">+'+gain.xp+' XP · ￦'+gain.coin+' · 집 스탯 +'+gain.stat+'</span>'
     :'<span class="lbold">이번 계약은 보상이 없어요</span><span class="micro" style="display:block;margin-top:4px">이미 「'+LEASE_ENDS[was].big+'」까지 가 봤어요.</span>';
   body.appendChild(g);
   var s=document.createElement('div'); s.className='micro';
