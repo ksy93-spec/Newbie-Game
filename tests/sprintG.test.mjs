@@ -91,6 +91,26 @@ test('4. 대학생도 첫 안내는 집 퀘스트다', async () => {
   await ctx.close();
 });
 
+test('6. 짧은 이야기 컷신: 계기에서 큐에 들고, 한가할 때 틀고, 끝나면 수집 노트에서 다시 본다', async () => {
+  const { playCine } = await import('./cine.mjs');
+  const { ctx, page, logs } = await open();
+  await page.evaluate(() => { S.first = '2020-01-01'; S.cs = { seen: {}, q: [], pay: {}, day: '', n: 0 }; });
+  for (const id of ['firstq', 'home6', 'boss1', 'memory', 'back']) {
+    await page.evaluate((id) => { S.cs.n = 0; csWant(id, id === 'boss1' ? 'mlm' : 4); }, id);
+    assert.equal(await page.evaluate(() => csTick()), true, id + ' 재생');
+    await playCine(page, [], { timeout: 20000 });
+    assert.ok(await page.evaluate((id) => !!S.cs.seen[id], id));
+  }
+  const coin = await page.evaluate(() => S.coin);
+  await page.evaluate(() => { S.cs.n = 0; csWant('firstq'); });
+  assert.equal(await page.evaluate(() => S.cs.q.length), 0, '본 이야기는 다시 큐에 들지 않는다');
+  await page.evaluate(() => render('codex'));
+  assert.match(await page.textContent('#cmq'), /이야기 조각 5\/5/);
+  assert.ok(coin > 0);
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
+
 test('5. 걷는 동안 저장은 멈춘 뒤 한 번만 쓴다', async () => {
   const { ctx, page, logs } = await open();
   const n = await page.evaluate(async () => {

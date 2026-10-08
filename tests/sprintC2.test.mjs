@@ -169,6 +169,7 @@ test('2. 첫 퀘스트는 가장 나쁘게 통과해도(1/3) 코인이 0이어�
 
 test('3. 하루의 끝: 새 퀘스트를 다 풀면 "오늘 몫 끝"이 딱 한 번 뜬다', async () => {
   const { ctx, page, errors } = await open({ boot: true });
+  await page.evaluate(() => { S.cs = { seen: { firstq: '2020-01-01' }, q: [], pay: {}, day: '', n: 0 }; save(); });   // 첫 단추 이야기는 따로 본다(sprintG)
   const n = await st(page, () => openLeft());
   assert.equal(n, 5);
   for (let i = 0; i < n; i++) {

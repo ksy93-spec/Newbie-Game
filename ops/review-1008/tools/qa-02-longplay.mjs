@@ -83,6 +83,7 @@ async function mainQuest() {
       await page.click('#hmq'); await sleep(1500);
       const s2 = await page.evaluate(() => ({ map: ME.map, scr: document.querySelector('.screen.on').id, mqp: !!window.MQP, toast: document.getElementById('htoast').hidden ? '' : document.getElementById('htoast').textContent }));
       log('lease chip tap -> ' + JSON.stringify(s2) + ' (chip ' + where + ')');
+      if (s2.mqp) { await playMQ(); await sleep(800); await clearOverlays(page); continue; }
       // 칩이 장소로 보내 주면, 그 자리까지 걷는다
       if (s2.scr === 'home' && !s2.mqp) {
         const sp = await page.evaluate(() => { const c = leaseCh(); if (!c) return null; const p = leasePlace(c.place); let hit = null; Object.keys(MAPS).forEach((k) => (MAPS[k].spots || []).forEach((s) => { if (s.kind === 'lease' && s.place === p && (!s.pick || s.pick === S.lease.pick) && !hit) hit = { k, x: s.x, y: s.y, place: p, pick: s.pick }; })); return hit; });
