@@ -2398,7 +2398,9 @@ function upUse(){ upLeft(); S.upN=(S.upN||0)+1; }
 function tierGrow(){
   if(S.peak>=TIERS.length-1||tierFor(S.stats.ju)<=S.peak||upLeft()<=0) return null;
   if(typeof tierCap==='function'&&S.peak>=tierCap()) return null;        /* 자가는 메인 6장이 연다 */
-  var wasTop=(S.tier===S.peak); upUse(); S.peak=Math.min(S.peak+1,TIERS.length-1);
+  var next=S.peak+1;
+  if(lifeOn()&&next<4){ if(tierFor(S.stats.ju)<4) return null; next=4; }   /* 인생 모드: 움막·텐트·찜질방은 건너뛴다 */
+  var wasTop=(S.tier===S.peak)&&!lifeNest(); upUse(); S.peak=Math.min(next,TIERS.length-1);   /* 본가·기숙사에서는 저절로 이사하지 않는다 */
   return {wasTop:wasTop}; }
 function paidBase(){ return Math.max(S.paid||0,S.tier||0); }
 function tierCost(i){ var b=paidBase(); return i<=b?0:TIER_DEP[i]-TIER_DEP[b]; }
@@ -2462,7 +2464,7 @@ function houseG2(t,g){
     rr(g,cx-7,h-15,cx+7,h-8,P.s2,1); rc(g,cx-5,h-13,cx+5,h-8,P.k2); }
 }
 var HCACHE={};
-function houseCv(i){ var a=castCv('ho_'+i); if(a) return a;               /* 그림 에셋이 있으면 그것을, 없으면 도트로 그린 집 */
+function houseCv(i){ var a=castCv('ho_'+lifeHouseArt(i)); if(a) return a;               /* 그림 에셋이 있으면 그것을, 없으면 도트로 그린 집 */
   if(!HCACHE[i]){ HCACHE[i]=toCanvas(houseG(TIERS[i])); HCACHE[i].lw=HCACHE[i].width; HCACHE[i].lh=HCACHE[i].height; } return HCACHE[i]; }
 /* 거처 그림을 화면 크기 w×h(CSS px)인 새 캔버스로 */
 function houseEl(i,sc){ var hc=houseCv(i),cv=document.createElement('canvas'); cv.width=hc.width; cv.height=hc.height;
@@ -2759,7 +2761,7 @@ function statNow(k){
   if(k==='sik') return '음식값 '+statPct('sik')+'% 할인';
   if(k==='ui') return '청결이 '+statPct('ui')+'% 천천히 줄어요';
   if(k==='jik') return '퀘스트 경험치 +'+statPct('jik')+'%';
-  if(k==='ju'){ var nx=S.peak<TIERS.length-1?TIERS[S.peak+1]:null; return nx?(S.stats.ju>=nx.need?nx.name+' 열 수 있어요':nx.name+'까지 '+(nx.need-S.stats.ju)):'모든 거처를 열었어요'; }
+  if(k==='ju'){ var ni=nextTierIdx(),nx=ni!==null?TIERS[ni]:null; return nx?(S.stats.ju>=nx.need?nx.name+' 열 수 있어요':nx.name+'까지 '+(nx.need-S.stats.ju)):'모든 거처를 열었어요'; }
   if(k==='geum'){ var b=BOSSES.filter(function(x){ return x.stat==='geum'&&S.stats.geum<x.need; })[0]; return b?b.name+' 도전까지 '+(b.need-S.stats.geum):'금융 보스에 모두 도전할 수 있어요'; }
   return ''; }
 function foodPrice(f){ return Math.max(1,Math.round(f.cost*(1-(perkSum('foodDisc')+statPct('sik'))/100))); }
@@ -3537,7 +3539,7 @@ var LIFE_SIDO=[
  {s:'경남',p:6.3,band:'그 외',dia:'gs',g:[['창원시 성산구',['상남동','중앙동']],['김해시',['내외동','장유동']],['진주시',['평거동','가호동']]]},
  {s:'제주',p:1.3,band:'그 외',dia:'std',g:[['제주시',['노형동','연동','이도동']],['서귀포시',['동홍동','대륜동']]]}];
 var LIFE_FX={
- band:{'수도권':{coin:-10,stat:{jik:3}},'광역시':{coin:0,stat:{sik:3}},'그 외':{coin:20,stat:{ju:4}}},
+ band:{'수도권':{coin:-10,stat:{jik:3}},'광역시':{coin:0,stat:{sik:3}},'그 외':{coin:20,stat:{ju:10}}}   /* 지방은 지역 한정 집 퀘스트를 못 받아 첫 집이 늦다(QA). 집 +10으로 메운다 */,
  income:[{v:'빠듯',p:20,coin:80,stat:{geum:4}},{v:'보통',p:60,coin:150,stat:{sik:2}},{v:'넉넉',p:20,coin:240,stat:{ui:2}}],
  path:[{v:'4년제',p:51,stat:{ui:2,geum:1}},{v:'전문대',p:24,stat:{jik:4}},{v:'고졸',p:25,stat:{jik:3},coin:30}],
  living:{'본가':{tier:0,coin:60,home:'본가 방'},'기숙사':{tier:3,coin:0,home:'기숙사'},'자취':{tier:4,coin:-40,home:'자취방'}},
@@ -3631,7 +3633,8 @@ function lifeFx(p){
   var b=LIFE_FX.band[p.band],inc=LIFE_FX.income.filter(function(x){ return x.v===p.income; })[0],pa=LIFE_FX.path.filter(function(x){ return x.v===p.path; })[0],lv=LIFE_FX.living[p.living];
   var st={ju:0,sik:0,ui:0,geum:0,jik:0},add=function(o){ Object.keys(o||{}).forEach(function(k){ st[k]+=o[k]; }); };
   add(b.stat); add(inc.stat); add(pa.stat); add(LIFE_FX.trait[p.trait]); if(p.majorSt) st[p.majorSt]+=2;
-  return {coin:Math.max(50,inc.coin+b.coin+(pa.coin||0)+lv.coin),stat:st,tier:lv.tier,home:lv.home,
+  var tier=(p.living==='자취'&&p.income==='넉넉')?6:lv.tier,home=p.living==='자취'?TIERS_ORIG?TIERS_ORIG[tier].name:TIERS[tier].name:lv.home;
+  return {coin:Math.max(50,inc.coin+b.coin+(pa.coin||0)+lv.coin),stat:st,tier:tier,home:home,
     status:p.path==='고졸'?'취준생':'대학생'}; }
 function birthRoll(){
   var L=S.life; if(L.rolls>=3) return;
@@ -3645,7 +3648,26 @@ function birthApply(){
   S.years=null; S.prep=(fx.status==='취준생')?'공채':null; S.company=null;
   S.avatar=p.sex==='F'?'stuF':'stuM';
   if(HEROMAP[p.hero]) pickHero(p.hero);
-  L.t0=Date.now(); save(); }
+  L.t0=Date.now(); applyLifeTiers(); save(); }
+
+/* ── 인생 모드 거처: 본가 방·기숙사 ──
+   일반 모드 사다리(노숙→움막→텐트→찜질방→…)는 맨손 상경 이야기다. 인생 모드에서는 0칸을 "본가 방", 3칸을 "기숙사"로 바꾸고
+   1~3칸은 건너뛴다. TIERS·ROOMSPEC 이름과 그림만 덮어쓰고, 일반 모드로 돌아가면 되돌린다 */
+var TIERS_ORIG=null,ROOMSPEC_ORIG=null;
+function lifeLiving(){ return lifeOn()&&S.life&&S.life.prof?S.life.prof.living:null; }
+function lifeNest(){ var lv=lifeLiving(); return !!lv&&((lv==='본가'&&S.tier===0)||(lv==='기숙사'&&S.tier===3)); }
+function lifeHouseArt(i){ var lv=lifeLiving(); if(lv==='본가'&&i===0) return 10; if(lv==='기숙사'&&i===3) return 9; return i; }
+/* 다음에 열릴 거처 칸. 인생 모드는 움막·텐트·찜질방을 건너뛴다 */
+function nextTierIdx(){ if(S.peak>=TIERS.length-1) return null; return (lifeOn()&&S.peak<4)?4:S.peak+1; }
+function furnTier(){ return (lifeOn()&&ROOMSPEC[S.tier])?Math.max(S.tier,3):S.tier; }   /* 본가 방·기숙사도 작은 세간은 놓는다 */
+function applyLifeTiers(){
+  if(!TIERS_ORIG){ TIERS_ORIG=TIERS.map(function(t){ return {name:t.name,kind:t.kind,def:t.def}; }); ROOMSPEC_ORIG=ROOMSPEC.slice(); }
+  TIERS.forEach(function(t,i){ t.name=TIERS_ORIG[i].name; t.kind=TIERS_ORIG[i].kind; t.def=TIERS_ORIG[i].def; });
+  for(var i=0;i<ROOMSPEC_ORIG.length;i++) ROOMSPEC[i]=ROOMSPEC_ORIG[i];
+  var lv=lifeLiving();
+  if(lv==='본가'){ TIERS[0].name='본가 방'; TIERS[0].kind='villa'; TIERS[0].def=16; ROOMSPEC[0]={w:8,h:6,kind:'flat'}; }
+  if(lv==='기숙사'){ TIERS[3].name='기숙사'; ROOMSPEC[3]={w:8,h:6,kind:'flat'}; }
+  HCACHE={}; if(typeof ROOMC!=='undefined') ROOMC={}; if(typeof TCACHE!=='undefined') TCACHE=null; }
 function lifeKeys(p){ return {region:p.band==='수도권'?'cap':p.band==='광역시'?'metro':'etc',household:p.income==='넉넉'?'rich':p.income==='빠듯'?'tight':'mid',
   dialect:p.dia==='std'?null:p.dia}; }
 
@@ -3663,8 +3685,8 @@ function birthRender(body){
    '<div class="bcl">'+esc(p.sido+' '+p.sgg+' '+p.dong)+' 출생 · '+esc(p.hs)+' 졸업</div>'+
    '<div class="bcl">'+(p.path==='고졸'?'대학 대신 바로 일 찾기':esc(p.uni+' '+p.major)+' 1학년')+'</div>'+
    row('출신',p.band,fxText(b))+row('형편',p.income,fxText({coin:0,stat:inc.stat}))+row('학교',p.path,fxText({coin:pa.coin||0,stat:pa.stat}))+
-   row('거처',p.living,'첫 집 '+TIERS[lv.tier].name)+row('성향',p.trait+' · '+p.mbti,fxText({stat:LIFE_FX.trait[p.trait]}))+
-   '<div class="bcs">시작 코인 ￦'+fx.coin+' · 첫 거처 '+TIERS[fx.tier].name+' · 스탯 합 +'+Object.keys(fx.stat).reduce(function(a,k){ return a+fx.stat[k]; },0)+'</div>'+
+   row('거처',p.living,'첫 집 '+fx.home)+row('성향',p.trait+' · '+p.mbti,fxText({stat:LIFE_FX.trait[p.trait]}))+
+   '<div class="bcs">시작 코인 ￦'+fx.coin+' · 첫 거처 '+fx.home+' · 스탯 합 +'+Object.keys(fx.stat).reduce(function(a,k){ return a+fx.stat[k]; },0)+'</div>'+
    '<div class="bcg">'+tmi('혈액형',p.blood+'형')+tmi('키',p.height+'cm · '+p.build)+tmi('안경',p.glasses?'씀':'안 씀')+tmi('가족',p.parents+' · '+p.sibs+(p.multi?' · '+p.multi:''))+
    tmi('반려동물',p.pet?'본가에 '+p.pet:'')+tmi('좋아하는 음식',p.food)+tmi('취미',p.hobby)+tmi('버릇',p.habit)+tmi('휴대폰',p.phone)+tmi('첫 알바',p.firstJob)+'</div>'+
    '<div class="bcq">"'+esc(p.say)+'"</div><div class="bci">'+esc(p.intro)+'</div>'+
@@ -3698,7 +3720,15 @@ function lifeBeforeCh(id,go){
   if(age&&S.life.anch.age<age){ S.life.anch={age:age,done:S.done.length}; }
   lifeTick(); save();
   var y=LIFE_YEARS[LIFE_YKEY[id]]; if(!y) return false;
-  playMQ({kicker:'LIFE',title:y.title,sub:y.sub,scenes:lifeFill(y.scenes,lifeFillVals()),endScenes:function(){ return []; },onDone:function(){ setTimeout(go,300); }});
+  var sc=lifeFill(y.scenes,lifeFillVals()),p=S.life.prof||{};
+  /* 카드에 맞춰 장면을 고친다: 고졸·전문대의 스물넷, 아직 본가·기숙사인 스물여섯 */
+  if(id==='job'&&p.path==='고졸') sc[1].text=['일한 지 몇 해.','이력서 한 줄이','조금 늘었다.'];
+  if(id==='job'&&p.path==='전문대') sc[1].text=['전문대를 마친 지','두 해.','이력서를 다시 썼다.'];
+  if(id==='lease'&&lifeNest()) sc[0].text=['스물여섯.',TIERS[S.tier].name+' 생활도','몇 해째다.'];
+  /* 형편이 숫자로 느껴지게: 본가는 아낀 방값, 넉넉하면 집에서 보탠 돈 */
+  var gift=(lifeNest()&&p.living==='본가'?40:0)+(p.income==='넉넉'?60:0);
+  if(gift){ S.coin+=gift; save(); setTimeout(function(){ sfx('coin'); toast((p.living==='본가'&&lifeNest()?'아낀 방값':'집에서 보탠 돈')+' ￦'+gift); },600); }
+  playMQ({kicker:'LIFE',title:y.title,sub:y.sub,scenes:sc,endScenes:function(){ return []; },onDone:function(){ setTimeout(go,300); }});
   return true; }
 function lifeFillVals(){ var p=(S.life&&S.life.prof)||{},k=lifeKeys(p.sido?p:{band:'수도권',income:'보통',dia:'std'});
   return {name:p.name||heroOf().name,birth:p.birth||'',birthMD:p.birthMD||'',dong:(p.sido||'')+' '+(p.sgg||'')+' '+(p.dong||''),school:p.hs||'',major:p.major||'',
@@ -3752,10 +3782,10 @@ function lifeAfter(sm){
 function lifeNew(skipAlbum){
   var old=(SLOT==='life'&&S&&S.mode==='life')?S:peekSlot(KEY_LIFE),keep={snd:S?S.snd:true,vib:S?S.vib:true};
   if(!skipAlbum&&old&&old.onboarded&&old.life&&!old.life.over&&old.life.prof){ var S0=S; S=old; try{ albumAdd(lifeSummary(true)); }catch(e){} S=S0; }
-  setSlot('life'); S=fresh(); S.mode='life'; S.life=lifeFresh(); S.prologue=1; S.snd=keep.snd; S.vib=keep.vib; save(); }
+  setSlot('life'); S=fresh(); S.mode='life'; S.life=lifeFresh(); S.prologue=1; S.snd=keep.snd; S.vib=keep.vib; applyLifeTiers(); save(); }
 function switchSlot(s){
   if(SLOT===s&&S) return;
-  setSlot(s); S=load(); stopWalk();
+  setSlot(s); S=load(); applyLifeTiers(); stopWalk();
   if(S.onboarded){ render('home'); hudRefresh(); } else { obStep=0; obRender(); go('onboard'); } }
 
 /* 인생 모드 대본(스토리, ops/life-1009/life-scenes.js) */
@@ -4069,7 +4099,7 @@ function rollDay(){
     if(gr){ var mv=gr.wasTop?tierMove(S.peak):null; S.upNote={i:S.peak,ok:mv?mv.ok:0,cost:mv?mv.cost:0,stay:!gr.wasTop,lease:mv&&mv.lease?1:0}; } }
   S.todayQ=S.onboarded?pickDaily():[];
   if(S.onboarded&&gap>=3&&typeof csWant==='function') csWant('back',gap);
-  if(S.onboarded&&typeof mqDone==='function'&&mqDone('card')&&typeof csWant==='function') csWant('memory');
+  if(S.onboarded&&typeof mqDone==='function'&&mqDone('card')&&typeof csWant==='function'&&(!lifeOn()||(S.life.prof&&S.life.prof.band==='그 외'))) csWant('memory');   /* 할배 고향 회상은 지방 출신 인생에만 */
   ev('day_start',{streak:S.streak,gap:gap,dayN:dayGap(S.first,t)+1});
   save(); return true; }
 function todayList(){
@@ -5471,7 +5501,7 @@ function settleRedecorate(){
   var ids=furniList().filter(function(o){ return o.x==null&&FURNI[o.id]&&FURNI[o.id].w; }).map(function(o){ return o.id; });
   var put=0,kept=0;
   ids.forEach(function(id){ var it=FURNI[id],cur=furniOf(id);
-    if(!ROOMSPEC[S.tier]||S.tier<it.need){ kept++; return; }
+    if(!ROOMSPEC[S.tier]||furnTier()<it.need){ kept++; return; }
     ROOMC={}; var m=roomMap(),at=m&&autoSpot(m,it,id);
     if(!at){ kept++; return; }
     cur.x=at.x; cur.y=at.y; put++; });
@@ -5481,7 +5511,7 @@ function settleRedecorate(){
 function startPlace(id,queue,cost){
   var it=FURNI[id]; if(!it||!it.w) return;
   if(!ROOMSPEC[S.tier]){ toast('아직 놓을 방이 없어요.'); return; }
-  if(S.tier<it.need){                                   /* 이사 정리·옮기기로 우회하던 것 */
+  if(furnTier()<it.need){                                   /* 이사 정리·옮기기로 우회하던 것 */
     toast(TIERS[it.need].name+'부터 놓을 수 있어요. 창고에 둬요.');
     if(queue) placeNext(queue); return; }
   if(ME.map!=='room'){ var rm=roomMap(); enterMap('room',rm.spawn.x,rm.spawn.y); }
@@ -5527,7 +5557,7 @@ function autoPlaceRest(){
   PLACE=null;
   ids.forEach(function(id){ var it=FURNI[id]; if(!it||!it.w) return;
     var cur=furniOf(id); if(cur){ cur.x=null; cur.y=null; }
-    if(S.tier<it.need){ kept++; return; }
+    if(furnTier()<it.need){ kept++; return; }
     ROOMC={}; var m=roomMap(),at=autoSpot(m,it,id);
     if(!at){ kept++; return; }
     if(cur){ cur.x=at.x; cur.y=at.y; } else furniList().push({id:id,x:at.x,y:at.y});
@@ -5560,7 +5590,7 @@ function movePlace(dx,dy){
 function buyFurni(id){
   var it=FURNI[id]; if(!it) return;
   if(it.mq&&!mqOk(it.mq)&&!hasFurni(id)){ toast(mqLockMsg(mqById(it.mq))); return; }
-  if(S.tier<it.need){ toast(TIERS[it.need].name+'부터 놓을 수 있어요.'); return; }
+  if(furnTier()<it.need){ toast(TIERS[it.need].name+'부터 놓을 수 있어요.'); return; }
   if(id==='ramen'){
     if(!S.demo&&S.coin<it.cost){ toast('코인이 모자라요.'); return; }
     if(!S.demo) S.coin-=it.cost;
@@ -5576,7 +5606,7 @@ function buyFurni(id){
 function furniRow(id){
   var it=FURNI[id],owned=(id==='ramen')?((S.ramen||0)>0):hasFurni(id);
   var mql=(!owned&&it.mq&&!mqOk(it.mq))?mqById(it.mq):null;
-  var locked=S.tier<it.need||!!mql;
+  var locked=furnTier()<it.need||!!mql;
   var b=document.createElement('button');
   b.className='item pix'+(owned?' on':'')+(locked?' locked':'');
   var cv=document.createElement('canvas'); cv.width=30; cv.height=30;
@@ -8413,7 +8443,7 @@ function renderHome(){
   document.getElementById('hxpv').textContent=S.xp+' / '+n+' XP';
   setTimeout(function(){ document.getElementById('hxp').style.width=Math.min(100,Math.round(S.xp/n*100))+'%'; },60);
   paintHudFace();
-  var nx=(S.peak<TIERS.length-1)?TIERS[S.peak+1].need-S.stats.ju:null,hold=nx!==null&&S.peak>=tierCap();
+  var nxi=nextTierIdx(),nx=(nxi!==null)?TIERS[nxi].need-S.stats.ju:null,hold=nx!==null&&S.peak>=tierCap();
   var ht=document.getElementById('htier'),canMove=S.peak>S.tier&&!S.lease;
   ht.onclick=canMove?function(){ sfx('pick'); houseTip(S.peak); }:null; ht.style.cursor=canMove?'pointer':'';
   ht.innerHTML=TIERS[S.tier].name+
@@ -8521,7 +8551,12 @@ function endTalk(){
    처음 한 번에 다 말해 봐야 기억에 안 남는다. 필요해지는 순간마다 하나씩 알려 준다.
    조건이 맞는 첫 단계만 띄우고, 본 단계는 다시 안 띄운다. */
 var TUT_STEPS=[
- {id:'intro',when:function(){ return true; },lines:[
+ {id:'intro',when:function(){ return true; },
+  life:['안녕, 이 동네에서 부동산 하는 사람이야. 오가며 얼굴은 봤지?',
+   '건물마다 간판이 붙어 있지? 문 위에 느낌표가 뜬 건물엔 너한테 해 줄 얘기가 있다는 뜻이야. 노란 건 오늘 꼭 들을 얘기.',
+   '가고 싶은 곳을 톡 누르면 알아서 걸어가. 문을 누르면 들어가고, 안에서는 창구를 누르면 상담이 시작돼.',
+   '독립은 아직이어도 집 공부는 지금부터야. 첫 상담은 오른쪽 끝 부동산에서 받아 봐.'],
+  lines:[
    '어, 새로 온 얼굴이네. 나는 이 동네에서 부동산 하는 사람이야.',
    '건물마다 간판이 붙어 있지? 문 위에 느낌표가 뜬 건물엔 너한테 해 줄 얘기가 있다는 뜻이야. 노란 건 오늘 꼭 들을 얘기.',
    '가고 싶은 곳을 톡 누르면 알아서 걸어가. 문을 누르면 들어가고, 안에서는 창구를 누르면 상담이 시작돼.',
@@ -8551,7 +8586,8 @@ var TUT_STEPS=[
    '동네마다 건물 안에 창구가 있어. 학교 앞은 학생지원센터, 고용센터 앞은 고용센터랑 공단.',
    '가게 사람 중엔 넌센스 퀴즈를 내는 사람도 있어. 보라색 말풍선이야. 다 맞히면 특별한 물건을 준대.',
    '그리고 땅에서 가끔 반짝이는 게 보이면 밟아 봐. 동전이나 경험치가 떨어져 있거든.']},
- {id:'room',when:function(){ return S.peak>=1; },lines:[
+ {id:'room',when:function(){ return lifeOn()?!!ROOMSPEC[S.tier]:S.peak>=1; },
+  life:['네 방은 동네 맨 왼쪽 문이야.','상점에서 세간을 사면 방에 놓을 수 있고, 놓으면 방어가 올라.'],lines:[
    '오, 거처가 올라갔네! 이제 들어갈 방이 생겼어.',
    '동네 맨 왼쪽 문이 네 방이야. 상점에서 세간을 사면 방에 놓을 수 있고, 놓으면 방어가 올라.']},
  {id:'gear',when:function(){ return S.coin>=110&&S.done.length>=1; },hl:'.tabbar .tab:nth-child(3),.tabbar .tab:nth-child(4)',lines:[
@@ -8585,7 +8621,7 @@ function checkTutor(){
     if(st.id!=='intro'&&S.tuts.indexOf('intro')<0) return;
     if(ME.map!==(st.map||'town')) return;           /* 그 장소에 서 있을 때만 이어 간다. 방 안에 부동산 사장이 나타나던 것 */
     var ok=false; try{ ok=st.when(); }catch(e){}
-    if(ok){ talkTo({name:'부동산 사장',face:'gpa',lines:st.lines,hl:st.hl,tut:st.id}); return; } } }
+    if(ok){ talkTo({name:'부동산 사장',face:'gpa',lines:(lifeOn()&&st.life)?st.life:st.lines,hl:st.hl,tut:st.id}); return; } } }
 function startTutor(){ checkTutor(); }
 function autoClaim(){
   if(S.claimed===dayKey()) return;
@@ -9298,12 +9334,12 @@ function furniTip(id){
     statLine('공격',it.atk||0,null)+statLine('방어',it.def||0,null)+
     (id==='ramen'?'<div class="il good"><i>◆</i>남은 라면 '+(S.ramen||0)+'개 · 퀘스트에서 목숨 하나</div>':'')+
     perkLines(it.perk).map(function(l){ return '<div class="il" style="color:#D9B8FF"><i>✦</i>'+l+'</div>'; }).join('')+
-    (it.need?'<div class="il '+(S.tier>=it.need?'good':'warn')+'"><i>◆</i>'+TIERS[it.need].name+'부터 놓을 수 있음</div>':'')+
+    (it.need?'<div class="il '+(furnTier()>=it.need?'good':'warn')+'"><i>◆</i>'+TIERS[it.need].name+'부터 놓을 수 있음</div>':'')+
     (o&&o.x==null?'<div class="il warn"><i>◆</i>창고에 있음 · 방에 놓아야 공격·방어가 붙어요</div>':'')+
     '<div class="iq">"'+it.desc+'"</div><div class="isrc">상점 · ￦'+it.cost+'</div>';
   openTip.thumb=furniThumb(id);
   var bt=[];
-  if(o&&it.w&&ROOMSPEC[S.tier]&&S.tier>=it.need) bt.push({t:o.x!=null?'방에서 옮기기':'방에 놓기',f:function(){ closeTip(); startPlace(id); }});
+  if(o&&it.w&&ROOMSPEC[S.tier]&&furnTier()>=it.need) bt.push({t:o.x!=null?'방에서 옮기기':'방에 놓기',f:function(){ closeTip(); startPlace(id); }});
   if(!have) bt.push({t:'상점으로',f:function(){ closeTip(); render('shop'); }});
   openTip(h,r.c,bt); }
 function renderShop(){
@@ -10152,7 +10188,7 @@ function upNoteShow(){
 var _renderHomeB=renderHome; renderHome=function(){ _renderHomeB.apply(this,arguments); todayBtn(); todayAuto(); upNoteShow(); };
 /* 전세 계약을 거쳐야 옮기는 거처. rollDay가 새 거처를 열 때 leaseGate가 바로 읽으므로 불러오기 전에 둔다. */
 var LEASE_TIERS={7:1,8:1};
-S=load();
+S=load(); applyLifeTiers();
 /* 되돌린 일러스트 주인공(h_로 시작하는 id) 저장은 예전 남·여 주인공으로 돌린다. 모르는 id로 남으면 상태창·캐릭터 화면이 깨진다 */
 if(!AVATARS[S.avatar]) S.avatar=/^h_(haeun|seoyun|jimin|narae)$/.test(S.avatar||'')?'stuF':'stuM';
 /* 주인공을 고르기 전에 만든 저장은 성별에 맞는 기본 인물로(머리색은 그대로 둔다) */
@@ -11850,7 +11886,8 @@ function csFill(id,arg){
   var rp=function(x){ return String(x).replace(/\{(\w+)\}/g,function(m,k){ return f[k]!=null?f[k]:m; }); };
   return sc.map(function(p){ var q=JSON.parse(JSON.stringify(p));
     if(q.alt&&id==='back'&&!f.rev) q.text=q.alt.rev0;
-    if(q.bg) q.bg=rp(q.bg); q.text=(q.text||[]).map(rp); if(q.doc) q.doc.rows=q.doc.rows.map(function(r){ return r.map(rp); });
+    if(q.bg) q.bg=rp(q.bg); q.text=(q.text||[]).map(rp);
+    if(id==='firstq'&&lifeOn()&&lifeNest()&&/잘 곳부터/.test(q.text.join(' '))) q.text=['급한 건 아직 없지.',TIERS[S.tier].name+'이 있을 때','집 공부를 해 두게.']; if(q.doc) q.doc.rows=q.doc.rows.map(function(r){ return r.map(rp); });
     return q; }); }
 function csPay(id,replay){
   var R=CS_STORY[id].reward,C=csS(),rows=[]; if(!R||replay) return rows;
