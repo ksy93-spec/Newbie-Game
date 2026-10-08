@@ -7214,7 +7214,7 @@ var MAPT=null;                       /* 애니메이션 타이머 */
 function curMap(){ return (ME.map==='room'?roomMap():MAPS[ME.map])||MAPS.town; }
 function mePx(){
   var x=ME.tx*TS,y=ME.ty*TS;
-  if(MOVE){ var k=MOVE.t/MOVE.dur;
+  if(MOVE){ var k=Math.min(1,(MOVE.t+MOVEK)/MOVE.dur);
     x=(MOVE.fx+(MOVE.tx-MOVE.fx)*k)*TS; y=(MOVE.fy+(MOVE.ty-MOVE.fy)*k)*TS; }
   return {x:x,y:y};
 }
@@ -7380,6 +7380,15 @@ function mapFade(){
   var f=document.getElementById('hfade'); if(!f) return;
   if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   f.classList.add('on'); void f.offsetWidth; requestAnimationFrame(function(){ f.classList.remove('on'); }); }
+var TCACHE=null;
+function tileCache(m){
+  var k=(m.tint?'-':S.tier)+'|'+RES;
+  if(TCACHE&&TCACHE.m===m&&TCACHE.k===k) return TCACHE;
+  /* 화면과 같은 해상도(RES배)로 그려 둔다. 1배로 두면 나무 그림자 같은 둥근 모양이 각진다 */
+  var cv=mkcv(m.w*TS*RES,m.h*TS*RES),c=cv.getContext('2d'),anim=[],x,y,ch;
+  c.imageSmoothingEnabled=false; c.setTransform(RES,0,0,RES,0,0);
+  for(y=0;y<m.h;y++) for(x=0;x<m.w;x++){ ch=tileAt(m,x,y); drawTile(c,m,ch,x*TS,y*TS,x,y); if(ch==='w') anim.push(x,y); }
+  return (TCACHE={m:m,k:k,cv:cv,anim:anim}); }
 /* ── 그리기 ──────────────────────────────────────────────────────────── */
 function drawScene(){
   var cv=document.getElementById('scene'); if(!cv) return;
@@ -7392,7 +7401,12 @@ function drawScene(){
   ctx.save(); ctx.scale(cam.z,cam.z); ctx.translate(-cam.x,-cam.y);
   var x0=Math.max(0,Math.floor(cam.x/TS)),x1=Math.min(m.w-1,Math.ceil((cam.x+SW/cam.z)/TS));
   var y0=Math.max(0,Math.floor(cam.y/TS)),y1=Math.min(m.h-1,Math.ceil((cam.y+SH/cam.z)/TS));
-  for(y=y0;y<=y1;y++) for(x=x0;x<=x1;x++) drawTile(ctx,m,tileAt(m,x,y),x*TS,y*TS,x,y);
+  /* 변하지 않는 타일은 지도마다 한 번 그려 둔 캔버스에서 옮긴다. 물만 매번 다시 그린다 */
+  if(cam.z>=1&&!window.NOTC){ var tc=tileCache(m),sx0=x0*TS,sy0=y0*TS,sw0=(x1-x0+1)*TS,sh0=(y1-y0+1)*TS;
+    ctx.drawImage(tc.cv,sx0*RES,sy0*RES,sw0*RES,sh0*RES,sx0,sy0,sw0,sh0);
+    for(var ai=0;ai<tc.anim.length;ai+=2){ x=tc.anim[ai]; y=tc.anim[ai+1];
+      if(x>=x0&&x<=x1&&y>=y0&&y<=y1) drawTile(ctx,m,'w',x*TS,y*TS,x,y); } }
+  else for(y=y0;y<=y1;y++) for(x=x0;x<=x1;x++) drawTile(ctx,m,tileAt(m,x,y),x*TS,y*TS,x,y);
   if(!m.interior&&ME.map!=='room'){                 /* 지도 아래로 내려다본 자리는 풀밭으로 이어 그린다 */
     var ye=Math.ceil((cam.y+SH/cam.z)/TS);
     for(y=m.h;y<=ye;y++) for(x=x0;x<=x1;x++){ var lc=m.pad||m.rows[m.h-1].charAt(x);
@@ -7625,20 +7639,27 @@ function startWalk(){
   if(S.pos&&mapById(S.pos.map)){ ME.map=S.pos.map; ME.tx=S.pos.tx; ME.ty=S.pos.ty; ME.dir=S.pos.dir||0; }
   if(!walkable(curMap(),ME.tx,ME.ty)) enterMap(ME.map,ME.tx,ME.ty);
   drawScene();
-  MAPT=setInterval(function(){
-    TICK++;
-    if(!MOVE){ if(HOLD.dir!==null) return stepDir(HOLD.dir);
-      if(TICK%180===0) checkTutor();
-      if(TICK%4===0||(PETW&&(PETW.mv||PETW.heart))) drawScene(); return; }
-    MOVE.t++;
-    if(MOVE.t>=MOVE.dur){ ME.step=(ME.step+1)%2; nextStep(); }
-    else drawScene();
-  },55);
+  MAPT=1; MAPLAST=MAPIDLE=performance.now(); MAPACC=0; MAPRAF=requestAnimationFrame(mapFrame);
 }
-function stopWalk(){ if(MAPT){ clearInterval(MAPT); MAPT=null; } MOVE=null; savePosNow(); }
+/* 걷는 속도·깜빡임은 55ms 틱으로 세고, 그리기는 화면 프레임마다 하며 칸 사이 위치를 보간한다(초당 14번 → 60번) */
+var TICKMS=55,MAPRAF=0,MAPLAST=0,MAPACC=0,MAPIDLE=0,MOVEK=0;
+function mapTick(){
+  TICK++;
+  if(!MOVE){ if(HOLD.dir!==null){ stepDir(HOLD.dir); return; }
+    if(TICK%180===0) checkTutor(); return; }
+  MOVE.t++;
+  if(MOVE.t>=MOVE.dur){ ME.step=(ME.step+1)%2; nextStep(); } }
+function mapFrame(now){
+  if(!MAPT) return;
+  var dt=Math.min(250,now-MAPLAST); MAPLAST=now; MAPACC+=dt;
+  while(MAPACC>=TICKMS){ MAPACC-=TICKMS; mapTick(); if(!MAPT) return; }
+  MOVEK=MOVE&&MOVE.dur?MAPACC/TICKMS:0;
+  if(MOVE||(PETW&&(PETW.mv||PETW.heart))||now-MAPIDLE>=220){ MAPIDLE=now; drawScene(); }
+  MAPRAF=requestAnimationFrame(mapFrame); }
+function stopWalk(){ if(MAPT){ cancelAnimationFrame(MAPRAF); MAPT=null; } MOVE=null; MOVEK=0; savePosNow(); }
 /* 앱이 뒤로 가면 지도 루프와 소리를 멈추고 저장을 마친다. 돌아오면 홈일 때만 다시 켠다 */
 document.addEventListener('visibilitychange',function(){
-  if(document.hidden){ savePosNow(); if(MAPT){ clearInterval(MAPT); MAPT=null; MOVE=null; } try{ if(AC&&AC.state==='running') AC.suspend(); }catch(e){} }
+  if(document.hidden){ savePosNow(); if(MAPT){ cancelAnimationFrame(MAPRAF); MAPT=null; MOVE=null; MOVEK=0; } try{ if(AC&&AC.state==='running') AC.suspend(); }catch(e){} }
   else { var hm=document.getElementById('home'); if(hm&&hm.classList.contains('on')&&!MAPT) startWalk(); try{ if(AC&&AC.state==='suspended') AC.resume(); }catch(e){} } });
 addEventListener('pagehide',function(){ savePosNow(); });
 function sceneTile(ev){
