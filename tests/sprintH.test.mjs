@@ -153,3 +153,23 @@ test('5. 깨진·옛 인생 저장이 남아 있어도 시작 화면이 비지 �
     await ctx.close();
   }
 });
+
+test('6. 리뷰 1009 개발: 건너뛴 거처는 못 고르고, HUD 글자는 상태를 안 바꾸고, 6장 뒤 닫혀도 결산이 온다', async () => {
+  const { ctx, page, logs } = await open();
+  const r = await page.evaluate(() => {
+    lifeNew(); let p; for (let i = 0; i < 3000; i++) { p = lifeGen(lifeSeedNew()); if (p.living === '본가') break; }
+    S.life.prof = p; S.life.seed = p.seed; birthApply(); S.onboarded = true; S.tut = 1; S.tuts = ['intro']; S.stats.ju = 30; S.coin = 500; tierGrow(); save();
+    const skip = [0, 1, 2, 3].filter(lifeSkip), mv = tierMove(1).ok;
+    S.done.push('a', 'b', 'c'); const before = localStorage.getItem('nq.life.v1'); hudName(); const same = before === localStorage.getItem('nq.life.v1');
+    MQ_LIST.forEach((c) => { S.mq.done[c.id] = 'good'; }); save();
+    return { skip, mv, same, normalName: tierNameOf({ mode: 'normal' }, 0), homeName: tierNameOf(S, 0) }; });
+  assert.deepEqual(r.skip, [1, 2, 3]);
+  assert.equal(r.mv, 0);
+  assert.ok(r.same, 'hudName은 저장을 안 바꾼다');
+  assert.equal(r.normalName, '노숙'); assert.equal(r.homeName, '본가 방');
+  await page.reload(); await page.waitForFunction(() => window.S && window.QUESTS, null, { polling: 100 });
+  await page.waitForFunction(() => { if (TUT) endTalk(); return window.MQP || (S.life && S.life.over); }, null, { timeout: 8000, polling: 200 });
+  assert.equal(await page.evaluate(() => S.life.over), true);
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});

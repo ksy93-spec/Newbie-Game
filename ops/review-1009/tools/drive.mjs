@@ -71,8 +71,8 @@ export async function settle(page, log, name, quietMs = 2000) {
     if (s.tip) { const bt = await page.$$eval('#itipbox button', (bs) => bs.map((b) => b.textContent.trim()));
       log.push('sheet: ' + (await page.textContent('#itipbox')).replace(/\s+/g, ' ').slice(0, 160) + ' | btns ' + JSON.stringify(bt));
       if (name) await shot(page, name + '-sheet' + log.length);
-      let c = false; for (const p of ['계속', '확인', '받기', '좋아요', '닫기']) { const b = page.locator('#itipbox button', { hasText: p }); if (await b.count()) { await b.first().click(); c = true; break; } }
-      if (!c) await page.locator('#itipbox button').last().click().catch(() => page.keyboard.press('Escape'));
+      let c = false; for (const p of ['계속', '확인', '받기', '좋아요', '닫기']) { const b = page.locator('#itipbox button', { hasText: p }).filter({ hasNotText: '광고' }); if (await b.count()) { await b.first().click(); c = true; break; } }
+      if (!c) await page.locator('#itipbox button').filter({ hasNotText: '광고' }).last().click({ timeout: 3000 }).catch(() => page.keyboard.press('Escape'));
       quiet = 0; await page.waitForTimeout(400); continue; }
     quiet += 250; if (quiet >= quietMs) return s;
     await page.waitForTimeout(250);
