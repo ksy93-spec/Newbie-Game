@@ -110,3 +110,23 @@ test('3. 거처가 카드와 맞는다: 본가는 본가 방, 기숙사는 기�
   assert.deepEqual(logs, []);
   await ctx.close();
 });
+
+for (const [w, h] of [[360, 640], [390, 844]]) {
+  test(`4. 처음 켠 사람(${w}x${h}): 인생 모드를 고르면 "이 인생으로 살기" 버튼이 화면 안에 있고 눌린다`, async () => {
+    const ctx = await browser.newContext({ viewport: { width: w, height: h } });
+    const page = await ctx.newPage(); const logs = [];
+    page.on('pageerror', (e) => logs.push('pageerror: ' + e));
+    await page.goto(BASE);
+    await page.waitForSelector('#opening .omb[data-k="life"]', { timeout: 10000 });
+    await page.click('#opening .omb[data-k="life"]');
+    await page.waitForFunction(() => !document.getElementById('opening') && document.getElementById('onboard').classList.contains('on'), null, { timeout: 8000 });
+    const hit = await page.evaluate(() => { const b = document.getElementById('obnext').getBoundingClientRect();
+      const e = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); return { inView: b.bottom <= innerHeight && b.top >= 0, top: e && e.id }; });
+    assert.ok(hit.inView, '버튼이 화면 안');
+    assert.equal(hit.top, 'obnext', '버튼 위를 덮은 것이 없다');
+    await page.click('#obnext');
+    await page.waitForFunction(() => S.onboarded && S.life.applied, null, { timeout: 5000 });
+    assert.deepEqual(logs, []);
+    await ctx.close();
+  });
+}

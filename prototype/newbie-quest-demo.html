@@ -702,6 +702,11 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
 .lcard{display:flex;flex-direction:column;gap:6px;} .lch{font-size:11px;color:#9B93A8;} .lct{font-size:20px;color:#FFE79B;} .lcl{font-size:12px;color:#CDEEFF;}
 .lcn{font-size:13px;} .lcp{font-size:11px;color:#9B93A8;} .lcg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center;}
 .lcg span{display:block;font-size:10px;color:#9B93A8;} .lcg b{font-size:12px;} .lcs{font-size:11px;} .lcf{font-size:10px;color:#6B6380;}
+/* 시작 화면: 내용이 화면보다 길면(인생 카드) 가운데 맞춤이 위아래를 잘라 다음 버튼이 화면 밖에 갇혔다.
+   위에서부터 쌓고 스크롤되게, 다음 버튼은 화면 아래에 붙인다 */
+#onboard .scroll{justify-content:flex-start;overflow-y:auto;}
+#onboard .scroll>:first-child{margin-top:auto;}
+#onboard #obnext{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom));z-index:3;box-shadow:0 6px 18px rgba(0,0,0,.45);margin-bottom:auto;}
 </style>
 
 <div id="app">
