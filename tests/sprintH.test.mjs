@@ -130,3 +130,26 @@ for (const [w, h] of [[360, 640], [390, 844]]) {
     await ctx.close();
   });
 }
+
+test('5. 깨진·옛 인생 저장이 남아 있어도 시작 화면이 비지 않고 다음 버튼이 눌린다', async () => {
+  const cases = [
+    { 'nq.slot': 'life', 'nq.life.v1': JSON.stringify({ mode: 'life', onboarded: false, life: { v: 1, rolls: 3, prof: null, prev: [], anch: { age: 20, done: 0 }, yrs: {} } }) },
+    { 'nq.slot': 'life', 'nq.life.v1': JSON.stringify({ mode: 'life', onboarded: false, life: null }) },
+    { 'nq.slot': 'life', 'nq.life.v1': JSON.stringify({ mode: 'normal', onboarded: false }) },
+  ];
+  for (const ls of cases) {
+    const ctx = await browser.newContext({ viewport: { width: 360, height: 640 } });
+    const page = await ctx.newPage(); const logs = [];
+    page.on('pageerror', (e) => logs.push('pageerror: ' + e));
+    await page.addInitScript((ls) => { if (!sessionStorage.getItem('x')) { sessionStorage.setItem('x', 1); for (const k in ls) localStorage.setItem(k, ls[k]); } }, ls);
+    await page.goto(BASE + '#nointro');
+    await page.waitForFunction(() => window.S && window.QUESTS, null, { polling: 100 });
+    const r = await page.evaluate(() => ({ body: document.getElementById('obbody').textContent, dis: document.getElementById('obnext').disabled }));
+    assert.match(r.body, /카드 한 장/);
+    assert.equal(r.dis, false);
+    await page.click('#obnext');
+    await page.waitForFunction(() => S.onboarded, null, { timeout: 5000 });
+    assert.deepEqual(logs, []);
+    await ctx.close();
+  }
+});

@@ -1,0 +1,48 @@
+// 처음 켠 사람: 오프닝 메뉴 → 인생 모드 → 카드 삼세판 → 태어남 컷신 → 첫 대화. 사용: node ops/review-1009/tools/qa-a-start.mjs 360 640
+import { launch, BASE, shot, tag, tapCine, tapTutor, overflow, visButtons, hitTest, st, wait, STATE } from './lib.mjs';
+const vw = +process.argv[2] || 360, vh = +process.argv[3] || 640, T = tag(vw), R = { vw, vh };
+const { browser, ctx, page, logs } = await launch(vw, vh);
+await page.goto(BASE);
+await page.waitForSelector('.omenu:not([hidden]) .omb', { timeout: 10000 });
+await wait(page, 400);
+R.menu = await page.$$eval('.omb', (bs) => bs.map((b) => b.innerText.replace(/\n/g, ' / ')));
+await shot(page, T + '-01menu');
+R.menuOverflow = await overflow(page, '#opening');
+await page.locator('.omb[data-k="life"]').click();
+await page.waitForSelector('#obbody .bcard', { timeout: 8000 });
+await wait(page, 1500);
+await shot(page, T + '-02card');
+R.cardOverflow = await overflow(page, '#onboard');
+R.obnextHit = await hitTest(page, '#obnext');
+R.card1 = await page.textContent('#obbody .bch');
+for (let i = 0; i < 2; i++) {
+  const rb = page.locator('#obbody button:has-text("다시 태어나기")');
+  R['rerollHit' + i] = await hitTest(page, '#obbody button.btn--wide');
+  await rb.click(); await wait(page, 300);
+  R['card' + (i + 2)] = await page.textContent('#obbody .bch');
+}
+R.lastBtn = await page.textContent('#obbody button.btn--wide');
+R.lastDisabled = await page.locator('#obbody button.btn--wide').isDisabled();
+await shot(page, T + '-03card3');
+R.card3Overflow = await overflow(page, '#onboard');
+R.obnextHit3 = await hitTest(page, '#obnext');
+await page.locator('#obnext').click();
+await wait(page, 600);
+R.afterNext = await page.evaluate(() => ({ opening: !!document.getElementById('opening'), mq: !!window.MQP, screen: [...document.querySelectorAll('.screen.on, section.on')].map((e) => e.id) }));
+let k = 0;
+R.birth = await tapCine(page, { onScene: async (s, i) => { if (i === 2 || i === 6) await shot(page, T + '-04birth' + i); } });
+await wait(page, 800);
+await shot(page, T + '-05home');
+R.home = await st(page);
+R.homeOverflow = await overflow(page, '#home');
+R.homeButtons = await visButtons(page);
+await wait(page, 1500);
+R.tut1 = await tapTutor(page);
+await shot(page, T + '-06afterTut');
+await wait(page, 2500);
+R.tut2 = await tapTutor(page);
+R.home2 = await st(page);
+R.logs = logs;
+await ctx.storageState({ path: STATE + '/after-birth-' + vw + '.json' });
+console.log(JSON.stringify(R, null, 1));
+await browser.close();

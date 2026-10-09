@@ -3487,6 +3487,11 @@ function load(){ var o=null;
     return (typeof f==='string')?{id:f,x:null,y:null}:f; });   /* 세간이 자리를 갖기 전 저장 */
   if(o.full==null){ o.full=100; o.fullAt=Date.now(); }
   if(o.econ!==2){ o.demo=false; o.econ=2; }     /* 시연(전부 무료·전부 열림)을 끝낸다. 가진 것은 그대로 */
+  /* 저장 칸과 모드를 맞춘다. 인생 칸인데 인생 기록이 비었거나 빠진 칸이 있으면 채운다(빈 화면에 갇히던 것) */
+  if(SLOT==='life'){ o.mode='life'; var lf=lifeFresh(); if(!o.life||typeof o.life!=='object') o.life=lf;
+    Object.keys(lf).forEach(function(k){ if(o.life[k]===undefined||o.life[k]===null&&(k==='anch'||k==='yrs'||k==='prev')) o.life[k]=lf[k]; });
+    if(!o.onboarded&&!o.life.prof){ o.life.rolls=Math.min(o.life.rolls||0,2); o.life.applied=false; } }
+  else o.mode='normal';
   if(o.avatar==='imgM') o.avatar='stuM';
   if(o.avatar==='imgF') o.avatar='stuF';
   return o; }
@@ -3625,7 +3630,7 @@ function lifeFx(p){
   return {coin:Math.max(50,inc.coin+b.coin+(pa.coin||0)+lv.coin),stat:st,tier:tier,home:home,
     status:p.path==='고졸'?'취준생':'대학생'}; }
 function birthRoll(){
-  var L=S.life; if(L.rolls>=3) return;
+  var L=S.life; if(L.rolls>=3&&L.prof) return;
   if(L.prof) L.prev.push({name:L.prof.name,line:L.prof.sido+' '+L.prof.sgg+' · '+L.prof.mbti});
   L.seed=lifeSeedNew(); L.prof=lifeGen(L.seed); L.rolls++; save(); }
 function birthApply(){
@@ -4390,11 +4395,19 @@ function applyStarter(){
   o.forEach(function(id){ if(S.owned.indexOf(id)<0) S.owned.push(id); });
   S.equip.top=o[0]; S.equip.bottom=o[1]; }
 var obStep=0;
+/* 시작 화면을 그리다 오류가 나도 빈 화면에 갇히지 않게: 다시 시작 단추를 띄운다 */
 function obRender(){
+  try{ obRender_(); }
+  catch(e){ ev('err',{at:'obRender',m:String(e).slice(0,80)});
+    var body=document.getElementById('obbody'); body.innerHTML='<div class="ob-q">화면을 불러오지 못했어요</div><div class="micro">저장된 시작 정보가 깨졌을 수 있어요. 아래를 누르면 시작 단계부터 다시 해요.</div>';
+    var nb=document.getElementById('obnext'); nb.disabled=false; nb.textContent='처음부터 다시';
+    nb.onclick=function(){ S=fresh(); if(SLOT==='life'){ S.mode='life'; S.life=lifeFresh(); S.prologue=1; } save(); obStep=0; nb.onclick=obNextClick; obRender(); }; } }
+function obRender_(){
   var steps=obSteps(),key=steps[Math.min(obStep,steps.length-1)];
   var body=document.getElementById('obbody');
   if(key==='birth'){
-    birthRender(body);
+    try{ birthRender(body); }
+    catch(e){ ev('err',{at:'birthRender',m:String(e).slice(0,80)}); S.life=lifeFresh(); save(); birthRender(body); }   /* 저장이 깨졌으면 새 카드로 */
     var pp=document.getElementById('obpips'); pp.innerHTML=''; steps.forEach(function(_,i){ var e=document.createElement('i'); if(i<=obStep) e.className='on'; pp.appendChild(e); });
     var bn=document.getElementById('obnext'); bn.disabled=false; bn.textContent='이 인생으로 살기';
     paintHero(document.getElementById('obchar'),'idle',0); return; }
@@ -4439,7 +4452,8 @@ function obRender(){
   nb.disabled=S[key]==null; nb.textContent=(obStep===nst-1)?'시작하기':'다음';
   paintHero(document.getElementById('obchar'),'idle',0); }
 document.getElementById('hmenu').onclick=function(){ render('codex'); };
-document.getElementById('obnext').onclick=function(){
+document.getElementById('obnext').onclick=obNextClick;
+function obNextClick(){
   var steps=obSteps();
   if(steps[obStep]==='birth'){ birthApply(); ev('life_birth',{seed:S.life.seed,rolls:S.life.rolls}); }
   if(obStep<steps.length-1){ obStep++; ev('onboard_step',{i:obStep,k:steps[obStep]}); obRender(); return; }

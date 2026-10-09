@@ -1,0 +1,3532 @@
+[
+ {
+  "ck": "A",
+  "seed": "v1-Y5YCMT",
+  "card": {
+   "band": "수도권",
+   "path": "4년제",
+   "living": "본가",
+   "income": "보통"
+  },
+  "trait": "성실",
+  "acc": 0.85,
+  "fx": {
+   "coin": 200,
+   "stat": {
+    "ju": 0,
+    "sik": 2,
+    "ui": 2,
+    "geum": 1,
+    "jik": 10
+   },
+   "tier": 0,
+   "home": "본가 방",
+   "status": "대학생"
+  },
+  "start": {
+   "coin": 200,
+   "tier": "본가 방",
+   "ju": 5,
+   "stats": {
+    "ju": 5,
+    "sik": 7,
+    "ui": 7,
+    "geum": 6,
+    "jik": 15
+   }
+  },
+  "pool0": 29,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 10,
+    "lv": 2,
+    "ju": 13,
+    "coin": 324,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 35,
+    "left": 33,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 7,
+    "t": 36,
+    "lv": 5,
+    "ju": 54,
+    "coin": 136,
+    "ageBefore": 25,
+    "age": 26,
+    "fit": 31,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 7,
+    "t": 40,
+    "lv": 6,
+    "ju": 60,
+    "coin": 436,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 31,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 10,
+    "t": 61,
+    "lv": 8,
+    "ju": 64,
+    "coin": 394,
+    "ageBefore": 27,
+    "age": 29,
+    "fit": 31,
+    "left": 26,
+    "wait": 0
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 18,
+    "t": 92,
+    "lv": 10,
+    "ju": 89,
+    "coin": 512,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 31,
+    "left": 20,
+    "wait": 2
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 18,
+    "t": 96,
+    "lv": 10,
+    "ju": 89,
+    "coin": 872,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 30,
+    "left": 20,
+    "wait": 2
+   }
+  ],
+  "ended": {
+   "t": 103,
+   "nq": 18,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1522,
+   "lv": 11,
+   "stats": {
+    "ju": 99,
+    "sik": 32,
+    "ui": 40,
+    "geum": 100,
+    "jik": 51
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:jeonse-",
+    "t": 22,
+    "nq": 5
+   },
+   {
+    "ev": "boss:mlm+",
+    "t": 30,
+    "nq": 7
+   },
+   {
+    "ev": "lease7",
+    "t": 34.599999999999994,
+    "nq": 7,
+    "coin": 136,
+    "cost": 380,
+    "moved": true
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 47,
+    "nq": 7
+   },
+   {
+    "ev": "lease8",
+    "t": 51.599999999999994,
+    "nq": 7,
+    "coin": 427,
+    "cost": 120,
+    "moved": true
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 67,
+    "nq": 10
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 2,
+  "waitEn": 2,
+  "waitFull": 0,
+  "food": 196,
+  "gifts": 40,
+  "giftLog": [
+   "job:40"
+  ],
+  "dep": 500,
+  "gear": 2320,
+  "t": 103,
+  "nq": 18,
+  "coinEnd": 1522
+ },
+ {
+  "ck": "A",
+  "seed": "v1-SPQW7A",
+  "card": {
+   "band": "수도권",
+   "path": "4년제",
+   "living": "본가",
+   "income": "보통"
+  },
+  "trait": "살림",
+  "acc": 0.85,
+  "fx": {
+   "coin": 200,
+   "stat": {
+    "ju": 5,
+    "sik": 2,
+    "ui": 2,
+    "geum": 1,
+    "jik": 5
+   },
+   "tier": 0,
+   "home": "본가 방",
+   "status": "대학생"
+  },
+  "start": {
+   "coin": 200,
+   "tier": "본가 방",
+   "ju": 10,
+   "stats": {
+    "ju": 10,
+    "sik": 7,
+    "ui": 7,
+    "geum": 6,
+    "jik": 10
+   }
+  },
+  "pool0": 29,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 10,
+    "lv": 2,
+    "ju": 18,
+    "coin": 324,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 35,
+    "left": 33,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 7,
+    "t": 36,
+    "lv": 5,
+    "ju": 59,
+    "coin": 136,
+    "ageBefore": 25,
+    "age": 26,
+    "fit": 31,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 7,
+    "t": 40,
+    "lv": 6,
+    "ju": 65,
+    "coin": 436,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 31,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 10,
+    "t": 63,
+    "lv": 8,
+    "ju": 84,
+    "coin": 417,
+    "ageBefore": 27,
+    "age": 29,
+    "fit": 31,
+    "left": 26,
+    "wait": 0
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 18,
+    "t": 92,
+    "lv": 10,
+    "ju": 94,
+    "coin": 366,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 31,
+    "left": 20,
+    "wait": 2
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 18,
+    "t": 96,
+    "lv": 10,
+    "ju": 94,
+    "coin": 726,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 30,
+    "left": 20,
+    "wait": 2
+   }
+  ],
+  "ended": {
+   "t": 103,
+   "nq": 18,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1376,
+   "lv": 11,
+   "stats": {
+    "ju": 100,
+    "sik": 35,
+    "ui": 40,
+    "geum": 100,
+    "jik": 46
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:jeonse-",
+    "t": 18,
+    "nq": 4
+   },
+   {
+    "ev": "boss:mlm+",
+    "t": 30,
+    "nq": 7
+   },
+   {
+    "ev": "lease7",
+    "t": 34.599999999999994,
+    "nq": 7,
+    "coin": 136,
+    "cost": 380,
+    "moved": true
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 47,
+    "nq": 7
+   },
+   {
+    "ev": "lease8",
+    "t": 51.599999999999994,
+    "nq": 7,
+    "coin": 427,
+    "cost": 120,
+    "moved": true
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 60,
+    "nq": 9
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 2,
+  "waitEn": 2,
+  "waitFull": 0,
+  "food": 196,
+  "gifts": 40,
+  "giftLog": [
+   "job:40"
+  ],
+  "dep": 500,
+  "gear": 2510,
+  "t": 103,
+  "nq": 18,
+  "coinEnd": 1376
+ },
+ {
+  "ck": "A",
+  "seed": "v1-WBG3QZ",
+  "card": {
+   "band": "수도권",
+   "path": "4년제",
+   "living": "본가",
+   "income": "보통"
+  },
+  "trait": "성실",
+  "acc": 0.7,
+  "fx": {
+   "coin": 200,
+   "stat": {
+    "ju": 0,
+    "sik": 2,
+    "ui": 2,
+    "geum": 1,
+    "jik": 10
+   },
+   "tier": 0,
+   "home": "본가 방",
+   "status": "대학생"
+  },
+  "start": {
+   "coin": 200,
+   "tier": "본가 방",
+   "ju": 5,
+   "stats": {
+    "ju": 5,
+    "sik": 7,
+    "ui": 7,
+    "geum": 6,
+    "jik": 15
+   }
+  },
+  "pool0": 29,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 10,
+    "lv": 2,
+    "ju": 13,
+    "coin": 314,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 35,
+    "left": 33,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 16,
+    "t": 117,
+    "lv": 6,
+    "ju": 53,
+    "coin": 18,
+    "ageBefore": 25,
+    "age": 26,
+    "fit": 31,
+    "left": 21,
+    "wait": 50
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 16,
+    "t": 122,
+    "lv": 6,
+    "ju": 57,
+    "coin": 198,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 31,
+    "left": 21,
+    "wait": 50
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 18,
+    "t": 138,
+    "lv": 8,
+    "ju": 65,
+    "coin": 155,
+    "ageBefore": 27,
+    "age": 29,
+    "fit": 31,
+    "left": 20,
+    "wait": 50
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 28,
+    "t": 166,
+    "lv": 10,
+    "ju": 82,
+    "coin": 402,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 31,
+    "left": 10,
+    "wait": 50
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 28,
+    "t": 170,
+    "lv": 10,
+    "ju": 82,
+    "coin": 522,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 30,
+    "left": 10,
+    "wait": 50
+   }
+  ],
+  "ended": {
+   "t": 177,
+   "nq": 28,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 852,
+   "lv": 10,
+   "stats": {
+    "ju": 88,
+    "sik": 28,
+    "ui": 34,
+    "geum": 100,
+    "jik": 90
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:mlm+",
+    "t": 26,
+    "nq": 7
+   },
+   {
+    "ev": "boss:fp-",
+    "t": 32,
+    "nq": 8
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 81,
+    "nq": 13
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 109,
+    "nq": 15
+   },
+   {
+    "ev": "lease7",
+    "t": 116.43000000000012,
+    "nq": 16,
+    "coin": 18,
+    "cost": 380,
+    "moved": true
+   },
+   {
+    "ev": "lease8",
+    "t": 133.93000000000012,
+    "nq": 17,
+    "coin": 420,
+    "cost": 120,
+    "moved": true
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 50,
+  "waitEn": 50,
+  "waitFull": 0,
+  "food": 348,
+  "gifts": 40,
+  "giftLog": [
+   "job:40"
+  ],
+  "dep": 500,
+  "gear": 1880,
+  "t": 177,
+  "nq": 28,
+  "coinEnd": 852
+ },
+ {
+  "ck": "B",
+  "seed": "v1-ZCJY6J",
+  "card": {
+   "band": "그 외",
+   "path": "고졸",
+   "living": "자취",
+   "income": "빠듯"
+  },
+  "trait": "성실",
+  "acc": 0.85,
+  "fx": {
+   "coin": 90,
+   "stat": {
+    "ju": 10,
+    "sik": 0,
+    "ui": 0,
+    "geum": 4,
+    "jik": 8
+   },
+   "tier": 4,
+   "home": "고시원",
+   "status": "취준생"
+  },
+  "start": {
+   "coin": 90,
+   "tier": "고시원",
+   "ju": 15,
+   "stats": {
+    "ju": 15,
+    "sik": 5,
+    "ui": 5,
+    "geum": 9,
+    "jik": 13
+   }
+  },
+  "pool0": 34,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 13,
+    "lv": 2,
+    "ju": 15,
+    "coin": 390,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 34,
+    "left": 31,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 6,
+    "t": 33,
+    "lv": 5,
+    "ju": 71,
+    "coin": 342,
+    "ageBefore": 24,
+    "age": 26,
+    "fit": 30,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 6,
+    "t": 38,
+    "lv": 6,
+    "ju": 77,
+    "coin": 522,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 30,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 10,
+    "t": 61,
+    "lv": 8,
+    "ju": 81,
+    "coin": 434,
+    "ageBefore": 28,
+    "age": 29,
+    "fit": 30,
+    "left": 25,
+    "wait": 0
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 18,
+    "t": 86,
+    "lv": 10,
+    "ju": 81,
+    "coin": 402,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 30,
+    "left": 19,
+    "wait": 0
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 18,
+    "t": 90,
+    "lv": 10,
+    "ju": 81,
+    "coin": 762,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 29,
+    "left": 19,
+    "wait": 0
+   }
+  ],
+  "ended": {
+   "t": 97,
+   "nq": 18,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1412,
+   "lv": 11,
+   "stats": {
+    "ju": 91,
+    "sik": 33,
+    "ui": 38,
+    "geum": 100,
+    "jik": 70
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:mlm+",
+    "t": 9,
+    "nq": 2
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 24,
+    "nq": 5
+   },
+   {
+    "ev": "lease7",
+    "t": 32.4,
+    "nq": 6,
+    "coin": 342,
+    "cost": 100,
+    "moved": true
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 44,
+    "nq": 6
+   },
+   {
+    "ev": "lease8",
+    "t": 48.9,
+    "nq": 6,
+    "coin": 762,
+    "cost": 120,
+    "moved": true
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 0,
+  "waitEn": 0,
+  "waitFull": 0,
+  "food": 198,
+  "gifts": 0,
+  "giftLog": [],
+  "dep": 360,
+  "gear": 2460,
+  "t": 97,
+  "nq": 18,
+  "coinEnd": 1412
+ },
+ {
+  "ck": "B",
+  "seed": "v1-DYYDAP",
+  "card": {
+   "band": "그 외",
+   "path": "고졸",
+   "living": "자취",
+   "income": "빠듯"
+  },
+  "trait": "살림",
+  "acc": 0.85,
+  "fx": {
+   "coin": 90,
+   "stat": {
+    "ju": 15,
+    "sik": 0,
+    "ui": 0,
+    "geum": 4,
+    "jik": 3
+   },
+   "tier": 4,
+   "home": "고시원",
+   "status": "취준생"
+  },
+  "start": {
+   "coin": 90,
+   "tier": "고시원",
+   "ju": 20,
+   "stats": {
+    "ju": 20,
+    "sik": 5,
+    "ui": 5,
+    "geum": 9,
+    "jik": 8
+   }
+  },
+  "pool0": 34,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 13,
+    "lv": 2,
+    "ju": 20,
+    "coin": 390,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 34,
+    "left": 31,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 5,
+    "t": 30,
+    "lv": 5,
+    "ju": 60,
+    "coin": 400,
+    "ageBefore": 24,
+    "age": 26,
+    "fit": 30,
+    "left": 29,
+    "wait": 0
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 5,
+    "t": 35,
+    "lv": 6,
+    "ju": 66,
+    "coin": 590,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 30,
+    "left": 29,
+    "wait": 0
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 10,
+    "t": 61,
+    "lv": 8,
+    "ju": 86,
+    "coin": 434,
+    "ageBefore": 28,
+    "age": 29,
+    "fit": 30,
+    "left": 25,
+    "wait": 0
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 18,
+    "t": 86,
+    "lv": 10,
+    "ju": 86,
+    "coin": 402,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 30,
+    "left": 19,
+    "wait": 0
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 18,
+    "t": 90,
+    "lv": 10,
+    "ju": 86,
+    "coin": 762,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 29,
+    "left": 19,
+    "wait": 0
+   }
+  ],
+  "ended": {
+   "t": 97,
+   "nq": 18,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1412,
+   "lv": 11,
+   "stats": {
+    "ju": 96,
+    "sik": 33,
+    "ui": 38,
+    "geum": 100,
+    "jik": 65
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:mlm+",
+    "t": 9,
+    "nq": 2
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 21,
+    "nq": 4
+   },
+   {
+    "ev": "lease7",
+    "t": 29.3,
+    "nq": 5,
+    "coin": 400,
+    "cost": 100,
+    "moved": true
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 42,
+    "nq": 5
+   },
+   {
+    "ev": "lease8",
+    "t": 46.699999999999996,
+    "nq": 5,
+    "coin": 820,
+    "cost": 120,
+    "moved": true
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 0,
+  "waitEn": 0,
+  "waitFull": 0,
+  "food": 198,
+  "gifts": 0,
+  "giftLog": [],
+  "dep": 360,
+  "gear": 2460,
+  "t": 97,
+  "nq": 18,
+  "coinEnd": 1412
+ },
+ {
+  "ck": "B",
+  "seed": "v1-DXVEPT",
+  "card": {
+   "band": "그 외",
+   "path": "고졸",
+   "living": "자취",
+   "income": "빠듯"
+  },
+  "trait": "성실",
+  "acc": 0.7,
+  "fx": {
+   "coin": 90,
+   "stat": {
+    "ju": 10,
+    "sik": 0,
+    "ui": 0,
+    "geum": 4,
+    "jik": 8
+   },
+   "tier": 4,
+   "home": "고시원",
+   "status": "취준생"
+  },
+  "start": {
+   "coin": 90,
+   "tier": "고시원",
+   "ju": 15,
+   "stats": {
+    "ju": 15,
+    "sik": 5,
+    "ui": 5,
+    "geum": 9,
+    "jik": 13
+   }
+  },
+  "pool0": 34,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 10,
+    "lv": 2,
+    "ju": 15,
+    "coin": 180,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 34,
+    "left": 31,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 7,
+    "t": 32,
+    "lv": 4,
+    "ju": 48,
+    "coin": 241,
+    "ageBefore": 25,
+    "age": 26,
+    "fit": 30,
+    "left": 27,
+    "wait": 0
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 8,
+    "t": 47,
+    "lv": 6,
+    "ju": 60,
+    "coin": 351,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 30,
+    "left": 26,
+    "wait": 0
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 18,
+    "t": 95,
+    "lv": 8,
+    "ju": 60,
+    "coin": 440,
+    "ageBefore": 28,
+    "age": 29,
+    "fit": 30,
+    "left": 19,
+    "wait": 6
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 27,
+    "t": 142,
+    "lv": 10,
+    "ju": 73,
+    "coin": 479,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 30,
+    "left": 10,
+    "wait": 23
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 27,
+    "t": 146,
+    "lv": 10,
+    "ju": 73,
+    "coin": 609,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 29,
+    "left": 10,
+    "wait": 23
+   }
+  ],
+  "ended": {
+   "t": 153,
+   "nq": 27,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 939,
+   "lv": 10,
+   "stats": {
+    "ju": 79,
+    "sik": 22,
+    "ui": 32,
+    "geum": 100,
+    "jik": 100
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:jeonse+",
+    "t": 24,
+    "nq": 6
+   },
+   {
+    "ev": "lease7",
+    "t": 31.2,
+    "nq": 7,
+    "coin": 241,
+    "cost": 100,
+    "moved": true
+   },
+   {
+    "ev": "boss:mlm-",
+    "t": 39,
+    "nq": 7
+   },
+   {
+    "ev": "lease8",
+    "t": 46.300000000000004,
+    "nq": 8,
+    "coin": 351,
+    "cost": 120,
+    "moved": true
+   },
+   {
+    "ev": "boss:mlm-",
+    "t": 64,
+    "nq": 12
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 68,
+    "nq": 12
+   },
+   {
+    "ev": "boss:mlm-",
+    "t": 92,
+    "nq": 17
+   },
+   {
+    "ev": "boss:mlm+",
+    "t": 129,
+    "nq": 22
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 23,
+  "waitEn": 23,
+  "waitFull": 0,
+  "food": 420,
+  "gifts": 0,
+  "giftLog": [],
+  "dep": 360,
+  "gear": 1670,
+  "t": 153,
+  "nq": 27,
+  "coinEnd": 939
+ },
+ {
+  "ck": "C",
+  "seed": "v1-K4AUMN",
+  "card": {
+   "band": "광역시",
+   "path": "전문대",
+   "living": "기숙사",
+   "income": "넉넉"
+  },
+  "trait": "성실",
+  "acc": 0.85,
+  "fx": {
+   "coin": 240,
+   "stat": {
+    "ju": 0,
+    "sik": 3,
+    "ui": 2,
+    "geum": 0,
+    "jik": 11
+   },
+   "tier": 3,
+   "home": "기숙사",
+   "status": "대학생"
+  },
+  "start": {
+   "coin": 240,
+   "tier": "기숙사",
+   "ju": 5,
+   "stats": {
+    "ju": 5,
+    "sik": 8,
+    "ui": 7,
+    "geum": 5,
+    "jik": 16
+   }
+  },
+  "pool0": 29,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 10,
+    "lv": 2,
+    "ju": 13,
+    "coin": 384,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 35,
+    "left": 33,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 7,
+    "t": 36,
+    "lv": 5,
+    "ju": 54,
+    "coin": 186,
+    "ageBefore": 25,
+    "age": 26,
+    "fit": 31,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 7,
+    "t": 40,
+    "lv": 6,
+    "ju": 60,
+    "coin": 376,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 31,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 10,
+    "t": 60,
+    "lv": 8,
+    "ju": 64,
+    "coin": 393,
+    "ageBefore": 27,
+    "age": 29,
+    "fit": 31,
+    "left": 26,
+    "wait": 0
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 18,
+    "t": 92,
+    "lv": 10,
+    "ju": 89,
+    "coin": 502,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 31,
+    "left": 20,
+    "wait": 3
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 18,
+    "t": 97,
+    "lv": 10,
+    "ju": 89,
+    "coin": 922,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 30,
+    "left": 20,
+    "wait": 3
+   }
+  ],
+  "ended": {
+   "t": 103,
+   "nq": 18,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1572,
+   "lv": 11,
+   "stats": {
+    "ju": 99,
+    "sik": 33,
+    "ui": 40,
+    "geum": 100,
+    "jik": 52
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:jeonse-",
+    "t": 22,
+    "nq": 5
+   },
+   {
+    "ev": "boss:mlm+",
+    "t": 30,
+    "nq": 7
+   },
+   {
+    "ev": "lease7",
+    "t": 34.599999999999994,
+    "nq": 7,
+    "coin": 126,
+    "cost": 290,
+    "moved": true
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 47,
+    "nq": 7
+   },
+   {
+    "ev": "lease8",
+    "t": 51.599999999999994,
+    "nq": 7,
+    "coin": 347,
+    "cost": 120,
+    "moved": true
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 67,
+    "nq": 10
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 3,
+  "waitEn": 3,
+  "waitFull": 0,
+  "food": 196,
+  "gifts": 360,
+  "giftLog": [
+   "job:60",
+   "lease:60",
+   "card:60",
+   "car:60",
+   "wedding:60",
+   "home:60"
+  ],
+  "dep": 410,
+  "gear": 2720,
+  "t": 103,
+  "nq": 18,
+  "coinEnd": 1572
+ },
+ {
+  "ck": "C",
+  "seed": "v1-DJUN3Q",
+  "card": {
+   "band": "광역시",
+   "path": "전문대",
+   "living": "기숙사",
+   "income": "넉넉"
+  },
+  "trait": "살림",
+  "acc": 0.85,
+  "fx": {
+   "coin": 240,
+   "stat": {
+    "ju": 5,
+    "sik": 3,
+    "ui": 2,
+    "geum": 0,
+    "jik": 6
+   },
+   "tier": 3,
+   "home": "기숙사",
+   "status": "대학생"
+  },
+  "start": {
+   "coin": 240,
+   "tier": "기숙사",
+   "ju": 10,
+   "stats": {
+    "ju": 10,
+    "sik": 8,
+    "ui": 7,
+    "geum": 5,
+    "jik": 11
+   }
+  },
+  "pool0": 29,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 10,
+    "lv": 2,
+    "ju": 18,
+    "coin": 384,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 35,
+    "left": 33,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 7,
+    "t": 36,
+    "lv": 5,
+    "ju": 59,
+    "coin": 186,
+    "ageBefore": 25,
+    "age": 26,
+    "fit": 31,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 7,
+    "t": 40,
+    "lv": 6,
+    "ju": 65,
+    "coin": 376,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 31,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 10,
+    "t": 63,
+    "lv": 8,
+    "ju": 84,
+    "coin": 377,
+    "ageBefore": 27,
+    "age": 29,
+    "fit": 31,
+    "left": 26,
+    "wait": 0
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 18,
+    "t": 92,
+    "lv": 10,
+    "ju": 94,
+    "coin": 580,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 31,
+    "left": 20,
+    "wait": 2
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 18,
+    "t": 96,
+    "lv": 10,
+    "ju": 94,
+    "coin": 1000,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 30,
+    "left": 20,
+    "wait": 2
+   }
+  ],
+  "ended": {
+   "t": 103,
+   "nq": 18,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1650,
+   "lv": 11,
+   "stats": {
+    "ju": 100,
+    "sik": 36,
+    "ui": 40,
+    "geum": 100,
+    "jik": 47
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:jeonse-",
+    "t": 18,
+    "nq": 4
+   },
+   {
+    "ev": "boss:mlm+",
+    "t": 30,
+    "nq": 7
+   },
+   {
+    "ev": "lease7",
+    "t": 34.599999999999994,
+    "nq": 7,
+    "coin": 126,
+    "cost": 290,
+    "moved": true
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 47,
+    "nq": 7
+   },
+   {
+    "ev": "lease8",
+    "t": 51.599999999999994,
+    "nq": 7,
+    "coin": 347,
+    "cost": 120,
+    "moved": true
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 60,
+    "nq": 9
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 2,
+  "waitEn": 2,
+  "waitFull": 0,
+  "food": 196,
+  "gifts": 360,
+  "giftLog": [
+   "job:60",
+   "lease:60",
+   "card:60",
+   "car:60",
+   "wedding:60",
+   "home:60"
+  ],
+  "dep": 410,
+  "gear": 2680,
+  "t": 103,
+  "nq": 18,
+  "coinEnd": 1650
+ },
+ {
+  "ck": "C",
+  "seed": "v1-7J2NDW",
+  "card": {
+   "band": "광역시",
+   "path": "전문대",
+   "living": "기숙사",
+   "income": "넉넉"
+  },
+  "trait": "성실",
+  "acc": 0.7,
+  "fx": {
+   "coin": 240,
+   "stat": {
+    "ju": 0,
+    "sik": 3,
+    "ui": 2,
+    "geum": 0,
+    "jik": 11
+   },
+   "tier": 3,
+   "home": "기숙사",
+   "status": "대학생"
+  },
+  "start": {
+   "coin": 240,
+   "tier": "기숙사",
+   "ju": 5,
+   "stats": {
+    "ju": 5,
+    "sik": 8,
+    "ui": 7,
+    "geum": 5,
+    "jik": 16
+   }
+  },
+  "pool0": 29,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 10,
+    "lv": 2,
+    "ju": 13,
+    "coin": 374,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 35,
+    "left": 33,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 22,
+    "t": 163,
+    "lv": 7,
+    "ju": 48,
+    "coin": 291,
+    "ageBefore": 25,
+    "age": 26,
+    "fit": 31,
+    "left": 16,
+    "wait": 75
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 22,
+    "t": 167,
+    "lv": 8,
+    "ju": 52,
+    "coin": 531,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 31,
+    "left": 16,
+    "wait": 75
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 22,
+    "t": 172,
+    "lv": 8,
+    "ju": 52,
+    "coin": 461,
+    "ageBefore": 27,
+    "age": 29,
+    "fit": 31,
+    "left": 16,
+    "wait": 75
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 27,
+    "t": 195,
+    "lv": 10,
+    "ju": 75,
+    "coin": 491,
+    "ageBefore": 30,
+    "age": 32,
+    "fit": 31,
+    "left": 11,
+    "wait": 75
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 27,
+    "t": 200,
+    "lv": 10,
+    "ju": 75,
+    "coin": 671,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 30,
+    "left": 11,
+    "wait": 75
+   }
+  ],
+  "ended": {
+   "t": 206,
+   "nq": 27,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1001,
+   "lv": 10,
+   "stats": {
+    "ju": 81,
+    "sik": 25,
+    "ui": 34,
+    "geum": 100,
+    "jik": 100
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:mlm+",
+    "t": 26,
+    "nq": 7
+   },
+   {
+    "ev": "boss:fp-",
+    "t": 56,
+    "nq": 12
+   },
+   {
+    "ev": "boss:jeonse-",
+    "t": 82,
+    "nq": 15
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 108,
+    "nq": 17
+   },
+   {
+    "ev": "boss:jeonse-",
+    "t": 137,
+    "nq": 20
+   },
+   {
+    "ev": "lease7",
+    "t": 161.55000000000004,
+    "nq": 22,
+    "coin": 231,
+    "cost": 290,
+    "moved": true
+   },
+   {
+    "ev": "lease8",
+    "t": 182.25000000000003,
+    "nq": 23,
+    "coin": 445,
+    "cost": 120,
+    "moved": true
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 190,
+    "nq": 25
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 75,
+  "waitEn": 75,
+  "waitFull": 0,
+  "food": 386,
+  "gifts": 360,
+  "giftLog": [
+   "job:60",
+   "lease:60",
+   "card:60",
+   "car:60",
+   "wedding:60",
+   "home:60"
+  ],
+  "dep": 410,
+  "gear": 2120,
+  "t": 206,
+  "nq": 27,
+  "coinEnd": 1001
+ },
+ {
+  "ck": "D",
+  "seed": "v1-3NMQXU",
+  "card": {
+   "band": "수도권",
+   "path": "4년제",
+   "living": "자취",
+   "income": "넉넉"
+  },
+  "trait": "성실",
+  "acc": 0.85,
+  "fx": {
+   "coin": 190,
+   "stat": {
+    "ju": 0,
+    "sik": 0,
+    "ui": 4,
+    "geum": 1,
+    "jik": 10
+   },
+   "tier": 6,
+   "home": "원룸 월세",
+   "status": "대학생"
+  },
+  "start": {
+   "coin": 190,
+   "tier": "원룸 월세",
+   "ju": 5,
+   "stats": {
+    "ju": 5,
+    "sik": 5,
+    "ui": 9,
+    "geum": 6,
+    "jik": 15
+   }
+  },
+  "pool0": 29,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 10,
+    "lv": 2,
+    "ju": 13,
+    "coin": 334,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 35,
+    "left": 33,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 6,
+    "t": 30,
+    "lv": 5,
+    "ju": 54,
+    "coin": 436,
+    "ageBefore": 24,
+    "age": 26,
+    "fit": 31,
+    "left": 29,
+    "wait": 0
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 6,
+    "t": 35,
+    "lv": 6,
+    "ju": 60,
+    "coin": 686,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 31,
+    "left": 29,
+    "wait": 0
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 10,
+    "t": 61,
+    "lv": 8,
+    "ju": 64,
+    "coin": 510,
+    "ageBefore": 28,
+    "age": 29,
+    "fit": 31,
+    "left": 26,
+    "wait": 0
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 18,
+    "t": 106,
+    "lv": 10,
+    "ju": 89,
+    "coin": 459,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 31,
+    "left": 20,
+    "wait": 17
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 18,
+    "t": 111,
+    "lv": 10,
+    "ju": 89,
+    "coin": 859,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 30,
+    "left": 20,
+    "wait": 17
+   }
+  ],
+  "ended": {
+   "t": 117,
+   "nq": 18,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1509,
+   "lv": 11,
+   "stats": {
+    "ju": 99,
+    "sik": 30,
+    "ui": 42,
+    "geum": 100,
+    "jik": 51
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:jeonse-",
+    "t": 22,
+    "nq": 5
+   },
+   {
+    "ev": "lease7",
+    "t": 29,
+    "nq": 6,
+    "coin": 376,
+    "cost": 100,
+    "moved": true
+   },
+   {
+    "ev": "boss:mlm+",
+    "t": 41,
+    "nq": 6
+   },
+   {
+    "ev": "lease8",
+    "t": 46,
+    "nq": 6,
+    "coin": 916,
+    "cost": 120,
+    "moved": true
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 49,
+    "nq": 6
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 67,
+    "nq": 10
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 17,
+  "waitEn": 17,
+  "waitFull": 0,
+  "food": 198,
+  "gifts": 360,
+  "giftLog": [
+   "job:60",
+   "lease:60",
+   "card:60",
+   "car:60",
+   "wedding:60",
+   "home:60"
+  ],
+  "dep": 220,
+  "gear": 2940,
+  "t": 117,
+  "nq": 18,
+  "coinEnd": 1509
+ },
+ {
+  "ck": "D",
+  "seed": "v1-U5Z7ZM",
+  "card": {
+   "band": "수도권",
+   "path": "4년제",
+   "living": "자취",
+   "income": "넉넉"
+  },
+  "trait": "살림",
+  "acc": 0.85,
+  "fx": {
+   "coin": 190,
+   "stat": {
+    "ju": 5,
+    "sik": 0,
+    "ui": 4,
+    "geum": 1,
+    "jik": 5
+   },
+   "tier": 6,
+   "home": "원룸 월세",
+   "status": "대학생"
+  },
+  "start": {
+   "coin": 190,
+   "tier": "원룸 월세",
+   "ju": 10,
+   "stats": {
+    "ju": 10,
+    "sik": 5,
+    "ui": 9,
+    "geum": 6,
+    "jik": 10
+   }
+  },
+  "pool0": 29,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 10,
+    "lv": 2,
+    "ju": 18,
+    "coin": 334,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 35,
+    "left": 33,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 6,
+    "t": 30,
+    "lv": 5,
+    "ju": 59,
+    "coin": 436,
+    "ageBefore": 24,
+    "age": 26,
+    "fit": 31,
+    "left": 29,
+    "wait": 0
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 6,
+    "t": 35,
+    "lv": 6,
+    "ju": 65,
+    "coin": 686,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 31,
+    "left": 29,
+    "wait": 0
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 10,
+    "t": 63,
+    "lv": 8,
+    "ju": 84,
+    "coin": 517,
+    "ageBefore": 28,
+    "age": 29,
+    "fit": 31,
+    "left": 26,
+    "wait": 0
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 18,
+    "t": 106,
+    "lv": 10,
+    "ju": 94,
+    "coin": 466,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 31,
+    "left": 20,
+    "wait": 17
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 18,
+    "t": 111,
+    "lv": 10,
+    "ju": 94,
+    "coin": 866,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 30,
+    "left": 20,
+    "wait": 17
+   }
+  ],
+  "ended": {
+   "t": 117,
+   "nq": 18,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1516,
+   "lv": 11,
+   "stats": {
+    "ju": 100,
+    "sik": 33,
+    "ui": 42,
+    "geum": 100,
+    "jik": 46
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:jeonse-",
+    "t": 18,
+    "nq": 4
+   },
+   {
+    "ev": "lease7",
+    "t": 29,
+    "nq": 6,
+    "coin": 376,
+    "cost": 100,
+    "moved": true
+   },
+   {
+    "ev": "boss:mlm+",
+    "t": 41,
+    "nq": 6
+   },
+   {
+    "ev": "lease8",
+    "t": 46,
+    "nq": 6,
+    "coin": 916,
+    "cost": 120,
+    "moved": true
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 49,
+    "nq": 6
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 60,
+    "nq": 9
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 17,
+  "waitEn": 17,
+  "waitFull": 0,
+  "food": 198,
+  "gifts": 360,
+  "giftLog": [
+   "job:60",
+   "lease:60",
+   "card:60",
+   "car:60",
+   "wedding:60",
+   "home:60"
+  ],
+  "dep": 220,
+  "gear": 2940,
+  "t": 117,
+  "nq": 18,
+  "coinEnd": 1516
+ },
+ {
+  "ck": "D",
+  "seed": "v1-J487YC",
+  "card": {
+   "band": "수도권",
+   "path": "4년제",
+   "living": "자취",
+   "income": "넉넉"
+  },
+  "trait": "성실",
+  "acc": 0.7,
+  "fx": {
+   "coin": 190,
+   "stat": {
+    "ju": 0,
+    "sik": 0,
+    "ui": 4,
+    "geum": 1,
+    "jik": 10
+   },
+   "tier": 6,
+   "home": "원룸 월세",
+   "status": "대학생"
+  },
+  "start": {
+   "coin": 190,
+   "tier": "원룸 월세",
+   "ju": 5,
+   "stats": {
+    "ju": 5,
+    "sik": 5,
+    "ui": 9,
+    "geum": 6,
+    "jik": 15
+   }
+  },
+  "pool0": 29,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 10,
+    "lv": 2,
+    "ju": 13,
+    "coin": 324,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 35,
+    "left": 33,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 15,
+    "t": 80,
+    "lv": 6,
+    "ju": 56,
+    "coin": 482,
+    "ageBefore": 25,
+    "age": 26,
+    "fit": 31,
+    "left": 22,
+    "wait": 16
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 15,
+    "t": 84,
+    "lv": 6,
+    "ju": 60,
+    "coin": 562,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 31,
+    "left": 22,
+    "wait": 16
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 18,
+    "t": 102,
+    "lv": 8,
+    "ju": 68,
+    "coin": 554,
+    "ageBefore": 27,
+    "age": 29,
+    "fit": 31,
+    "left": 20,
+    "wait": 16
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 27,
+    "t": 127,
+    "lv": 10,
+    "ju": 79,
+    "coin": 596,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 31,
+    "left": 11,
+    "wait": 16
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 27,
+    "t": 132,
+    "lv": 10,
+    "ju": 79,
+    "coin": 756,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 30,
+    "left": 11,
+    "wait": 16
+   }
+  ],
+  "ended": {
+   "t": 138,
+   "nq": 27,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1086,
+   "lv": 10,
+   "stats": {
+    "ju": 85,
+    "sik": 25,
+    "ui": 28,
+    "geum": 100,
+    "jik": 95
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:mlm+",
+    "t": 26,
+    "nq": 7
+   },
+   {
+    "ev": "boss:fp-",
+    "t": 32,
+    "nq": 8
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 50,
+    "nq": 13
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 74,
+    "nq": 15
+   },
+   {
+    "ev": "lease7",
+    "t": 78.61000000000001,
+    "nq": 15,
+    "coin": 422,
+    "cost": 100,
+    "moved": true
+   },
+   {
+    "ev": "lease8",
+    "t": 94.81000000000002,
+    "nq": 16,
+    "coin": 457,
+    "cost": 120,
+    "moved": true
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 16,
+  "waitEn": 16,
+  "waitFull": 0,
+  "food": 311,
+  "gifts": 360,
+  "giftLog": [
+   "job:60",
+   "lease:60",
+   "card:60",
+   "car:60",
+   "wedding:60",
+   "home:60"
+  ],
+  "dep": 220,
+  "gear": 2240,
+  "t": 138,
+  "nq": 27,
+  "coinEnd": 1086
+ },
+ {
+  "ck": "E",
+  "seed": "v1-T7UDQ8",
+  "card": {
+   "band": "그 외",
+   "path": "4년제",
+   "living": "기숙사",
+   "income": "빠듯"
+  },
+  "trait": "성실",
+  "acc": 0.85,
+  "fx": {
+   "coin": 100,
+   "stat": {
+    "ju": 10,
+    "sik": 0,
+    "ui": 2,
+    "geum": 5,
+    "jik": 7
+   },
+   "tier": 3,
+   "home": "기숙사",
+   "status": "대학생"
+  },
+  "start": {
+   "coin": 100,
+   "tier": "기숙사",
+   "ju": 15,
+   "stats": {
+    "ju": 15,
+    "sik": 5,
+    "ui": 7,
+    "geum": 10,
+    "jik": 12
+   }
+  },
+  "pool0": 28,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 13,
+    "lv": 2,
+    "ju": 23,
+    "coin": 384,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 34,
+    "left": 32,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 6,
+    "t": 33,
+    "lv": 5,
+    "ju": 63,
+    "coin": 206,
+    "ageBefore": 24,
+    "age": 26,
+    "fit": 30,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 6,
+    "t": 38,
+    "lv": 6,
+    "ju": 69,
+    "coin": 166,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 30,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 10,
+    "t": 61,
+    "lv": 8,
+    "ju": 84,
+    "coin": 391,
+    "ageBefore": 28,
+    "age": 29,
+    "fit": 30,
+    "left": 25,
+    "wait": 0
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 18,
+    "t": 103,
+    "lv": 10,
+    "ju": 84,
+    "coin": 329,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 30,
+    "left": 19,
+    "wait": 17
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 18,
+    "t": 108,
+    "lv": 10,
+    "ju": 84,
+    "coin": 689,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 29,
+    "left": 19,
+    "wait": 17
+   }
+  ],
+  "ended": {
+   "t": 114,
+   "nq": 18,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1339,
+   "lv": 11,
+   "stats": {
+    "ju": 94,
+    "sik": 33,
+    "ui": 40,
+    "geum": 100,
+    "jik": 60
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:mlm+",
+    "t": 9,
+    "nq": 2
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 21,
+    "nq": 4
+   },
+   {
+    "ev": "lease7",
+    "t": 32.4,
+    "nq": 6,
+    "coin": 206,
+    "cost": 290,
+    "moved": true
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 44,
+    "nq": 6
+   },
+   {
+    "ev": "lease8",
+    "t": 48.9,
+    "nq": 6,
+    "coin": 386,
+    "cost": 120,
+    "moved": true
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 17,
+  "waitEn": 17,
+  "waitFull": 0,
+  "food": 198,
+  "gifts": 0,
+  "giftLog": [],
+  "dep": 410,
+  "gear": 2470,
+  "t": 114,
+  "nq": 18,
+  "coinEnd": 1339
+ },
+ {
+  "ck": "E",
+  "seed": "v1-A7BMNG",
+  "card": {
+   "band": "그 외",
+   "path": "4년제",
+   "living": "기숙사",
+   "income": "빠듯"
+  },
+  "trait": "살림",
+  "acc": 0.85,
+  "fx": {
+   "coin": 100,
+   "stat": {
+    "ju": 15,
+    "sik": 0,
+    "ui": 2,
+    "geum": 5,
+    "jik": 2
+   },
+   "tier": 3,
+   "home": "기숙사",
+   "status": "대학생"
+  },
+  "start": {
+   "coin": 100,
+   "tier": "기숙사",
+   "ju": 20,
+   "stats": {
+    "ju": 20,
+    "sik": 5,
+    "ui": 7,
+    "geum": 10,
+    "jik": 7
+   }
+  },
+  "pool0": 28,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 13,
+    "lv": 2,
+    "ju": 28,
+    "coin": 384,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 34,
+    "left": 32,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 5,
+    "t": 30,
+    "lv": 5,
+    "ju": 68,
+    "coin": 164,
+    "ageBefore": 24,
+    "age": 26,
+    "fit": 30,
+    "left": 29,
+    "wait": 0
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 5,
+    "t": 43,
+    "lv": 6,
+    "ju": 78,
+    "coin": 294,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 30,
+    "left": 29,
+    "wait": 0
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 10,
+    "t": 61,
+    "lv": 8,
+    "ju": 94,
+    "coin": 409,
+    "ageBefore": 28,
+    "age": 29,
+    "fit": 30,
+    "left": 25,
+    "wait": 0
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 18,
+    "t": 103,
+    "lv": 10,
+    "ju": 94,
+    "coin": 347,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 30,
+    "left": 19,
+    "wait": 17
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 18,
+    "t": 108,
+    "lv": 10,
+    "ju": 94,
+    "coin": 707,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 29,
+    "left": 19,
+    "wait": 17
+   }
+  ],
+  "ended": {
+   "t": 114,
+   "nq": 18,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1357,
+   "lv": 11,
+   "stats": {
+    "ju": 100,
+    "sik": 33,
+    "ui": 40,
+    "geum": 100,
+    "jik": 55
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:mlm+",
+    "t": 9,
+    "nq": 2
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 21,
+    "nq": 4
+   },
+   {
+    "ev": "lease7",
+    "t": 29.3,
+    "nq": 5,
+    "coin": 164,
+    "cost": 290,
+    "moved": true
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 37,
+    "nq": 5
+   },
+   {
+    "ev": "lease8",
+    "t": 42.199999999999996,
+    "nq": 5,
+    "coin": 294,
+    "cost": 120,
+    "moved": true
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 17,
+  "waitEn": 17,
+  "waitFull": 0,
+  "food": 198,
+  "gifts": 0,
+  "giftLog": [],
+  "dep": 410,
+  "gear": 2470,
+  "t": 114,
+  "nq": 18,
+  "coinEnd": 1357
+ },
+ {
+  "ck": "E",
+  "seed": "v1-UUNYT5",
+  "card": {
+   "band": "그 외",
+   "path": "4년제",
+   "living": "기숙사",
+   "income": "빠듯"
+  },
+  "trait": "성실",
+  "acc": 0.7,
+  "fx": {
+   "coin": 100,
+   "stat": {
+    "ju": 10,
+    "sik": 0,
+    "ui": 2,
+    "geum": 5,
+    "jik": 7
+   },
+   "tier": 3,
+   "home": "기숙사",
+   "status": "대학생"
+  },
+  "start": {
+   "coin": 100,
+   "tier": "기숙사",
+   "ju": 15,
+   "stats": {
+    "ju": 15,
+    "sik": 5,
+    "ui": 7,
+    "geum": 10,
+    "jik": 12
+   }
+  },
+  "pool0": 28,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 10,
+    "lv": 2,
+    "ju": 23,
+    "coin": 174,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 34,
+    "left": 32,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 11,
+    "t": 85,
+    "lv": 5,
+    "ju": 47,
+    "coin": 49,
+    "ageBefore": 25,
+    "age": 26,
+    "fit": 30,
+    "left": 24,
+    "wait": 31
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 11,
+    "t": 90,
+    "lv": 6,
+    "ju": 51,
+    "coin": 229,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 30,
+    "left": 24,
+    "wait": 31
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 18,
+    "t": 124,
+    "lv": 8,
+    "ju": 59,
+    "coin": 316,
+    "ageBefore": 28,
+    "age": 29,
+    "fit": 30,
+    "left": 19,
+    "wait": 31
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 28,
+    "t": 174,
+    "lv": 10,
+    "ju": 94,
+    "coin": 436,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 30,
+    "left": 9,
+    "wait": 48
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 28,
+    "t": 178,
+    "lv": 10,
+    "ju": 94,
+    "coin": 556,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 29,
+    "left": 9,
+    "wait": 48
+   }
+  ],
+  "ended": {
+   "t": 185,
+   "nq": 28,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 886,
+   "lv": 11,
+   "stats": {
+    "ju": 100,
+    "sik": 29,
+    "ui": 34,
+    "geum": 100,
+    "jik": 84
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:jeonse-",
+    "t": 18,
+    "nq": 4
+   },
+   {
+    "ev": "boss:mlm+",
+    "t": 27,
+    "nq": 6
+   },
+   {
+    "ev": "boss:fp-",
+    "t": 33,
+    "nq": 7
+   },
+   {
+    "ev": "boss:jeonse-",
+    "t": 56,
+    "nq": 9
+   },
+   {
+    "ev": "lease7",
+    "t": 84.12,
+    "nq": 11,
+    "coin": 49,
+    "cost": 290,
+    "moved": true
+   },
+   {
+    "ev": "lease8",
+    "t": 100.32000000000001,
+    "nq": 12,
+    "coin": 201,
+    "cost": 120,
+    "moved": true
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 103,
+    "nq": 12
+   },
+   {
+    "ev": "boss:jeonse-",
+    "t": 112,
+    "nq": 14
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 150,
+    "nq": 19
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 48,
+  "waitEn": 48,
+  "waitFull": 0,
+  "food": 453,
+  "gifts": 0,
+  "giftLog": [],
+  "dep": 410,
+  "gear": 1700,
+  "t": 185,
+  "nq": 28,
+  "coinEnd": 886
+ },
+ {
+  "ck": "F",
+  "seed": "v1-GGWU68",
+  "card": {
+   "band": "광역시",
+   "path": "고졸",
+   "living": "본가",
+   "income": "빠듯"
+  },
+  "trait": "성실",
+  "acc": 0.85,
+  "fx": {
+   "coin": 170,
+   "stat": {
+    "ju": 0,
+    "sik": 3,
+    "ui": 0,
+    "geum": 4,
+    "jik": 8
+   },
+   "tier": 0,
+   "home": "본가 방",
+   "status": "취준생"
+  },
+  "start": {
+   "coin": 170,
+   "tier": "본가 방",
+   "ju": 5,
+   "stats": {
+    "ju": 5,
+    "sik": 8,
+    "ui": 5,
+    "geum": 9,
+    "jik": 13
+   }
+  },
+  "pool0": 35,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 13,
+    "lv": 2,
+    "ju": 5,
+    "coin": 400,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 35,
+    "left": 32,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 7,
+    "t": 36,
+    "lv": 5,
+    "ju": 61,
+    "coin": 166,
+    "ageBefore": 25,
+    "age": 26,
+    "fit": 31,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 7,
+    "t": 40,
+    "lv": 6,
+    "ju": 67,
+    "coin": 466,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 31,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 10,
+    "t": 61,
+    "lv": 8,
+    "ju": 71,
+    "coin": 416,
+    "ageBefore": 27,
+    "age": 29,
+    "fit": 31,
+    "left": 26,
+    "wait": 0
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 18,
+    "t": 104,
+    "lv": 10,
+    "ju": 81,
+    "coin": 364,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 31,
+    "left": 20,
+    "wait": 17
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 18,
+    "t": 108,
+    "lv": 10,
+    "ju": 81,
+    "coin": 724,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 30,
+    "left": 20,
+    "wait": 17
+   }
+  ],
+  "ended": {
+   "t": 115,
+   "nq": 18,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1374,
+   "lv": 11,
+   "stats": {
+    "ju": 91,
+    "sik": 36,
+    "ui": 38,
+    "geum": 100,
+    "jik": 58
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:mlm+",
+    "t": 9,
+    "nq": 2
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 27,
+    "nq": 6
+   },
+   {
+    "ev": "lease7",
+    "t": 34.599999999999994,
+    "nq": 7,
+    "coin": 166,
+    "cost": 380,
+    "moved": true
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 47,
+    "nq": 7
+   },
+   {
+    "ev": "lease8",
+    "t": 51.599999999999994,
+    "nq": 7,
+    "coin": 447,
+    "cost": 120,
+    "moved": true
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 17,
+  "waitEn": 17,
+  "waitFull": 0,
+  "food": 196,
+  "gifts": 40,
+  "giftLog": [
+   "job:40"
+  ],
+  "dep": 500,
+  "gear": 2460,
+  "t": 115,
+  "nq": 18,
+  "coinEnd": 1374
+ },
+ {
+  "ck": "F",
+  "seed": "v1-VED3RC",
+  "card": {
+   "band": "광역시",
+   "path": "고졸",
+   "living": "본가",
+   "income": "빠듯"
+  },
+  "trait": "살림",
+  "acc": 0.85,
+  "fx": {
+   "coin": 170,
+   "stat": {
+    "ju": 5,
+    "sik": 3,
+    "ui": 0,
+    "geum": 4,
+    "jik": 3
+   },
+   "tier": 0,
+   "home": "본가 방",
+   "status": "취준생"
+  },
+  "start": {
+   "coin": 170,
+   "tier": "본가 방",
+   "ju": 10,
+   "stats": {
+    "ju": 10,
+    "sik": 8,
+    "ui": 5,
+    "geum": 9,
+    "jik": 8
+   }
+  },
+  "pool0": 35,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 13,
+    "lv": 2,
+    "ju": 10,
+    "coin": 400,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 35,
+    "left": 32,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 7,
+    "t": 36,
+    "lv": 5,
+    "ju": 66,
+    "coin": 166,
+    "ageBefore": 25,
+    "age": 26,
+    "fit": 31,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 7,
+    "t": 40,
+    "lv": 6,
+    "ju": 72,
+    "coin": 466,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 31,
+    "left": 28,
+    "wait": 0
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 10,
+    "t": 61,
+    "lv": 8,
+    "ju": 76,
+    "coin": 416,
+    "ageBefore": 27,
+    "age": 29,
+    "fit": 31,
+    "left": 26,
+    "wait": 0
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 18,
+    "t": 104,
+    "lv": 10,
+    "ju": 86,
+    "coin": 364,
+    "ageBefore": 31,
+    "age": 32,
+    "fit": 31,
+    "left": 20,
+    "wait": 17
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 18,
+    "t": 108,
+    "lv": 10,
+    "ju": 86,
+    "coin": 724,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 30,
+    "left": 20,
+    "wait": 17
+   }
+  ],
+  "ended": {
+   "t": 115,
+   "nq": 18,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 1374,
+   "lv": 11,
+   "stats": {
+    "ju": 96,
+    "sik": 36,
+    "ui": 38,
+    "geum": 100,
+    "jik": 53
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:mlm+",
+    "t": 9,
+    "nq": 2
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 27,
+    "nq": 6
+   },
+   {
+    "ev": "lease7",
+    "t": 34.599999999999994,
+    "nq": 7,
+    "coin": 166,
+    "cost": 380,
+    "moved": true
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 47,
+    "nq": 7
+   },
+   {
+    "ev": "lease8",
+    "t": 51.599999999999994,
+    "nq": 7,
+    "coin": 447,
+    "cost": 120,
+    "moved": true
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 17,
+  "waitEn": 17,
+  "waitFull": 0,
+  "food": 196,
+  "gifts": 40,
+  "giftLog": [
+   "job:40"
+  ],
+  "dep": 500,
+  "gear": 2460,
+  "t": 115,
+  "nq": 18,
+  "coinEnd": 1374
+ },
+ {
+  "ck": "F",
+  "seed": "v1-422CFY",
+  "card": {
+   "band": "광역시",
+   "path": "고졸",
+   "living": "본가",
+   "income": "빠듯"
+  },
+  "trait": "성실",
+  "acc": 0.7,
+  "fx": {
+   "coin": 170,
+   "stat": {
+    "ju": 0,
+    "sik": 3,
+    "ui": 0,
+    "geum": 4,
+    "jik": 8
+   },
+   "tier": 0,
+   "home": "본가 방",
+   "status": "취준생"
+  },
+  "start": {
+   "coin": 170,
+   "tier": "본가 방",
+   "ju": 5,
+   "stats": {
+    "ju": 5,
+    "sik": 8,
+    "ui": 5,
+    "geum": 9,
+    "jik": 13
+   }
+  },
+  "pool0": 35,
+  "rows": [
+   {
+    "ch": 1,
+    "id": "job",
+    "nq": 3,
+    "t": 10,
+    "lv": 2,
+    "ju": 5,
+    "coin": 300,
+    "ageBefore": 21,
+    "age": 24,
+    "fit": 35,
+    "left": 32,
+    "wait": 0
+   },
+   {
+    "ch": 2,
+    "id": "lease",
+    "nq": 25,
+    "t": 203,
+    "lv": 8,
+    "ju": 55,
+    "coin": 31,
+    "ageBefore": 25,
+    "age": 26,
+    "fit": 31,
+    "left": 13,
+    "wait": 102
+   },
+   {
+    "ch": 3,
+    "id": "card",
+    "nq": 25,
+    "t": 208,
+    "lv": 8,
+    "ju": 59,
+    "coin": 211,
+    "ageBefore": 26,
+    "age": 27,
+    "fit": 31,
+    "left": 13,
+    "wait": 102
+   },
+   {
+    "ch": 4,
+    "id": "car",
+    "nq": 25,
+    "t": 212,
+    "lv": 9,
+    "ju": 59,
+    "coin": 421,
+    "ageBefore": 27,
+    "age": 29,
+    "fit": 31,
+    "left": 13,
+    "wait": 102
+   },
+   {
+    "ch": 5,
+    "id": "wedding",
+    "nq": 27,
+    "t": 227,
+    "lv": 10,
+    "ju": 67,
+    "coin": 346,
+    "ageBefore": 29,
+    "age": 32,
+    "fit": 31,
+    "left": 11,
+    "wait": 102
+   },
+   {
+    "ch": 6,
+    "id": "home",
+    "nq": 27,
+    "t": 231,
+    "lv": 10,
+    "ju": 67,
+    "coin": 476,
+    "ageBefore": 32,
+    "age": 37,
+    "fit": 30,
+    "left": 11,
+    "wait": 102
+   }
+  ],
+  "ended": {
+   "t": 238,
+   "nq": 27,
+   "title": "family",
+   "tier": "도시형생활주택",
+   "coin": 806,
+   "lv": 10,
+   "stats": {
+    "ju": 73,
+    "sik": 29,
+    "ui": 32,
+    "geum": 100,
+    "jik": 100
+   },
+   "boss": 3
+  },
+  "marks": [
+   {
+    "ev": "boss:mlm+",
+    "t": 26,
+    "nq": 7
+   },
+   {
+    "ev": "boss:fp-",
+    "t": 30,
+    "nq": 7
+   },
+   {
+    "ev": "boss:fp-",
+    "t": 61,
+    "nq": 12
+   },
+   {
+    "ev": "boss:jeonse-",
+    "t": 110,
+    "nq": 15
+   },
+   {
+    "ev": "boss:fp+",
+    "t": 137,
+    "nq": 17
+   },
+   {
+    "ev": "boss:jeonse-",
+    "t": 168,
+    "nq": 20
+   },
+   {
+    "ev": "boss:jeonse+",
+    "t": 197,
+    "nq": 25
+   },
+   {
+    "ev": "lease7",
+    "t": 202.42999999999995,
+    "nq": 25,
+    "coin": 31,
+    "cost": 380,
+    "moved": true
+   },
+   {
+    "ev": "lease8",
+    "t": 223.52999999999994,
+    "nq": 26,
+    "coin": 480,
+    "cost": 120,
+    "moved": true
+   }
+  ],
+  "stallWhy": null,
+  "stall": {},
+  "mg": 0,
+  "wait": 102,
+  "waitEn": 102,
+  "waitFull": 0,
+  "food": 386,
+  "gifts": 40,
+  "giftLog": [
+   "job:40"
+  ],
+  "dep": 500,
+  "gear": 1850,
+  "t": 238,
+  "nq": 27,
+  "coinEnd": 806
+ }
+]
