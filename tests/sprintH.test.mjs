@@ -173,3 +173,47 @@ test('6. 리뷰 1009 개발: 건너뛴 거처는 못 고르고, HUD 글자는 �
   assert.deepEqual(logs, []);
   await ctx.close();
 });
+
+test('7. 켜다가 스크립트가 멈춰도 빈 화면에 갇히지 않는다: 오류 글과 "기록 보관하고 처음부터"가 뜬다', async () => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await ctx.newPage();
+  await page.addInitScript(() => {
+    if (sessionStorage.getItem('boom')) return; sessionStorage.setItem('boom', 1);
+    localStorage.setItem('nq.v8', JSON.stringify({ onboarded: false })); localStorage.setItem('nq.album.v1', '[]');
+    Object.defineProperty(window, 'QUESTS', { configurable: true, set() { throw new Error('테스트용 시작 오류'); }, get() { return undefined; } });
+  });
+  await page.goto(BASE);
+  await page.waitForFunction(() => !document.getElementById('obnext').disabled, null, { timeout: 8000 });
+  assert.match(await page.textContent('#obbody'), /멈췄어요[\s\S]*테스트용 시작 오류/);
+  await page.click('#obnext');
+  await page.waitForFunction(() => window.__BOOTED, null, { timeout: 10000 });
+  const r = await page.evaluate(() => ({ v8: localStorage.getItem('nq.v8') && JSON.parse(localStorage.getItem('nq.v8')).onboarded, rescue: Object.keys(localStorage).some((k) => k.startsWith('nq.rescue.')), album: localStorage.getItem('nq.album.v1') }));
+  assert.ok(r.rescue, '지운 기록은 따로 보관');
+  assert.equal(r.album, '[]', '앨범은 그대로');
+  await ctx.close();
+});
+
+test('8. 글자는 길게 눌러도 선택되지 않고, 입력 칸은 된다', async () => {
+  const { ctx, page } = await open();
+  const r = await page.evaluate(() => ({ body: getComputedStyle(document.body).userSelect, input: getComputedStyle(document.getElementById('wikiq')).userSelect }));
+  assert.equal(r.body, 'none'); assert.notEqual(r.input, 'none');
+  await ctx.close();
+});
+
+test('9. 며칠 쉬다 오거나 3장을 마친 저장으로 새날 처음 켜도 스크립트가 멈추지 않는다(할배 이야기 줄 세우기)', async () => {
+  const base = { onboarded: true, tut: 1, tuts: ['intro'], status: '직장인', years: 2, company: '중소기업', region: '그 외', age: 29, avatar: 'stuM', lv: 8,
+    done: ['a', 'b', 'c'], mq: { done: { job: 'good', lease: 'good', card: 'good' } }, day: '2026-09-01', first: '2026-08-01', streak: 3 };
+  for (const [slot, key, extra] of [['normal', 'nq.v8', {}], ['normal', 'nq.v8', { mq: { done: {} } }]]) {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const page = await ctx.newPage(); const logs = [];
+    page.on('pageerror', (e) => logs.push('pageerror: ' + e));
+    await page.addInitScript(([key, val]) => { if (!sessionStorage.getItem('x')) { sessionStorage.setItem('x', 1); localStorage.setItem(key, val); } }, [key, JSON.stringify(Object.assign({}, base, extra))]);
+    await page.goto(BASE + '#nointro');
+    await page.waitForFunction(() => window.__BOOTED, null, { timeout: 8000 });
+    const r = await page.evaluate(() => ({ scr: document.querySelector('.screen.on').id, q: (S.cs && S.cs.q || []).map((e) => e.id) }));
+    assert.equal(r.scr, 'home');
+    assert.ok(r.q.includes('back'), '사흘 넘게 쉬면 돌아온 날 이야기가 줄에 선다 ' + JSON.stringify(r.q));
+    assert.deepEqual(logs, []);
+    await ctx.close();
+  }
+});
