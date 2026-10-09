@@ -3541,14 +3541,15 @@ var LIFE_FX={
  trait:{'알뜰':{geum:5},'살림':{ju:5},'미식':{sik:5},'꾸밈':{ui:5},'성실':{jik:5}}};
 var LIFE_T={
  month:[9.1,8.0,8.9,8.2,8.3,7.9,8.4,8.4,8.6,8.3,8.1,7.8],
- parents:[{v:'부모님 두 분',p:84},{v:'엄마와 나',p:8},{v:'아빠와 나',p:3},{v:'조부모님과',p:2},{v:'새 가족(재혼 가정)',p:3}],
- sibs:[{v:'외동',p:28},{v:'첫째',p:30},{v:'둘째(막내)',p:30},{v:'셋 중 하나',p:12}],
- multi:[{v:'엄마가 베트남 출신',p:30},{v:'엄마가 중국 출신',p:30},{v:'엄마가 필리핀 출신',p:12},{v:'아빠가 다른 나라 출신',p:12},{v:'엄마가 일본 출신',p:8},{v:'엄마가 태국 출신',p:8}],
+ parents:[{v:'부모님 두 분',p:85},{v:'엄마와 나',p:8},{v:'아빠와 나',p:3},{v:'할머니·할아버지와',p:1},{v:'새로 꾸린 가족',p:3}],
+ sibs:[{v:'외동',p:16},{v:'첫째',p:30},{v:'둘째(막내)',p:30},{v:'삼 남매 이상',p:24}],
+ multi:[{v:'엄마 고향은 중국',p:38},{v:'엄마 고향은 베트남',p:27},{v:'엄마 고향은 필리핀',p:9},{v:'엄마 고향은 일본',p:7},{v:'아빠 고향은 다른 나라',p:12},{v:'엄마 고향은 다른 나라',p:7}],
  pet:[{v:'',p:72},{v:'강아지',p:19},{v:'고양이',p:7},{v:'거북이',p:2}],
  hs:{'4년제':[{v:'일반고',p:80},{v:'자율형 사립고',p:8},{v:'특목고',p:5},{v:'특성화고',p:7}],'전문대':[{v:'일반고',p:70},{v:'특성화고',p:27},{v:'자율형 사립고',p:3}],'고졸':[{v:'일반고',p:50},{v:'특성화고',p:45},{v:'마이스터고',p:5}]},
+ hsBad:['정자','주례','사직','석사','하단','무거','왕조','내외','수송','가정','온천','상인','비전','망원','효자','무실','중앙','매탄'],
  hsPool:['새솔','한빛','늘푸른','다솜','가온','해오름','미리내','누리','솔내','한울','온누리','청솔','한결','바름','새봄'],
  hsSpec:['정보','공업','상업','디자인'],
- uniStay:{'수도권':88,'광역시':65,'그 외':45},
+ uniStay:{'수도권':88,'광역시':75,'그 외':70},
  uniPool:['한누리','새길','가람','온빛','해솔','미르','다온','한마루','늘봄','푸른숲'],
  major:[{f:'공학',p:25,st:'jik',o:['기계공학','전자공학','컴퓨터공학','건축공학','화학공학'],c:['기계과','전기과','컴퓨터정보과','건축과','화공과']},
   {f:'사회',p:26,st:'geum',o:['경영학','경제학','행정학','사회복지학','미디어커뮤니케이션'],c:['세무회계과','경영과','사회복지과','관광과','광고홍보과']},
@@ -3563,16 +3564,16 @@ var LIFE_T={
  blood:[{v:'A',p:34},{v:'O',p:28},{v:'B',p:27},{v:'AB',p:11}],
  height:{M:[174,5.8],F:[161,5.2]},
  build:[{v:'마른 편',p:18},{v:'보통',p:52},{v:'다부진 편',p:15},{v:'듬직한 편',p:15}],
- food:['떡볶이','김치찌개','치킨','삼겹살','마라탕','돈가스','라멘','제육볶음','초밥','순대국','엄마표 김밥','삼각김밥','짜장면','냉면','파스타','쌀국수'],
+ food:['떡볶이','김치찌개','치킨','삼겹살','마라탕','돈가스','라멘','제육볶음','초밥','순대국','집 김밥','삼각김밥','짜장면','냉면','파스타','쌀국수'],
  foodLocal:{'부산':['돼지국밥','밀면','어묵'],'대구':['막창','납작만두','찜갈비'],'광주':['상추튀김','오리탕'],'대전':['칼국수','두부두루치기'],'울산':['언양불고기'],'강원':['닭갈비','막국수','감자옹심이'],
   '전북':['비빔밥','콩나물국밥'],'전남':['꼬막비빔밥','떡갈비'],'경북':['찜닭','고등어구이'],'경남':['진주냉면','충무김밥'],'충북':['올갱이국'],'충남':['호두과자','칼국수'],'제주':['고기국수','몸국'],
   '서울':['평양냉면','곱창'],'경기':['부대찌개','갈비'],'인천':['쫄면','닭강정'],'세종':['복숭아']},
  hobby:['헬스','러닝','배드민턴','보드게임','웹툰 정주행','아이돌 덕질','필름 카메라','뜨개질','캠핑 영상 보기','게임','노래방','베이킹','식물 키우기','등산','플리마켓 구경','클라이밍','독서 모임','유튜브 편집'],
  habit:['영수증을 지갑에 꼭 챙긴다','알람을 다섯 개 맞춘다','메모 앱에 뭐든 적는다','엘리베이터 닫힘 버튼을 누른다','음식 사진부터 찍는다','신발 끈을 두 번 묶는다','긴장하면 귤을 깐다','길고양이를 보면 멈춘다','이어폰 한쪽만 낀다','택배 상자를 바로 접는다','펜을 딸깍거린다','잠들기 전 내일 날씨를 본다'],
  phone:[{v:'아이폰',p:62},{v:'갤럭시',p:36},{v:'중고폰',p:2}],
- phoneState:['액정에 금 간','3년째 쓰는','지난달 새로 산','형제에게 물려받은','케이스가 두꺼운'],
+ phoneState:['액정에 금 간','3년째 쓰는','지난달 새로 산','언니·형한테 물려받은','케이스가 두꺼운'],
  firstJob:[{v:'편의점',p:22},{v:'카페',p:18},{v:'음식점 서빙',p:16},{v:'패스트푸드',p:10},{v:'학원 보조',p:8},{v:'물류센터 상하차',p:8},{v:'영화관',p:5},{v:'과외',p:5,uni:1},{v:'행사 스태프',p:4},{v:'아직 없음',p:4}],
- surname:[{v:'김',p:21.5},{v:'이',p:14.7},{v:'박',p:8.4},{v:'최',p:4.7},{v:'정',p:4.3},{v:'강',p:2.3},{v:'조',p:2.1},{v:'윤',p:2.1},{v:'장',p:2.0},{v:'임',p:1.6},{v:'한',p:1.5},{v:'오',p:1.5},{v:'서',p:1.5},{v:'신',p:1.5},{v:'권',p:1.4},{v:'황',p:1.4},{v:'안',p:1.4},{v:'송',p:1.3},{v:'전',p:1.1},{v:'홍',p:1.1},{v:'문',p:1.0},{v:'양',p:1.0},{v:'손',p:1.0},{v:'배',p:0.9},{v:'백',p:0.8},{v:'허',p:0.7},{v:'유',p:0.7},{v:'남',p:0.6},{v:'심',p:0.6},{v:'노',p:0.6}],
+ surname:[{v:'김',p:21.5},{v:'이',p:14.7},{v:'박',p:8.4},{v:'최',p:4.7},{v:'정',p:4.3},{v:'강',p:2.3},{v:'조',p:2.1},{v:'윤',p:2.1},{v:'장',p:2.0},{v:'임',p:1.6},{v:'한',p:1.5},{v:'오',p:1.5},{v:'고',p:0.9},{v:'서',p:1.5},{v:'신',p:1.5},{v:'권',p:1.4},{v:'황',p:1.4},{v:'안',p:1.4},{v:'송',p:1.3},{v:'전',p:1.1},{v:'홍',p:1.1},{v:'문',p:1.0},{v:'양',p:1.0},{v:'손',p:1.0},{v:'배',p:0.9},{v:'백',p:0.8},{v:'허',p:0.7},{v:'유',p:0.7},{v:'남',p:0.6},{v:'심',p:0.6},{v:'노',p:0.6}],
  given:{M:['민준','현우','동현','준혁','민재','도현','지훈','승민','건우','유준','시우','우진','성민','준서'],F:['서연','민지','수빈','서현','예은','지원','유진','지민','하은','채원','지은','윤서','다은','예린']},
  dialect:{std:['일단 해 보고 생각할게요.','오늘도 무사히 지나가면 됐어요.'],gs:['마, 일단 해 보는 기다.','오늘도 무사히 넘어가모 됐다 아이가.'],
   jl:['일단 해 보고 생각해 볼라고요.','오늘도 무사히 넘어가믄 된당께.'],cc:['일단 해 보고 생각해 봐유.','오늘도 무사히 지나가면 된 거여.']},
@@ -3604,7 +3605,7 @@ function lifeGen(seed){
   p.income=wpick(R('income'),LIFE_FX.income).v;
   var rp=R('path'); p.path=wpick(rp,LIFE_FX.path).v;
   var ht=wpick(rp,T.hs[p.path]).v,stem=dong.replace(/[0-9]+동$|동$|읍$/,'');
-  var hn=(stem.length>=2&&rp()<0.5)?stem:upick(rp,T.hsPool);
+  var hn=(ht==='일반고'&&stem.length>=2&&T.hsBad.indexOf(stem)<0&&rp()<0.5)?stem:upick(rp,T.hsPool);
   p.hs=ht==='특성화고'?hn+upick(rp,T.hsSpec)+'고':ht==='마이스터고'?hn+'마이스터고':ht==='특목고'?hn+(rp()<0.5?'외고':'예고'):hn+'고';
   p.hsType=ht;
   if(p.path!=='고졸'){ var ru=R('uni'),stay=ru()*100<T.uniStay[p.band],city=stay?sd.s:(ru()<0.8?'서울':'경기'),mj=wpick(ru,T.major),k=Math.floor(ru()*mj.o.length);
@@ -3615,11 +3616,12 @@ function lifeGen(seed){
   p.mbti=mb; p.trait=upick(rb,T.mbtiTrait[mb]);
   var rx=R('body'); p.blood=wpick(rx,T.blood).v; var hh=T.height[p.sex]; p.height=Math.round(hh[0]+hh[1]*Math.max(-2.5,Math.min(2.5,gauss(rx)))); p.build=wpick(rx,T.build).v; p.glasses=rx()<0.55;
   var rt=R('tmi'),loc=T.foodLocal[sd.s]; p.food=(loc&&rt()<0.3)?upick(rt,loc):upick(rt,T.food); p.hobby=upick(rt,T.hobby); p.habit=upick(rt,T.habit);
-  p.phone=upick(rt,T.phoneState)+' '+wpick(rt,T.phone).v;
+  var pst=T.phoneState.filter(function(x){ return p.sibs==='외동'?!/물려받은/.test(x):true; }),pv=wpick(rt,T.phone).v;
+  p.phone=pv==='중고폰'?'중고로 산 폰':upick(rt,pst)+' '+pv;
   var jobs=T.firstJob.filter(function(j){ return !j.uni||p.path!=='고졸'; }); p.firstJob=wpick(rt,jobs).v;
   var rn=R('name'); p.name=wpick(rn,T.surname).v+upick(rn,T.given[p.sex]);
   var rd=R('dia'),dk=(p.dia!=='std'&&rd()<0.5)?p.dia:'std'; p.say=upick(rd,T.dialect[dk]);
-  p.intro=T.mbtiLine[mb.charAt(0)]+', '+T.mbtiLine[mb.charAt(3)]+' 사람. 주말엔 '+p.hobby+', 버릇은 '+p.habit+'.';
+  p.intro=T.mbtiLine[mb.charAt(0)]+', '+T.mbtiLine[mb.charAt(3)]+' 사람. 주말엔 '+p.hobby+'. 버릇 하나, '+p.habit+'.';
   var th=T.traitHero[p.sex][p.trait]; p.hero=(p.glasses&&th!=='spec'&&th!=='alttle'&&rd()<0.5)?(p.sex==='M'?'spec':'alttle'):th;
   return p; }
 /* 약력이 게임 수치에 닿는 몫. 어느 카드도 못 깨는 판이 되지 않게 작게 */
@@ -3679,14 +3681,14 @@ function birthRender(body){
   var row=function(k,v,e){ return '<div class="bcr"><span>'+k+'</span><b>'+esc(v)+'</b><small>'+esc(e||'')+'</small></div>'; };
   var tmi=function(k,v){ return v?'<div class="bct"><span>'+k+'</span><b>'+esc(v)+'</b></div>':''; };
   var b=LIFE_FX.band[p.band],inc=LIFE_FX.income.filter(function(x){ return x.v===p.income; })[0],pa=LIFE_FX.path.filter(function(x){ return x.v===p.path; })[0],lv=LIFE_FX.living[p.living];
-  body.innerHTML='<div class="ob-q">스무 살, 카드 한 장</div><div class="micro">실제 통계 비율로 태어나요. 다시 태어나기는 삼세판.</div>'+
+  body.innerHTML='<div class="ob-q">스무 살, 카드 한 장</div><div class="micro">통계를 바탕으로 태어나요. 다시 태어나기는 삼세판.</div>'+
    '<div class="bcard pix"><div class="bch"><b>'+esc(p.name)+'</b><span>'+(p.sex==='M'?'남':'여')+' · '+p.birth+'생 · '+p.tti+'띠 · '+p.zodiac+'</span></div>'+
    '<div class="bcl">'+esc(p.sido+' '+p.sgg+' '+p.dong)+' 출생 · '+esc(p.hs)+' 졸업</div>'+
    '<div class="bcl">'+(p.path==='고졸'?'대학 대신 바로 일 찾기':esc(p.uni+' '+p.major)+' 1학년')+'</div>'+
-   row('출신',p.band,fxText(b))+row('형편',p.income,fxText({coin:0,stat:inc.stat}))+row('학교',p.path,fxText({coin:pa.coin||0,stat:pa.stat}))+
+   row('출신',p.band==='그 외'?'비수도권':p.band,fxText(b))+row('형편',p.income,fxText({coin:0,stat:inc.stat}))+row('학교',p.path,fxText({coin:pa.coin||0,stat:pa.stat}))+
    row('거처',p.living,'첫 집 '+fx.home)+row('성향',p.trait+' · '+p.mbti,fxText({stat:LIFE_FX.trait[p.trait]}))+
    '<div class="bcs">시작 코인 ￦'+fx.coin+' · 첫 거처 '+fx.home+' · 스탯 합 +'+Object.keys(fx.stat).reduce(function(a,k){ return a+fx.stat[k]; },0)+'</div>'+
-   '<div class="bcg">'+tmi('혈액형',p.blood+'형')+tmi('키',p.height+'cm · '+p.build)+tmi('안경',p.glasses?'씀':'안 씀')+tmi('가족',p.parents+' · '+p.sibs+(p.multi?' · '+p.multi:''))+
+   '<div class="bcg">'+tmi('혈액형',p.blood+'형')+tmi('키',p.height+'cm')+tmi('안경',p.glasses?'씀':'안 씀')+tmi('가족',p.parents+' · '+p.sibs+(p.multi?' · '+p.multi:''))+
    tmi('반려동물',p.pet?'본가에 '+p.pet:'')+tmi('좋아하는 음식',p.food)+tmi('취미',p.hobby)+tmi('버릇',p.habit)+tmi('휴대폰',p.phone)+tmi('첫 알바',p.firstJob)+'</div>'+
    '<div class="bcq">"'+esc(p.say)+'"</div><div class="bci">'+esc(p.intro)+'</div>'+
    '<div class="bcf">인생 번호 '+p.seed+' · 가상의 인물입니다</div></div>';
@@ -3732,8 +3734,8 @@ function lifeBeforeCh(id,go){
 function lifeFillVals(){ var p=(S.life&&S.life.prof)||{},k=lifeKeys(p.sido?p:{band:'수도권',income:'보통',dia:'std'});
   return {name:p.name||heroOf().name,birth:p.birth||'',birthMD:p.birthMD||'',dong:(p.sido||'')+' '+(p.sgg||'')+' '+(p.dong||''),school:p.hs||'',major:p.major||'',
     mbti:p.mbti||'',blood:p.blood||'',food:p.food||'미역국',hobby:p.hobby||'',
-    regionText:p.band==='그 외'?'지방 소도시':(p.band||''),householdText:p.income==='넉넉'?'넉넉한 편':p.income==='빠듯'?'빠듯한 편':'보통',
-    home:p.living?LIFE_FX.living[p.living].home:'방',region:k.region,household:k.household,dialect:k.dialect,
+    regionText:p.band==='그 외'?'비수도권 도시':(p.band||''),householdText:p.income==='넉넉'?'넉넉한 편':p.income==='빠듯'?'빠듯한 편':'보통',
+    home:p.living?lifeFx(p).home:'방',region:k.region,household:k.household,dialect:k.dialect,
     start:LIFE_START[k.region],startBg:LIFE_START_BG[k.region]}; }
 function lifeBirthPlay(){
   var f=lifeFillVals(),sc=lifeBirthScenes(f);
@@ -3749,7 +3751,7 @@ function lifeTitleId(){
 function lifeSummary(stopped){
   var p=S.life.prof||{},tid=stopped?'stop':lifeTitleId();
   return {v:1,at:dayKey(),stopped:!!stopped,seed:p.seed,name:p.name,birth:p.birth,place:(p.sido||'')+' '+(p.sgg||'')+' '+(p.dong||''),mbti:p.mbti,
-    line:[p.band,p.income,p.path,p.living,p.trait].join(' · '),title:tid,titleName:stopped?'중간에 멈춘 인생':(LIFE_TITLES[tid]||LIFE_TITLES.light).name,
+    line:[p.band==='그 외'?'비수도권':p.band,p.income,p.path,p.living,p.trait].join(' · '),title:tid,titleName:stopped?'중간에 멈춘 인생':(LIFE_TITLES[tid]||LIFE_TITLES.light).name,
     age:S.life.age,tier:tierNameOf(S,S.tier),coin:S.coin,lv:S.lv,stats:JSON.parse(JSON.stringify(S.stats)),
     ch:MQ_LIST.filter(function(c){ return mqDone(c.id); }).length,boss:BOSSES.filter(function(b){ return bossCleared(b.id); }).length,
     mins:Math.max(1,Math.round((S.life.ms||0)/60000))}; }
@@ -3811,7 +3813,7 @@ function switchSlot(s){
 var LIFE_START    = { cap: '독립한', metro: '상경한', etc: '상경한' };
 var LIFE_START_BG = { cap: 'station', metro: 'station', etc: 'hometown' };
 /* 할배가 기억하는 고향. 할배 = 이 판의 주인공이므로 카드에 따라 바뀐다 (story.md 3절) */
-var LIFE_HOMETOWN = { cap: '광역버스 첫차 서는 동네', metro: '지하철 종점 동네', etc: '버스가 하루 네 번 서는 마을' };
+var LIFE_HOMETOWN = { cap: '광역버스 첫차 서는 동네', metro: '지하철 종점 동네', etc: '고속버스로 서울 가는 동네' };
 
 /* (a) 태어남: 태어남 카드(생성된 약력)를 확정한 뒤 1번. 약 29초
    조립: head 2 + 지역 풍경 1 + 할배 등장 1(사투리 지역은 dialect) + 지역 1 + 형편 1 + 맛 1(MBTI/음식, 같은 카드면 same) + tail 2 */
@@ -3830,18 +3832,18 @@ var LIFE_BIRTH = {
   metro: { bg: 'town', cast: [['hero', 'C']],
            text: ['광역시 아파트 단지.', '서울은 KTX로', '두세 시간.'] },
   etc:   { bg: 'hometown', cast: [['hero', 'C']],
-           text: ['산 너머 버스가', '하루 네 번 서는', '마을.'] } },
+           text: ['서울까지는', '고속버스로 몇 시간.', '여기가 내 동네다.'] } },
  meet: [
   { bg: 'town', fx: 'fade', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
     text: ['허허, 카드 한 장', '받았구먼.', '어디 좀 보세.'] } ],
  /* 지역마다 하나: 할배가 출신 칸을 읽는다 */
  region: {
   cap:   { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
-           text: ['집이 가까운 게', '큰 밑천이야.', '아낀 월세는 모으게.'] },
+           text: ['일자리가 가까운 게', '큰 밑천이야.', '오가는 시간도 돈이네.'] },
   metro: { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
            text: ['서울 안 가도', '길은 있네.', '가는 것도 자네 몫이고.'] },
   etc:   { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
-           text: ['...하루 네 번 버스라.', '허허, 잘 알지.', '아주 잘 알아.'] } },
+           text: ['...서울까지 몇 시간이라.', '허허, 잘 알지.', '아주 잘 알아.'] } },
  /* 형편마다 하나: 할배가 집안 칸을 읽는다 */
  household: {
   rich:  { bg: 'town', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
@@ -3994,7 +3996,7 @@ var LIFE_END = {
   { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
     text: ['허허, 이게 자네', '예순 해구먼.', '칭호도 받았네.'] },
   { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
-    text: ['{title}.', '...내 카드보다', '훨씬 낫구먼.'] },
+    text: ['{title}.', '...내가 살았던 것보다', '훨씬 낫구먼.'] },
   { bg: 'night', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
     text: ['사실 자네한테', '숨긴 게 하나 있네.'] },
   { bg: 'night', fx: 'flash', sfx: 'win', cast: [['hero', 'L'], ['halbae', 'R']], who: '귀인 할배',
@@ -4054,7 +4056,7 @@ function lifeBirthScenes(card) {
   var B = LIFE_BIRTH, f = card, meet = (card.dialect && B.dialect[card.dialect]) ? [B.dialect[card.dialect]] : B.meet;
   var sc = B.head.concat([B.place[card.region]], meet, [B.region[card.region], B.household[card.household]]);
   if (card.region === 'etc' && card.household === 'tight') sc.push(B.same);
-  else if (card.mbti && (!card.food || (card.birth || '').length % 2)) sc.push(B.mbti[card.mbti.charAt(0) === 'E' ? 'E' : 'I']);
+  else if (card.mbti && (!card.food || +String(card.birth || '0').slice(-1) % 2)) sc.push(B.mbti[card.mbti.charAt(0) === 'E' ? 'E' : 'I']);
   else if (card.food) sc.push(B.food);
   sc = sc.concat(B.tail);
   return lifeFill(sc, Object.assign({}, f, { region: f.regionText, household: f.householdText }));
@@ -8562,10 +8564,10 @@ function endTalk(){
    조건이 맞는 첫 단계만 띄우고, 본 단계는 다시 안 띄운다. */
 var TUT_STEPS=[
  {id:'intro',when:function(){ return true; },
-  life:['안녕, 이 동네에서 부동산 하는 사람이야. 오가며 얼굴은 봤지?',
+  life:['안녕, 이 동네에서 부동산 하는 사람이야. 앞으로 자주 보겠네.',
    '건물마다 간판이 붙어 있지? 문 위에 느낌표가 뜬 건물엔 너한테 해 줄 얘기가 있다는 뜻이야. 노란 건 오늘 꼭 들을 얘기.',
    '가고 싶은 곳을 톡 누르면 알아서 걸어가. 문을 누르면 들어가고, 안에서는 창구를 누르면 상담이 시작돼.',
-   '독립은 아직이어도 집 공부는 지금부터야. 첫 상담은 오른쪽 끝 부동산에서 받아 봐.'],
+   '어디서 지내든 집 공부는 지금부터야. 첫 상담은 오른쪽 끝 부동산에서 받아 봐.'],
   lines:[
    '어, 새로 온 얼굴이네. 나는 이 동네에서 부동산 하는 사람이야.',
    '건물마다 간판이 붙어 있지? 문 위에 느낌표가 뜬 건물엔 너한테 해 줄 얘기가 있다는 뜻이야. 노란 건 오늘 꼭 들을 얘기.',
@@ -11910,7 +11912,7 @@ function csFill(id,arg){
   return sc.map(function(p){ var q=JSON.parse(JSON.stringify(p));
     if(q.alt&&id==='back'&&!f.rev) q.text=q.alt.rev0;
     if(q.bg) q.bg=rp(q.bg); q.text=(q.text||[]).map(rp);
-    if(id==='firstq'&&lifeOn()&&lifeNest()&&/잘 곳부터/.test(q.text.join(' '))) q.text=['급한 건 아직 없지.',TIERS[S.tier].name+'이 있을 때','집 공부를 해 두게.']; if(q.doc) q.doc.rows=q.doc.rows.map(function(r){ return r.map(rp); });
+    if(id==='firstq'&&lifeOn()&&lifeNest()&&/잘 곳부터/.test(q.text.join(' '))) q.text=['급한 건 아직 없지.',TIERS[S.tier].name+(/[가-힣]/.test(TIERS[S.tier].name.slice(-1))&&(TIERS[S.tier].name.slice(-1).charCodeAt(0)-0xAC00)%28?'이':'가')+' 있을 때','집 공부를 해 두게.']; if(q.doc) q.doc.rows=q.doc.rows.map(function(r){ return r.map(rp); });
     return q; }); }
 function csPay(id,replay){
   var R=CS_STORY[id].reward,C=csS(),rows=[]; if(!R||replay) return rows;
