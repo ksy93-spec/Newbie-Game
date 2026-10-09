@@ -43,6 +43,9 @@ body{overscroll-behavior:none;touch-action:manipulation;}
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;}
+/* 폰에서 길게 누르거나 두 번 눌러도 글자가 선택되거나 복사 메뉴가 뜨지 않게. 입력 칸은 그대로 */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
+input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default;}
 body{margin:0;background:var(--s4);font-family:var(--f-body);font-size:15px;line-height:24px;
   color:var(--s4);word-break:keep-all;overflow-wrap:anywhere;-webkit-font-smoothing:none;
   display:flex;justify-content:center;}
@@ -996,6 +999,8 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
 </div>
 
 <script>
+/* 켜는 도중 오류가 나면 적어 둔다. 맨 아래 안전장치가 빈 화면 대신 이 글과 복구 버튼을 띄운다 */
+window.__BOOTERR=null; window.addEventListener('error',function(e){ if(!window.__BOOTED&&!window.__BOOTERR) window.__BOOTERR=(e.message||'오류')+(e.lineno?' · '+e.lineno+'행':''); });
 /* ══════════ 팔레트 (램프) ══════════ */
 var P={p0:'#FFFDF6',p1:'#FFF8EC',p2:'#FFEFD4',p3:'#F7DDB0',p4:'#E3C08A',
  k1:'#CDEEFF',k2:'#9BDCF7',k3:'#6EC8F0',k4:'#3A9BC9',
@@ -10222,11 +10227,11 @@ var _renderHomeB=renderHome; renderHome=function(){ _renderHomeB.apply(this,argu
 setInterval(function(){ if(!document.hidden&&S&&lifeOn()&&S.life&&S.onboarded&&!S.life.over) S.life.ms=(S.life.ms||0)+30000; },30000);
 /* 인생 모드: 6장을 깨고 결산 전에 닫혔거나, 결산 카드를 못 보고 닫혔으면 홈에서 다시 잇는다 */
 function lifeCatchUp(){
-  if(!lifeOn()||!S.life||!S.onboarded||MQP||lifeCatchUp.t) return;
+  if(!lifeOn()||!S.life||!S.onboarded||lifeCatchUp.t) return;
   var end=!S.life.over&&mqDone('home'),card=S.life.over&&!S.life.cardSeen; if(!end&&!card) return;
   lifeCatchUp.t=setTimeout(function(){ lifeCatchUp.t=0;
-    if(!lifeOn()||!S.life||document.querySelector('.screen.on')!==document.getElementById('home')) return;
-    if(!mqIdle()) return lifeCatchUp();                        /* 안내·창이 닫힐 때까지 기다렸다가 */
+    if(!lifeOn()||!S.life) return;
+    if(!mqIdle()) return lifeCatchUp();                        /* 컷신·다른 화면이 끝날 때까지 */
     if(!S.life.over&&mqDone('home')) return lifeEnd();
     var sm=albumLoad().filter(function(a){ return !a.stopped&&a.seed===(S.life.prof||{}).seed; })[0];
     if(sm&&S.life.over&&!S.life.cardSeen) lifeAfter(sm); },1500); }
@@ -11920,7 +11925,7 @@ var CS_STORY={"firstq":{"title":"첫 단추","sub":"퀘스트 하나를 끝낸 �
 var BOSS_FIRST={"jeonse":{"bg":"apartment","scene":{"bg":"apartment","fx":"shake","cast":[["hero","L"],["boss","R"]],"who":"전세 먹튀 집주인","text":["...알았어, 알았다고.","만기 날짜 맞춰서","돌려줄게."]}},"mlm":{"bg":"cafe","scene":{"bg":"cafe","fx":"shake","cast":[["hero","L"],["mlmf","R"]],"who":"다단계 선배","text":["...너 좀 변했다?","예전엔 내 말이면","다 들었잖아."]}},"fp":{"bg":"bank","scene":{"bg":"bank","fx":"shake","cast":[["hero","L"],["fp","R"]],"who":"자칭 재무설계사","text":["...수수료 얘기는","다음에 하시죠.","오늘은 이만."]}}};
 function csS(){ if(!S.cs) S.cs={seen:{},q:[],pay:{},day:'',n:0}; return S.cs; }
 function csWant(id,arg){
-  var C=csS(); if(!CS_STORY[id]) return;
+  var C=csS(); if(typeof CS_STORY!=='undefined'&&CS_STORY&&!CS_STORY[id]) return;   /* 켜는 중(rollDay)에는 아직 대본 표가 없다. 그때는 줄만 세워 둔다 */
   if(id!=='back'&&C.seen[id]) return;
   if(C.q.some(function(e){ return e.id===id; })) return;
   C.q.push({id:id,arg:arg==null?null:arg}); save(); }
@@ -12962,6 +12967,31 @@ function openDeepCheck(){ var id=deepCheckId(); if(id) openCheck(id); }
 window.addEventListener('hashchange',openDeepCheck);
 openDeepCheck();
 openingStart();
+window.__BOOTED=1;
+</script>
+<script>
+/* 안전장치: 게임 스크립트가 켜다가 멈추면(예전 저장이 깨졌거나 기기에서만 나는 오류) 시작 화면이 비고 '다음'이 꺼진 채로 남는다.
+   그때는 무슨 오류인지 보여 주고, 기록을 따로 보관한 뒤 처음부터 다시 켤 수 있게 한다. */
+(function(){
+  function rescue(){
+    if(window.__BOOTED) return;
+    var body=document.getElementById('obbody'),nb=document.getElementById('obnext'); if(!body||!nb) return;
+    var ob=document.getElementById('onboard'); if(ob) ob.classList.add('on');
+    body.innerHTML='<div class="ob-q">게임을 켜다가 멈췄어요</div>'+
+      '<div class="micro">예전 판에서 남은 기록이 지금 판과 맞지 않을 수 있어요. 아래 버튼을 누르면 지금 기록을 따로 보관해 두고 처음부터 켜요. 인생 앨범은 그대로 남아요.</div>'+
+      '<div class="micro" style="opacity:.6;word-break:break-all">'+String(window.__BOOTERR||'시간 초과').replace(/[<>&]/g,'')+'</div>'+
+      '<button class="btn btn--wide pix" id="obretry" style="margin-top:8px">한 번 더 켜 보기</button>';
+    document.getElementById('obretry').onclick=function(){ location.reload(); };
+    nb.disabled=false; nb.textContent='기록 보관하고 처음부터';
+    nb.onclick=function(){
+      try{ var keep={},ks=['nq.v8','nq.life.v1','nq.slot'];
+        ks.forEach(function(k){ var v=localStorage.getItem(k); if(v!=null) keep[k]=v; });
+        localStorage.setItem('nq.rescue.'+Date.now(),JSON.stringify(keep));
+        ks.forEach(function(k){ localStorage.removeItem(k); }); }catch(e){}
+      location.reload(); }; }
+  function check(){ setTimeout(rescue,window.__BOOTERR?300:4000); }
+  if(document.readyState==='complete') check(); else addEventListener('load',check);
+})();
 </script>
 
 <script>if('serviceWorker' in navigator) addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });</script>
