@@ -3533,9 +3533,9 @@ var LIFE_SIDO=[
  {s:'경남',p:6.3,band:'그 외',dia:'gs',g:[['창원시 성산구',['상남동','중앙동']],['김해시',['내외동','장유동']],['진주시',['평거동','가호동']]]},
  {s:'제주',p:1.3,band:'그 외',dia:'std',g:[['제주시',['노형동','연동','이도동']],['서귀포시',['동홍동','대륜동']]]}];
 var LIFE_FX={
- band:{'수도권':{coin:-10,stat:{jik:3}},'광역시':{coin:0,stat:{sik:3}},'그 외':{coin:20,stat:{ju:10}}}   /* 지방은 지역 한정 집 퀘스트를 못 받아 첫 집이 늦다(QA). 집 +10으로 메운다 */,
+ band:{'수도권':{coin:-10,stat:{jik:3,ju:4}},'광역시':{coin:0,stat:{sik:3,ju:4}},'그 외':{coin:20,stat:{ju:10}}}   /* 지방은 지역 한정 집 퀘스트를 못 받아 첫 집이 늦다(QA). 집 +10으로 메운다 */,
  income:[{v:'빠듯',p:20,coin:80,stat:{geum:4}},{v:'보통',p:60,coin:150,stat:{sik:2}},{v:'넉넉',p:20,coin:240,stat:{ui:2}}],
- path:[{v:'4년제',p:51,stat:{ui:2,geum:1}},{v:'전문대',p:24,stat:{jik:4}},{v:'고졸',p:25,stat:{jik:3},coin:30}],
+ path:[{v:'4년제',p:51,stat:{ui:2,geum:1}},{v:'전문대',p:24,stat:{jik:4}},{v:'고졸',p:25,stat:{jik:3,ju:3},coin:30}],
  living:{'본가':{tier:0,coin:60,home:'본가 방'},'기숙사':{tier:3,coin:0,home:'기숙사'},'자취':{tier:4,coin:-40,home:'자취방'}},
  byBand:{'수도권':[{v:'본가',p:60},{v:'기숙사',p:15},{v:'자취',p:25}],'광역시':[{v:'본가',p:45},{v:'기숙사',p:20},{v:'자취',p:35}],'그 외':[{v:'본가',p:30},{v:'기숙사',p:25},{v:'자취',p:45}]},
  trait:{'알뜰':{geum:5},'살림':{ju:5},'미식':{sik:5},'꾸밈':{ui:5},'성실':{jik:5}}};
@@ -3727,9 +3727,9 @@ function lifeBeforeCh(id,go){
   if(id==='job'&&p.path==='전문대') sc[1].text=['전문대를 마친 지','두 해.','이력서를 다시 썼다.'];
   if(id==='lease'&&lifeNest()) sc[0].text=['스물여섯.',TIERS[S.tier].name+' 생활도','몇 해째다.'];
   /* 형편이 숫자로 느껴지게: 본가는 아낀 방값, 넉넉하면 집에서 보탠 돈 */
-  var gift=(lifeNest()&&p.living==='본가'?40:0)+(p.income==='넉넉'?60:0);
+  var gift=(lifeNest()&&p.living==='본가'?(id==='lease'?140:40):0)+(p.income==='넉넉'?(id==='lease'||id==='home'?120:30):0);
   if(gift){ S.coin+=gift; save(); setTimeout(function(){ sfx('coin'); toast((p.living==='본가'&&lifeNest()?'아낀 방값':'집에서 보탠 돈')+' ￦'+gift); },600); }
-  playMQ({kicker:'LIFE',title:y.title,sub:y.sub,scenes:sc,endScenes:function(){ return []; },onDone:function(){ setTimeout(go,300); }});
+  playMQ({kicker:'LIFE',title:y.title,sub:y.sub,scenes:sc,endScenes:function(){ return []; },onDone:function(){ hudRefresh(); setTimeout(go,300); }});
   return true; }
 function lifeFillVals(){ var p=(S.life&&S.life.prof)||{},k=lifeKeys(p.sido?p:{band:'수도권',income:'보통',dia:'std'});
   return {name:p.name||heroOf().name,birth:p.birth||'',birthMD:p.birthMD||'',dong:(p.sido||'')+' '+(p.sgg||'')+' '+(p.dong||''),school:p.hs||'',major:p.major||'',
@@ -3746,7 +3746,7 @@ function lifeBirthPlay(){
 function lifeTitleId(){
   var p=S.life.prof||{},own=!!(TIERS[S.tier]&&TIERS[S.tier].own),wed=typeof mqDone==='function'&&mqDone('wedding');
   var boss=BOSSES.every(function(b){ return bossCleared(b.id); }),sum=['ju','sik','ui','geum','jik'].reduce(function(a,k){ return a+(S.stats[k]||0); },0);
-  if(wed&&own) return 'family'; if(p.income==='빠듯'&&own) return 'bloom'; if(boss) return 'shield'; if(own) return 'home';
+  if(p.income==='빠듯'&&own) return 'bloom'; if(wed&&own&&S.mq&&S.mq.done&&S.mq.done.wedding==='good') return 'family'; if(boss) return 'shield'; if(own) return 'home';
   if(S.coin>=3000) return 'saver'; if(sum>=350) return 'scholar'; if((S.best||0)>=7) return 'steady'; return 'light'; }
 function lifeSummary(stopped){
   var p=S.life.prof||{},tid=stopped?'stop':lifeTitleId();
@@ -6977,6 +6977,7 @@ function hudRefresh(){
   if(typeof lifeTick==='function') lifeTick();
   var n=need(S.lv),tt=totals(),e;
   if((e=document.getElementById('hnm'))) e.textContent=hudName();
+  if(lifeOn()&&(e=document.getElementById('hsub'))) e.textContent=whyLine();
   if((e=document.getElementById('hcoin'))) e.textContent=S.coin;
   if((e=document.getElementById('hatk'))) e.textContent=tt.atk;
   if((e=document.getElementById('hdefc'))) e.textContent=tt.def;
@@ -8445,6 +8446,7 @@ function renderHome(){
   if(demoOn()&&S.onboarded&&!S.demoDone) applyDemo();
   autoClaim(); setTimeout(hudRefresh,80);
   setTimeout(checkTutor,700);
+  if(typeof lifeTick==='function') lifeTick();
   var n=need(S.lv),tt=totals();
   document.getElementById('hnm').textContent=hudName();
   document.getElementById('hsub').textContent=whyLine();
@@ -11682,6 +11684,7 @@ var MQ_T0=Date.now(),MQ_SAID=0,MQ_T3=0;
 /* 할배 알림은 하루 한 번. 인생 모드는 장마다 한 번 */
 function mqSaidKey(){ return lifeOn()?'L'+((mqNext()||{}).id||'end'):dayKey(); }                          /* 이번 세션 시작, 할배가 알린 날(dayKey), 첫날 3분 뒤 다시 시도 타이머 */
 function leaseDoneAny(){ return !!(S.leaseDone&&(S.leaseDone[7]||S.leaseDone[8]))||(S.paid||0)>=7; }
+function lifeNoQuests(){ return lifeOn()&&!QUESTS.some(function(q){ return !q.trip&&fits(q)&&(S.done||[]).indexOf(q.id)<0; }); }
 function mqDay(id){ return lifeOn()||!(S.mq&&S.mq.at&&S.mq.at[id]===dayKey()); }   /* 앞 장을 깬 날이 오늘이 아니다: 하루 한 장 */
 var MQ_LIST=[
  {id:'job',key:'MQ_JOB',no:1,title:'첫 취업',
@@ -11689,8 +11692,8 @@ var MQ_LIST=[
   wait:function(){ var n=3-(S.done||[]).length; return n>0?'퀘스트 '+n+'개 더':null; },
   ann:['퀘스트를 셋이나 해냈구먼. 허허, 제법이야.','이제 큰일 하나를 같이 보세. 합격 문자부터 첫 월급까지.'],q:'메인 1장 · 첫 취업. 두세 분이면 보네.'},
  {id:'lease',no:2,title:'첫 전세 계약',
-  open:function(){ return mqDone('job')&&(S.peak>=7||!!S.lease||leaseDoneAny()); },
-  wait:function(){ return (S.peak>=7||S.lease||leaseDoneAny())?null:(TIERS[7].need>S.stats.ju?'원룸 전세까지 집 스탯 '+(TIERS[7].need-S.stats.ju)+' 더':'원룸 전세가 열리면'); },
+  open:function(){ return mqDone('job')&&(S.peak>=7||!!S.lease||leaseDoneAny()||lifeNoQuests()); },
+  wait:function(){ return (S.peak>=7||S.lease||leaseDoneAny())?null:lifeOn()?'원룸 전세까지 집 스탯 '+Math.max(0,TIERS[7].need-S.stats.ju)+' 더 · 퀘스트를 다 풀면 할배가 먼저 부를 거야':(TIERS[7].need>S.stats.ju?'원룸 전세까지 집 스탯 '+(TIERS[7].need-S.stats.ju)+' 더':'원룸 전세가 열리면'); },
   ann:['원룸 전세가 열렸네. 이번엔 이사가 아니라 계약부터야.','보증금은 자네가 모은 돈 거의 전부일 걸세. 처음부터 끝까지 같이 보지.'],q:'메인 2장 · 첫 전세 계약. 부동산으로 가 볼 텐가?'},
  {id:'card',key:'MQ_CARD',no:3,title:'첫 신용카드',
   open:function(){ return mqDone('lease')&&mqDay('lease')&&S.lv>=6&&mapOpen('bank'); },
@@ -11705,7 +11708,7 @@ var MQ_LIST=[
   wait:function(){ return S.lv<10?'Lv.10이 되면':null; },
   ann:['허허, 요즘 통화가 길던데. 좋은 사람이 생겼구먼.','결혼 준비는 둘이 돈 얘기를 처음 꺼내는 날부터야.'],q:'메인 5장 · 결혼 준비.'},
  {id:'home',key:'MQ_HOME',no:6,title:'첫 내 집 마련',
-  open:function(){ return mqDone('wedding')&&mqDay('wedding')&&((S.paid||0)>=8||!!(S.leaseDone&&S.leaseDone[8])); },
+  open:function(){ return mqDone('wedding')&&mqDay('wedding')&&((S.paid||0)>=8||!!(S.leaseDone&&S.leaseDone[8])||lifeNoQuests()); },
   wait:function(){ return ((S.paid||0)>=8||(S.leaseDone&&S.leaseDone[8]))?null:'투룸 전세로 옮기면'; },
   ann:['투룸 전세에서 제법 살았구먼. 이제 자네 이름 올릴 집 얘기를 하세.','평생 가장 큰 계약이야. 마지막으로 한 번 더 같이 가 보세.'],q:'메인 6장 · 첫 내 집 마련.'}
 ];
@@ -11809,7 +11812,7 @@ function mqLeaseStart(c){
   var M=mqS(),W=mqWrap(); ev('mq_start',{id:'lease'});
   if(leaseDoneAny()&&!S.lease){ return mqLeaseOutro(W.recap||[]); }
   playMQ({no:c.no,title:c.title,sub:c.sub,scenes:W.intro,
-    onDone:function(){ M.cur='lease'; M.leaseIntro=1; save();
+    onDone:function(){ M.cur='lease'; M.leaseIntro=1; if(lifeOn()&&S.peak<7) S.peak=7; save();
       if(!S.lease&&S.peak>=7) leaseGate(7);
       render('home');
       if(S.lease){ setTimeout(function(){ if(leaseCh()&&leaseCh().place==='estate'){ S.onFoot=true; enterMap('town_estate',8,7); ME.dir=3; savePos(); drawScene(); }

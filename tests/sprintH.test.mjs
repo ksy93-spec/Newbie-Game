@@ -168,7 +168,7 @@ test('6. 리뷰 1009 개발: 건너뛴 거처는 못 고르고, HUD 글자는 �
   assert.ok(r.same, 'hudName은 저장을 안 바꾼다');
   assert.equal(r.normalName, '노숙'); assert.equal(r.homeName, '본가 방');
   await page.reload(); await page.waitForFunction(() => window.S && window.QUESTS, null, { polling: 100 });
-  await page.waitForFunction(() => { if (TUT) endTalk(); return window.MQP || (S.life && S.life.over); }, null, { timeout: 20000, polling: 200 });
+  await page.waitForFunction(() => { if (TUT) endTalk(); if (!MQP && !document.getElementById('itip').hidden) closeTip(); return window.MQP || (S.life && S.life.over); }, null, { timeout: 20000, polling: 200 });
   assert.equal(await page.evaluate(() => S.life.over), true);
   assert.deepEqual(logs, []);
   await ctx.close();
