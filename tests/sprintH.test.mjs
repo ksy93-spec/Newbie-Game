@@ -167,8 +167,12 @@ test('6. 리뷰 1009 개발: 건너뛴 거처는 못 고르고, HUD 글자는 �
   assert.equal(r.mv, 0);
   assert.ok(r.same, 'hudName은 저장을 안 바꾼다');
   assert.equal(r.normalName, '노숙'); assert.equal(r.homeName, '본가 방');
+  // 파일 주소(file://)는 새로고침할 때 브라우저가 가끔 저장소를 통째로 비운다(게임과 상관없는 키도 같이 사라짐).
+  // 앱을 다시 켜는 상황을 흉내 내려는 것이므로, 저장을 옮겨 두었다가 비어 있으면 되살린다.
+  const snap = await page.evaluate(() => JSON.stringify(Object.assign({}, localStorage)));
+  await page.addInitScript((snap) => { if (!localStorage.getItem('nq.slot')) { const o = JSON.parse(snap); for (const k in o) localStorage.setItem(k, o[k]); } }, snap);
   await page.reload(); await page.waitForFunction(() => window.S && window.QUESTS, null, { polling: 100 });
-  await page.waitForFunction(() => { if (TUT) endTalk(); if (!MQP && !document.getElementById('itip').hidden) closeTip(); return window.MQP || (S.life && S.life.over); }, null, { timeout: 20000, polling: 200 });
+  await page.waitForFunction(() => { if (TUT) endTalk(); if (!MQP && !document.getElementById('itip').hidden) closeTip(); if (window.MQP && MQP.o.kicker !== 'LIFE') { if (MQP.picked === null && (MQP.list()[MQP.cur()] || {}).choice) MQP.pick(0); else MQP.next({ type: 'test' }); } return S.life && S.life.over; }, null, { timeout: 20000, polling: 200 });
   assert.equal(await page.evaluate(() => S.life.over), true);
   assert.deepEqual(logs, []);
   await ctx.close();
