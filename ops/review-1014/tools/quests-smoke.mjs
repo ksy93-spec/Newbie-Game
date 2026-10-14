@@ -8,8 +8,9 @@ const { chromium } = await import('playwright');
 
 const FILE = process.argv[2];
 if (!FILE) { console.error('게임 파일 복사본 경로를 주세요'); process.exit(2); }
-const NEW = ['pay1','tax3','learn1','ju6','ju7','geum5','cari1','hlth0','irp1','irp2','quit1','baby1','baby2','ju8','ju9','ju10','ju11','ins2','cari2','tax4','sik3',
+const ALL = ['pay1','tax3','learn1','ju6','ju7','geum5','cari1','hlth0','irp1','irp2','quit1','baby1','baby2','ju8','ju9','ju10','ju11','ins2','cari2','tax4','sik3',
   'pen2','pen3','care1','care2','tax5','hlth1','ju12','ju13','ju14','scam3','job8','sik4','pen4','ju15','inh1','ju16','hlth2','jik4','sik5','scam4'];
+const NEW = process.env.ONLY ? process.env.ONLY.split(',') : ALL;
 const browser = await chromium.launch();
 let bad = 0;
 for (const vp of [{ width: 360, height: 640 }, { width: 390, height: 844 }]) {
@@ -32,7 +33,7 @@ for (const vp of [{ width: 360, height: 640 }, { width: 390, height: 844 }]) {
     S.life.age = 55; dripEnsure(); out.open55 = openLeft();
     return out; }, NEW);
   console.log(vp.width + 'x' + vp.height, JSON.stringify(r));
-  if (r.n < 88 || r.missing.length || r.f25 !== 8 || r.f45 !== 33 || r.f55 !== 41 || !r.pen2_45 || r.pen4_45 || r.pen2_25) { bad++; console.log('  x 나이 조건이 예상과 다름'); }
+  if (r.n < 88 || r.missing.length || (NEW === ALL && (r.f25 !== 8 || r.f45 !== 33 || r.f55 !== 41)) || !r.pen2_45 || r.pen4_45 || r.pen2_25) { bad++; console.log('  x 나이 조건이 예상과 다름'); }
   // 하나씩 풀어 보기(정답만 눌러서 결과 화면까지)
   for (const id of (vp.width === 360 ? NEW : NEW.slice(0, 6))) {
     const ok = await page.evaluate((id) => { const q = QMAP[id]; S.full = 100; S.energy = 100; if (S.drip.u.indexOf(id) < 0) S.drip.u.push(id);

@@ -783,7 +783,6 @@ function lifeMidEnd(id, ok, n) {
   }
   rows.push(['확인처 · ' + ev.src.map(function (s) { return s[0].split(' · ')[0]; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).slice(0, 3).join(' · '), '', '#9B93A8']);
   save();
-  if (typeof ev2 === 'function') ev2('life_mid_end', { id: id, g: g });
   return [{ bg: 'night', cast: [['hero', 'C']], text: ev.ends[g] },
           { type: 'reward', head: 'LIFE EVENT', grade: g, card: ['', ev.title + ' · ' + ev.sub], rows: rows }];
 }
