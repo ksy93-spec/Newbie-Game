@@ -54,9 +54,9 @@ var LIFE_STAGES=[
  {id:'end',age:60,ykey:'y60',title:'정년, 예순',after:'m55',
   trigger:'59살 몫을 채우면 결산(lifeEnd)',
   reward:null,unlock:[],note:'지금의 예순 결산을 그대로 쓴다.'}];
-/* 퀘스트 담당이 쓸 나이 띠. 필요 수는 시뮬(pacing.md 4절)에서 나온 값 */
+/* 퀘스트 담당이 쓸 나이 띠. 시뮬에서 한 띠에 퀘스트 4~9개를 푼다(정답률 85~65%). 지금은 20대에 남은 청년 퀘스트로 채워지므로 띠마다 최소 6개, 바라는 수 8개 */
 var LIFE_QUEST_BANDS=[
- {band:'30s',fit:{status:['직장인'],ageMin:30,ageMax:39},need:4,hint:'연봉 협상, 연말정산, 이직과 퇴직금, 육아휴직·출산 지원, 대출 갈아타기'},
+ {band:'30s',fit:{status:['직장인'],ageMin:30,ageMax:39},need:8,hint:'연봉 협상, 연말정산, 이직과 퇴직금, 육아휴직·출산 지원, 대출 갈아타기'},
  {band:'40s',fit:{status:['직장인'],ageMin:40,ageMax:49},need:8,hint:'건강검진·실손보험, 부모님 병원비, 자녀 교육비, 주택담보대출 금리, 연금저축'},
  {band:'50s',fit:{status:['직장인'],ageMin:50,ageMax:59},need:8,hint:'국민연금 수령 나이, 퇴직연금·IRP, 희망퇴직, 재취업, 상속·증여 기초, 보이스피싱'}];
 
