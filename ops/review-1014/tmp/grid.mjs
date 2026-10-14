@@ -1,0 +1,10 @@
+process.env.PLAYWRIGHT_BROWSERS_PATH ||= '/opt/pw-browsers';
+const { chromium } = await import('playwright');
+const b = await chromium.launch(); const p = await b.newPage();
+await p.goto('file:///home/user/Newbie-Game/prototype/newbie-quest-demo.html#nointro');
+await p.waitForFunction(() => window.MAPS);
+const ids = process.argv.slice(2);
+console.log(await p.evaluate((ids) => ids.map((id) => { const m = MAPS[id]; const g = m.rows.map((r) => r.split(''));
+  (m.spots || []).forEach((s, i) => g[s.y][s.x] = String.fromCharCode(48 + i)); (m.warps || []).forEach((w) => g[w.y][w.x] = '+');
+  return id + ' spawn ' + JSON.stringify(m.spawn) + '\n' + g.map((r, y) => String(y).padStart(2) + ' ' + r.join('')).join('\n') + '\n' + (m.spots || []).map((s, i) => i + '=' + (s.name || s.id) + '(' + s.x + ',' + s.y + ')').join(' '); }).join('\n\n'), ids));
+await b.close();

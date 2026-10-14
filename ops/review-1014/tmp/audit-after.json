@@ -1,0 +1,4719 @@
+{
+ "town": {
+  "w": 22,
+  "h": 20,
+  "interior": false,
+  "s0": [
+   4,
+   4
+  ],
+  "walk": 280,
+  "island": 7,
+  "worst": {
+   "ex": 18,
+   "a": [
+    0,
+    12
+   ],
+   "b": [
+    0,
+    15
+   ]
+  },
+  "detourPairs": 424,
+  "detourSum": 3946,
+  "props": [
+   {
+    "x": 16,
+    "y": 15,
+    "what": "표지판 주택가 방향 안내판",
+    "spot": true,
+    "maxg": 4,
+    "pairs": 1,
+    "gain": 104,
+    "pave": 1
+   }
+  ],
+  "art": [
+   [
+    17,
+    16
+   ]
+  ],
+  "dead": [],
+  "exits": {
+   "east": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "south": [
+    17
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "부동산 사장",
+    "x": 6,
+    "y": 4,
+    "dist": 1,
+    "man": 2
+   },
+   {
+    "kind": "spot:shelf",
+    "name": "내 짐가방",
+    "x": 3,
+    "y": 3,
+    "dist": 1,
+    "man": 2
+   },
+   {
+    "kind": "spot:thing",
+    "name": "고속도로 안내판",
+    "x": 1,
+    "y": 12,
+    "dist": 10,
+    "man": 11
+   },
+   {
+    "kind": "spot:talk",
+    "name": "산책하는 할머니",
+    "x": 12,
+    "y": 16,
+    "dist": 19,
+    "man": 20
+   },
+   {
+    "kind": "spot:thing",
+    "name": "동네 게시판",
+    "x": 14,
+    "y": 15,
+    "dist": 20,
+    "man": 21
+   },
+   {
+    "kind": "spot:thing",
+    "name": "주택가 방향 안내판",
+    "x": 16,
+    "y": 15,
+    "dist": 24,
+    "man": 23
+   },
+   {
+    "kind": "door",
+    "name": "문→room",
+    "x": 2,
+    "y": 2,
+    "dist": 3,
+    "man": 4
+   },
+   {
+    "kind": "door",
+    "name": "문→town_mart",
+    "x": 8,
+    "y": 2,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "door",
+    "name": "문→town_hall",
+    "x": 14,
+    "y": 2,
+    "dist": 11,
+    "man": 12
+   },
+   {
+    "kind": "door",
+    "name": "문→town_estate",
+    "x": 19,
+    "y": 2,
+    "dist": 16,
+    "man": 17
+   },
+   {
+    "kind": "egg",
+    "name": "t_bush",
+    "x": 2,
+    "y": 18,
+    "onTile": 1,
+    "dist": 24,
+    "man": 16
+   },
+   {
+    "kind": "egg",
+    "name": "t_clover",
+    "x": 14,
+    "y": 18,
+    "onTile": 1,
+    "dist": 24,
+    "man": 24
+   }
+  ],
+  "issues": [
+   {
+    "k": "고립착지",
+    "x": 20,
+    "y": 15,
+    "note": "campus west 착지가 본 길과 끊김"
+   },
+   {
+    "k": "고립착지",
+    "x": 20,
+    "y": 16,
+    "note": "campus west 착지가 본 길과 끊김"
+   },
+   {
+    "k": "고립착지",
+    "x": 20,
+    "y": 17,
+    "note": "campus west 착지가 본 길과 끊김"
+   },
+   {
+    "k": "고립착지",
+    "x": 20,
+    "y": 18,
+    "note": "campus west 착지가 본 길과 끊김"
+   },
+   {
+    "k": "고립착지",
+    "x": 20,
+    "y": 18,
+    "note": "villa north 착지가 본 길과 끊김"
+   },
+   {
+    "k": "길막소품",
+    "x": 16,
+    "y": 15,
+    "note": "표지판 주택가 방향 안내판 · 치우면 최대 4걸음 줄어듦, 4걸음 이상 줄어드는 칸 쌍 1"
+   }
+  ]
+ },
+ "campus": {
+  "w": 22,
+  "h": 20,
+  "interior": false,
+  "s0": [
+   2,
+   6
+  ],
+  "walk": 315,
+  "island": 0,
+  "worst": {
+   "ex": 16,
+   "a": [
+    0,
+    7
+   ],
+   "b": [
+    0,
+    15
+   ]
+  },
+  "detourPairs": 763,
+  "detourSum": 7424,
+  "props": [
+   {
+    "x": 3,
+    "y": 11,
+    "what": "노점('A')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 4,
+    "gain": 76,
+    "pave": 1
+   }
+  ],
+  "art": [
+   [
+    2,
+    0
+   ],
+   [
+    3,
+    0
+   ],
+   [
+    4,
+    0
+   ],
+   [
+    5,
+    0
+   ],
+   [
+    6,
+    0
+   ],
+   [
+    7,
+    0
+   ],
+   [
+    14,
+    0
+   ],
+   [
+    15,
+    0
+   ],
+   [
+    16,
+    0
+   ],
+   [
+    17,
+    0
+   ],
+   [
+    18,
+    0
+   ],
+   [
+    19,
+    0
+   ]
+  ],
+  "dead": [],
+  "exits": {
+   "west": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    15,
+    16,
+    17,
+    18
+   ],
+   "east": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    15,
+    16,
+    17,
+    18
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "동기",
+    "x": 11,
+    "y": 7,
+    "dist": 9,
+    "man": 10
+   },
+   {
+    "kind": "spot:talk",
+    "name": "게임 동아리 부장",
+    "x": 5,
+    "y": 16,
+    "dist": 18,
+    "man": 13
+   },
+   {
+    "kind": "spot:thing",
+    "name": "운동장 안내판",
+    "x": 10,
+    "y": 16,
+    "dist": 17,
+    "man": 18
+   },
+   {
+    "kind": "door",
+    "name": "문→campus_lib",
+    "x": 4,
+    "y": 3,
+    "dist": 4,
+    "man": 5
+   },
+   {
+    "kind": "door",
+    "name": "문→campus_help",
+    "x": 6,
+    "y": 3,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "door",
+    "name": "문→campus_cafe",
+    "x": 17,
+    "y": 3,
+    "dist": 17,
+    "man": 18
+   },
+   {
+    "kind": "egg",
+    "name": "c_field",
+    "x": 20,
+    "y": 17,
+    "onTile": 1,
+    "dist": 29,
+    "man": 29
+   },
+   {
+    "kind": "egg",
+    "name": "c_notes",
+    "x": 1,
+    "y": 15,
+    "onTile": 1,
+    "dist": 22,
+    "man": 10
+   }
+  ],
+  "issues": []
+ },
+ "center": {
+  "w": 22,
+  "h": 20,
+  "interior": false,
+  "s0": [
+   3,
+   4
+  ],
+  "walk": 275,
+  "island": 7,
+  "worst": {
+   "ex": 26,
+   "a": [
+    0,
+    7
+   ],
+   "b": [
+    0,
+    15
+   ]
+  },
+  "detourPairs": 352,
+  "detourSum": 5272,
+  "props": [],
+  "art": [
+   [
+    2,
+    15
+   ],
+   [
+    3,
+    18
+   ],
+   [
+    4,
+    18
+   ],
+   [
+    5,
+    18
+   ],
+   [
+    6,
+    18
+   ],
+   [
+    7,
+    18
+   ]
+  ],
+  "dead": [
+   [
+    3,
+    15
+   ]
+  ],
+  "exits": {
+   "west": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    15,
+    16,
+    17,
+    18
+   ],
+   "east": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "south": [
+    17
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:thing",
+    "name": "시장 방향 안내판",
+    "x": 16,
+    "y": 15,
+    "dist": 23,
+    "man": 24
+   },
+   {
+    "kind": "spot:talk",
+    "name": "벤치의 할아버지",
+    "x": 13,
+    "y": 16,
+    "dist": 21,
+    "man": 22
+   },
+   {
+    "kind": "door",
+    "name": "문→center_lobby",
+    "x": 8,
+    "y": 2,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "door",
+    "name": "문→center_lobby",
+    "x": 9,
+    "y": 2,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "door",
+    "name": "문→center_nhis",
+    "x": 16,
+    "y": 2,
+    "dist": 14,
+    "man": 15
+   },
+   {
+    "kind": "egg",
+    "name": "ce_bench",
+    "x": 15,
+    "y": 18,
+    "onTile": 1,
+    "dist": 26,
+    "man": 26
+   },
+   {
+    "kind": "egg",
+    "name": "ce_pond",
+    "x": 11,
+    "y": 17,
+    "onTile": 1,
+    "dist": 21,
+    "man": 21
+   }
+  ],
+  "issues": [
+   {
+    "k": "고립착지",
+    "x": 20,
+    "y": 15,
+    "note": "office west 착지가 본 길과 끊김"
+   },
+   {
+    "k": "고립착지",
+    "x": 20,
+    "y": 16,
+    "note": "office west 착지가 본 길과 끊김"
+   },
+   {
+    "k": "고립착지",
+    "x": 20,
+    "y": 17,
+    "note": "office west 착지가 본 길과 끊김"
+   },
+   {
+    "k": "고립착지",
+    "x": 20,
+    "y": 18,
+    "note": "office west 착지가 본 길과 끊김"
+   },
+   {
+    "k": "고립착지",
+    "x": 20,
+    "y": 18,
+    "note": "market north 착지가 본 길과 끊김"
+   },
+   {
+    "k": "고립착지",
+    "x": 20,
+    "y": 18,
+    "note": "market north 착지가 본 길과 끊김"
+   }
+  ]
+ },
+ "office": {
+  "w": 22,
+  "h": 20,
+  "interior": false,
+  "s0": [
+   3,
+   4
+  ],
+  "walk": 306,
+  "island": 0,
+  "worst": {
+   "ex": 20,
+   "a": [
+    21,
+    7
+   ],
+   "b": [
+    21,
+    15
+   ]
+  },
+  "detourPairs": 693,
+  "detourSum": 7580,
+  "props": [
+   {
+    "x": 17,
+    "y": 16,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 1,
+    "gain": 144,
+    "pave": 0
+   },
+   {
+    "x": 16,
+    "y": 15,
+    "what": "노점('A')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 1,
+    "gain": 134,
+    "pave": 0
+   }
+  ],
+  "art": [
+   [
+    20,
+    1
+   ],
+   [
+    20,
+    2
+   ],
+   [
+    17,
+    17
+   ]
+  ],
+  "dead": [
+   [
+    17,
+    15
+   ]
+  ],
+  "exits": {
+   "west": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    15,
+    16,
+    17,
+    18
+   ],
+   "east": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    15,
+    16,
+    17,
+    18
+   ],
+   "north": [
+    20
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:thing",
+    "name": "역 방향 안내판",
+    "x": 19,
+    "y": 3,
+    "dist": 16,
+    "man": 17
+   },
+   {
+    "kind": "spot:talk",
+    "name": "푸드트럭 사장",
+    "x": 15,
+    "y": 16,
+    "dist": 23,
+    "man": 24
+   },
+   {
+    "kind": "door",
+    "name": "문→office_lobby",
+    "x": 7,
+    "y": 2,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "door",
+    "name": "문→office_lobby",
+    "x": 8,
+    "y": 2,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "egg",
+    "name": "o_truck",
+    "x": 19,
+    "y": 17,
+    "onTile": 1,
+    "dist": 29,
+    "man": 29
+   }
+  ],
+  "issues": []
+ },
+ "bank": {
+  "w": 22,
+  "h": 20,
+  "interior": false,
+  "s0": [
+   3,
+   4
+  ],
+  "walk": 297,
+  "island": 0,
+  "worst": {
+   "ex": 20,
+   "a": [
+    0,
+    12
+   ],
+   "b": [
+    0,
+    15
+   ]
+  },
+  "detourPairs": 585,
+  "detourSum": 6332,
+  "props": [
+   {
+    "x": 10,
+    "y": 16,
+    "what": "벼룩시장 상인",
+    "spot": true,
+    "maxg": 6,
+    "pairs": 40,
+    "gain": 380,
+    "pave": 0
+   },
+   {
+    "x": 9,
+    "y": 17,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 13,
+    "gain": 306,
+    "pave": 0
+   },
+   {
+    "x": 16,
+    "y": 17,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 9,
+    "gain": 208,
+    "pave": 0
+   },
+   {
+    "x": 17,
+    "y": 18,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 6,
+    "pairs": 27,
+    "gain": 202,
+    "pave": 0
+   },
+   {
+    "x": 3,
+    "y": 18,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 6,
+    "pairs": 24,
+    "gain": 182,
+    "pave": 0
+   },
+   {
+    "x": 2,
+    "y": 17,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 13,
+    "gain": 174,
+    "pave": 0
+   }
+  ],
+  "art": [
+   [
+    16,
+    16
+   ]
+  ],
+  "dead": [
+   [
+    2,
+    18
+   ],
+   [
+    16,
+    18
+   ]
+  ],
+  "exits": {
+   "west": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    15,
+    16,
+    17,
+    18
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:boss",
+    "name": "jeonse",
+    "x": 16,
+    "y": 5,
+    "dist": 13,
+    "man": 14
+   },
+   {
+    "kind": "spot:boss",
+    "name": "mlm",
+    "x": 18,
+    "y": 7,
+    "dist": 17,
+    "man": 18
+   },
+   {
+    "kind": "spot:boss",
+    "name": "fp",
+    "x": 20,
+    "y": 4,
+    "dist": 16,
+    "man": 17
+   },
+   {
+    "kind": "spot:talk",
+    "name": "벼룩시장 상인",
+    "x": 10,
+    "y": 16,
+    "dist": 18,
+    "man": 19
+   },
+   {
+    "kind": "door",
+    "name": "문→bank_branch",
+    "x": 4,
+    "y": 2,
+    "dist": 2,
+    "man": 3
+   },
+   {
+    "kind": "door",
+    "name": "문→bank_laundry",
+    "x": 13,
+    "y": 2,
+    "dist": 11,
+    "man": 12
+   },
+   {
+    "kind": "egg",
+    "name": "b_flea",
+    "x": 20,
+    "y": 16,
+    "onTile": 1,
+    "dist": 29,
+    "man": 29
+   },
+   {
+    "kind": "egg",
+    "name": "b_alley",
+    "x": 1,
+    "y": 18,
+    "onTile": 1,
+    "dist": 26,
+    "man": 16
+   }
+  ],
+  "issues": [
+   {
+    "k": "길막소품",
+    "x": 10,
+    "y": 16,
+    "note": "벼룩시장 상인 · 치우면 최대 6걸음 줄어듦, 4걸음 이상 줄어드는 칸 쌍 40"
+   },
+   {
+    "k": "길막소품",
+    "x": 17,
+    "y": 18,
+    "note": "나무('t') · 치우면 최대 6걸음 줄어듦, 4걸음 이상 줄어드는 칸 쌍 27"
+   },
+   {
+    "k": "길막소품",
+    "x": 3,
+    "y": 18,
+    "note": "나무('t') · 치우면 최대 6걸음 줄어듦, 4걸음 이상 줄어드는 칸 쌍 24"
+   }
+  ]
+ },
+ "town_mart": {
+  "w": 11,
+  "h": 8,
+  "interior": true,
+  "s0": [
+   5,
+   6
+  ],
+  "walk": 39,
+  "island": 0,
+  "worst": {
+   "ex": 2,
+   "a": [
+    4,
+    1
+   ],
+   "b": [
+    8,
+    1
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [
+   [
+    4,
+    1
+   ],
+   [
+    8,
+    1
+   ]
+  ],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "편의점 알바생",
+    "x": 2,
+    "y": 5,
+    "dist": 3,
+    "man": 4
+   },
+   {
+    "kind": "spot:desk",
+    "name": "m_table",
+    "x": 8,
+    "y": 5,
+    "dist": 3,
+    "man": 4
+   },
+   {
+    "kind": "door",
+    "name": "문→town",
+    "x": 5,
+    "y": 7,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "tm_coin",
+    "x": 9,
+    "y": 6,
+    "onTile": 1,
+    "dist": 4,
+    "man": 4
+   }
+  ],
+  "issues": []
+ },
+ "town_hall": {
+  "w": 12,
+  "h": 8,
+  "interior": true,
+  "s0": [
+   6,
+   6
+  ],
+  "walk": 41,
+  "island": 0,
+  "worst": {
+   "ex": 10,
+   "a": [
+    1,
+    2
+   ],
+   "b": [
+    1,
+    4
+   ]
+  },
+  "detourPairs": 39,
+  "detourSum": 268,
+  "props": [],
+  "art": [
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    7,
+    2
+   ],
+   [
+    9,
+    2
+   ],
+   [
+    6,
+    3
+   ]
+  ],
+  "dead": [
+   [
+    8,
+    1
+   ],
+   [
+    10,
+    1
+   ]
+  ],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:desk",
+    "name": "h_move",
+    "x": 2,
+    "y": 3,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "spot:desk",
+    "name": "h_youth",
+    "x": 5,
+    "y": 3,
+    "dist": 3,
+    "man": 4
+   },
+   {
+    "kind": "spot:desk",
+    "name": "h_report",
+    "x": 9,
+    "y": 3,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "spot:thing",
+    "name": "번호표 기계",
+    "x": 1,
+    "y": 1,
+    "dist": 9,
+    "man": 10
+   },
+   {
+    "kind": "spot:lease",
+    "name": "전입 신고 창구 직원",
+    "x": 10,
+    "y": 4,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "door",
+    "name": "문→town",
+    "x": 6,
+    "y": 7,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "th_sofa",
+    "x": 10,
+    "y": 6,
+    "onTile": 1,
+    "dist": 4,
+    "man": 4
+   }
+  ],
+  "issues": []
+ },
+ "town_estate": {
+  "w": 14,
+  "h": 10,
+  "interior": true,
+  "s0": [
+   6,
+   8
+  ],
+  "walk": 79,
+  "island": 0,
+  "worst": {
+   "ex": 6,
+   "a": [
+    12,
+    2
+   ],
+   "b": [
+    12,
+    6
+   ]
+  },
+  "detourPairs": 3,
+  "detourSum": 18,
+  "props": [
+   {
+    "x": 11,
+    "y": 6,
+    "what": "벤치('b')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 9,
+    "gain": 124,
+    "pave": 4
+   },
+   {
+    "x": 12,
+    "y": 5,
+    "what": "jeonse-day",
+    "spot": true,
+    "maxg": 6,
+    "pairs": 12,
+    "gain": 110,
+    "pave": 3
+   }
+  ],
+  "art": [],
+  "dead": [
+   [
+    3,
+    1
+   ],
+   [
+    10,
+    1
+   ]
+  ],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:desk",
+    "name": "e_jeonse",
+    "x": 2,
+    "y": 3,
+    "dist": 8,
+    "man": 9
+   },
+   {
+    "kind": "spot:desk",
+    "name": "e_wolse",
+    "x": 6,
+    "y": 3,
+    "dist": 4,
+    "man": 5
+   },
+   {
+    "kind": "spot:desk",
+    "name": "e_maemae",
+    "x": 10,
+    "y": 3,
+    "dist": 8,
+    "man": 9
+   },
+   {
+    "kind": "spot:ep",
+    "name": "jeonse-day",
+    "x": 12,
+    "y": 5,
+    "dist": 8,
+    "man": 9
+   },
+   {
+    "kind": "spot:lease",
+    "name": "전세 계약 상담",
+    "x": 8,
+    "y": 6,
+    "dist": 3,
+    "man": 4
+   },
+   {
+    "kind": "door",
+    "name": "문→town",
+    "x": 6,
+    "y": 9,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "te_desk",
+    "x": 1,
+    "y": 7,
+    "onTile": 1,
+    "dist": 6,
+    "man": 6
+   }
+  ],
+  "issues": [
+   {
+    "k": "길막소품",
+    "x": 12,
+    "y": 5,
+    "note": "jeonse-day · 치우면 최대 6걸음 줄어듦, 4걸음 이상 줄어드는 칸 쌍 12"
+   }
+  ]
+ },
+ "campus_lib": {
+  "w": 12,
+  "h": 9,
+  "interior": true,
+  "s0": [
+   5,
+   7
+  ],
+  "walk": 49,
+  "island": 0,
+  "worst": {
+   "ex": 4,
+   "a": [
+    5,
+    1
+   ],
+   "b": [
+    5,
+    7
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [
+   [
+    5,
+    1
+   ],
+   [
+    10,
+    1
+   ]
+  ],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "도서관 사서",
+    "x": 6,
+    "y": 6,
+    "dist": 1,
+    "man": 2
+   },
+   {
+    "kind": "door",
+    "name": "문→campus",
+    "x": 5,
+    "y": 8,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "cl_book",
+    "x": 1,
+    "y": 7,
+    "onTile": 1,
+    "dist": 4,
+    "man": 4
+   }
+  ],
+  "issues": []
+ },
+ "campus_help": {
+  "w": 12,
+  "h": 9,
+  "interior": true,
+  "s0": [
+   5,
+   7
+  ],
+  "walk": 59,
+  "island": 0,
+  "worst": {
+   "ex": 2,
+   "a": [
+    3,
+    1
+   ],
+   "b": [
+    6,
+    1
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:desk",
+    "name": "u_loan",
+    "x": 2,
+    "y": 3,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "spot:desk",
+    "name": "u_dorm",
+    "x": 7,
+    "y": 3,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "door",
+    "name": "문→campus",
+    "x": 5,
+    "y": 8,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "ch_flyer",
+    "x": 10,
+    "y": 5,
+    "onTile": 1,
+    "dist": 7,
+    "man": 7
+   }
+  ],
+  "issues": []
+ },
+ "campus_cafe": {
+  "w": 12,
+  "h": 8,
+  "interior": true,
+  "s0": [
+   4,
+   6
+  ],
+  "walk": 47,
+  "island": 0,
+  "worst": {
+   "ex": 2,
+   "a": [
+    5,
+    1
+   ],
+   "b": [
+    5,
+    4
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:desk",
+    "name": "c_alba",
+    "x": 1,
+    "y": 1,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "spot:talk",
+    "name": "카페 사장",
+    "x": 3,
+    "y": 1,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "spot:desk",
+    "name": "c_friend",
+    "x": 5,
+    "y": 3,
+    "dist": 3,
+    "man": 4
+   },
+   {
+    "kind": "spot:thing",
+    "name": "커피 머신",
+    "x": 4,
+    "y": 1,
+    "dist": 4,
+    "man": 5
+   },
+   {
+    "kind": "spot:ep",
+    "name": "first-job",
+    "x": 9,
+    "y": 5,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "door",
+    "name": "문→campus",
+    "x": 4,
+    "y": 7,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "cc_coupon",
+    "x": 10,
+    "y": 6,
+    "onTile": 1,
+    "dist": 6,
+    "man": 6
+   }
+  ],
+  "issues": []
+ },
+ "center_lobby": {
+  "w": 14,
+  "h": 9,
+  "interior": true,
+  "s0": [
+   6,
+   7
+  ],
+  "walk": 64,
+  "island": 0,
+  "worst": {
+   "ex": 6,
+   "a": [
+    12,
+    5
+   ],
+   "b": [
+    11,
+    6
+   ]
+  },
+  "detourPairs": 2,
+  "detourSum": 12,
+  "props": [
+   {
+    "x": 8,
+    "y": 6,
+    "what": "job-hunt",
+    "spot": true,
+    "maxg": 4,
+    "pairs": 6,
+    "gain": 208,
+    "pave": 4
+   },
+   {
+    "x": 7,
+    "y": 5,
+    "what": "벤치('b')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 14,
+    "gain": 194,
+    "pave": 3
+   },
+   {
+    "x": 11,
+    "y": 5,
+    "what": "벤치('b')",
+    "spot": false,
+    "maxg": 6,
+    "pairs": 16,
+    "gain": 114,
+    "pave": 3
+   },
+   {
+    "x": 12,
+    "y": 6,
+    "what": "구직 중인 선배",
+    "spot": true,
+    "maxg": 6,
+    "pairs": 6,
+    "gain": 66,
+    "pave": 2
+   }
+  ],
+  "art": [],
+  "dead": [
+   [
+    11,
+    1
+   ]
+  ],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:desk",
+    "name": "l_benefit",
+    "x": 2,
+    "y": 3,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "spot:desk",
+    "name": "l_quit",
+    "x": 6,
+    "y": 3,
+    "dist": 5,
+    "man": 4
+   },
+   {
+    "kind": "spot:desk",
+    "name": "l_support",
+    "x": 10,
+    "y": 3,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "spot:desk",
+    "name": "l_labor",
+    "x": 12,
+    "y": 3,
+    "dist": 9,
+    "man": 10
+   },
+   {
+    "kind": "spot:talk",
+    "name": "구직 중인 선배",
+    "x": 12,
+    "y": 6,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "spot:thing",
+    "name": "번호표 기계",
+    "x": 4,
+    "y": 1,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "spot:ep",
+    "name": "job-hunt",
+    "x": 8,
+    "y": 6,
+    "dist": 2,
+    "man": 3
+   },
+   {
+    "kind": "door",
+    "name": "문→center",
+    "x": 6,
+    "y": 8,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "door",
+    "name": "문→center",
+    "x": 7,
+    "y": 8,
+    "dist": 1,
+    "man": 2
+   },
+   {
+    "kind": "egg",
+    "name": "cel_memo",
+    "x": 1,
+    "y": 6,
+    "onTile": 1,
+    "dist": 6,
+    "man": 6
+   }
+  ],
+  "issues": [
+   {
+    "k": "길막소품",
+    "x": 8,
+    "y": 6,
+    "note": "job-hunt · 치우면 최대 4걸음 줄어듦, 4걸음 이상 줄어드는 칸 쌍 6"
+   },
+   {
+    "k": "길막소품",
+    "x": 11,
+    "y": 5,
+    "note": "벤치('b') · 치우면 최대 6걸음 줄어듦, 4걸음 이상 줄어드는 칸 쌍 16"
+   },
+   {
+    "k": "길막소품",
+    "x": 12,
+    "y": 6,
+    "note": "구직 중인 선배 · 치우면 최대 6걸음 줄어듦, 4걸음 이상 줄어드는 칸 쌍 6"
+   }
+  ]
+ },
+ "center_nhis": {
+  "w": 12,
+  "h": 8,
+  "interior": true,
+  "s0": [
+   6,
+   6
+  ],
+  "walk": 49,
+  "island": 0,
+  "worst": {
+   "ex": 2,
+   "a": [
+    3,
+    1
+   ],
+   "b": [
+    6,
+    1
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [
+   [
+    10,
+    1
+   ]
+  ],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:desk",
+    "name": "n_health",
+    "x": 2,
+    "y": 3,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "spot:desk",
+    "name": "n_pension",
+    "x": 7,
+    "y": 3,
+    "dist": 3,
+    "man": 4
+   },
+   {
+    "kind": "door",
+    "name": "문→center",
+    "x": 6,
+    "y": 7,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "cn_pamph",
+    "x": 10,
+    "y": 6,
+    "onTile": 1,
+    "dist": 4,
+    "man": 4
+   }
+  ],
+  "issues": []
+ },
+ "office_lobby": {
+  "w": 14,
+  "h": 9,
+  "interior": true,
+  "s0": [
+   6,
+   7
+  ],
+  "walk": 66,
+  "island": 0,
+  "worst": {
+   "ex": 6,
+   "a": [
+    12,
+    4
+   ],
+   "b": [
+    12,
+    6
+   ]
+  },
+  "detourPairs": 8,
+  "detourSum": 48,
+  "props": [
+   {
+    "x": 4,
+    "y": 6,
+    "what": "경비 아저씨",
+    "spot": true,
+    "maxg": 4,
+    "pairs": 13,
+    "gain": 188,
+    "pave": 4
+   }
+  ],
+  "art": [
+   [
+    2,
+    6
+   ]
+  ],
+  "dead": [
+   [
+    2,
+    1
+   ],
+   [
+    11,
+    1
+   ],
+   [
+    1,
+    7
+   ]
+  ],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:desk",
+    "name": "o_hr",
+    "x": 2,
+    "y": 3,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "spot:desk",
+    "name": "o_tax",
+    "x": 5,
+    "y": 3,
+    "dist": 4,
+    "man": 5
+   },
+   {
+    "kind": "spot:desk",
+    "name": "o_senior",
+    "x": 8,
+    "y": 3,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "spot:talk",
+    "name": "경비 아저씨",
+    "x": 4,
+    "y": 6,
+    "dist": 2,
+    "man": 3
+   },
+   {
+    "kind": "spot:ep",
+    "name": "first-pay",
+    "x": 11,
+    "y": 4,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "door",
+    "name": "문→office",
+    "x": 6,
+    "y": 8,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "door",
+    "name": "문→office",
+    "x": 7,
+    "y": 8,
+    "dist": 1,
+    "man": 2
+   },
+   {
+    "kind": "egg",
+    "name": "ol_ramen",
+    "x": 12,
+    "y": 6,
+    "onTile": 1,
+    "dist": 7,
+    "man": 7
+   }
+  ],
+  "issues": [
+   {
+    "k": "길막소품",
+    "x": 4,
+    "y": 6,
+    "note": "경비 아저씨 · 치우면 최대 4걸음 줄어듦, 4걸음 이상 줄어드는 칸 쌍 13"
+   }
+  ]
+ },
+ "bank_branch": {
+  "w": 12,
+  "h": 8,
+  "interior": true,
+  "s0": [
+   4,
+   6
+  ],
+  "walk": 38,
+  "island": 3,
+  "worst": {
+   "ex": 10,
+   "a": [
+    1,
+    2
+   ],
+   "b": [
+    1,
+    4
+   ]
+  },
+  "detourPairs": 32,
+  "detourSum": 218,
+  "props": [
+   {
+    "x": 7,
+    "y": 2,
+    "what": "은행 안내 직원",
+    "spot": true,
+    "maxg": 99,
+    "pairs": 0,
+    "gain": 0,
+    "joined": 4
+   }
+  ],
+  "art": [
+   [
+    2,
+    2
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    5,
+    2
+   ]
+  ],
+  "dead": [],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:desk",
+    "name": "b_sub",
+    "x": 2,
+    "y": 3,
+    "dist": 4,
+    "man": 5
+   },
+   {
+    "kind": "spot:desk",
+    "name": "b_scam",
+    "x": 5,
+    "y": 3,
+    "dist": 3,
+    "man": 4
+   },
+   {
+    "kind": "spot:desk",
+    "name": "b_credit",
+    "x": 9,
+    "y": 3,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "spot:talk",
+    "name": "은행 안내 직원",
+    "x": 7,
+    "y": 2,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "spot:thing",
+    "name": "ATM",
+    "x": 1,
+    "y": 1,
+    "dist": 11,
+    "man": 8
+   },
+   {
+    "kind": "spot:thing",
+    "name": "ATM",
+    "x": 2,
+    "y": 1,
+    "dist": 10,
+    "man": 7
+   },
+   {
+    "kind": "door",
+    "name": "문→bank",
+    "x": 4,
+    "y": 7,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "bb_coin",
+    "x": 10,
+    "y": 6,
+    "onTile": 1,
+    "dist": 6,
+    "man": 6
+   }
+  ],
+  "issues": [
+   {
+    "k": "섬막는소품",
+    "x": 7,
+    "y": 2,
+    "note": "은행 안내 직원 · 치우면 끊긴 칸 3개가 이어짐"
+   }
+  ]
+ },
+ "bank_laundry": {
+  "w": 9,
+  "h": 7,
+  "interior": true,
+  "s0": [
+   4,
+   5
+  ],
+  "walk": 24,
+  "island": 0,
+  "worst": {
+   "ex": 6,
+   "a": [
+    1,
+    2
+   ],
+   "b": [
+    1,
+    4
+   ]
+  },
+  "detourPairs": 1,
+  "detourSum": 6,
+  "props": [],
+  "art": [
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    2
+   ]
+  ],
+  "dead": [
+   [
+    1,
+    4
+   ]
+  ],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:desk",
+    "name": "w_laundry",
+    "x": 2,
+    "y": 3,
+    "dist": 3,
+    "man": 4
+   },
+   {
+    "kind": "spot:thing",
+    "name": "코인 세탁기",
+    "x": 1,
+    "y": 1,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "spot:thing",
+    "name": "분실물함",
+    "x": 6,
+    "y": 1,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "door",
+    "name": "문→bank",
+    "x": 4,
+    "y": 6,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "bl_floor",
+    "x": 7,
+    "y": 4,
+    "onTile": 1,
+    "dist": 4,
+    "man": 4
+   }
+  ],
+  "issues": []
+ },
+ "villa": {
+  "w": 22,
+  "h": 20,
+  "interior": false,
+  "s0": [
+   17,
+   1
+  ],
+  "walk": 249,
+  "island": 0,
+  "worst": {
+   "ex": 32,
+   "a": [
+    17,
+    0
+   ],
+   "b": [
+    20,
+    0
+   ]
+  },
+  "detourPairs": 557,
+  "detourSum": 7818,
+  "props": [],
+  "art": [],
+  "dead": [],
+  "exits": {
+   "north": [
+    17,
+    20
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:thing",
+    "name": "분양 현수막",
+    "x": 2,
+    "y": 7,
+    "dist": 20,
+    "man": 21
+   },
+   {
+    "kind": "spot:thing",
+    "name": "아파트 게시판",
+    "x": 16,
+    "y": 6,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "spot:talk",
+    "name": "놀이터의 이웃",
+    "x": 14,
+    "y": 13,
+    "dist": 20,
+    "man": 15
+   },
+   {
+    "kind": "door",
+    "name": "문→villa_new",
+    "x": 4,
+    "y": 6,
+    "dist": 19,
+    "man": 18
+   },
+   {
+    "kind": "door",
+    "name": "문→villa_old",
+    "x": 12,
+    "y": 6,
+    "dist": 11,
+    "man": 10
+   },
+   {
+    "kind": "egg",
+    "name": "v_sand",
+    "x": 13,
+    "y": 11,
+    "onTile": 1,
+    "dist": 18,
+    "man": 14
+   },
+   {
+    "kind": "egg",
+    "name": "v_flyer",
+    "x": 1,
+    "y": 17,
+    "onTile": 1,
+    "dist": 32,
+    "man": 32
+   }
+  ],
+  "issues": []
+ },
+ "villa_new": {
+  "w": 10,
+  "h": 8,
+  "interior": true,
+  "s0": [
+   4,
+   6
+  ],
+  "walk": 43,
+  "island": 0,
+  "worst": {
+   "ex": 2,
+   "a": [
+    4,
+    1
+   ],
+   "b": [
+    8,
+    1
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:lease",
+    "name": "신축 빌라 집주인",
+    "x": 6,
+    "y": 3,
+    "dist": 4,
+    "man": 5
+   },
+   {
+    "kind": "spot:thing",
+    "name": "옵션 안내문",
+    "x": 7,
+    "y": 1,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "door",
+    "name": "문→villa",
+    "x": 4,
+    "y": 7,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "vn_tag",
+    "x": 8,
+    "y": 6,
+    "onTile": 1,
+    "dist": 4,
+    "man": 4
+   }
+  ],
+  "issues": []
+ },
+ "villa_old": {
+  "w": 12,
+  "h": 9,
+  "interior": true,
+  "s0": [
+   5,
+   7
+  ],
+  "walk": 60,
+  "island": 0,
+  "worst": {
+   "ex": 2,
+   "a": [
+    7,
+    1
+   ],
+   "b": [
+    7,
+    4
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:lease",
+    "name": "구축 아파트 집주인",
+    "x": 7,
+    "y": 3,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "spot:thing",
+    "name": "오래된 보일러",
+    "x": 4,
+    "y": 1,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "door",
+    "name": "문→villa",
+    "x": 5,
+    "y": 8,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "vo_coin",
+    "x": 10,
+    "y": 6,
+    "onTile": 1,
+    "dist": 6,
+    "man": 6
+   }
+  ],
+  "issues": []
+ },
+ "market": {
+  "w": 22,
+  "h": 20,
+  "interior": false,
+  "s0": [
+   17,
+   1
+  ],
+  "walk": 265,
+  "island": 0,
+  "worst": {
+   "ex": 32,
+   "a": [
+    0,
+    3
+   ],
+   "b": [
+    0,
+    9
+   ]
+  },
+  "detourPairs": 857,
+  "detourSum": 13732,
+  "props": [
+   {
+    "x": 3,
+    "y": 10,
+    "what": "노점('A')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 9,
+    "gain": 110,
+    "pave": 2
+   },
+   {
+    "x": 8,
+    "y": 10,
+    "what": "노점('A')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 4,
+    "gain": 80,
+    "pave": 2
+   },
+   {
+    "x": 2,
+    "y": 4,
+    "what": "노점('A')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 1,
+    "gain": 16,
+    "pave": 3
+   },
+   {
+    "x": 14,
+    "y": 4,
+    "what": "노점('A')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 1,
+    "gain": 16,
+    "pave": 3
+   }
+  ],
+  "art": [],
+  "dead": [],
+  "exits": {
+   "north": [
+    17,
+    20,
+    21
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "반찬가게 사장",
+    "x": 3,
+    "y": 4,
+    "dist": 16,
+    "man": 17
+   },
+   {
+    "kind": "spot:thing",
+    "name": "원산지 표시판",
+    "x": 15,
+    "y": 4,
+    "dist": 4,
+    "man": 5
+   },
+   {
+    "kind": "spot:thing",
+    "name": "정육점 가격표",
+    "x": 7,
+    "y": 10,
+    "dist": 18,
+    "man": 19
+   },
+   {
+    "kind": "spot:talk",
+    "name": "장 보는 대학생",
+    "x": 13,
+    "y": 11,
+    "dist": 13,
+    "man": 14
+   },
+   {
+    "kind": "door",
+    "name": "문→market_fish",
+    "x": 5,
+    "y": 2,
+    "dist": 14,
+    "man": 13
+   },
+   {
+    "kind": "door",
+    "name": "문→market_food",
+    "x": 10,
+    "y": 8,
+    "dist": 15,
+    "man": 14
+   },
+   {
+    "kind": "egg",
+    "name": "mk_coin",
+    "x": 0,
+    "y": 11,
+    "onTile": 1,
+    "dist": 27,
+    "man": 27
+   },
+   {
+    "kind": "egg",
+    "name": "mk_rice",
+    "x": 2,
+    "y": 15,
+    "onTile": 1,
+    "dist": 29,
+    "man": 29
+   }
+  ],
+  "issues": []
+ },
+ "market_fish": {
+  "w": 10,
+  "h": 7,
+  "interior": true,
+  "s0": [
+   4,
+   5
+  ],
+  "walk": 32,
+  "island": 0,
+  "worst": {
+   "ex": 2,
+   "a": [
+    3,
+    2
+   ],
+   "b": [
+    3,
+    4
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "수산물 가게 사장",
+    "x": 2,
+    "y": 1,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "spot:thing",
+    "name": "가게 저울",
+    "x": 3,
+    "y": 3,
+    "dist": 2,
+    "man": 3
+   },
+   {
+    "kind": "door",
+    "name": "문→market",
+    "x": 4,
+    "y": 6,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "mf_shell",
+    "x": 8,
+    "y": 4,
+    "onTile": 1,
+    "dist": 5,
+    "man": 5
+   }
+  ],
+  "issues": []
+ },
+ "market_food": {
+  "w": 12,
+  "h": 8,
+  "interior": true,
+  "s0": [
+   5,
+   6
+  ],
+  "walk": 46,
+  "island": 0,
+  "worst": {
+   "ex": 4,
+   "a": [
+    1,
+    4
+   ],
+   "b": [
+    9,
+    4
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [
+   {
+    "x": 8,
+    "y": 4,
+    "what": "점심 먹는 상인",
+    "spot": true,
+    "maxg": 4,
+    "pairs": 13,
+    "gain": 156,
+    "pave": 2
+   }
+  ],
+  "art": [],
+  "dead": [
+   [
+    9,
+    1
+   ]
+  ],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "칼국숫집 사장",
+    "x": 2,
+    "y": 1,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "spot:talk",
+    "name": "점심 먹는 상인",
+    "x": 8,
+    "y": 4,
+    "dist": 4,
+    "man": 5
+   },
+   {
+    "kind": "door",
+    "name": "문→market",
+    "x": 5,
+    "y": 7,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "mfd_coin",
+    "x": 10,
+    "y": 6,
+    "onTile": 1,
+    "dist": 5,
+    "man": 5
+   }
+  ],
+  "issues": [
+   {
+    "k": "길막소품",
+    "x": 8,
+    "y": 4,
+    "note": "점심 먹는 상인 · 치우면 최대 4걸음 줄어듦, 4걸음 이상 줄어드는 칸 쌍 13"
+   }
+  ]
+ },
+ "station": {
+  "w": 22,
+  "h": 20,
+  "interior": false,
+  "s0": [
+   20,
+   18
+  ],
+  "walk": 289,
+  "island": 0,
+  "worst": {
+   "ex": 22,
+   "a": [
+    0,
+    11
+   ],
+   "b": [
+    0,
+    14
+   ]
+  },
+  "detourPairs": 709,
+  "detourSum": 6966,
+  "props": [
+   {
+    "x": 8,
+    "y": 11,
+    "what": "기둥('p')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 223,
+    "gain": 1880,
+    "pave": 4
+   },
+   {
+    "x": 16,
+    "y": 14,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 91,
+    "gain": 584,
+    "pave": 0
+   }
+  ],
+  "art": [],
+  "dead": [],
+  "exits": {
+   "south": [
+    20,
+    21
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:thing",
+    "name": "버스 노선도",
+    "x": 12,
+    "y": 10,
+    "dist": 15,
+    "man": 16
+   },
+   {
+    "kind": "spot:talk",
+    "name": "출근하는 직장인",
+    "x": 5,
+    "y": 7,
+    "dist": 25,
+    "man": 26
+   },
+   {
+    "kind": "spot:talk",
+    "name": "버스킹하는 청년",
+    "x": 16,
+    "y": 15,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "door",
+    "name": "문→station_hall",
+    "x": 9,
+    "y": 4,
+    "dist": 24,
+    "man": 25
+   },
+   {
+    "kind": "door",
+    "name": "문→station_hall",
+    "x": 10,
+    "y": 4,
+    "dist": 23,
+    "man": 24
+   },
+   {
+    "kind": "egg",
+    "name": "st_card",
+    "x": 0,
+    "y": 9,
+    "onTile": 1,
+    "dist": 29,
+    "man": 29
+   },
+   {
+    "kind": "egg",
+    "name": "st_coin",
+    "x": 1,
+    "y": 18,
+    "onTile": 1,
+    "dist": 19,
+    "man": 19
+   }
+  ],
+  "issues": []
+ },
+ "station_hall": {
+  "w": 14,
+  "h": 9,
+  "interior": true,
+  "s0": [
+   6,
+   7
+  ],
+  "walk": 62,
+  "island": 0,
+  "worst": {
+   "ex": 4,
+   "a": [
+    6,
+    1
+   ],
+   "b": [
+    6,
+    6
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [
+   [
+    11,
+    2
+   ]
+  ],
+  "dead": [
+   [
+    12,
+    2
+   ]
+  ],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "역무원",
+    "x": 5,
+    "y": 1,
+    "dist": 8,
+    "man": 7
+   },
+   {
+    "kind": "spot:thing",
+    "name": "유실물 센터 안내",
+    "x": 8,
+    "y": 1,
+    "dist": 9,
+    "man": 8
+   },
+   {
+    "kind": "spot:thing",
+    "name": "교통카드 충전기",
+    "x": 1,
+    "y": 1,
+    "dist": 10,
+    "man": 11
+   },
+   {
+    "kind": "door",
+    "name": "문→station",
+    "x": 6,
+    "y": 8,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "door",
+    "name": "문→station",
+    "x": 7,
+    "y": 8,
+    "dist": 1,
+    "man": 2
+   },
+   {
+    "kind": "egg",
+    "name": "sh_coin",
+    "x": 12,
+    "y": 6,
+    "onTile": 1,
+    "dist": 7,
+    "man": 7
+   }
+  ],
+  "issues": []
+ },
+ "rest": {
+  "w": 22,
+  "h": 16,
+  "interior": false,
+  "s0": [
+   3,
+   11
+  ],
+  "walk": 185,
+  "island": 22,
+  "worst": {
+   "ex": 6,
+   "a": [
+    19,
+    9
+   ],
+   "b": [
+    19,
+    11
+   ]
+  },
+  "detourPairs": 1,
+  "detourSum": 6,
+  "props": [],
+  "art": [],
+  "dead": [
+   [
+    19,
+    9
+   ]
+  ],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:desk",
+    "name": "r_truck",
+    "x": 2,
+    "y": 4,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "spot:desk",
+    "name": "r_gas",
+    "x": 18,
+    "y": 10,
+    "dist": 15,
+    "man": 16
+   },
+   {
+    "kind": "spot:thing",
+    "name": "졸음쉼터 안내판",
+    "x": 10,
+    "y": 7,
+    "dist": 10,
+    "man": 11
+   },
+   {
+    "kind": "spot:thing",
+    "name": "고속도로 안내판",
+    "x": 21,
+    "y": 11,
+    "dist": 17,
+    "man": 18
+   },
+   {
+    "kind": "door",
+    "name": "문→rest_hall",
+    "x": 5,
+    "y": 2,
+    "dist": 10,
+    "man": 11
+   },
+   {
+    "kind": "door",
+    "name": "문→rest_hall",
+    "x": 6,
+    "y": 2,
+    "dist": 11,
+    "man": 12
+   },
+   {
+    "kind": "egg",
+    "name": "r_coin",
+    "x": 20,
+    "y": 3,
+    "onTile": 1,
+    "dist": 25,
+    "man": 25
+   },
+   {
+    "kind": "egg",
+    "name": "r_map",
+    "x": 1,
+    "y": 11,
+    "onTile": 1,
+    "dist": 2,
+    "man": 2
+   }
+  ],
+  "issues": []
+ },
+ "rest_hall": {
+  "w": 12,
+  "h": 8,
+  "interior": true,
+  "s0": [
+   5,
+   6
+  ],
+  "walk": 46,
+  "island": 0,
+  "worst": {
+   "ex": 6,
+   "a": [
+    8,
+    4
+   ],
+   "b": [
+    10,
+    4
+   ]
+  },
+  "detourPairs": 1,
+  "detourSum": 6,
+  "props": [
+   {
+    "x": 9,
+    "y": 4,
+    "what": "여행 중인 가족",
+    "spot": true,
+    "maxg": 6,
+    "pairs": 11,
+    "gain": 184,
+    "pave": 4
+   }
+  ],
+  "art": [],
+  "dead": [
+   [
+    9,
+    1
+   ]
+  ],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "휴게소 식당",
+    "x": 2,
+    "y": 1,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "spot:talk",
+    "name": "여행 중인 가족",
+    "x": 9,
+    "y": 4,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "door",
+    "name": "문→rest",
+    "x": 5,
+    "y": 7,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "door",
+    "name": "문→rest",
+    "x": 6,
+    "y": 7,
+    "dist": 1,
+    "man": 2
+   },
+   {
+    "kind": "egg",
+    "name": "rh_coin",
+    "x": 10,
+    "y": 6,
+    "onTile": 1,
+    "dist": 5,
+    "man": 5
+   }
+  ],
+  "issues": [
+   {
+    "k": "길막소품",
+    "x": 9,
+    "y": 4,
+    "note": "여행 중인 가족 · 치우면 최대 6걸음 줄어듦, 4걸음 이상 줄어드는 칸 쌍 11"
+   }
+  ]
+ },
+ "korea": {
+  "w": 22,
+  "h": 28,
+  "interior": false,
+  "s0": [
+   8,
+   11
+  ],
+  "walk": 45,
+  "island": 0,
+  "worst": {
+   "ex": 4,
+   "a": [
+    8,
+    16
+   ],
+   "b": [
+    12,
+    20
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [
+   [
+    16,
+    7
+   ],
+   [
+    5,
+    8
+   ],
+   [
+    16,
+    8
+   ],
+   [
+    5,
+    9
+   ],
+   [
+    16,
+    9
+   ],
+   [
+    6,
+    10
+   ],
+   [
+    7,
+    10
+   ],
+   [
+    9,
+    10
+   ],
+   [
+    10,
+    10
+   ],
+   [
+    11,
+    10
+   ],
+   [
+    12,
+    10
+   ],
+   [
+    13,
+    10
+   ],
+   [
+    14,
+    10
+   ],
+   [
+    15,
+    10
+   ],
+   [
+    8,
+    11
+   ],
+   [
+    8,
+    12
+   ],
+   [
+    8,
+    13
+   ],
+   [
+    8,
+    14
+   ],
+   [
+    8,
+    15
+   ],
+   [
+    8,
+    16
+   ],
+   [
+    8,
+    17
+   ],
+   [
+    8,
+    19
+   ],
+   [
+    8,
+    20
+   ],
+   [
+    8,
+    21
+   ],
+   [
+    12,
+    21
+   ],
+   [
+    9,
+    22
+   ],
+   [
+    10,
+    22
+   ],
+   [
+    11,
+    22
+   ],
+   [
+    13,
+    22
+   ],
+   [
+    14,
+    22
+   ],
+   [
+    15,
+    22
+   ],
+   [
+    16,
+    22
+   ]
+  ],
+  "dead": [],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "door",
+    "name": "문→town",
+    "x": 5,
+    "y": 6,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "door",
+    "name": "문→rest",
+    "x": 8,
+    "y": 9,
+    "dist": 1,
+    "man": 2
+   },
+   {
+    "kind": "door",
+    "name": "문→gangneung",
+    "x": 17,
+    "y": 6,
+    "dist": 13,
+    "man": 14
+   },
+   {
+    "kind": "door",
+    "name": "문→jeonju",
+    "x": 6,
+    "y": 18,
+    "dist": 8,
+    "man": 9
+   },
+   {
+    "kind": "door",
+    "name": "문→busan",
+    "x": 17,
+    "y": 24,
+    "dist": 21,
+    "man": 22
+   },
+   {
+    "kind": "door",
+    "name": "문→daegu",
+    "x": 12,
+    "y": 19,
+    "dist": 17,
+    "man": 12
+   },
+   {
+    "kind": "door",
+    "name": "문→gyeongju",
+    "x": 19,
+    "y": 22,
+    "dist": 21,
+    "man": 22
+   },
+   {
+    "kind": "egg",
+    "name": "k_view",
+    "x": 16,
+    "y": 9,
+    "onTile": 1,
+    "dist": 10,
+    "man": 10
+   }
+  ],
+  "issues": []
+ },
+ "gangneung": {
+  "w": 22,
+  "h": 16,
+  "interior": false,
+  "s0": [
+   5,
+   6
+  ],
+  "walk": 165,
+  "island": 13,
+  "worst": {
+   "ex": 10,
+   "a": [
+    14,
+    0
+   ],
+   "b": [
+    21,
+    1
+   ]
+  },
+  "detourPairs": 1,
+  "detourSum": 10,
+  "props": [
+   {
+    "x": 6,
+    "y": 0,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 99,
+    "pairs": 0,
+    "gain": 0,
+    "joined": 6
+   },
+   {
+    "x": 15,
+    "y": 0,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 99,
+    "pairs": 0,
+    "gain": 0,
+    "joined": 6
+   },
+   {
+    "x": 21,
+    "y": 0,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 99,
+    "pairs": 0,
+    "gain": 0,
+    "joined": 6
+   }
+  ],
+  "art": [
+   [
+    13,
+    0
+   ],
+   [
+    21,
+    2
+   ],
+   [
+    21,
+    3
+   ],
+   [
+    20,
+    4
+   ]
+  ],
+  "dead": [],
+  "exits": {
+   "north": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:desk",
+    "name": "g_info",
+    "x": 5,
+    "y": 5,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "spot:talk",
+    "name": "순두부집 사장",
+    "x": 20,
+    "y": 5,
+    "dist": 17,
+    "man": 16
+   },
+   {
+    "kind": "spot:thing",
+    "name": "파라솔 대여",
+    "x": 14,
+    "y": 5,
+    "dist": 9,
+    "man": 10
+   },
+   {
+    "kind": "spot:thing",
+    "name": "해수욕장 안내판",
+    "x": 10,
+    "y": 6,
+    "dist": 4,
+    "man": 5
+   },
+   {
+    "kind": "spot:desk",
+    "name": "g_guard",
+    "x": 17,
+    "y": 8,
+    "dist": 13,
+    "man": 14
+   },
+   {
+    "kind": "door",
+    "name": "문→gangneung_cafe",
+    "x": 4,
+    "y": 3,
+    "dist": 3,
+    "man": 4
+   },
+   {
+    "kind": "egg",
+    "name": "g_shell",
+    "x": 5,
+    "y": 9,
+    "onTile": 1,
+    "dist": 3,
+    "man": 3
+   },
+   {
+    "kind": "egg",
+    "name": "g_coin",
+    "x": 20,
+    "y": 10,
+    "onTile": 1,
+    "dist": 19,
+    "man": 19
+   }
+  ],
+  "issues": [
+   {
+    "k": "섬막는소품",
+    "x": 6,
+    "y": 0,
+    "note": "나무('t') · 치우면 끊긴 칸 5개가 이어짐"
+   },
+   {
+    "k": "섬막는소품",
+    "x": 15,
+    "y": 0,
+    "note": "나무('t') · 치우면 끊긴 칸 5개가 이어짐"
+   },
+   {
+    "k": "섬막는소품",
+    "x": 21,
+    "y": 0,
+    "note": "나무('t') · 치우면 끊긴 칸 5개가 이어짐"
+   }
+  ]
+ },
+ "gangneung_ojuk": {
+  "w": 22,
+  "h": 16,
+  "interior": false,
+  "s0": [
+   10,
+   14
+  ],
+  "walk": 224,
+  "island": 0,
+  "worst": {
+   "ex": 4,
+   "a": [
+    17,
+    4
+   ],
+   "b": [
+    17,
+    10
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [
+   {
+    "x": 16,
+    "y": 8,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 7,
+    "gain": 412,
+    "pave": 0
+   },
+   {
+    "x": 17,
+    "y": 9,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 12,
+    "gain": 344,
+    "pave": 0
+   }
+  ],
+  "art": [],
+  "dead": [
+   [
+    20,
+    14
+   ]
+  ],
+  "exits": {
+   "south": [
+    10,
+    11
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:thing",
+    "name": "오죽헌 안내판",
+    "x": 8,
+    "y": 6,
+    "dist": 9,
+    "man": 10
+   },
+   {
+    "kind": "spot:talk",
+    "name": "문화관광해설사",
+    "x": 15,
+    "y": 6,
+    "dist": 12,
+    "man": 13
+   },
+   {
+    "kind": "spot:thing",
+    "name": "검은 대나무",
+    "x": 3,
+    "y": 9,
+    "dist": 11,
+    "man": 12
+   },
+   {
+    "kind": "egg",
+    "name": "go_ink",
+    "x": 18,
+    "y": 12,
+    "onTile": 1,
+    "dist": 10,
+    "man": 10
+   },
+   {
+    "kind": "egg",
+    "name": "go_coin",
+    "x": 1,
+    "y": 4,
+    "onTile": 1,
+    "dist": 19,
+    "man": 19
+   }
+  ],
+  "issues": []
+ },
+ "gangneung_cafe": {
+  "w": 12,
+  "h": 8,
+  "interior": true,
+  "s0": [
+   4,
+   6
+  ],
+  "walk": 47,
+  "island": 0,
+  "worst": {
+   "ex": 2,
+   "a": [
+    5,
+    1
+   ],
+   "b": [
+    10,
+    1
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [
+   [
+    10,
+    1
+   ]
+  ],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "바리스타",
+    "x": 2,
+    "y": 1,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "spot:talk",
+    "name": "창가 손님",
+    "x": 9,
+    "y": 5,
+    "dist": 5,
+    "man": 6
+   },
+   {
+    "kind": "door",
+    "name": "문→gangneung",
+    "x": 4,
+    "y": 7,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "gc_bean",
+    "x": 10,
+    "y": 6,
+    "onTile": 1,
+    "dist": 6,
+    "man": 6
+   }
+  ],
+  "issues": []
+ },
+ "jeonju": {
+  "w": 22,
+  "h": 16,
+  "interior": false,
+  "s0": [
+   4,
+   5
+  ],
+  "walk": 267,
+  "island": 0,
+  "worst": {
+   "ex": 2,
+   "a": [
+    7,
+    0
+   ],
+   "b": [
+    11,
+    0
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [],
+  "exits": {
+   "south": [
+    10,
+    11
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "비빔밥집 사장",
+    "x": 18,
+    "y": 5,
+    "dist": 15,
+    "man": 14
+   },
+   {
+    "kind": "spot:talk",
+    "name": "한복 대여점 직원",
+    "x": 8,
+    "y": 9,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "spot:thing",
+    "name": "경기전 안내판",
+    "x": 12,
+    "y": 5,
+    "dist": 9,
+    "man": 8
+   },
+   {
+    "kind": "spot:thing",
+    "name": "기념품 좌판",
+    "x": 3,
+    "y": 11,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "door",
+    "name": "문→jeonju_inn",
+    "x": 3,
+    "y": 2,
+    "dist": 3,
+    "man": 4
+   },
+   {
+    "kind": "egg",
+    "name": "j_leaf",
+    "x": 20,
+    "y": 12,
+    "onTile": 1,
+    "dist": 23,
+    "man": 23
+   },
+   {
+    "kind": "egg",
+    "name": "j_coin",
+    "x": 1,
+    "y": 10,
+    "onTile": 1,
+    "dist": 8,
+    "man": 8
+   }
+  ],
+  "issues": []
+ },
+ "jeonju_market": {
+  "w": 22,
+  "h": 16,
+  "interior": false,
+  "s0": [
+   10,
+   1
+  ],
+  "walk": 216,
+  "island": 0,
+  "worst": {
+   "ex": 4,
+   "a": [
+    10,
+    2
+   ],
+   "b": [
+    10,
+    10
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [
+   {
+    "x": 8,
+    "y": 7,
+    "what": "노점('A')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 3,
+    "gain": 160,
+    "pave": 3
+   }
+  ],
+  "art": [],
+  "dead": [],
+  "exits": {
+   "north": [
+    10,
+    11
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "야시장 판매대",
+    "x": 9,
+    "y": 7,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "spot:thing",
+    "name": "야시장 안내판",
+    "x": 4,
+    "y": 8,
+    "dist": 12,
+    "man": 13
+   },
+   {
+    "kind": "spot:talk",
+    "name": "야시장 구경꾼",
+    "x": 16,
+    "y": 8,
+    "dist": 12,
+    "man": 13
+   },
+   {
+    "kind": "egg",
+    "name": "jm_coin",
+    "x": 20,
+    "y": 4,
+    "onTile": 1,
+    "dist": 13,
+    "man": 13
+   },
+   {
+    "kind": "egg",
+    "name": "jm_lamp",
+    "x": 1,
+    "y": 12,
+    "onTile": 1,
+    "dist": 20,
+    "man": 20
+   }
+  ],
+  "issues": []
+ },
+ "busan": {
+  "w": 22,
+  "h": 16,
+  "interior": false,
+  "s0": [
+   4,
+   4
+  ],
+  "walk": 140,
+  "island": 0,
+  "worst": {
+   "ex": 20,
+   "a": [
+    21,
+    3
+   ],
+   "b": [
+    21,
+    8
+   ]
+  },
+  "detourPairs": 559,
+  "detourSum": 5958,
+  "props": [],
+  "art": [],
+  "dead": [],
+  "exits": {
+   "north": [
+    10,
+    11
+   ],
+   "east": [
+    3,
+    4,
+    5,
+    8,
+    9,
+    10
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:desk",
+    "name": "b_rent",
+    "x": 2,
+    "y": 4,
+    "dist": 1,
+    "man": 2
+   },
+   {
+    "kind": "spot:talk",
+    "name": "국밥집 사장",
+    "x": 18,
+    "y": 4,
+    "dist": 15,
+    "man": 14
+   },
+   {
+    "kind": "spot:thing",
+    "name": "포장마차 메뉴판",
+    "x": 9,
+    "y": 4,
+    "dist": 4,
+    "man": 5
+   },
+   {
+    "kind": "spot:talk",
+    "name": "해운대 주민",
+    "x": 14,
+    "y": 9,
+    "dist": 14,
+    "man": 15
+   },
+   {
+    "kind": "egg",
+    "name": "bu_coin",
+    "x": 20,
+    "y": 10,
+    "onTile": 1,
+    "dist": 22,
+    "man": 22
+   },
+   {
+    "kind": "egg",
+    "name": "bu_view",
+    "x": 3,
+    "y": 9,
+    "onTile": 1,
+    "dist": 14,
+    "man": 6
+   }
+  ],
+  "issues": []
+ },
+ "busan_gamcheon": {
+  "w": 22,
+  "h": 16,
+  "interior": false,
+  "s0": [
+   10,
+   14
+  ],
+  "walk": 207,
+  "island": 0,
+  "worst": {
+   "ex": 6,
+   "a": [
+    0,
+    14
+   ],
+   "b": [
+    5,
+    14
+   ]
+  },
+  "detourPairs": 11,
+  "detourSum": 66,
+  "props": [
+   {
+    "x": 4,
+    "y": 14,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 6,
+    "pairs": 27,
+    "gain": 212,
+    "pave": 0
+   },
+   {
+    "x": 5,
+    "y": 13,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 7,
+    "gain": 204,
+    "pave": 1
+   },
+   {
+    "x": 19,
+    "y": 14,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 6,
+    "pairs": 19,
+    "gain": 126,
+    "pave": 0
+   },
+   {
+    "x": 20,
+    "y": 13,
+    "what": "나무('t')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 10,
+    "gain": 116,
+    "pave": 1
+   }
+  ],
+  "art": [
+   [
+    4,
+    2
+   ],
+   [
+    16,
+    2
+   ]
+  ],
+  "dead": [
+   [
+    4,
+    1
+   ],
+   [
+    16,
+    1
+   ],
+   [
+    5,
+    14
+   ],
+   [
+    20,
+    14
+   ]
+  ],
+  "exits": {
+   "south": [
+    10,
+    11
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:thing",
+    "name": "주민 생활 공간 안내",
+    "x": 9,
+    "y": 12,
+    "dist": 2,
+    "man": 3
+   },
+   {
+    "kind": "spot:talk",
+    "name": "마을 주민",
+    "x": 12,
+    "y": 5,
+    "dist": 10,
+    "man": 11
+   },
+   {
+    "kind": "spot:thing",
+    "name": "어린 왕자 조형물",
+    "x": 9,
+    "y": 10,
+    "dist": 4,
+    "man": 5
+   },
+   {
+    "kind": "egg",
+    "name": "gc_stamp",
+    "x": 21,
+    "y": 3,
+    "onTile": 1,
+    "dist": 22,
+    "man": 22
+   },
+   {
+    "kind": "egg",
+    "name": "gc_coin",
+    "x": 0,
+    "y": 12,
+    "onTile": 1,
+    "dist": 12,
+    "man": 12
+   }
+  ],
+  "issues": [
+   {
+    "k": "길막소품",
+    "x": 4,
+    "y": 14,
+    "note": "나무('t') · 치우면 최대 6걸음 줄어듦, 4걸음 이상 줄어드는 칸 쌍 27"
+   },
+   {
+    "k": "길막소품",
+    "x": 19,
+    "y": 14,
+    "note": "나무('t') · 치우면 최대 6걸음 줄어듦, 4걸음 이상 줄어드는 칸 쌍 19"
+   }
+  ]
+ },
+ "busan_jagalchi": {
+  "w": 22,
+  "h": 16,
+  "interior": false,
+  "s0": [
+   1,
+   3
+  ],
+  "walk": 87,
+  "island": 0,
+  "worst": {
+   "ex": 18,
+   "a": [
+    20,
+    3
+   ],
+   "b": [
+    20,
+    8
+   ]
+  },
+  "detourPairs": 267,
+  "detourSum": 2734,
+  "props": [
+   {
+    "x": 7,
+    "y": 4,
+    "what": "노점('A')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 1,
+    "gain": 46,
+    "pave": 2
+   },
+   {
+    "x": 3,
+    "y": 4,
+    "what": "노점('A')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 1,
+    "gain": 16,
+    "pave": 2
+   },
+   {
+    "x": 15,
+    "y": 4,
+    "what": "노점('A')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 1,
+    "gain": 16,
+    "pave": 2
+   },
+   {
+    "x": 19,
+    "y": 4,
+    "what": "노점('A')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 1,
+    "gain": 16,
+    "pave": 2
+   }
+  ],
+  "art": [
+   [
+    0,
+    5
+   ],
+   [
+    4,
+    8
+   ],
+   [
+    5,
+    8
+   ],
+   [
+    6,
+    8
+   ],
+   [
+    7,
+    8
+   ],
+   [
+    12,
+    8
+   ],
+   [
+    13,
+    8
+   ],
+   [
+    14,
+    8
+   ],
+   [
+    15,
+    8
+   ],
+   [
+    16,
+    8
+   ],
+   [
+    17,
+    8
+   ],
+   [
+    18,
+    8
+   ],
+   [
+    19,
+    8
+   ]
+  ],
+  "dead": [],
+  "exits": {
+   "west": [
+    3,
+    5,
+    8,
+    9,
+    10
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "자갈치 상인",
+    "x": 0,
+    "y": 4,
+    "dist": 1,
+    "man": 2
+   },
+   {
+    "kind": "spot:thing",
+    "name": "시장 저울",
+    "x": 11,
+    "y": 4,
+    "dist": 10,
+    "man": 11
+   },
+   {
+    "kind": "spot:thing",
+    "name": "원산지 팻말",
+    "x": 16,
+    "y": 4,
+    "dist": 15,
+    "man": 16
+   },
+   {
+    "kind": "spot:talk",
+    "name": "회센터 사장",
+    "x": 21,
+    "y": 8,
+    "dist": 24,
+    "man": 25
+   },
+   {
+    "kind": "egg",
+    "name": "jg_gull",
+    "x": 16,
+    "y": 8,
+    "onTile": 1,
+    "dist": 20,
+    "man": 20
+   },
+   {
+    "kind": "egg",
+    "name": "jg_coin",
+    "x": 0,
+    "y": 8,
+    "onTile": 1,
+    "dist": 20,
+    "man": 6
+   }
+  ],
+  "issues": []
+ },
+ "gyeongju": {
+  "w": 22,
+  "h": 16,
+  "interior": false,
+  "s0": [
+   4,
+   5
+  ],
+  "walk": 211,
+  "island": 0,
+  "worst": {
+   "ex": 8,
+   "a": [
+    17,
+    3
+   ],
+   "b": [
+    17,
+    11
+   ]
+  },
+  "detourPairs": 135,
+  "detourSum": 834,
+  "props": [],
+  "art": [],
+  "dead": [],
+  "exits": {
+   "north": [
+    10,
+    11
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "경주빵 가게 사장",
+    "x": 19,
+    "y": 5,
+    "dist": 16,
+    "man": 15
+   },
+   {
+    "kind": "spot:thing",
+    "name": "불국사 가는 버스 안내",
+    "x": 8,
+    "y": 6,
+    "dist": 4,
+    "man": 5
+   },
+   {
+    "kind": "spot:talk",
+    "name": "여행 온 대학생",
+    "x": 12,
+    "y": 12,
+    "dist": 14,
+    "man": 15
+   },
+   {
+    "kind": "door",
+    "name": "문→gyeongju_inn",
+    "x": 4,
+    "y": 2,
+    "dist": 2,
+    "man": 3
+   },
+   {
+    "kind": "egg",
+    "name": "gj_tile",
+    "x": 21,
+    "y": 13,
+    "onTile": 1,
+    "dist": 25,
+    "man": 25
+   },
+   {
+    "kind": "egg",
+    "name": "gj_coin",
+    "x": 0,
+    "y": 11,
+    "onTile": 1,
+    "dist": 10,
+    "man": 10
+   }
+  ],
+  "issues": []
+ },
+ "gyeongju_tomb": {
+  "w": 22,
+  "h": 16,
+  "interior": false,
+  "s0": [
+   10,
+   14
+  ],
+  "walk": 220,
+  "island": 2,
+  "worst": {
+   "ex": 12,
+   "a": [
+    20,
+    9
+   ],
+   "b": [
+    20,
+    12
+   ]
+  },
+  "detourPairs": 147,
+  "detourSum": 1052,
+  "props": [],
+  "art": [
+   [
+    1,
+    2
+   ]
+  ],
+  "dead": [
+   [
+    2,
+    1
+   ],
+   [
+    6,
+    1
+   ],
+   [
+    20,
+    4
+   ],
+   [
+    20,
+    9
+   ]
+  ],
+  "exits": {
+   "south": [
+    10,
+    11
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:thing",
+    "name": "첨성대",
+    "x": 12,
+    "y": 7,
+    "dist": 8,
+    "man": 9
+   },
+   {
+    "kind": "spot:thing",
+    "name": "대릉원 안내판",
+    "x": 7,
+    "y": 5,
+    "dist": 11,
+    "man": 12
+   },
+   {
+    "kind": "spot:thing",
+    "name": "동궁과 월지 안내판",
+    "x": 16,
+    "y": 5,
+    "dist": 14,
+    "man": 15
+   },
+   {
+    "kind": "spot:talk",
+    "name": "야경 해설사",
+    "x": 13,
+    "y": 10,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "egg",
+    "name": "gt_star",
+    "x": 4,
+    "y": 13,
+    "onTile": 1,
+    "dist": 7,
+    "man": 7
+   },
+   {
+    "kind": "egg",
+    "name": "gt_coin",
+    "x": 20,
+    "y": 6,
+    "onTile": 1,
+    "dist": 18,
+    "man": 18
+   }
+  ],
+  "issues": []
+ },
+ "gyeongju_inn": {
+  "w": 10,
+  "h": 7,
+  "interior": true,
+  "s0": [
+   4,
+   5
+  ],
+  "walk": 31,
+  "island": 0,
+  "worst": {
+   "ex": 2,
+   "a": [
+    3,
+    1
+   ],
+   "b": [
+    6,
+    1
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "한옥 스테이 주인",
+    "x": 4,
+    "y": 1,
+    "dist": 3,
+    "man": 4
+   },
+   {
+    "kind": "door",
+    "name": "문→gyeongju",
+    "x": 4,
+    "y": 6,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "gi_tea",
+    "x": 8,
+    "y": 4,
+    "onTile": 1,
+    "dist": 5,
+    "man": 5
+   }
+  ],
+  "issues": []
+ },
+ "daegu": {
+  "w": 22,
+  "h": 16,
+  "interior": false,
+  "s0": [
+   4,
+   5
+  ],
+  "walk": 203,
+  "island": 0,
+  "worst": {
+   "ex": 2,
+   "a": [
+    10,
+    0
+   ],
+   "b": [
+    10,
+    5
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [],
+  "exits": {
+   "north": [
+    10,
+    11
+   ],
+   "south": [
+    10,
+    11
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "분식집 사장",
+    "x": 5,
+    "y": 5,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "spot:talk",
+    "name": "동성로 대학생",
+    "x": 15,
+    "y": 10,
+    "dist": 15,
+    "man": 16
+   },
+   {
+    "kind": "spot:thing",
+    "name": "동성로 안내판",
+    "x": 10,
+    "y": 6,
+    "dist": 6,
+    "man": 7
+   },
+   {
+    "kind": "egg",
+    "name": "dg_coin",
+    "x": 21,
+    "y": 9,
+    "onTile": 1,
+    "dist": 21,
+    "man": 21
+   },
+   {
+    "kind": "egg",
+    "name": "dg_ticket",
+    "x": 0,
+    "y": 11,
+    "onTile": 1,
+    "dist": 10,
+    "man": 10
+   }
+  ],
+  "issues": []
+ },
+ "daegu_market": {
+  "w": 22,
+  "h": 16,
+  "interior": false,
+  "s0": [
+   10,
+   14
+  ],
+  "walk": 218,
+  "island": 0,
+  "worst": {
+   "ex": 4,
+   "a": [
+    10,
+    2
+   ],
+   "b": [
+    10,
+    10
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [
+   {
+    "x": 8,
+    "y": 7,
+    "what": "노점('A')",
+    "spot": false,
+    "maxg": 4,
+    "pairs": 7,
+    "gain": 192,
+    "pave": 3
+   }
+  ],
+  "art": [],
+  "dead": [],
+  "exits": {
+   "south": [
+    10,
+    11
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:talk",
+    "name": "야시장 판매대",
+    "x": 9,
+    "y": 7,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "spot:thing",
+    "name": "야시장 안내판",
+    "x": 4,
+    "y": 8,
+    "dist": 11,
+    "man": 12
+   },
+   {
+    "kind": "spot:talk",
+    "name": "칼국수 골목 이모",
+    "x": 16,
+    "y": 8,
+    "dist": 11,
+    "man": 12
+   },
+   {
+    "kind": "egg",
+    "name": "sm_coin",
+    "x": 20,
+    "y": 4,
+    "onTile": 1,
+    "dist": 20,
+    "man": 20
+   },
+   {
+    "kind": "egg",
+    "name": "sm_cloth",
+    "x": 1,
+    "y": 12,
+    "onTile": 1,
+    "dist": 11,
+    "man": 11
+   }
+  ],
+  "issues": []
+ },
+ "daegu_kim": {
+  "w": 22,
+  "h": 12,
+  "interior": false,
+  "s0": [
+   10,
+   1
+  ],
+  "walk": 68,
+  "island": 19,
+  "worst": {
+   "ex": 2,
+   "a": [
+    10,
+    0
+   ],
+   "b": [
+    10,
+    6
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [],
+  "exits": {
+   "north": [
+    10,
+    11
+   ]
+  },
+  "tgt": [
+   {
+    "kind": "spot:thing",
+    "name": "벽화",
+    "x": 4,
+    "y": 6,
+    "dist": 10,
+    "man": 11
+   },
+   {
+    "kind": "spot:thing",
+    "name": "벽화",
+    "x": 15,
+    "y": 4,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "spot:talk",
+    "name": "골목 주민",
+    "x": 13,
+    "y": 6,
+    "dist": 7,
+    "man": 8
+   },
+   {
+    "kind": "egg",
+    "name": "dk_pick",
+    "x": 21,
+    "y": 5,
+    "onTile": 1,
+    "dist": 17,
+    "man": 15
+   },
+   {
+    "kind": "egg",
+    "name": "dk_coin",
+    "x": 0,
+    "y": 6,
+    "onTile": 1,
+    "dist": 15,
+    "man": 15
+   }
+  ],
+  "issues": []
+ },
+ "jeonju_inn": {
+  "w": 10,
+  "h": 7,
+  "interior": true,
+  "s0": [
+   4,
+   5
+  ],
+  "walk": 31,
+  "island": 0,
+  "worst": {
+   "ex": 2,
+   "a": [
+    3,
+    1
+   ],
+   "b": [
+    6,
+    1
+   ]
+  },
+  "detourPairs": 0,
+  "detourSum": 0,
+  "props": [],
+  "art": [],
+  "dead": [],
+  "exits": {},
+  "tgt": [
+   {
+    "kind": "spot:desk",
+    "name": "j_inn",
+    "x": 4,
+    "y": 1,
+    "dist": 3,
+    "man": 4
+   },
+   {
+    "kind": "door",
+    "name": "문→jeonju",
+    "x": 4,
+    "y": 6,
+    "dist": 0,
+    "man": 1
+   },
+   {
+    "kind": "egg",
+    "name": "ji_key",
+    "x": 8,
+    "y": 4,
+    "onTile": 1,
+    "dist": 5,
+    "man": 5
+   }
+  ],
+  "issues": []
+ }
+}
