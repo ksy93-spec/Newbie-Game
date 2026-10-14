@@ -82,10 +82,10 @@ for (const q of added) {
   const place = after.QPLACE[id];
   if (!place) W(`${t} QPLACE 없음(어디서나 받음)`); else if (!desks.has(place)) E(`${t} 창구 ${place} 없음`);
   const text = JSON.stringify([q.title, q.intro, q.qs]);
-  if (/[—–]/.test(text)) E(`${t} 긴 줄표(—, –)가 있음`);
+  if (/[\u2013\u2014]/.test(text)) E(`${t} 긴 줄표(u2013, u2014)가 있음`);
 }
 for (const k of Object.keys(oldPlace)) if (after.QPLACE[k] !== oldPlace[k]) E(`기존 QPLACE ${k}를 덮어씀`);
-if (/[—–]/.test(src)) W('quests.js 주석 등 어딘가에 긴 줄표가 있음');
+if (/[\u2013\u2014]/.test(src)) W('quests.js 주석 등 어딘가에 긴 줄표가 있음');
 
 // 나이대·테마 집계
 const band = q => { const m = (q.fit || {}).ageMin; return m >= 50 ? '50대' : m >= 40 ? '40대' : m >= 30 ? '30대' : '20대'; };

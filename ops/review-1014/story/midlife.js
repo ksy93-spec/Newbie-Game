@@ -756,6 +756,10 @@ function lifeMidScenes(id, fl, age, withYears) {
   age = age || ev.age;
   if (withYears !== false && ev.y && LIFE_MID_YEARS[ev.y]) sc = lifeMidBuild(LIFE_MID_YEARS[ev.y].scenes, LIFE_MID_YEARS[ev.y].patch, fl);
   sc = sc.concat(lifeMidBuild(ev.scenes, ev.patch, fl));
+  return lifeMidFill(sc, age);
+}
+/* {ageKo}와 lifeFillVals 칸을 채운다. lifeFill이 없으면(검사용) {ageKo}만 */
+function lifeMidFill(sc, age) {
   var f = (typeof lifeFillVals === 'function') ? lifeFillVals() : {};
   f.ageKo = lifeMidAgeKo(age);
   if (typeof lifeFill === 'function') return lifeFill(sc, f);
@@ -765,9 +769,7 @@ function lifeMidScenes(id, fl, age, withYears) {
 function lifeMidYearScenes(ykey, fl, age) {
   fl = fl || lifeMidFlags();
   var y = LIFE_MID_YEARS[ykey]; if (!y) return [];
-  var sc = lifeMidBuild(y.scenes, y.patch, fl), f = (typeof lifeFillVals === 'function') ? lifeFillVals() : {};
-  f.ageKo = lifeMidAgeKo(age || y.age);
-  return (typeof lifeFill === 'function') ? lifeFill(sc, f) : sc;
+  return lifeMidFill(lifeMidBuild(y.scenes, y.patch, fl), age || y.age);
 }
 /* 끝 장면 + 보상 카드. 처음이거나 더 잘했을 때만 차액을 준다(rentEnd와 같은 방식). 기록은 S.life.mid[id] */
 function lifeMidEnd(id, ok, n) {

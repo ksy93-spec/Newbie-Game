@@ -96,7 +96,7 @@ async function drain(idleN = 9) {
         await add(6); await page.locator('#htutorop button').nth(k).click({ timeout: 3000 }).catch(async () => { BUGS.push({ sim: SIM, kind: 'click', msg: '대화 선택 버튼을 못 눌렀다 ' + o.tut.btns[k] }); await page.evaluate(() => endTalk()); });
         await page.waitForTimeout(250); continue;
       }
-      await log('TALK', o.tut.q); await add(2.5); await page.evaluate(() => stepTutor()); await page.waitForTimeout(120); continue;
+      if (o.tut.q !== drain.lastQ) { drain.lastQ = o.tut.q; await log('TALK', o.tut.q); await add(2.5); } await page.evaluate(() => stepTutor()); await page.waitForTimeout(120); continue;
     }
     if (o.tip) {
       idle = 0; await log('SHEET', o.tip.slice(0, 160) + ' {' + o.tipBtns.join('|') + '}');
@@ -207,6 +207,9 @@ for (let it = 0; it < 900 && !FINISHED && SIM < MAXMIN * 60; it++) {
     const ok = await page.waitForFunction(() => document.querySelector('.screen.on').id === 'quest' || (window.TUT && 1), null, { timeout: 25000, polling: 200 }).then(() => true).catch(() => false);
     const walk = (Date.now() - r0) / 1000; await add(walk);
     const inQ = await page.evaluate(() => document.querySelector('.screen.on').id === 'quest');
+    if (!inQ) { await drain(4); if (await page.evaluate(() => { const b = document.getElementById('hguide'); return b && !b.hidden; })) { const r1 = Date.now(); await page.click('#hguide').catch(() => {});
+        await page.waitForFunction(() => document.querySelector('.screen.on').id === 'quest', null, { timeout: 25000, polling: 200 }).catch(() => {}); const w2 = (Date.now() - r1) / 1000; await add(w2);
+        if (await page.evaluate(() => document.querySelector('.screen.on').id === 'quest')) { await log('WALK', `대화가 끼어들어 길잡이를 한 번 더 누름, 걷기 ${w2.toFixed(1)}초`); qn++; await playQuest(`#${qn} 길잡이(두 번째 누름)`); stuckN = 0; continue; } } }
     if (!inQ) { const tt = await page.evaluate(() => (window.__toasts || []).slice(-1)[0]); await log('WALK-FAIL', `길잡이 "${gq}" 눌렀는데 ${walk.toFixed(1)}초 뒤 퀘스트가 안 열림 (토스트 ${JSON.stringify(tt)})`); await drain(3);
       const still = await page.evaluate(() => document.querySelector('.screen.on').id === 'quest'); if (!still) { const q = await page.evaluate(() => { const t = guideTarget(); return t && t.q.id; });
         if (q) await short('길잡이로 못 감 → startQuest 직접 ' + q, (id) => startQuest(QMAP[id]), q); else continue; } }
