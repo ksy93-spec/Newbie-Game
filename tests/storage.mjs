@@ -9,6 +9,10 @@ const PROBE = url.pathToFileURL(path.resolve(here, 'probe.html')).href;
 
 export async function flushStorage(page, key = 'nq.v8') {
   const want = await page.evaluate((k) => localStorage.getItem(k), key);
+  // 파일 주소(file://)는 새로고침 때 브라우저가 가끔 저장소를 통째로 비운다(게임과 상관없는 키도 같이 사라짐).
+  // 다시 켜는 상황을 흉내 내려는 것이므로 지금 저장을 옮겨 두었다가, 새 페이지에서 비어 있으면 되살린다.
+  const snap = await page.evaluate(() => JSON.stringify(Object.assign({}, localStorage)));
+  await page.addInitScript(([k, snap]) => { if (localStorage.getItem(k) == null) { const o = JSON.parse(snap); for (const x in o) localStorage.setItem(x, o[x]); } }, [key, snap]);
   const probe = await page.context().newPage();
   try {
     await probe.goto(PROBE);

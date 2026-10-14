@@ -1,0 +1,539 @@
+[
+  {
+    "id": "nego",
+    "started": true,
+    "attempts": 1,
+    "forced": null,
+    "choices": [
+      {
+        "n": 1,
+        "shot": "mid-nego-1.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 2,
+        "shot": "mid-nego-2.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 3
+        }
+      },
+      {
+        "n": 3,
+        "shot": "mid-nego-3.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      }
+    ],
+    "steps": 48,
+    "stoppedBy": "mqp-null",
+    "errors": []
+  },
+  {
+    "id": "jobhop",
+    "started": true,
+    "attempts": 1,
+    "forced": null,
+    "choices": [
+      {
+        "n": 1,
+        "shot": "mid-jobhop-1.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 2,
+        "shot": "mid-jobhop-2.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 3,
+        "shot": "mid-jobhop-3.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      }
+    ],
+    "steps": 48,
+    "stoppedBy": "mqp-null",
+    "errors": []
+  },
+  {
+    "id": "checkup",
+    "started": true,
+    "attempts": 1,
+    "forced": null,
+    "choices": [
+      {
+        "n": 1,
+        "shot": "mid-checkup-1.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 2,
+        "shot": "mid-checkup-2.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 3,
+        "shot": "mid-checkup-3.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      }
+    ],
+    "steps": 50,
+    "stoppedBy": "mqp-null",
+    "errors": []
+  },
+  {
+    "id": "kidedu",
+    "started": true,
+    "attempts": 1,
+    "forced": null,
+    "choices": [
+      {
+        "n": 1,
+        "shot": "mid-kidedu-1.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 2,
+        "shot": "mid-kidedu-2.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 3,
+        "shot": "mid-kidedu-3.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      }
+    ],
+    "steps": 46,
+    "stoppedBy": "mqp-null",
+    "errors": []
+  },
+  {
+    "id": "selfedu",
+    "started": true,
+    "attempts": 20,
+    "forced": [
+      "solo"
+    ],
+    "choices": [
+      {
+        "n": 1,
+        "shot": "mid-selfedu-1.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 2,
+        "shot": "mid-selfedu-2.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 3,
+        "shot": "mid-selfedu-3.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      }
+    ],
+    "steps": 46,
+    "stoppedBy": "mqp-null",
+    "errors": []
+  },
+  {
+    "id": "care",
+    "started": true,
+    "attempts": 1,
+    "forced": null,
+    "choices": [
+      {
+        "n": 1,
+        "shot": "mid-care-1.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 2,
+        "shot": "mid-care-2.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 3,
+        "shot": "mid-care-3.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 4,
+        "shot": "mid-care-4.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      }
+    ],
+    "steps": 49,
+    "stoppedBy": "mqp-null",
+    "errors": []
+  },
+  {
+    "id": "refi",
+    "started": true,
+    "attempts": 20,
+    "forced": [
+      "own"
+    ],
+    "choices": [
+      {
+        "n": 1,
+        "shot": "mid-refi-1.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 2,
+        "shot": "mid-refi-2.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 3,
+        "shot": "mid-refi-3.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      }
+    ],
+    "steps": 46,
+    "stoppedBy": "mqp-null",
+    "errors": []
+  },
+  {
+    "id": "renew",
+    "started": true,
+    "attempts": 1,
+    "forced": null,
+    "choices": [
+      {
+        "n": 1,
+        "shot": "mid-renew-1.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 2,
+        "shot": "mid-renew-2.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 3,
+        "shot": "mid-renew-3.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      }
+    ],
+    "steps": 44,
+    "stoppedBy": "mqp-null",
+    "errors": []
+  },
+  {
+    "id": "pension",
+    "started": true,
+    "attempts": 1,
+    "forced": null,
+    "choices": [
+      {
+        "n": 1,
+        "shot": "mid-pension-1.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 2,
+        "shot": "mid-pension-2.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      }
+    ],
+    "steps": 43,
+    "stoppedBy": "mqp-null",
+    "errors": []
+  },
+  {
+    "id": "taxfam",
+    "started": true,
+    "attempts": 1,
+    "forced": null,
+    "choices": [
+      {
+        "n": 1,
+        "shot": "mid-taxfam-1.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 2,
+        "shot": "mid-taxfam-2.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 3,
+        "shot": "mid-taxfam-3.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      }
+    ],
+    "steps": 46,
+    "stoppedBy": "mqp-null",
+    "errors": []
+  },
+  {
+    "id": "retire",
+    "started": true,
+    "attempts": 1,
+    "forced": null,
+    "choices": [
+      {
+        "n": 1,
+        "shot": "mid-retire-1.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 2,
+        "shot": "mid-retire-2.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 3,
+        "shot": "mid-retire-3.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      }
+    ],
+    "steps": 48,
+    "stoppedBy": "mqp-null",
+    "errors": []
+  },
+  {
+    "id": "inherit",
+    "started": true,
+    "attempts": 1,
+    "forced": null,
+    "choices": [
+      {
+        "n": 1,
+        "shot": "mid-inherit-1.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 2,
+        "shot": "mid-inherit-2.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 3,
+        "shot": "mid-inherit-3.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      }
+    ],
+    "steps": 48,
+    "stoppedBy": "mqp-null",
+    "errors": []
+  },
+  {
+    "id": "phish",
+    "started": true,
+    "attempts": 1,
+    "forced": null,
+    "choices": [
+      {
+        "n": 1,
+        "shot": "mid-phish-1.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 2,
+        "shot": "mid-phish-2.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      },
+      {
+        "n": 3,
+        "shot": "mid-phish-3.png",
+        "check": {
+          "dom": [],
+          "canvas": [],
+          "viewport": [],
+          "optCount": 2
+        }
+      }
+    ],
+    "steps": 40,
+    "stoppedBy": "mqp-null",
+    "errors": []
+  }
+]

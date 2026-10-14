@@ -10,7 +10,7 @@ const { chromium } = await import('playwright');
 
 const W = +(process.argv[2] || 390), H = +(process.argv[3] || 844), MAXMIN = +(process.argv[4] || 400), TAG = process.argv[5] || 'main';
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '../../..');
-const BASE = url.pathToFileURL(path.join(ROOT, 'prototype/newbie-quest-demo.html')).href;
+const BASE = url.pathToFileURL(process.env.QA_HTML || path.join(ROOT, 'prototype/newbie-quest-demo.html')).href;
 const IMG = path.join(ROOT, 'ops/review-1014/img');
 const OUT = process.env.QA_OUT || path.join(ROOT, 'ops/review-1014/tools/out');
 fs.mkdirSync(IMG, { recursive: true }); fs.mkdirSync(OUT, { recursive: true });
@@ -75,15 +75,15 @@ async function drain(idleN = 9) {
       idle = 0; const m = o.mq;
       if (!curCine || curCine.title !== m.title + '|' + m.sub) { curCine = { title: m.title + '|' + m.sub, kicker: m.kicker, t0: SIM, scenes: 0, choices: 0, ok: 0, age0: (await st()).age }; CINES.push(curCine);
         await log('CINE', `${m.kicker || '메인'} 「${m.title}」 ${m.sub} (${m.n - 1}장면)`); }
+      if (m.i !== curCine.lastI) { curCine.lastI = m.i; curCine.scenes++;
+        if (m.type === 'title') await add(2); else if (m.type === 'reward') await add(5); else await add(2.5 + (m.doc ? 3 : 0) + (m.lines > 3 ? 1 : 0));
+        curCine.t1 = SIM; if (curCine.scenes === 3) await shot(('cine-' + (m.kicker === 'LIFE' ? 'life-' + m.sub : m.title)).replace(/[^\w가-힣-]/g, '_')); }
       if (m.opts && m.picked === null) {
         const okIdx = m.opts.map((x, j) => (x ? j : -1)).filter((j) => j >= 0), bad = m.opts.map((x, j) => (!x ? j : -1)).filter((j) => j >= 0);
         let j = 0; if (okIdx.length && (rand() < ACC || !bad.length)) j = okIdx[Math.floor(rand() * okIdx.length)]; else if (bad.length) j = bad[Math.floor(rand() * bad.length)];
         curCine.choices++; if (m.opts[j]) curCine.ok++;
-        await add(6 + (m.doc ? 4 : 0)); await page.evaluate((j) => MQP.pick(j), j); await page.waitForTimeout(60); continue;
+        await add(6); curCine.t1 = SIM; await page.evaluate((j) => MQP.pick(j), j); await page.waitForTimeout(60); continue;
       }
-      if (m.type === 'title') await add(2); else if (m.type === 'reward') await add(5); else if (m.picked === null) await add(2.5 + (m.doc ? 3 : 0) + (m.lines > 3 ? 1 : 0)); else await add(3);
-      curCine.scenes++; curCine.t1 = SIM;
-      if (curCine.scenes === 3) await shot(('cine-' + (m.kicker === 'LIFE' ? 'life-' + m.sub : m.title)).replace(/[^\w가-힣-]/g, '_'));
       await page.evaluate(() => MQP && MQP.next({ type: 'test' })); await page.waitForTimeout(50); continue;
     }
     if (curCine) { curCine.age1 = (await st()).age; curCine = null; }

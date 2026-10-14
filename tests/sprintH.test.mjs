@@ -240,3 +240,16 @@ test('10. 리뷰 1014: 마흔 자리에 오면 중간 사건(건강검진)이 �
   assert.deepEqual(logs, []);
   await ctx.close();
 });
+
+test('11. 게임에 쓰는 한글이 모두 도트 글꼴(갈무리 축소판)에 들어 있다', async () => {
+  const fs = await import('node:fs');
+  const html = fs.readFileSync(url.fileURLToPath(BASE), 'utf8').replace(/data:[^)'"]+/g, '');
+  const chars = [...new Set([...html].filter((c) => /[가-힣]/.test(c)))];
+  const { ctx, page } = await open();
+  await page.waitForFunction(() => document.fonts.status === 'loaded');
+  const miss = await page.evaluate((chars) => { const c = document.createElement('canvas').getContext('2d'); c.canvas.width = 40; c.canvas.height = 20;
+    const img = (font, ch) => { c.clearRect(0, 0, 40, 20); c.font = font; c.textBaseline = 'top'; c.fillText(ch, 2, 2); return c.getImageData(0, 0, 40, 20).data.join(''); };
+    return ['Galmuri14', 'Galmuri11'].map((f) => chars.filter((ch) => img(`11px ${f}, sans-serif`, ch) === img('11px sans-serif', ch)).join('')).join(''); }, chars);
+  assert.equal(miss, '', '빠진 글자는 tools/fonts/subset.py로 글꼴을 다시 만든다');
+  await ctx.close();
+});
