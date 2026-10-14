@@ -64,9 +64,9 @@ test('2. 인생 모드 한 판: 카드 삼세판 → 태어남 → 나이 → �
   const h = await page.evaluate(() => ({ hud: document.getElementById('hnm').textContent, mode: S.mode, coin: S.coin, slot: SLOT }));
   assert.match(h.hud, /20살/);
   assert.equal(h.mode, 'life');
-  // 퀘스트 여섯 개면 두 살
+  // 퀘스트 여섯 개를 해도 스물둘 갈림길(m22) 앞에서 한 해씩만 오른다
   await page.evaluate(() => { S.done.push('x1', 'x2', 'x3', 'x4', 'x5', 'x6'); hudRefresh(); });
-  assert.equal(await page.evaluate(() => S.life.age), 22);
+  assert.equal(await page.evaluate(() => S.life.age), 21);
   // 1장 앞 세월 컷신과 나이 24
   await page.evaluate(() => { lifeBeforeCh('job', function () { window.__goJob = 1; }); });
   await playCine(page, [], { timeout: 20000 });
@@ -154,14 +154,16 @@ test('5. 깨진·옛 인생 저장이 남아 있어도 시작 화면이 비지 �
   }
 });
 
-test('6. 리뷰 1009 개발: 건너뛴 거처는 못 고르고, HUD 글자는 상태를 안 바꾸고, 6장 뒤 닫혀도 결산이 온다', async () => {
+test('6. 리뷰 1009 개발: 건너뛴 거처는 못 고르고, HUD 글자는 상태를 안 바꾸고, 예순을 채우고 닫혀도 결산이 온다', async () => {
   const { ctx, page, logs } = await open();
   const r = await page.evaluate(() => {
     lifeNew(); let p; for (let i = 0; i < 3000; i++) { p = lifeGen(lifeSeedNew()); if (p.living === '본가') break; }
     S.life.prof = p; S.life.seed = p.seed; birthApply(); S.onboarded = true; S.tut = 1; S.tuts = ['intro']; S.stats.ju = 30; S.coin = 500; tierGrow(); save();
     const skip = [0, 1, 2, 3].filter(lifeSkip), mv = tierMove(1).ok;
     S.done.push('a', 'b', 'c'); const before = localStorage.getItem('nq.life.v1'); hudName(); const same = before === localStorage.getItem('nq.life.v1');
-    MQ_LIST.forEach((c) => { S.mq.done[c.id] = 'good'; }); save();
+    MQ_LIST.forEach((c) => { S.mq.done[c.id] = 'good'; });
+    // 한 해씩 구조: 6장 뒤 중간 장을 다 지나고 쉰아홉을 다 살았다고 친다
+    S.life.st = S.life.st || {}; LIFE_STAGES.forEach((st) => { if (st.id !== 'end') S.life.st[st.id] = 1; }); S.life.anch = { age: 60, done: lifeActs() }; save();
     return { skip, mv, same, normalName: tierNameOf({ mode: 'normal' }, 0), homeName: tierNameOf(S, 0) }; });
   assert.deepEqual(r.skip, [1, 2, 3]);
   assert.equal(r.mv, 0);
@@ -182,7 +184,7 @@ test('7. 켜다가 스크립트가 멈춰도 빈 화면에 갇히지 않는다: 
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();
   await page.addInitScript(() => {
-    if (sessionStorage.getItem('boom')) return; sessionStorage.setItem('boom', 1);
+    if (window.name === 'boomed') return; window.name = 'boomed';   // 파일 주소는 새로고침 때 저장소가 비기도 해서 창 이름으로 한 번만
     localStorage.setItem('nq.v8', JSON.stringify({ onboarded: false })); localStorage.setItem('nq.album.v1', '[]');
     Object.defineProperty(window, 'QUESTS', { configurable: true, set() { throw new Error('테스트용 시작 오류'); }, get() { return undefined; } });
   });
@@ -220,4 +222,21 @@ test('9. 며칠 쉬다 오거나 3장을 마친 저장으로 새날 처음 켜�
     assert.deepEqual(logs, []);
     await ctx.close();
   }
+});
+
+test('10. 리뷰 1014: 마흔 자리에 오면 중간 사건(건강검진)이 세월 다리와 함께 나오고, 끝나면 다음 자리로 간다', async () => {
+  const { ctx, page, logs } = await open();
+  await page.evaluate(() => {
+    lifeNew(); const p = lifeGen(lifeSeedNew()); S.life.prof = p; S.life.seed = p.seed; birthApply(); S.onboarded = true; S.tut = 1; S.tuts = ['intro'];
+    ['job', 'lease', 'card', 'car', 'wedding', 'home'].forEach((id) => { S.mq.done[id] = 'good'; });
+    S.life.st = { m22: 1, m30: 1, m34: 1, m38: 1 }; S.life.anch = { age: 40, done: lifeActs() }; S.status = '직장인'; save(); render('home'); });
+  await page.waitForFunction(() => { if (TUT) endTalk(); if (window.MQP && MQP.o.title !== '건강검진') { if (MQP.picked === null && (MQP.list()[MQP.cur()] || {}).choice) MQP.pick(0); else MQP.next({ type: 'test' }); return false; } return window.MQP; }, null, { timeout: 20000, polling: 200 });
+  const t = await page.evaluate(() => ({ title: MQP.o.title, sub: MQP.o.sub, n: MQP.list().length }));
+  assert.equal(t.title, '건강검진');
+  assert.match(t.sub, /마흔/);
+  await playCine(page, [0, 0, 0, 0], { timeout: 60000 });
+  const r = await page.evaluate(() => ({ mid: S.life.mid && S.life.mid.checkup, st: !!S.life.st.m40, next: lifeStageNext().id }));
+  assert.equal(r.mid, 'good'); assert.ok(r.st); assert.equal(r.next, 'm43');
+  assert.deepEqual(logs, []);
+  await ctx.close();
 });

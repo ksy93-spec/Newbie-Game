@@ -40,7 +40,7 @@ async function st() {
     return { age: S.life && S.life.age, lv: S.lv, coin: S.coin, en: S.energy, full: S.full, clean: S.clean, mood: S.mood, done: (S.done || []).length,
       open: typeof openLeft === 'function' && S.onboarded ? openLeft() : 0, tier: S.tier, peak: S.peak, tname: S.onboarded ? tierNameOf(S, S.tier) : '',
       ch: Object.keys((S.mq && S.mq.done) || {}).join(','), next: nx ? nx.id : 'end', ready: nx ? mqReady(nx) : false, wait: nx ? mqWait(nx) : '',
-      leasing: !!S.lease, status: S.status, over: !!(S.life && S.life.over), stats: S.stats ? Object.values(S.stats).join('/') : '', ms: S.life ? S.life.ms : 0,
+      leasing: !!(S.lease && typeof leaseCh === 'function' && leaseCh() && !(S.leaseDone && S.leaseDone[S.lease.to])), leaseRaw: !!S.lease, status: S.status, over: !!(S.life && S.life.over), stats: S.stats ? Object.values(S.stats).join('/') : '', ms: S.life ? S.life.ms : 0,
       scr: (document.querySelector('.screen.on') || {}).id, map: window.ME ? ME.map : '', fits: QUESTS.filter((q) => !q.trip && fits(q)).length,
       boss: typeof BOSSES !== 'undefined' ? BOSSES.filter((b) => !bossCleared(b.id) && (S.stats[b.stat] || 0) >= b.need).map((b) => b.id).join(',') : '' };
   });
@@ -154,6 +154,8 @@ async function needs() {
     const r = await page.evaluate(() => { for (const k of Object.keys(FURNI_ACT)) { if (!hasPlaced(k)) continue; const acts = FURNI_ACT[k];
       for (let i = 0; i < acts.length; i++) { const a = acts[i]; if (a.ad || !a.d || !(a.d.energy > 0)) continue; if (actReady(k + i, a)) continue;
         doAct(k + i, a, function () {}); return FURNI[k].name + ' · ' + a.t; } } return null; });
+    const bench = r ? null : await page.evaluate(() => { const a = { t: '벤치', cd: 20, d: { energy: 12, mood: 4 } }; for (const m of ['town', 'park']) { const k = 'bench_' + m; if (actReady(k, a)) continue; doAct(k, a, function () {}); return k; } return null; });
+    if (bench) { await add(40); await log('REST', '공원·동네 벤치에서 쉼(+12, 20분 대기 시간 있음): ' + bench); continue; }
     if (r) { await add(15); await log('REST', '집 세간으로 쉼: ' + r); continue; }
     const m = (10 - s.en) * 6; await add(m * 60); await log('WAIT', `체력 ${s.en}, 쓸 수 있는 침대·매트 없음(또는 대기) → ${m}분 기다림`);
   }
@@ -177,7 +179,7 @@ await page.click('#obnext'); await add(2);
 await drain();
 await shot('home-first'); await log('HOME', '첫 홈 화면');
 
-let lastAge = 0, stuckN = 0, qn = 0;
+let lastAge = 0, stuckN = 0, qn = 0, mainRep = 0, lastSig = '';
 const ageShot = new Set();
 for (let it = 0; it < 900 && !FINISHED && SIM < MAXMIN * 60; it++) {
   await drain();
@@ -186,7 +188,8 @@ for (let it = 0; it < 900 && !FINISHED && SIM < MAXMIN * 60; it++) {
   if (s.age !== lastAge) { await log('AGE', `${lastAge} → ${s.age}`); lastAge = s.age; if (!ageShot.has(s.age)) { ageShot.add(s.age); await shot('age-' + s.age); } }
   if (s.scr !== 'home') { await page.evaluate(() => go('home')); await log('NAV', '홈이 아닌 화면 ' + s.scr + ' → 홈'); continue; }
   // 1) 메인 장이 열렸거나 전세 계약 중이면 메인 칩을 누른다
-  if (s.ready || s.leasing) {
+  const sig = [s.ready, s.leasing, s.done, s.ch, s.tier, s.lv].join('|'); mainRep = (sig === lastSig) ? mainRep + 1 : 0; lastSig = sig;
+  if ((s.ready || s.leasing) && mainRep < 6) {
     const chip = await page.evaluate(() => { const b = document.getElementById('hmq'); return b && !b.hidden ? b.textContent : null; });
     await log('MAIN', `메인 칩 누름: ${chip} (전세 진행 ${s.leasing})`); await add(2);
     if (chip) await page.click('#hmq').catch(() => page.evaluate(() => document.getElementById('hmq').click())); else await short('메인 칩이 안 보여 mqStart 직접 호출', (id) => mqStart(id), s.next);
