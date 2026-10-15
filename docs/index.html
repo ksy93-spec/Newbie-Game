@@ -727,6 +727,18 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
 #onboard .scroll{justify-content:flex-start;overflow-y:auto;}
 #onboard .scroll>:first-child{margin-top:auto;}
 #onboard #obnext{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom));z-index:3;box-shadow:0 6px 18px rgba(0,0,0,.45);margin-bottom:auto;}
+
+/* 리뷰 1014 UI 점검: 지도 위 칩들이 지도·문·간판을 가리지 않게 */
+.mqchip{top:8px;left:116px;right:60px;min-height:26px;padding:4px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}   /* 메인 칩은 존 태그 옆 한 줄로(U2) */
+.mqchip span{display:inline;margin-left:6px;opacity:.85;}
+.mqchip span::before{content:'· ';}
+.chkchip{top:40px;}                                     /* 메인 칩과 같은 칸을 쓰지 않게(U6) */
+.zonetag{max-width:104px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.guidechip{right:94px;}                                 /* 미니맵(최대 76px)과 띄움(U4) */
+.nearbar{padding-right:60px;}                           /* ☰와 겹치지 않게(U7) */
+.tutor .topt{min-height:40px;}                          /* 작은 터치 칸(U8) */
+.dslot canvas{width:40px!important;height:40px!important;}   /* 장비 칸 이름이 잘리지 않게(U11) */
+.paytool{height:auto;flex-shrink:0;}                    /* 계산기 카드가 줄어 글자가 잘리던 것(U12) */
 </style>
 
 <div id="app">
@@ -2447,7 +2459,7 @@ function tierMove(i){
   if(typeof rentGate==='function'&&rentGate(i)) return {ok:0,i:i,cost:c,rent:1};        /* 첫 월세도 계약부터 */
   if(c>S.coin) return {ok:0,i:i,cost:c};
   if(i===6&&(S.paid||0)<6&&typeof csWant==='function') csWant('home6');
-  S.coin-=c; S.tier=i; S.paid=Math.max(S.paid||0,i);
+  S.coin-=c; S.tier=i; S.paid=Math.max(S.paid||0,i); if(lifeOn()&&S.life) S.life.mvAge=S.life.age;
   if(c) ev('tier_deposit',{i:i,cost:c});
   return {ok:1,i:i,cost:c}; }
 /* 자가 여섯 단계. 내 집 하나로 끝나면 가장 긴 보상 트랙이 거기서 멈춘다.
@@ -2773,8 +2785,8 @@ function drawHighwaySigns(ctx,m){
     var label=(city?'고속도로 입구':w.to==='korea'?'고속도로':to.name)+(left?'':' →');
     if(left) label='← '+label;
     ctx.font='8px '+CFONT; var tw=Math.ceil(ctx.measureText(label).width)+10;
-    var sx=left?w.x*TS+2:(w.x+1)*TS-tw-2,sy=(w.y-4)*TS+2;               /* 차 탄 주인공(두 칸 높이)이 지나는 길보다 두 칸 위 */
-    rcx(ctx,'#3F3A55',left?sx+4:sx+tw-6,sy+12,2,2*TS+6);                  /* 기둥 */
+    var sx=left?w.x*TS+2:(w.x+1)*TS-tw-2,sy=(w.y-6)*TS+2;               /* 십자키 자리를 피해 두 줄 더 위(리뷰 1014 U1) */
+    rcx(ctx,'#3F3A55',left?sx+4:sx+tw-6,sy+12,2,4*TS+6);                  /* 기둥 */
     rcx(ctx,P.s5,sx-1,sy-1,tw+2,14); rcx(ctx,'#2F7A3A',sx,sy,tw,12); rcx(ctx,'#46964A',sx,sy,tw,1);
     rcx(ctx,'#FFFDF6',sx+1,sy+1,tw-2,1); rcx(ctx,'#FFFDF6',sx+1,sy+10,tw-2,1);
     ctx.textBaseline='top'; ctx.fillStyle='#FFFDF6'; ctx.fillText(label,sx+5,sy+2);
@@ -3630,7 +3642,7 @@ Q('pen3','geum','빈 연금 기간 메우기',90,80,{ageMin:40},'공단 상담�
  {q:'내 예상 연금액을 확인하는 곳은?',a:['국민연금공단 누리집이나 내 곁에 국민연금 앱','은행 ATM','건강보험 고지서'],ok:0,
   why:'공단 앱과 누리집에서 가입 내역과 예상 연금을 본다. 퇴직·개인연금까지는 금융감독원 통합연금포털에서 함께 본다.'}],{geum:12}),
 Q('care1','ju','부모님 장기요양 등급',90,80,{ageMin:40},'공단 상담원',null,
- '어머님 혼자 지내시기 힘들어지셨다고요? 장기요양부터 신청해 봐요.',[
+ '부모님 혼자 지내시기 힘들어지셨다고요? 장기요양부터 신청해 봐요.',[
  {q:'노인장기요양보험 신청은 어디에 할까?',a:['국민건강보험공단','국민연금공단','주민센터 전입 창구'],ok:0,
   why:'국민건강보험공단에 신청하면 방문 조사와 의사소견서를 거쳐 등급이 나온다. 노인장기요양보험 누리집.'},
  {q:'신청할 수 있는 사람은?',a:['65세 이상이거나, 65세 미만이라도 치매 등 노인성 질병이 있는 사람','70세 이상만','소득이 없는 사람만'],ok:0,
@@ -3736,7 +3748,7 @@ Q('inh1','geum','상속, 빚도 물려받는다',100,90,{ageMin:50},'주민센�
  {q:'상속세 신고 기한은?',a:['상속개시일이 속한 달 말일부터 6개월 안','다음 해 5월','기한 없음'],ok:0,
   why:'국내 거주자 기준 6개월 안에 신고한다. 낼 세금이 없을 것 같아도 신고 여부를 국세청에서 확인한다.'}],{geum:13}),
 Q('ju16','ju','부모님 집을 물려받으면',100,90,{ageMin:50},'공인중개사',null,
- '부모님 집을 물려받았는데 내 집도 있어요. 두 채가 된 건가요?',[
+ '나중에 부모님 집을 물려받으면 내 집까지 두 채가 돼요. 미리 알아 둬요.',[
  {q:'상속받은 집의 소유권을 내 이름으로 옮기는 절차는?',a:['상속 등기','전입신고','확정일자'],ok:0,
   why:'등기소에서 상속을 원인으로 소유권이전등기를 한다. 대법원 인터넷등기소에서 안내를 본다.'},
  {q:'상속으로 받은 집의 취득세 신고 기한은?',a:['상속개시일이 속한 달 말일부터 6개월 안','60일 안','기한 없음'],ok:0,
@@ -4125,9 +4137,9 @@ var LIFE_MID_YEARS = {
   patch: {
    p_jc: { 0: { text: ['{ageKo}.', '전문대 졸업장을', '받았다.'] },
            1: { text: ['이제 진짜', '일자리를 찾아야지.'] } },
-   p_hs: { 0: { text: ['{ageKo}.', '첫 일자리에서', '두 번째 겨울.'] },
-           1: { text: ['계속 다닐까,', '옮겨 볼까?'] },
-           2: { text: ['월급날 통장을', '한참 봤다.'] } } } },
+   p_hs: { 0: { text: ['{ageKo}.', '알바만 하며', '두 번째 겨울.'] },
+           1: { text: ['알바 말고', '진짜 일자리를 찾을까?'] },
+           2: { text: ['알바비 들어온', '통장을 한참 봤다.'] } } } },
 
  y30: { age: 30, ev: 'nego', title: '세월', sub: '서른',
   scenes: [
@@ -4794,7 +4806,7 @@ var LIFE_MID_FLAGS = ['solo', 'own', 'tight', 'p_hs', 'p_jc'];
 function lifeMidFlags() {
   var L = (typeof S !== 'undefined' && S && S.life) || {}, p = L.prof || {};
   var m = (typeof lifePickV === 'function') ? lifePickV('marry') : null;
-  var own = !!(typeof TIERS !== 'undefined' && S && TIERS[S.tier] && TIERS[S.tier].own);
+  var own = !!(typeof TIERS !== 'undefined' && S && TIERS[S.tier] && TIERS[S.tier].own) || !!(typeof mqDone === 'function' && lifeOn() && mqDone('home'));   /* story-logic 1014 */
   return { solo: m === 'solo', own: own, tight: p.income === '빠듯', p_hs: p.path === '고졸', p_jc: p.path === '전문대' };
 }
 function lifeMidNeedOk(need, fl) {
@@ -5082,6 +5094,13 @@ function lifeTick(){
     setTimeout(function(){ if(!MQP) toast((jump>1?n+'살 · '+jump+'년이 흘렀어요':n+'살이 됐어요')+' · 체력·배 가득'); hudRefresh(); },700); }
   if(S.status==='대학생'&&((p.path==='전문대'&&L.age>=22)||L.age>=24)){ S.status='취준생'; S.prep=0; if(!mqDone('job')) setTimeout(function(){ if(!MQP&&S.status==='취준생') toast('졸업했어요 · 이제 취준생'); },1400); }
   if(S.status!=='직장인'&&typeof mqDone==='function'&&mqDone('job')){ S.status='직장인'; S.company=S.company||'중소기업'; }
+  /* story-logic 1014 */ /* 기숙사는 학생 때까지. 졸업(전문대 22, 4년제 24)하면 다음 칸으로 나간다. 원룸 월세가 열려 있으면 첫 월세 계약이 이어진다 */
+  if(lifeNest()&&p.living==='기숙사'&&S.status!=='대학생'&&!S.rent){ S.peak=Math.max(S.peak,4); var dto=Math.min(S.peak,6),dm=tierMove(dto);
+    if(!dm.ok&&!dm.rent&&dto>4) dm=tierMove(4);
+    if(!dm.ok&&!dm.rent){ S.tier=4; S.paid=Math.max(S.paid||0,4); dm={ok:1}; }
+    if(dm.ok) setTimeout(function(){ if(!MQP) toast('기숙사를 나왔어요 · '+TIERS[S.tier].name); hudRefresh(); },2200); }
+  /* 할배 고향 회상(memory)은 일반 모드에서 "3장 다음 날"에 줄을 선다. 인생 모드는 하루에 수십 년이 가므로 3장 뒤 바로 */
+  if(typeof mqDone==='function'&&mqDone('card')&&p.band==='그 외'&&typeof csWant==='function') csWant('memory');
   if(S.status==='직장인'){ var y=L.age-LIFE_AGES.job; S.years=y<1?0:y<=3?2:5; }
   S.age=L.age<=24?24:L.age<=29?29:L.age<=34?34:40;
   if([L.age,S.status,S.years,S.age].join('|')!==before) save(); }
@@ -5092,13 +5111,13 @@ function lifeBeforeCh(id,go){
   if(!lifeOn()||!S.life||S.life.yrs[id]) return false;
   S.life.yrs[id]=1; var age=lifeChAge(id);
   if(age&&S.life.anch.age<age){ S.life.anch={age:age,done:lifeActs()}; }
-  lifeTick(); save();
+  lifeTick(); S.life.yrs[id]=S.life.age||1; save();   /* story-logic 1014 */ /* 장을 시작한 나이(결산 서랍 속 종이) */
   var y=LIFE_YEARS[LIFE_YKEY[id]]; if(!y) return false;
   var sc=lifeFill(y.scenes,lifeFillVals()),p=S.life.prof||{};
   /* 카드에 맞춰 장면을 고친다: 고졸·전문대의 스물넷, 아직 본가·기숙사인 스물여섯 */
-  if(id==='job'&&p.path==='고졸') sc[1].text=['일한 지 몇 해.','이력서 한 줄이','조금 늘었다.'];
+  if(id==='job'&&p.path==='고졸') sc[1].text=['알바와 계약직으로','몇 해. 이번엔','정규직이 목표다.'];
   if(id==='job'&&p.path==='전문대') sc[1].text=['전문대를 마친 지','두 해.','이력서를 다시 썼다.'];
-  if(id==='lease'&&lifeNest()) sc[0].text=['스물여섯.',TIERS[S.tier].name+' 생활도','몇 해째다.'];
+  if(id==='lease'&&(lifeNest()||S.tier<6)) sc[0].text=['스물여섯.',TIERS[S.tier].name+' 생활도','몇 해째다.'];
   /* 형편이 숫자로 느껴지게: 본가는 아낀 방값, 넉넉하면 집에서 보탠 돈 */
   var gift=(lifeNest()&&p.living==='본가'?(id==='lease'?140:40):0)+(p.income==='넉넉'?(id==='lease'||id==='home'?120:30):0);
   if(gift){ S.coin+=gift; save(); setTimeout(function(){ sfx('coin'); toast((p.living==='본가'&&lifeNest()?'아낀 방값':'집에서 보탠 돈')+' ￦'+gift); },600); }
@@ -5360,7 +5379,7 @@ var LIFE_END = {
   { bg: 'livingroom', cast: [['hero', 'L'], ['partner', 'R']], who: '배우자',
     text: ['서랍 정리하다가', '이게 다 나왔어.'] },
   { bg: 'livingroom',
-    doc: { t: '서랍 속 종이', rows: [['스물넷', '근로계약서'], ['스물여섯', '전세 계약서'], ['서른둘', '혼인신고서'], ['서른일곱', '등기권리증']], bad: [] },
+    doc: { t: '서랍 속 종이', rows: [['{a_job}', '근로계약서'], ['{a_lease}', '전세 계약서'], ['{a_wedding}', '혼인신고서'], ['{a_home}', '등기권리증']], bad: [] },
     who: '나', text: ['종이는 한곳에.', '누가 그랬더라.'] },
   { bg: 'night', fx: 'fade', cast: [['hero', 'C']],
     text: ['그날 밤,', '그 사람이', '마지막으로 왔다.'] } ],
@@ -5436,7 +5455,8 @@ function lifeBirthScenes(card) {
   return lifeFill(sc, Object.assign({}, f, { region: f.regionText, household: f.householdText }));
 }
 function lifeEndScenes(part, card, titleId) {
-  return lifeFill(LIFE_END[part], { title: (LIFE_TITLES[titleId] || LIFE_TITLES.light).name, food: card.food || '미역국',
+  var yr = (typeof S !== 'undefined' && S && S.life && S.life.yrs) || {}, ak = function (k, d) { return lifeMidAgeKo(yr[k] > 1 ? yr[k] : d); };   /* story-logic 1014 */
+  return lifeFill(LIFE_END[part], { a_job: ak('job', 24), a_lease: ak('lease', 26), a_wedding: ak('wedding', 32), a_home: ak('home', 37), title: (LIFE_TITLES[titleId] || LIFE_TITLES.light).name, food: card.food || '미역국',
     start: LIFE_START[card.region], startBg: LIFE_START_BG[card.region] });
 }
 function lifeTmi(id, card) {
@@ -5846,7 +5866,10 @@ function obNextClick(){
 
 /* 퀘스트 나이 조건(ageMin)은 인생 모드면 진짜 나이, 아니면 온보딩 나이 구간(24/29/34/40)으로 본다 */
 function qAge(){ return (typeof lifeOn==='function'&&lifeOn()&&S.life&&S.life.age!=null)?S.life.age:S.age; }
+/* story-logic 1014 */ /* 인생 모드에서 그 장을 깬 뒤에만 여는 퀘스트("차 샀다며?") */
+var LIFE_FIT_AFTER={cari1:'car',cari2:'car'};
 function fits(q){ var f=q.fit||{};
+  if(lifeOn()&&S.life&&LIFE_FIT_AFTER[q.id]&&!mqDone(LIFE_FIT_AFTER[q.id])) return false;
   if(f.status&&f.status.indexOf(S.status)<0) return false;
   var ag=lifeOn()&&S.life?S.life.age:S.age;
   if(f.ageMax!=null&&ag>f.ageMax) return false;
@@ -9894,7 +9917,9 @@ function toast(msg){
   var tip=document.getElementById('itip'),tv=document.getElementById('htravel');
   if((tip&&!tip.hidden)||(tv&&!tv.hidden)){ el.style.top='calc(12px + env(safe-area-inset-top))'; el.style.bottom='auto'; clearTimeout(toast.t); toast.t=setTimeout(function(){ el.hidden=true; },Math.min(7000,1800+70*String(msg).length)); return; }
   try{ var hm=document.getElementById('home'),ap=document.getElementById('app'),sb=hm&&hm.classList.contains('on')&&hm.querySelector('.stagebox');
-    if(sb&&ap){ var d=ap.getBoundingClientRect().bottom-sb.getBoundingClientRect().bottom+8; if(d>0&&d<400) el.style.bottom=Math.round(d)+'px'; } }catch(e){}
+    if(sb&&ap){ var d=ap.getBoundingClientRect().bottom-sb.getBoundingClientRect().bottom+8; var g=document.getElementById('hguide');
+      if(g&&!g.hidden&&d>0&&d<400) d+=g.offsetHeight+14;                   /* 안내 칩 글자를 덮지 않게 그 위로(U5) */
+      if(d>0&&d<400) el.style.bottom=Math.round(d)+'px'; } }catch(e){}
   clearTimeout(toast.t); toast.t=setTimeout(function(){ el.hidden=true; },Math.min(7000,1800+70*String(msg).length));   /* 긴 안내는 읽을 시간만큼 */
 }
 
@@ -9957,7 +9982,7 @@ function renderHome(){
   ht.innerHTML=TIERS[S.tier].name+
    (canMove?'<span class="micro" style="color:var(--y2)">'+TIERS[S.peak].name+' 열림 · 눌러서 이사</span>'
     :nx===null?'<span class="micro">최종 단계</span>'
-    :hold?'<span class="micro">자가는 메인 6장 뒤에 열림</span>'
+    :hold?'<span class="micro">'+tierHoldText()+'</span>'
     :nx>0?'<span class="micro">다음 거처까지 집 스탯 '+nx+'</span>'
     :'<span class="micro">'+(upLeft()>0?'다음 퀘스트를 깨면 해금':'새 거처는 내일 해금')+'</span>');
   document.getElementById('hdef').textContent=tt.def;
@@ -13070,7 +13095,7 @@ function playMQ(o){
     if(typed(p,t)>=total(p)&&!(p.choice&&st.picked===null)&&Math.floor(t*2.4)%2===0) ctext(ctx,'▼',bx+bw-12,by+bh-12,8,'#FFE79B');
     return by; }
   function drawChoices(p,top){
-    var opts=p.choice.opts,rects=[],y=top-6;
+    var opts=p.choice.opts,rects=[],y=top-(p.who?16:6);                  /* 말한 이 이름표를 덮지 않게(U10) */
     for(var j=opts.length-1;j>=0;j--){ var L=wrap([(j+1)+'. '+opts[j].a],W-34),h=L.length*11+8; y-=h;
       rects.unshift({x:12,y:y,w:W-24,h:h,j:j,L:L}); y-=4; }
     ctx.fillStyle='rgba(7,6,14,.55)'; ctx.fillRect(0,0,W,top);
@@ -13388,7 +13413,12 @@ function mqShopLock(slot,id){
 function mqLockShort(c){ return '메인 '+c.no+'장을 마친 뒤'; }
 function mqLockMsg(c){ return mqName(c)+을를(c.title).slice(c.title.length)+' 마치면 살 수 있어요'; }
 function mqRegionLock(to){ return mqOk('wedding')?null:'메인 5장 「결혼 준비」를 마치면 '+(to==='daegu'?'대구':'경주')+' 가는 길이 열려요'; }
-function tierCap(){ return mqOk('home')?TIERS.length-1:Math.max(8,S.peak>=9?S.peak:8); }
+function tierCap(){ var c=mqOk('home')?TIERS.length-1:Math.max(8,S.peak>=9?S.peak:8);
+  /* story-logic 1014 */ /* 인생 모드: 취업 전에는 원룸 월세까지, 결혼 준비 전에는 원룸 전세까지만 연다.
+     학생이 전세 계약을 하거나, 2장 직후 투룸 전세로 6장 조건을 미리 채우는 일을 막는다. 이미 연 칸은 그대로 */
+  if(lifeOn()&&S.life&&!S.life.over){ if(!mqDone('job')) c=Math.min(c,Math.max(6,S.peak)); else if(!mqDone('wedding')) c=Math.min(c,Math.max(7,S.peak)); }
+  return c; }
+function tierHoldText(){ if(lifeOn()&&S.life&&S.peak<8) return !mqDone('job')?'전세는 취업하고 나서 열림':'투룸 전세는 결혼 준비(5장) 뒤에'; return '자가는 메인 6장 뒤에 열림'; }
 function mqGrandfather(o){
   var own=function(id){ return (o.owned||[]).indexOf(id)>=0; },
       trip=['car1','car2','trip1','trip2','trip3','trip4','trip5'].some(function(id){ return (o.done||[]).indexOf(id)>=0; }),
@@ -13425,6 +13455,7 @@ function csWant(id,arg){
   C.q.push({id:id,arg:arg==null?null:arg}); save(); }
 function csFill(id,arg){
   var c=CS_STORY[id],sc=c.scenes.slice(),f={};
+  if(id==='home6'&&lifeOn()&&S.status!=='직장인') sc=sc.map(function(p,i){ return i===3?Object.assign({},p,{text:['월세는 매달 나가는','돈이야. 용돈이나 알바비','들어오는 날 빠지게 해 두게.']}):i===4?Object.assign({},p,{text:['월세 낸 기록은','버리지 말게. 일을 시작하면','연말정산 때 쓰네.']}):p; });   /* story-logic 1014 */
   if(id==='boss1'){ var bf=BOSS_FIRST[arg]||BOSS_FIRST.jeonse; sc=[bf.scene].concat(sc); f.bg=bf.bg; }
   if(id==='back'){ var nx=mqNext(); f={n:arg||3,rev:(S.review||[]).length,tier:TIERS[S.tier].name,lv:S.lv,mq:nx?nx.no+'장 '+nx.title:'모두 마침'}; }
   var rp=function(x){ return String(x).replace(/\{(\w+)\}/g,function(m,k){ return f[k]!=null?f[k]:m; }); };
@@ -13450,8 +13481,10 @@ function csPlay(id,arg,replay){
 function csTick(){
   if(!S||!S.cs||!S.cs.q.length||!mqIdle()) return false;
   var C=S.cs; if(C.day!==dayKey()){ C.day=dayKey(); C.n=0; }
-  if(C.n>=2||(S.first===dayKey()&&C.n>=1)) return false;
-  var e=C.q.shift(); return csPlay(e.id,e.arg,false); }
+  if(!lifeOn()&&(C.n>=2||(S.first===dayKey()&&C.n>=1))) return false;   /* story-logic 1014 */ /* 인생 모드는 하루 몫 대신 그 자리에서 */
+  var e=C.q.shift();
+  if(lifeOn()&&e.id==='home6'&&S.tier!==RENT_TIER){ save(); return csTick(); }   /* 원룸 월세를 이미 떠났으면 "첫날" 이야기는 버린다 */
+  return csPlay(e.id,e.arg,false); }
 /* 수집 노트: 본 이야기는 다시 보기, 못 본 것은 실마리 */
 var CS_HINT={firstq:'첫 퀘스트를 끝내면',home6:'원룸 월세로 이사하면',boss1:'보스를 처음 이기면',memory:'메인 3장을 마친 다음 날',back:'사흘 넘게 쉬다 돌아오면'};
 function csCodex(){
@@ -13525,8 +13558,8 @@ var LIFE_EV=[
   tip:'많은 나라가 여권 잔여기간 6개월 이상을 요구하네. 떠나기 전에 꼭 확인하게.'},
  {id:'ev_yearend',who:'회사 공지',months:[1,2],text:'"연말정산 간소화 자료 제출 기한은 다음 주 금요일까지입니다."',
   when:function(){ return S.status==='직장인'; },
-  choices:[{t:'나중에 하지 뭐',d:{mood:-5},msg:'기한을 넘겨 월세 세액공제를 못 받았다.'},
-           {t:'간소화 자료와 월세 영수증을 챙겨 낸다',d:{xp:30,coin:30},msg:'2월 월급과 함께 환급금이 들어왔다.'}],
+  choices:[{t:'나중에 하지 뭐',d:{mood:-5},msg:'기한을 넘겨 받을 수 있던 공제를 놓쳤다.'},
+           {t:'간소화 자료와 빠진 영수증을 챙겨 낸다',d:{xp:30,coin:30},msg:'2월 월급과 함께 환급금이 들어왔다.'}],
   tip:'간소화 서비스에 안 잡히는 월세나 안경 구입비는 따로 챙겨서 내야 하네.'},
  {id:'ev_registry',who:'공인중개사',text:'"등기부는 제가 봤는데 깨끗해요. 굳이 안 떼 보셔도 돼요. 계약금부터 넣으시죠."',
   when:function(){ return S.tier>=5&&S.tier<=8; },
@@ -13669,7 +13702,18 @@ var LIFE_EV=[
 ];
 /* 나이마다 5달씩 밀어 12년이면 열두 달을 다 돈다. (예전에는 이벤트 수를 더해 한 해에 두 달만 번갈아 나와 철 이벤트가 거의 안 떴다) */
 function lifeEvMonth(){ return lifeOn()&&S.life?1+((S.life.age*5)%12):+dayKey().slice(5,7); }
-function lifeEvOk(e,m){ return (!e.when||e.when())&&(!e.months||e.months.indexOf(m)>=0); }
+function lifeEvOk(e,m){ return (!e.when||e.when())&&(!e.months||e.months.indexOf(m)>=0)&&lifeEvFit(e); }
+/* story-logic 1014 */ /* 인생 모드에서 사건이 나이·장 순서와 어긋나지 않게: 카드는 3장 뒤, 차 보험은 4장 뒤, 입사 서류·첫 명세서는 입사 무렵,
+   회사 사건은 희망퇴직(55) 전, 청약통장 권유는 청년 나이·무주택, 이사 직후 사건은 그해 이사한 사람만 */
+function lifeEvFit(e){ if(!lifeOn()||!S.life) return true; var a=S.life.age,id=e.id;
+  if((id==='ev_revolving'||id==='ev_annualfee')&&!mqDone('card')) return false;
+  if(id==='ev_carins'&&!mqDone('car')) return false;
+  if(id==='ev_usedcar'&&a<27) return false;
+  if((id==='ev_payslip'||id==='ev_newhire')&&!(a<=LIFE_AGES.job+1||(lifeStageDone('m34')&&a<=35))) return false;
+  if(/^ev_(nopay|overtime|annualleave|newhire|payslip|yearend)$/.test(id)&&lifeStageDone('m55')) return false;
+  if(id==='ev_subscription'&&(a>34||(TIERS[S.tier]&&TIERS[S.tier].own))) return false;
+  if(id==='ev_movein'&&S.life.mvAge!==a) return false;
+  return true; }
 function lifeEvPick(month){
   var m=month||lifeEvMonth();
   S.evSeen=S.evSeen||[];
@@ -14144,7 +14188,9 @@ function guideDraw(ctx){
     rcx(ctx,P.y1,ax-Math.floor(w2/2),y2,w2,1); } }
 function guideSync(){
   var el=document.getElementById('hguide'); if(!el) return;
-  var t=(TUT||PLACE)?null:guideTarget(),key=t?(t.q.id+'|'+ME.map+'|'+(t.warp?t.warp.x+','+t.warp.y:'')):'';
+  var t=(TUT||PLACE)?null:guideTarget();
+  if(t&&curMap().interior&&ME.map!==t.map) t=null;                      /* 작은 건물 안에서는 칩이 출구를 가린다. 캔버스 화살표가 대신 안내(U3) */
+  var key=t?(t.q.id+'|'+ME.map+'|'+(t.warp?t.warp.x+','+t.warp.y:'')):'';
   if(el.__k===key) return; el.__k=key;
   if(!t){ el.hidden=true; return; }
   var here=(ME.map===t.map),dir=(!here&&t.warp)?({right:'오른쪽 ',left:'왼쪽 ',up:'위쪽 ',down:'아래쪽 '}[t.warp.dir]||''):'';   /* 문이 화면 밖에 있어도 어느 쪽인지 알게 */
@@ -14523,10 +14569,16 @@ function rentScenes(){
    q('phone',H,'연말정산 안내',['첫 연말정산 안내가 왔다.','월세도 공제가 된다고?'],null,
      [{a:'월세 세액공제를 신청한다. 임대차계약서와 이체 내역을 챙긴다',ok:1,note:'무주택 세대주이고 총급여가 기준 이하면 낸 월세의 일부를 세금에서 돌려받는다. 전입신고한 주소여야 하고, 집주인 동의는 필요 없다. 요건과 공제율은 국세청 안내로 확인한다.'},
       {a:'집주인 눈치가 보여 신청하지 않는다',ok:0,note:'월세 세액공제는 집주인 동의 없이 계약서와 이체 내역으로 신청한다. 몇 년 모이면 적지 않은 돈이다.'}])]; }
+/* story-logic 1014 */ /* 아직 월급이 없는 사람(대학생·취준생)의 첫 월세: 마지막 "첫 연말정산" 장면을 기록 모아 두기로 바꾼다 */
+function rentScenesFit(){ var sc=rentScenes(); if(S.status==='직장인') return sc;
+  sc[sc.length-1]={bg:'phone',cast:[['hero','C']],who:'나',text:['월세 이체 내역,','이거 모아 둘 필요가','있을까?'],
+    choice:{opts:[{a:'계약서와 월세 이체 내역을 한 폴더에 모아 둔다',ok:1,note:'월세 세액공제는 일해서 번 소득(근로소득)이 있어야 받는다. 취업한 뒤 연말정산 때 계약서와 이체 내역이 그대로 쓰인다. 요건은 국세청 안내로 확인한다.'},
+      {a:'아직 월급이 없으니 버린다',ok:0,note:'계약서는 보증금을 돌려받을 때, 나갈 때 원상복구를 다툴 때 근거다. 이체 내역은 취업한 뒤 월세 세액공제에도 쓴다.'}]}};
+  return sc; }
 function rentPlay(){
   if(!S.rent||MQP) return;
   S.rent.auto=0; save(); ev('rent_start',{});
-  playMQ({kicker:'거처 퀘스트 · 첫 계약',title:'첫 월세 계약',sub:'원룸 월세 · 보증금은 작아도 계약은 계약이다',scenes:rentScenes(),
+  playMQ({kicker:'거처 퀘스트 · 첫 계약',title:'첫 월세 계약',sub:'원룸 월세 · 보증금은 작아도 계약은 계약이다',scenes:rentScenesFit(),
     endScenes:function(ok,n){ return rentEnd(ok,n); },onDone:function(){ render('home'); }}); }
 function rentEnd(ok,n){
   var g=ok>=n-1?'good':ok>=n-3?'ok':'bad',e=RENT_ENDS[g],was=S.rentBest,rank={good:0,ok:1,bad:2},rows=[];
