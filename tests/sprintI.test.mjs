@@ -59,3 +59,18 @@ test('2. 거처 창에서는 "월세 계약하러 가기", 보증금이 모자�
   assert.deepEqual(logs, []);
   await ctx.close();
 });
+
+test('3. 리뷰 1014: 안내 칩이 맵 여러 개를 건너 먼 창구까지 걸어간다', async () => {
+  const { ctx, page, logs } = await open();
+  const r = await page.evaluate(async () => {
+    Object.assign(S, { status: '직장인', years: 2, company: '중소기업', age: 29 }); S.lv = 12; ['job', 'lease', 'card', 'car'].forEach((k) => { S.mq.done[k] = 'good'; }); save();
+    const withDesk = QUESTS.filter((q) => guideMapOf(q) && !q.trip), reach = withDesk.filter((q) => guideRoute(guideMapOf(q), 'town'));
+    const q = QUESTS.find((x) => guideMapOf(x) === 'bank_branch'); window.guideQuest = () => q;
+    enterMap('town', MAPS.town.spawn.x, MAPS.town.spawn.y); guideGo(); const seen = ['town'];
+    for (let i = 0; i < 300; i++) { await new Promise((res) => setTimeout(res, 100)); if (TUT) endTalk(); if (seen[seen.length - 1] !== ME.map) seen.push(ME.map); if (ME.map === 'bank_branch' && !MOVE) break; }
+    return { all: withDesk.length, reach: reach.length, seen }; });
+  assert.ok(r.reach >= r.all - 2, '걸어서 닿는 창구 ' + r.reach + '/' + r.all);
+  assert.deepEqual(r.seen, ['town', 'campus', 'center', 'office', 'bank', 'bank_branch']);
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});

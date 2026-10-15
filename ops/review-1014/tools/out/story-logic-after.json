@@ -1,0 +1,290 @@
+{
+ "html": "/home/user/Newbie-Game/ops/review-1014/tmp/story-logic.html",
+ "cases": {
+  "solo": {
+   "card": [
+    "자취",
+    "4년제",
+    "광역시",
+    "보통"
+   ],
+   "start": {
+    "age": 20,
+    "status": "대학생",
+    "tier": "고시원",
+    "peak": 4,
+    "paid": 4,
+    "lease": null,
+    "rent": false,
+    "nest": false
+   },
+   "at23": {
+    "age": 23,
+    "status": "대학생",
+    "tier": "반지하",
+    "peak": 6,
+    "paid": 5,
+    "lease": null,
+    "rent": true,
+    "nest": false,
+    "mvs": [
+     {
+      "ok": 1,
+      "i": 5,
+      "cost": 60
+     },
+     {
+      "ok": 0,
+      "i": 6,
+      "cost": 80,
+      "rent": 1
+     }
+    ]
+   },
+   "rentLast": "월세 이체 내역, / 이거 모아 둘 필요가 / 있을까?",
+   "rentLastOk": "계약서와 월세 이체 내역을 한 폴더에 모아 둔다",
+   "afterRent": {
+    "age": 23,
+    "status": "대학생",
+    "tier": "원룸 월세",
+    "peak": 6,
+    "paid": 6,
+    "lease": null,
+    "rent": false,
+    "nest": false
+   },
+   "queue": [
+    "home6"
+   ],
+   "home6Scene3": "월세는 매달 나가는 / 돈이야. 용돈이나 알바비 / 들어오는 날 빠지게 해 두게.",
+   "idle": [
+    true,
+    false,
+    false,
+    true
+   ],
+   "csTick": true,
+   "playing": "첫 월세 방",
+   "evs23": [
+    "ev_subscription",
+    "ev_movein"
+   ],
+   "preJobLease": {
+    "age": 23,
+    "status": "대학생",
+    "tier": "원룸 월세",
+    "peak": 6,
+    "paid": 6,
+    "lease": null,
+    "rent": false,
+    "nest": false,
+    "mv": [
+     null,
+     null,
+     null
+    ]
+   },
+   "cari1At24": false,
+   "logs": []
+  },
+  "dorm_4년제": {
+   "card": [
+    "기숙사",
+    "4년제",
+    "그 외",
+    "넉넉"
+   ],
+   "grad": {
+    "age": 23,
+    "status": "대학생",
+    "tier": "기숙사",
+    "peak": 5,
+    "paid": 3,
+    "lease": null,
+    "rent": false,
+    "nest": true
+   },
+   "at24": {
+    "age": 24,
+    "status": "취준생",
+    "tier": "반지하",
+    "peak": 5,
+    "paid": 5,
+    "lease": null,
+    "rent": false,
+    "nest": false
+   },
+   "afterJob": {
+    "age": 24,
+    "status": "직장인",
+    "tier": "반지하",
+    "peak": 5,
+    "paid": 5,
+    "lease": null,
+    "rent": false,
+    "nest": false
+   },
+   "at25": {
+    "age": 25,
+    "status": "직장인",
+    "tier": "반지하",
+    "peak": 5,
+    "paid": 5,
+    "lease": null,
+    "rent": false,
+    "nest": false
+   },
+   "logs": []
+  },
+  "dorm_전문대": {
+   "card": [
+    "기숙사",
+    "전문대",
+    "수도권",
+    "빠듯"
+   ],
+   "grad": {
+    "age": 22,
+    "status": "취준생",
+    "tier": "반지하",
+    "peak": 5,
+    "paid": 5,
+    "lease": null,
+    "rent": false,
+    "nest": false
+   },
+   "at24": {
+    "age": 24,
+    "status": "취준생",
+    "tier": "반지하",
+    "peak": 5,
+    "paid": 5,
+    "lease": null,
+    "rent": false,
+    "nest": false
+   },
+   "afterJob": {
+    "age": 24,
+    "status": "직장인",
+    "tier": "반지하",
+    "peak": 5,
+    "paid": 5,
+    "lease": null,
+    "rent": false,
+    "nest": false
+   },
+   "at25": {
+    "age": 25,
+    "status": "직장인",
+    "tier": "반지하",
+    "peak": 5,
+    "paid": 5,
+    "lease": null,
+    "rent": false,
+    "nest": false
+   },
+   "logs": []
+  },
+  "hs": {
+   "card": [
+    "본가",
+    "고졸",
+    "수도권",
+    "보통"
+   ],
+   "at22": {
+    "age": 22,
+    "status": "취준생",
+    "tier": "본가 방",
+    "peak": 0,
+    "paid": 0,
+    "lease": null,
+    "rent": false,
+    "nest": true
+   },
+   "y22": [
+    "스물둘. 알바만 하며 두 번째 겨울.",
+    "알바 말고 진짜 일자리를 찾을까?"
+   ],
+   "y24": [
+    "스물넷. 첫 면접 한 달 전.",
+    "알바와 계약직으로 몇 해. 이번엔 정규직이 목표다."
+   ],
+   "at24": {
+    "age": 24,
+    "status": "취준생",
+    "tier": "본가 방",
+    "peak": 0,
+    "paid": 0,
+    "lease": null,
+    "rent": false,
+    "nest": true
+   },
+   "logs": []
+  },
+  "y26": {
+   "card": [
+    "자취",
+    "고졸"
+   ],
+   "st": {
+    "age": 26,
+    "status": "직장인",
+    "tier": "고시원",
+    "peak": 4,
+    "paid": 4,
+    "lease": null,
+    "rent": false,
+    "nest": false
+   },
+   "sc0": "스물여섯. 고시원 생활도 몇 해째다.",
+   "logs": []
+  },
+  "late": {
+   "flags48": {
+    "solo": false,
+    "own": true,
+    "tight": false,
+    "p_hs": true,
+    "p_jc": false
+   },
+   "slot48": {
+    "y": "y48",
+    "ev": "refi"
+   },
+   "drawer": [
+    "스물넷 근로계약서",
+    "스물여덟 전세 계약서",
+    "서른넷 혼인신고서",
+    "서른아홉 등기권리증"
+   ],
+   "evs57": [],
+   "logs": []
+  },
+  "text": {
+   "care1": [
+    {
+     "ageMin": 40
+    },
+    "공단 상담원",
+    "{\"id\":\"care1\",\"theme\":\"ju\",\"title\":\"부모님 장기요양 등급\",\"xp\":90,\"coin\":80,\"basis\":\"2026-09-29\",\"fit\":{\"ageMin\":40},\"npc\":\"공단 상담원\",\"reward\":null,\"intro\":\"부모님 혼자 지내시기 힘들"
+   ],
+   "ju16": [
+    {
+     "ageMin": 50
+    },
+    "공인중개사",
+    "{\"id\":\"ju16\",\"theme\":\"ju\",\"title\":\"부모님 집을 물려받으면\",\"xp\":100,\"coin\":90,\"basis\":\"2026-09-29\",\"fit\":{\"ageMin\":50},\"npc\":\"공인중개사\",\"reward\":null,\"intro\":\"나중에 부모님 집을 물려받"
+   ],
+   "cari1": [
+    {
+     "status": [
+      "직장인"
+     ]
+    },
+    "3년차 선배",
+    "{\"id\":\"cari1\",\"theme\":\"geum\",\"title\":\"첫 차, 자동차보험 고르기\",\"xp\":80,\"coin\":70,\"basis\":\"2026-09-29\",\"fit\":{\"status\":[\"직장인\"]},\"npc\":\"3년차 선배\",\"reward\":null,\"intro\":\"차 샀다"
+   ]
+  }
+ }
+}
