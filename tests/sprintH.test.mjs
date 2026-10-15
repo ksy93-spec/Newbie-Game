@@ -253,3 +253,15 @@ test('11. 게임에 쓰는 한글이 모두 도트 글꼴(갈무리 축소판)�
   assert.equal(miss, '', '빠진 글자는 tools/fonts/subset.py로 글꼴을 다시 만든다');
   await ctx.close();
 });
+
+test('12. 리뷰 1014 QA: 인생 모드는 생일마다 체력·포만감이 찬다', async () => {
+  const { ctx, page, logs } = await open();
+  const r = await page.evaluate(() => {
+    lifeNew(); const p = lifeGen(lifeSeedNew()); S.life.prof = p; S.life.seed = p.seed; birthApply(); S.onboarded = true; S.tut = 1;
+    S.energy = 3; S.full = 4; const a0 = S.life.age; S.done.push('e1', 'e2'); hudRefresh();
+    return { a0, a1: S.life.age, energy: S.energy, full: S.full, max: fullMax() }; });
+  assert.equal(r.a1, r.a0 + 1);
+  assert.equal(r.energy, 100); assert.equal(r.full, r.max);
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});

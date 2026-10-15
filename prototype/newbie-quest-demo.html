@@ -5059,8 +5059,11 @@ function lifeAgeCalc(){
 function lifeTick(){
   if(!lifeOn()||!S.life||!S.onboarded||S.life.over) return;
   var L=S.life,n=lifeAgeCalc(),p=L.prof||{},before=[L.age,S.status,S.years,S.age].join('|');
-  if(n>L.age){ var jump=n-L.age; L.age=n; setTimeout(function(){ if(!MQP) toast(jump>1?n+'살 · '+jump+'년이 흘렀어요':n+'살이 됐어요'); },700); }
-  if(S.status==='대학생'&&((p.path==='전문대'&&L.age>=22)||L.age>=24)){ S.status='취준생'; S.prep=0; setTimeout(function(){ if(!MQP) toast('졸업했어요 · 이제 취준생'); },1400); }
+  if(n>L.age){ var jump=n-L.age; L.age=n;
+    /* 인생 모드는 한 해가 몇 분이다. 생일마다 체력·포만감을 채워 '체력 차기 기다리기'로 몇 시간씩 멈추지 않게 한다(리뷰 1014 QA: 한 판의 81%가 대기) */
+    needTick(); S.energy=100; S.full=Math.max(S.full||0,fullMax());
+    setTimeout(function(){ if(!MQP) toast((jump>1?n+'살 · '+jump+'년이 흘렀어요':n+'살이 됐어요')+' · 체력·배 가득'); hudRefresh(); },700); }
+  if(S.status==='대학생'&&((p.path==='전문대'&&L.age>=22)||L.age>=24)){ S.status='취준생'; S.prep=0; if(!mqDone('job')) setTimeout(function(){ if(!MQP&&S.status==='취준생') toast('졸업했어요 · 이제 취준생'); },1400); }
   if(S.status!=='직장인'&&typeof mqDone==='function'&&mqDone('job')){ S.status='직장인'; S.company=S.company||'중소기업'; }
   if(S.status==='직장인'){ var y=L.age-LIFE_AGES.job; S.years=y<1?0:y<=3?2:5; }
   S.age=L.age<=24?24:L.age<=29?29:L.age<=34?34:40;
