@@ -710,6 +710,18 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
 #onboard .scroll{justify-content:flex-start;overflow-y:auto;}
 #onboard .scroll>:first-child{margin-top:auto;}
 #onboard #obnext{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom));z-index:3;box-shadow:0 6px 18px rgba(0,0,0,.45);margin-bottom:auto;}
+
+/* 리뷰 1014 UI 점검: 지도 위 칩들이 지도·문·간판을 가리지 않게 */
+.mqchip{top:8px;left:116px;right:60px;min-height:26px;padding:4px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}   /* 메인 칩은 존 태그 옆 한 줄로(U2) */
+.mqchip span{display:inline;margin-left:6px;opacity:.85;}
+.mqchip span::before{content:'· ';}
+.chkchip{top:40px;}                                     /* 메인 칩과 같은 칸을 쓰지 않게(U6) */
+.zonetag{max-width:104px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.guidechip{right:94px;}                                 /* 미니맵(최대 76px)과 띄움(U4) */
+.nearbar{padding-right:60px;}                           /* ☰와 겹치지 않게(U7) */
+.tutor .topt{min-height:40px;}                          /* 작은 터치 칸(U8) */
+.dslot canvas{width:40px!important;height:40px!important;}   /* 장비 칸 이름이 잘리지 않게(U11) */
+.paytool{height:auto;flex-shrink:0;}                    /* 계산기 카드가 줄어 글자가 잘리던 것(U12) */
 </style>
 
 <div id="app">
@@ -2756,8 +2768,8 @@ function drawHighwaySigns(ctx,m){
     var label=(city?'고속도로 입구':w.to==='korea'?'고속도로':to.name)+(left?'':' →');
     if(left) label='← '+label;
     ctx.font='8px '+CFONT; var tw=Math.ceil(ctx.measureText(label).width)+10;
-    var sx=left?w.x*TS+2:(w.x+1)*TS-tw-2,sy=(w.y-4)*TS+2;               /* 차 탄 주인공(두 칸 높이)이 지나는 길보다 두 칸 위 */
-    rcx(ctx,'#3F3A55',left?sx+4:sx+tw-6,sy+12,2,2*TS+6);                  /* 기둥 */
+    var sx=left?w.x*TS+2:(w.x+1)*TS-tw-2,sy=(w.y-6)*TS+2;               /* 십자키 자리를 피해 두 줄 더 위(리뷰 1014 U1) */
+    rcx(ctx,'#3F3A55',left?sx+4:sx+tw-6,sy+12,2,4*TS+6);                  /* 기둥 */
     rcx(ctx,P.s5,sx-1,sy-1,tw+2,14); rcx(ctx,'#2F7A3A',sx,sy,tw,12); rcx(ctx,'#46964A',sx,sy,tw,1);
     rcx(ctx,'#FFFDF6',sx+1,sy+1,tw-2,1); rcx(ctx,'#FFFDF6',sx+1,sy+10,tw-2,1);
     ctx.textBaseline='top'; ctx.fillStyle='#FFFDF6'; ctx.fillText(label,sx+5,sy+2);
@@ -9888,7 +9900,9 @@ function toast(msg){
   var tip=document.getElementById('itip'),tv=document.getElementById('htravel');
   if((tip&&!tip.hidden)||(tv&&!tv.hidden)){ el.style.top='calc(12px + env(safe-area-inset-top))'; el.style.bottom='auto'; clearTimeout(toast.t); toast.t=setTimeout(function(){ el.hidden=true; },Math.min(7000,1800+70*String(msg).length)); return; }
   try{ var hm=document.getElementById('home'),ap=document.getElementById('app'),sb=hm&&hm.classList.contains('on')&&hm.querySelector('.stagebox');
-    if(sb&&ap){ var d=ap.getBoundingClientRect().bottom-sb.getBoundingClientRect().bottom+8; if(d>0&&d<400) el.style.bottom=Math.round(d)+'px'; } }catch(e){}
+    if(sb&&ap){ var d=ap.getBoundingClientRect().bottom-sb.getBoundingClientRect().bottom+8; var g=document.getElementById('hguide');
+      if(g&&!g.hidden&&d>0&&d<400) d+=g.offsetHeight+14;                   /* 안내 칩 글자를 덮지 않게 그 위로(U5) */
+      if(d>0&&d<400) el.style.bottom=Math.round(d)+'px'; } }catch(e){}
   clearTimeout(toast.t); toast.t=setTimeout(function(){ el.hidden=true; },Math.min(7000,1800+70*String(msg).length));   /* 긴 안내는 읽을 시간만큼 */
 }
 
@@ -13064,7 +13078,7 @@ function playMQ(o){
     if(typed(p,t)>=total(p)&&!(p.choice&&st.picked===null)&&Math.floor(t*2.4)%2===0) ctext(ctx,'▼',bx+bw-12,by+bh-12,8,'#FFE79B');
     return by; }
   function drawChoices(p,top){
-    var opts=p.choice.opts,rects=[],y=top-6;
+    var opts=p.choice.opts,rects=[],y=top-(p.who?16:6);                  /* 말한 이 이름표를 덮지 않게(U10) */
     for(var j=opts.length-1;j>=0;j--){ var L=wrap([(j+1)+'. '+opts[j].a],W-34),h=L.length*11+8; y-=h;
       rects.unshift({x:12,y:y,w:W-24,h:h,j:j,L:L}); y-=4; }
     ctx.fillStyle='rgba(7,6,14,.55)'; ctx.fillRect(0,0,W,top);
@@ -14157,7 +14171,9 @@ function guideDraw(ctx){
     rcx(ctx,P.y1,ax-Math.floor(w2/2),y2,w2,1); } }
 function guideSync(){
   var el=document.getElementById('hguide'); if(!el) return;
-  var t=(TUT||PLACE)?null:guideTarget(),key=t?(t.q.id+'|'+ME.map+'|'+(t.warp?t.warp.x+','+t.warp.y:'')):'';
+  var t=(TUT||PLACE)?null:guideTarget();
+  if(t&&curMap().interior&&ME.map!==t.map) t=null;                      /* 작은 건물 안에서는 칩이 출구를 가린다. 캔버스 화살표가 대신 안내(U3) */
+  var key=t?(t.q.id+'|'+ME.map+'|'+(t.warp?t.warp.x+','+t.warp.y:'')):'';
   if(el.__k===key) return; el.__k=key;
   if(!t){ el.hidden=true; return; }
   var here=(ME.map===t.map),dir=(!here&&t.warp)?({right:'오른쪽 ',left:'왼쪽 ',up:'위쪽 ',down:'아래쪽 '}[t.warp.dir]||''):'';   /* 문이 화면 밖에 있어도 어느 쪽인지 알게 */
