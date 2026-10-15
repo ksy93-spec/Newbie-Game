@@ -11,16 +11,16 @@ const dst = path.resolve(process.argv[3] || src);
 const MARK = '/* story-logic 1014 */';
 
 const P = [
-// ── 1. 거처 문 닫기: 취업 전·스물여섯 전에는 원룸 월세까지, 결혼 전에는 원룸 전세까지 ──
+// ── 1. 거처 문 닫기: 취업 전에는 원룸 월세까지, 결혼 전에는 원룸 전세까지 ──
 { id: 'S1 tierCap', old:
 `function tierCap(){ return mqOk('home')?TIERS.length-1:Math.max(8,S.peak>=9?S.peak:8); }`,
   new:
 `function tierCap(){ var c=mqOk('home')?TIERS.length-1:Math.max(8,S.peak>=9?S.peak:8);
-  ${MARK} /* 인생 모드: 취업 전(스물여섯 전)에는 원룸 월세까지, 결혼 준비 전에는 원룸 전세까지만 연다.
+  ${MARK} /* 인생 모드: 취업 전에는 원룸 월세까지, 결혼 준비 전에는 원룸 전세까지만 연다.
      학생이 전세 계약을 하거나, 2장 직후 투룸 전세로 6장 조건을 미리 채우는 일을 막는다. 이미 연 칸은 그대로 */
-  if(lifeOn()&&S.life&&!S.life.over){ if(!mqDone('job')||!lifeAgeOk('lease')) c=Math.min(c,Math.max(6,S.peak)); else if(!mqDone('wedding')) c=Math.min(c,Math.max(7,S.peak)); }
+  if(lifeOn()&&S.life&&!S.life.over){ if(!mqDone('job')) c=Math.min(c,Math.max(6,S.peak)); else if(!mqDone('wedding')) c=Math.min(c,Math.max(7,S.peak)); }
   return c; }
-function tierHoldText(){ if(lifeOn()&&S.life&&S.peak<8) return !mqDone('job')?'전세는 취업하고 나서 열림':!lifeAgeOk('lease')?'전세는 스물여섯 메인 2장에서':'투룸 전세는 결혼 준비(5장) 뒤에'; return '자가는 메인 6장 뒤에 열림'; }` },
+function tierHoldText(){ if(lifeOn()&&S.life&&S.peak<8) return !mqDone('job')?'전세는 취업하고 나서 열림':'투룸 전세는 결혼 준비(5장) 뒤에'; return '자가는 메인 6장 뒤에 열림'; }` },
 { id: 'S1b hold text', old:
 `:hold?'<span class="micro">자가는 메인 6장 뒤에 열림</span>'`,
   new:

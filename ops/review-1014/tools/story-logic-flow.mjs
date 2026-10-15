@@ -29,9 +29,10 @@ async function run(name, want, setup, act) {
   }, [want, setup]);
   console.log(name, 'setup', JSON.stringify(await page.evaluate(() => ({ rent: S.rent, peak: S.peak, tier: S.tier, paid: S.paid, coin: S.coin, idle: mqIdle(), rd: S.rentDone }))));
   if (act) await page.evaluate(act);
+  await page.waitForTimeout(2500); console.log(name, 'dbg', JSON.stringify(await page.evaluate(() => ({ rent: S.rent, t: !!rentPlay.t, idle: mqIdle(), mqp: typeof MQP, wmqp: typeof window.MQP, tut: !!TUT, place: !!PLACE, move: !!MOVE, tip: document.getElementById('itip').hidden, scr: [...document.querySelectorAll('.on')].map((e) => e.id).join(',') }))));
   const seen = [];
   for (let n = 0; n < 6; n++) {
-    try { await page.waitForFunction(() => !!window.MQP, null, { timeout: 6000, polling: 100 }); } catch (e) { break; }
+    try { await page.waitForFunction(() => { if (TUT && !window.MQP) endTalk(); const tp = document.getElementById('itip'); if (!window.MQP && tp && !tp.hidden) closeTip(); return !!window.MQP; }, null, { timeout: 9000, polling: 300 }); } catch (e) { break; }
     seen.push(await page.evaluate(() => ({ cine: MQP.o.title, age: S.life.age, status: S.status, tier: TIERS[S.tier].name })));
     await playCine(page, Array(20).fill(0), { timeout: 30000 });
   }

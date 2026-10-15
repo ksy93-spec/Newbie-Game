@@ -1,0 +1,298 @@
+[tab-quests 390x844] 문제 없음
+[tab-char 390x844] 문제 없음
+[tab-shop 390x844] 문제 없음
+[tab-wiki 390x844] 문제 없음
+[tab-codex 390x844] 문제 없음
+[quest-intro 390x844] 문제 없음
+[quest-q 390x844] 문제 없음
+[quest-explain 390x844] 문제 없음
+[result 390x844] 문제 없음
+[result-fail 390x844] 문제 없음
+[tip-today 390x844] 문제 없음
+[tip-house5 390x844] 문제 없음
+[tip-house6 390x844] 문제 없음
+[tip-house9 390x844] 문제 없음
+[tip-long 390x844] 문제 없음
+[toast-home 390x844]
+  겹침 div#htoast.toast.pix「코인을 많이 얻었어요 ￦1,200 · 청결이」 x button#hguide.guidechip.pix「다음 퀘스트오른쪽 학생지원센터 장학·대출 창」 161x58px
+  겹침 div#htoast.toast.pix「코인을 많이 얻었어요 ￦1,200 · 청결이」 x div#hdpad.dpad「▲ ◀ ▶ ▼」 29x60px
+  겹침 div#htoast.toast.pix「코인을 많이 얻었어요 ￦1,200 · 청결이」 x button「▶」 3x4px
+  글자넘침 div.sceneinfo「원룸 전세다음 거처까지 집 스탯 43방어 7」 sw390/cw390 sh45/ch43
+  글자넘침 button#htoday.todaybtn.pix「오늘 할 일」 sw86/cw82 sh39/ch32
+  작은칸 button「▲」 30x30
+  작은칸 button「◀」 30x30
+  작은칸 button「▶」 30x30
+  작은칸 button「▼」 30x30
+  작은칸 button#htoday.todaybtn.pix「오늘 할 일」 82x32
+[toast-tip 390x844] 문제 없음
+[toast-quest 390x844] 문제 없음
+[tutor-home 390x844]
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 118x116px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x canvas#htutorcv「」 54x96px
+  겹침 button「▲」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 30x28px
+  겹침 button「▲」 x canvas#htutorcv「」 30x18px
+  겹침 button「◀」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 28x30px
+  겹침 button「◀」 x canvas#htutorcv「」 18x30px
+  겹침 button「▶」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 30x30px
+  겹침 button「▼」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 30x30px
+  겹침 button「▼」 x canvas#htutorcv「」 30x30px
+  겹침 button#hmini.minimap.pix「」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 76x70px
+  겹침 canvas#hminicv「」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 66x60px
+  글자넘침 div.sceneinfo「원룸 전세다음 거처까지 집 스탯 43방어 7」 sw390/cw390 sh45/ch43
+  글자넘침 button#htoday.todaybtn.pix「오늘 할 일」 sw86/cw82 sh39/ch32
+  작은칸 button「▲」 30x30
+  작은칸 button「◀」 30x30
+  작은칸 button「▶」 30x30
+  작은칸 button「▼」 30x30
+  작은칸 button#htoday.todaybtn.pix「오늘 할 일」 82x32
+[tutor-choice 390x844]
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 118x118px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x canvas#htutorcv「」 54x96px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x button.topt.pix「공인중개사 말만 듣고 바로 계약하기」 44x28px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x button.topt.pix「등기부등본의 근저당과 소유자 확인」 44x34px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x button.topt.pix「집주인이 말한 시세 그대로 믿기」 44x34px
+  겹침 button「▲」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 30x30px
+  겹침 button「▲」 x canvas#htutorcv「」 30x18px
+  겹침 button「◀」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 28x30px
+  겹침 button「◀」 x canvas#htutorcv「」 18x30px
+  겹침 button「▶」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 30x30px
+  겹침 button「▶」 x button.topt.pix「등기부등본의 근저당과 소유자 확인」 18x28px
+  겹침 button「▼」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 30x30px
+  겹침 button「▼」 x canvas#htutorcv「」 30x30px
+  겹침 button#hmini.minimap.pix「」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 76x70px
+  겹침 button#hmini.minimap.pix「」 x button.topt.pix「등기부등본의 근저당과 소유자 확인」 66x20px
+  겹침 button#hmini.minimap.pix「」 x button.topt.pix「집주인이 말한 시세 그대로 믿기」 66x34px
+  겹침 canvas#hminicv「」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 66x60px
+  겹침 canvas#hminicv「」 x button.topt.pix「등기부등본의 근저당과 소유자 확인」 61x15px
+  겹침 canvas#hminicv「」 x button.topt.pix「집주인이 말한 시세 그대로 믿기」 61x34px
+  글자넘침 div.sceneinfo「원룸 전세다음 거처까지 집 스탯 43방어 7」 sw390/cw390 sh45/ch43
+  글자넘침 button#htoday.todaybtn.pix「오늘 할 일」 sw86/cw82 sh39/ch32
+  작은칸 button「▲」 30x30
+  작은칸 button「◀」 30x30
+  작은칸 button「▶」 30x30
+  작은칸 button「▼」 30x30
+  작은칸 button.topt.pix「공인중개사 말만 듣고 바로 계약하기」 290x34
+  작은칸 button.topt.pix「등기부등본의 근저당과 소유자 확인」 290x34
+  작은칸 button.topt.pix「집주인이 말한 시세 그대로 믿기」 290x34
+  작은칸 button#htoday.todaybtn.pix「오늘 할 일」 82x32
+[travel 390x844]
+  겹침 div#hzone.zonetag.pix「1 동네 · 집 앞」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 100x26px
+  겹침 button#hguide.guidechip.pix「다음 퀘스트오른쪽 학생지원센터 장학·대출 창」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 172x58px
+  겹침 button#hmq.mqchip.pix「다음 메인 1장 첫 취업퀘스트 2개 더」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 122x40px
+  겹침 button#hmq.mqchip.pix「다음 메인 1장 첫 취업퀘스트 2개 더」 x button「원룸 전세내 방·」 120x40px
+  겹침 button#hmenu.menuchip.pix「☰」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 44x44px
+  겹침 button#hmenu.menuchip.pix「☰」 x button「원룸 전세내 방·」 42x20px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 120x120px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x button「닫기」 116x19px
+  겹침 button「▲」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 30x30px
+  겹침 button「▲」 x button「닫기」 30x19px
+  겹침 button「◀」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 30x30px
+  겹침 button「▶」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 30x30px
+  겹침 button「▼」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 30x30px
+  겹침 button#hmini.minimap.pix「」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 76x70px
+  겹침 canvas#hminicv「」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 66x60px
+  글자넘침 div.sceneinfo「원룸 전세다음 거처까지 집 스탯 43방어 7」 sw390/cw390 sh45/ch43
+  글자넘침 button#htoday.todaybtn.pix「오늘 할 일」 sw86/cw82 sh39/ch32
+  작은칸 button「▲」 30x30
+  작은칸 button「◀」 30x30
+  작은칸 button「▶」 30x30
+  작은칸 button「▼」 30x30
+  작은칸 button#htoday.todaybtn.pix「오늘 할 일」 82x32
+[menu 390x844] 문제 없음
+[tab-quests 375x667] 문제 없음
+[tab-char 375x667] 문제 없음
+[tab-shop 375x667] 문제 없음
+[tab-wiki 375x667]
+  글자넘침 button.wrow.pix.paytool「첫 월급 계산기4대보험·소득세를 뺀 실수령액」 sw341/cw341 sh61/ch54
+[tab-codex 375x667] 문제 없음
+[quest-intro 375x667] 문제 없음
+[quest-q 375x667] 문제 없음
+[quest-explain 375x667] 문제 없음
+[result 375x667] 문제 없음
+[result-fail 375x667] 문제 없음
+[tip-today 375x667] 문제 없음
+[tip-house5 375x667] 문제 없음
+[tip-house6 375x667] 문제 없음
+[tip-house9 375x667] 문제 없음
+[tip-long 375x667] 문제 없음
+[toast-home 375x667]
+  겹침 div#htoast.toast.pix「코인을 많이 얻었어요 ￦1,200 · 청결이」 x button#hguide.guidechip.pix「다음 퀘스트오른쪽 학생지원센터 장학·대출 창」 149x58px
+  겹침 div#htoast.toast.pix「코인을 많이 얻었어요 ￦1,200 · 청결이」 x div#hdpad.dpad「▲ ◀ ▶ ▼」 32x60px
+  겹침 div#htoast.toast.pix「코인을 많이 얻었어요 ￦1,200 · 청결이」 x button「▶」 6x4px
+  글자넘침 div.sceneinfo「원룸 전세다음 거처까지 집 스탯 43방어 7」 sw375/cw375 sh45/ch43
+  글자넘침 button#htoday.todaybtn.pix「오늘 할 일」 sw86/cw82 sh39/ch32
+  작은칸 button「▲」 30x30
+  작은칸 button「◀」 30x30
+  작은칸 button「▶」 30x30
+  작은칸 button「▼」 30x30
+  작은칸 button#htoday.todaybtn.pix「오늘 할 일」 82x32
+[toast-tip 375x667] 문제 없음
+[toast-quest 375x667] 문제 없음
+[tutor-home 375x667]
+  겹침 div#hzone.zonetag.pix「1 동네 · 집 앞」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 100x26px
+  겹침 div#hzone.zonetag.pix「1 동네 · 집 앞」 x canvas#htutorcv「」 36x22px
+  겹침 button#hmq.mqchip.pix「다음 메인 1장 첫 취업퀘스트 2개 더」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 122x40px
+  겹침 button#hmq.mqchip.pix「다음 메인 1장 첫 취업퀘스트 2개 더」 x canvas#htutorcv「」 36x40px
+  겹침 button#hmenu.menuchip.pix「☰」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 44x44px
+  글자넘침 div.sceneinfo「원룸 전세다음 거처까지 집 스탯 43방어 7」 sw375/cw375 sh45/ch43
+  글자넘침 button#htoday.todaybtn.pix「오늘 할 일」 sw86/cw82 sh39/ch32
+  작은칸 button「▲」 30x30
+  작은칸 button「◀」 30x30
+  작은칸 button「▶」 30x30
+  작은칸 button「▼」 30x30
+  작은칸 button#htoday.todaybtn.pix「오늘 할 일」 82x32
+[tutor-choice 375x667]
+  겹침 div#hzone.zonetag.pix「1 동네 · 집 앞」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 100x26px
+  겹침 div#hzone.zonetag.pix「1 동네 · 집 앞」 x canvas#htutorcv「」 36x22px
+  겹침 button#hmq.mqchip.pix「다음 메인 1장 첫 취업퀘스트 2개 더」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 122x40px
+  겹침 button#hmq.mqchip.pix「다음 메인 1장 첫 취업퀘스트 2개 더」 x canvas#htutorcv「」 36x40px
+  겹침 button#hmq.mqchip.pix「다음 메인 1장 첫 취업퀘스트 2개 더」 x button.topt.pix「등기부등본의 근저당과 소유자 확인」 70x5px
+  겹침 button#hmenu.menuchip.pix「☰」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 44x44px
+  글자넘침 div.sceneinfo「원룸 전세다음 거처까지 집 스탯 43방어 7」 sw375/cw375 sh45/ch43
+  글자넘침 button#htoday.todaybtn.pix「오늘 할 일」 sw86/cw82 sh39/ch32
+  작은칸 button「▲」 30x30
+  작은칸 button「◀」 30x30
+  작은칸 button「▶」 30x30
+  작은칸 button「▼」 30x30
+  작은칸 button.topt.pix「등기부등본의 근저당과 소유자 확인」 299x26
+  작은칸 button.topt.pix「집주인이 말한 시세 그대로 믿기」 299x26
+  작은칸 button.topt.pix「공인중개사 말만 듣고 바로 계약하기」 299x26
+  작은칸 button#htoday.todaybtn.pix「오늘 할 일」 82x32
+[travel 375x667]
+  겹침 div#hzone.zonetag.pix「1 동네 · 집 앞」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 100x26px
+  겹침 button#hguide.guidechip.pix「다음 퀘스트오른쪽 학생지원센터 장학·대출 창」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 157x58px
+  겹침 button#hguide.guidechip.pix「다음 퀘스트오른쪽 학생지원센터 장학·대출 창」 x button「역 앞메인 1장을 마치면잠김」 157x44px
+  겹침 button#hguide.guidechip.pix「다음 퀘스트오른쪽 학생지원센터 장학·대출 창」 x button「은행 골목5 · 계약과 돈할 일 1」 157x9px
+  겹침 button#hmq.mqchip.pix「다음 메인 1장 첫 취업퀘스트 2개 더」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 122x40px
+  겹침 button#hmq.mqchip.pix「다음 메인 1장 첫 취업퀘스트 2개 더」 x button「원룸 전세내 방·」 120x40px
+  겹침 button#hmenu.menuchip.pix「☰」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 44x44px
+  겹침 button#hmenu.menuchip.pix「☰」 x button「원룸 전세내 방·」 42x20px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 120x120px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x button「전통시장3 · 고용센터 남쪽·」 116x7px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x button「회사 앞4 · 첫 출근 이후할 일 2」 116x44px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x button「역 앞메인 1장을 마치면잠김」 116x44px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x button「은행 골목5 · 계약과 돈할 일 1」 116x13px
+  겹침 button「▲」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 30x30px
+  겹침 button「▲」 x button「전통시장3 · 고용센터 남쪽·」 30x7px
+  겹침 button「▲」 x button「회사 앞4 · 첫 출근 이후할 일 2」 30x19px
+  겹침 button「◀」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 30x30px
+  겹침 button「◀」 x button「회사 앞4 · 첫 출근 이후할 일 2」 26x23px
+  겹침 button「◀」 x button「역 앞메인 1장을 마치면잠김」 26x3px
+  겹침 button「▶」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 30x30px
+  겹침 button「▶」 x button「회사 앞4 · 첫 출근 이후할 일 2」 30x23px
+  겹침 button「▶」 x button「역 앞메인 1장을 마치면잠김」 30x3px
+  겹침 button「▼」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 30x30px
+  겹침 button「▼」 x button「역 앞메인 1장을 마치면잠김」 30x30px
+  겹침 button#hmini.minimap.pix「」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 76x70px
+  겹침 button#hmini.minimap.pix「」 x button「회사 앞4 · 첫 출근 이후할 일 2」 74x7px
+  겹침 button#hmini.minimap.pix「」 x button「역 앞메인 1장을 마치면잠김」 74x44px
+  겹침 button#hmini.minimap.pix「」 x button「은행 골목5 · 계약과 돈할 일 1」 74x11px
+  겹침 canvas#hminicv「」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 66x60px
+  겹침 canvas#hminicv「」 x button「역 앞메인 1장을 마치면잠김」 66x44px
+  겹침 canvas#hminicv「」 x button「은행 골목5 · 계약과 돈할 일 1」 66x6px
+  글자넘침 div.sceneinfo「원룸 전세다음 거처까지 집 스탯 43방어 7」 sw375/cw375 sh45/ch43
+  글자넘침 button#htoday.todaybtn.pix「오늘 할 일」 sw86/cw82 sh39/ch32
+  작은칸 button「▲」 30x30
+  작은칸 button「◀」 30x30
+  작은칸 button「▶」 30x30
+  작은칸 button「▼」 30x30
+  작은칸 button#htoday.todaybtn.pix「오늘 할 일」 82x32
+[menu 375x667] 문제 없음
+[tab-quests 412x915] 문제 없음
+[tab-char 412x915] 문제 없음
+[tab-shop 412x915] 문제 없음
+[tab-wiki 412x915] 문제 없음
+[tab-codex 412x915] 문제 없음
+[quest-intro 412x915] 문제 없음
+[quest-q 412x915] 문제 없음
+[quest-explain 412x915] 문제 없음
+[result 412x915] 문제 없음
+[result-fail 412x915] 문제 없음
+[tip-today 412x915] 문제 없음
+[tip-house5 412x915] 문제 없음
+[tip-house6 412x915] 문제 없음
+[tip-house9 412x915] 문제 없음
+[tip-long 412x915] 문제 없음
+[toast-home 412x915]
+  겹침 div#htoast.toast.pix「코인을 많이 얻었어요 ￦1,200 · 청결이」 x button#hguide.guidechip.pix「다음 퀘스트오른쪽 학생지원센터 장학·대출 창」 177x58px
+  겹침 div#htoast.toast.pix「코인을 많이 얻었어요 ￦1,200 · 청결이」 x div#hdpad.dpad「▲ ◀ ▶ ▼」 23x60px
+  글자넘침 div.sceneinfo「원룸 전세다음 거처까지 집 스탯 43방어 7」 sw412/cw412 sh45/ch43
+  글자넘침 button#htoday.todaybtn.pix「오늘 할 일」 sw86/cw82 sh39/ch32
+  작은칸 button「▲」 30x30
+  작은칸 button「◀」 30x30
+  작은칸 button「▶」 30x30
+  작은칸 button「▼」 30x30
+  작은칸 button#htoday.todaybtn.pix「오늘 할 일」 82x32
+[toast-tip 412x915] 문제 없음
+[toast-quest 412x915] 문제 없음
+[tutor-home 412x915]
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 118x116px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x canvas#htutorcv「」 54x96px
+  겹침 button「▲」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 30x28px
+  겹침 button「▲」 x canvas#htutorcv「」 30x18px
+  겹침 button「◀」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 28x30px
+  겹침 button「◀」 x canvas#htutorcv「」 18x30px
+  겹침 button「▶」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 30x30px
+  겹침 button「▼」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 30x30px
+  겹침 button「▼」 x canvas#htutorcv「」 30x30px
+  겹침 button#hmini.minimap.pix「」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 76x70px
+  겹침 canvas#hminicv「」 x div#htutor.tutor.pix「부동산 사장어, 새로 온 얼굴이네. 나는 이」 66x60px
+  글자넘침 div.sceneinfo「원룸 전세다음 거처까지 집 스탯 43방어 7」 sw412/cw412 sh45/ch43
+  글자넘침 button#htoday.todaybtn.pix「오늘 할 일」 sw86/cw82 sh39/ch32
+  작은칸 button「▲」 30x30
+  작은칸 button「◀」 30x30
+  작은칸 button「▶」 30x30
+  작은칸 button「▼」 30x30
+  작은칸 button#htoday.todaybtn.pix「오늘 할 일」 82x32
+[tutor-choice 412x915]
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 118x118px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x canvas#htutorcv「」 54x96px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x button.topt.pix「등기부등본의 근저당과 소유자 확인」 44x28px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x button.topt.pix「집주인이 말한 시세 그대로 믿기」 44x34px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x button.topt.pix「공인중개사 말만 듣고 바로 계약하기」 44x34px
+  겹침 button「▲」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 30x30px
+  겹침 button「▲」 x canvas#htutorcv「」 30x18px
+  겹침 button「◀」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 28x30px
+  겹침 button「◀」 x canvas#htutorcv「」 18x30px
+  겹침 button「▶」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 30x30px
+  겹침 button「▶」 x button.topt.pix「집주인이 말한 시세 그대로 믿기」 18x28px
+  겹침 button「▼」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 30x30px
+  겹침 button「▼」 x canvas#htutorcv「」 30x30px
+  겹침 button#hmini.minimap.pix「」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 76x70px
+  겹침 button#hmini.minimap.pix「」 x button.topt.pix「집주인이 말한 시세 그대로 믿기」 66x20px
+  겹침 button#hmini.minimap.pix「」 x button.topt.pix「공인중개사 말만 듣고 바로 계약하기」 66x34px
+  겹침 canvas#hminicv「」 x div#htutor.tutor.pix「부동산 사장계약서에 꼭 확인해야 하는 것은 」 66x60px
+  겹침 canvas#hminicv「」 x button.topt.pix「집주인이 말한 시세 그대로 믿기」 61x15px
+  겹침 canvas#hminicv「」 x button.topt.pix「공인중개사 말만 듣고 바로 계약하기」 61x34px
+  글자넘침 div.sceneinfo「원룸 전세다음 거처까지 집 스탯 43방어 7」 sw412/cw412 sh45/ch43
+  글자넘침 button#htoday.todaybtn.pix「오늘 할 일」 sw86/cw82 sh39/ch32
+  작은칸 button「▲」 30x30
+  작은칸 button「◀」 30x30
+  작은칸 button「▶」 30x30
+  작은칸 button「▼」 30x30
+  작은칸 button.topt.pix「등기부등본의 근저당과 소유자 확인」 312x34
+  작은칸 button.topt.pix「집주인이 말한 시세 그대로 믿기」 312x34
+  작은칸 button.topt.pix「공인중개사 말만 듣고 바로 계약하기」 312x34
+  작은칸 button#htoday.todaybtn.pix「오늘 할 일」 82x32
+[travel 412x915]
+  겹침 div#hzone.zonetag.pix「1 동네 · 집 앞」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 100x26px
+  겹침 button#hguide.guidechip.pix「다음 퀘스트오른쪽 학생지원센터 장학·대출 창」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 194x58px
+  겹침 button#hmq.mqchip.pix「다음 메인 1장 첫 취업퀘스트 2개 더」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 122x40px
+  겹침 button#hmq.mqchip.pix「다음 메인 1장 첫 취업퀘스트 2개 더」 x button「원룸 전세내 방·」 120x40px
+  겹침 button#hmenu.menuchip.pix「☰」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 44x44px
+  겹침 button#hmenu.menuchip.pix「☰」 x button「원룸 전세내 방·」 42x20px
+  겹침 div#hdpad.dpad「▲ ◀ ▶ ▼」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 120x120px
+  겹침 button「▲」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 30x30px
+  겹침 button「◀」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 30x30px
+  겹침 button「▶」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 30x30px
+  겹침 button「▼」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 30x30px
+  겹침 button#hmini.minimap.pix「」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 76x70px
+  겹침 canvas#hminicv「」 x div#htravel.travel「어디로 갈까요 · 눌러서 바로 이동원룸 전세」 66x60px
+  글자넘침 div.sceneinfo「원룸 전세다음 거처까지 집 스탯 43방어 7」 sw412/cw412 sh45/ch43
+  글자넘침 button#htoday.todaybtn.pix「오늘 할 일」 sw86/cw82 sh39/ch32
+  작은칸 button「▲」 30x30
+  작은칸 button「◀」 30x30
+  작은칸 button「▶」 30x30
+  작은칸 button「▼」 30x30
+  작은칸 button#htoday.todaybtn.pix「오늘 할 일」 82x32
+[menu 412x915] 문제 없음

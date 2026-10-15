@@ -1,0 +1,58 @@
+=== 412
+town 미니맵 76x70 안내칩 194x58
+   첫화면 가림: 간판「우리 집」{"mq":85}
+   바로옆에서도 가림: 간판「우리 집」@1,2 {"mq":85}
+campus 미니맵 76x70 안내칩 194x58
+   첫화면 가림: 사람/물건「게임 동아리 부장」{"guide":36} / 안내판「운동장 안내판」{"mini":44}
+center 미니맵 76x70 안내칩 194x58
+office 미니맵 76x70 안내칩 194x58
+bank 미니맵 76x70 안내칩 194x58
+   첫화면 가림: 사람/물건「벼룩시장 상인」{"mini":44}
+town_mart 미니맵 43x34 안내칩 194x58
+town_hall 미니맵 46x34 안내칩 194x58
+town_estate 미니맵 52x40 안내칩 194x58
+campus_lib 미니맵 46x37 안내칩 194x58
+campus_help 미니맵 46x37 안내칩 194x58
+campus_cafe 미니맵 46x37 안내칩 194x58
+center_lobby 미니맵 52x37 안내칩 194x58
+center_nhis 미니맵 46x34 안내칩 194x58
+office_lobby 미니맵 52x37 안내칩 194x58
+bank_branch 미니맵 46x34 안내칩 194x58
+bank_laundry 미니맵 37x31 안내칩 194x58
+villa 미니맵 76x70 안내칩 194x58
+villa_new 미니맵 40x34 안내칩 194x58
+villa_old 미니맵 46x37 안내칩 194x58
+market 미니맵 76x70 안내칩 194x58
+   첫화면 가림: 간판「잡화」{"zone":88}
+market_fish 미니맵 40x31 안내칩 194x58
+market_food 미니맵 46x34 안내칩 194x58
+station 미니맵 76x70 안내칩 194x58
+station_hall 미니맵 52x37 안내칩 -
+rest 미니맵 76x58 안내칩 -
+rest_hall 미니맵 46x34 안내칩 -
+korea 미니맵 76x94 안내칩 -
+gangneung 미니맵 76x94 안내칩 - DOM겹침: menuxnear 44x15
+   첫화면 가림: 간판「커피거리 카페」{"mq":35}
+   바로옆에서도 가림: 간판「커피거리 카페」@1,2 {"mq":35}
+gangneung_ojuk 미니맵 76x94 안내칩 -
+gangneung_cafe 미니맵 46x34 안내칩 -
+jeonju 미니맵 76x58 안내칩 -
+   첫화면 가림: 간판「게스트하우스」{"mq":69}
+jeonju_market 미니맵 76x58 안내칩 -
+   첫화면 가림: 간판「남부시장」{"mq":39}
+   바로옆에서도 가림: 간판「남부시장」@1,2 {"mq":35}
+busan 미니맵 76x58 안내칩 -
+   첫화면 가림: 간판「렌터카」{"mq":63}
+   바로옆에서도 가림: 간판「렌터카」@1,2 {"mq":63}
+busan_gamcheon 미니맵 76x58 안내칩 -
+busan_jagalchi 미니맵 76x58 안내칩 -
+gyeongju 미니맵 76x58 안내칩 -
+   첫화면 가림: 간판「한옥 스테이」{"mq":69}
+gyeongju_tomb 미니맵 76x58 안내칩 -
+gyeongju_inn 미니맵 40x31 안내칩 -
+daegu 미니맵 76x58 안내칩 - DOM겹침: menuxnear 44x15
+daegu_market 미니맵 76x58 안내칩 -
+   첫화면 가림: 간판「서문시장」{"mq":39}
+   바로옆에서도 가림: 간판「서문시장」@1,2 {"mq":35}
+daegu_kim 미니맵 76x58 안내칩 -
+jeonju_inn 미니맵 40x31 안내칩 -
