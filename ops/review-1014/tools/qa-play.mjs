@@ -179,7 +179,7 @@ await page.click('#obnext'); await add(2);
 await drain();
 await shot('home-first'); await log('HOME', '첫 홈 화면');
 
-let lastAge = 0, stuckN = 0, qn = 0, mainRep = 0, lastSig = '';
+let moveFail = {}; let lastAge = 0, stuckN = 0, qn = 0, mainRep = 0, lastSig = '';
 const ageShot = new Set();
 for (let it = 0; it < 900 && !FINISHED && SIM < MAXMIN * 60; it++) {
   await drain();
@@ -196,9 +196,10 @@ for (let it = 0; it < 900 && !FINISHED && SIM < MAXMIN * 60; it++) {
     await page.waitForTimeout(900); stuckN = 0; continue;
   }
   // 2) 더 좋은 거처가 열렸고 돈이 되면 옮긴다(캐릭터 탭 → 거처 → 옮기기 와 같음)
-  const mv = await page.evaluate(() => { let best = null; for (let i = S.peak; i > S.tier; i--) { if (lifeSkip(i)) continue; if (S.coin >= tierCost(i) + 60) { best = i; break; } } if (best == null) return null;
-    const from = S.tier, r = tierMove(best); if (r.ok) { save(); render('home'); } return { from: tierNameOf(S, from), to: tierNameOf(S, best), r }; });
+  const mv = await page.evaluate((bad) => { let best = null; for (let i = S.peak; i > S.tier; i--) { if (lifeSkip(i) || bad.includes(i)) continue; if (S.coin >= tierCost(i) + 60) { best = i; break; } } if (best == null) return null;
+    const from = S.tier, r = tierMove(best); if (r.ok) { save(); render('home'); } return { from: tierNameOf(S, from), to: tierNameOf(S, best), r }; }, Object.keys(moveFail).filter((k) => moveFail[k] >= 2).map(Number));
   if (mv) { await add(20); await log('MOVE', `거처 옮기기 시도(evaluate tierMove, UI의 '옮기기'와 같은 함수) ${mv.from} → ${mv.to}: ${JSON.stringify(mv.r)}`);
+    if (!mv.r.ok) moveFail[mv.r.i] = (moveFail[mv.r.i] || 0) + 1; else moveFail = {};
     if (mv.r.rent) await page.evaluate(() => rentPlay());
     if (mv.r.lease && !s.next.match(/lease/)) { await page.evaluate(() => leaseGoNext()); }
     await page.waitForTimeout(600); continue; }
