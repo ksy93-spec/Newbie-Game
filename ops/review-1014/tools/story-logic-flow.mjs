@@ -39,7 +39,7 @@ async function run(name, want, setup, act) {
   console.log(name, JSON.stringify({ seen, end, logs }));
   await ctx.close();
 }
-await run('자취4년제', "q.living==='자취'&&q.income!=='넉넉'&&q.path==='4년제'", '', null);
+await run('자취4년제', "q.living==='자취'&&q.income!=='넉넉'&&q.path==='4년제'", '', "rentAuto()");
 await run('기숙사4년제', "q.living==='기숙사'&&q.path==='4년제'", 'S.stats.ju=40; S.peak=6;',
-  "lifeBeforeCh('job', function(){ S.mq.done.job='good'; lifeTick(); save(); render('home'); })");
+  "lifeBeforeCh('job', function(){ S.mq.done.job='good'; lifeTick(); save(); render('home'); rentAuto(); })");
 await browser.close();
