@@ -9417,6 +9417,7 @@ function nextStep(){
   var n=MOVE.path[MOVE.pi];
   if(!petNudge(n.x,n.y)){ MOVE=null; ME.step=0; savePos(); drawScene(); return; }
   MOVE.fx=ME.tx; MOVE.fy=ME.ty; MOVE.tx=n.x; MOVE.ty=n.y; MOVE.t=0; MOVE.dur=(perkSum('speed')&&rideHere())?3:4;
+  if(GUIDE_AUTO) MOVE.dur=2;                                 /* 안내 칩으로 여러 맵을 건널 때는 두 배로 빨리 걷는다 */
   ME.dir=(n.x>ME.tx)?2:(n.x<ME.tx)?1:(n.y<ME.ty)?3:0;
   ME.tx=n.x; ME.ty=n.y;
 }
@@ -13666,7 +13667,8 @@ var LIFE_EV=[
            {t:'여러 곳을 비교하고 평일로 날짜를 잡는다',d:{xp:25,coin:20},msg:'성수기를 피해 처음 견적보다 싸게 했다.'}],
   tip:'이사는 전화 견적만 믿지 말고 방문이나 영상 견적을 받아 총액을 계약서에 적어 두게. 이사철에는 값이 오르니 여러 곳을 비교하고.'}
 ];
-function lifeEvMonth(){ return lifeOn()&&S.life?1+((S.life.age*5+(S.life.evn||0))%12):+dayKey().slice(5,7); }
+/* 나이마다 5달씩 밀어 12년이면 열두 달을 다 돈다. (예전에는 이벤트 수를 더해 한 해에 두 달만 번갈아 나와 철 이벤트가 거의 안 떴다) */
+function lifeEvMonth(){ return lifeOn()&&S.life?1+((S.life.age*5)%12):+dayKey().slice(5,7); }
 function lifeEvOk(e,m){ return (!e.when||e.when())&&(!e.months||e.months.indexOf(m)>=0); }
 function lifeEvPick(month){
   var m=month||lifeEvMonth();
@@ -14069,7 +14071,40 @@ var GUIDE_AUTO=0,MVB=null;
    다른 맵 건물을 고르면 길을 못 찾아 동네로 되돌아가기를 되풀이했다(재학 중 → 학생지원센터) */
 function guideMapOf(q){ var did=QPLACE[q.id],mk=null; if(!did) return null;
   Object.keys(MAPS).forEach(function(k){ (MAPS[k].spots||[]).forEach(function(s){ if(s.kind==='desk'&&s.id===did) mk=k; }); }); return mk; }
-function guideReach(q){ var mk=guideMapOf(q); return !!mk&&(mk==='town'||(MAPS.town.warps||[]).some(function(x){ return x.to===mk; })); }
+/* 맵 사이 길 찾기(리뷰 1014): 걸어서 이어진 문(warp)과 맵 가장자리(edges)로 목표 맵까지 가는 길을 넓이 우선으로 찾는다.
+   차·고속도로·기름값 길, 아직 안 열린 맵과 지역(메인 장 잠금)은 뺀다. 예전에는 동네와 동네 문 하나 거리만 찾아서
+   퀘스트 71개 중 50개를 안내하지 못했다 */
+function guideHopOk(w){ return !(w.needCar||w.to==='korea'||w.fuel||w.to==='room'||!MAPS[w.to]||(w.mq&&typeof mqOk==='function'&&!mqOk(w.mq))||!mapOpen(w.to)); }
+var GROUTE={t:0,c:{}};
+function guideRoute(to,from){
+  from=from||ME.map; if(from===to) return []; if(!MAPS[to]) return null;
+  var now=Date.now(),ck=from+'>'+to+'|'+S.lv; if(now-GROUTE.t>800){ GROUTE={t:now,c:{}}; } if(ck in GROUTE.c) return GROUTE.c[ck];
+  return (GROUTE.c[ck]=guideRoute_(to,from)); }
+function guideRoute_(to,from){
+  var prev={},q=[from],seen={}; seen[from]=1;
+  while(q.length){ var k=q.shift(),m=MAPS[k]; if(!m) continue; if(k===to) break;
+    var nx=[];
+    (m.warps||[]).forEach(function(w){ if(guideHopOk(w)) nx.push([w.to,{warp:w}]); });
+    var E=m.edges||{}; Object.keys(E).forEach(function(d){ if(MAPS[E[d]]&&mapOpen(E[d])) nx.push([E[d],{edge:d}]); });
+    nx.forEach(function(p){ if(seen[p[0]]) return; seen[p[0]]=1; prev[p[0]]={from:k,via:p[1]}; q.push(p[0]); }); }
+  if(!prev[to]) return null;
+  var path=[],k2=to; while(k2!==from){ path.unshift(prev[k2]); k2=prev[k2].from; } return path; }
+/* 지금 맵에서 밟을 다음 칸: 문이면 그 칸, 가장자리면 그 줄에서 걸어서 닿는 가장 가까운 칸 */
+var GHOP={k:'',v:null};
+function guideHop(to){
+  var hk=ME.map+'|'+ME.tx+','+ME.ty+'|'+to+'|'+S.lv; if(GHOP.k===hk) return GHOP.v;
+  GHOP.k=hk; return (GHOP.v=guideHop_(to)); }
+function guideHop_(to){
+  var r=guideRoute(to); if(!r||!r.length) return null;
+  var v=r[0].via,m=curMap();
+  if(v.warp) return {x:v.warp.x,y:v.warp.y,dir:v.warp.x>ME.tx?'right':v.warp.x<ME.tx?'left':v.warp.y<ME.ty?'up':'down'};
+  var cand=[],i;
+  if(v.edge==='west'||v.edge==='east'){ var x=v.edge==='west'?0:m.w-1; for(i=0;i<m.h;i++) cand.push({x:x,y:i}); }
+  else { var y=v.edge==='north'?0:m.h-1; for(i=0;i<m.w;i++) cand.push({x:i,y:y}); }
+  cand=cand.filter(function(c){ return walkable(m,c.x,c.y); }).sort(function(a,b){ return (Math.abs(a.x-ME.tx)+Math.abs(a.y-ME.ty))-(Math.abs(b.x-ME.tx)+Math.abs(b.y-ME.ty)); });
+  for(i=0;i<cand.length&&i<12;i++){ var p=pathTo(m,cand[i].x,cand[i].y); if(p) return {x:cand[i].x,y:cand[i].y,dir:{west:'left',east:'right',north:'up',south:'down'}[v.edge]}; }
+  return null; }
+function guideReach(q){ var mk=guideMapOf(q); return !!mk&&!!guideRoute(mk); }
 function guideQuest(){
   if(!S||!S.onboarded||!S.tut) return null;
   if(S.done.length) return guideNext();
@@ -14091,14 +14126,14 @@ function guideTarget(){
   var did=QPLACE[q.id],mk=null,sp=null,w=null;
   Object.keys(MAPS).forEach(function(k){ (MAPS[k].spots||[]).forEach(function(s){ if(s.kind==='desk'&&s.id===did){ mk=k; sp=s; } }); });
   if(!mk) return null;
-  (MAPS.town.warps||[]).forEach(function(x){ if(x.to===mk) w=x; });
+  if(ME.map!==mk) w=guideHop(mk);
   return {q:q,map:mk,spot:sp,warp:w}; }
 function guideDraw(ctx){
   if(TUT||PLACE) return;
   var t=guideTarget(); if(!t) return;
   var tx,ty,up;
   if(ME.map===t.map){ tx=t.spot.x; ty=t.spot.y; up=0; }
-  else if(ME.map==='town'&&t.warp){ tx=t.warp.x; ty=t.warp.y; up=1; }
+  else if(t.warp){ tx=t.warp.x; ty=t.warp.y; up=1; }
   else return;
   var f=Math.floor(TICK/4),c=(f%2)?P.y1:P.s4,x0=tx*TS,y0=ty*TS,bob=[0,1,2,1][f%4],r;
   rcx(ctx,c,x0-1,y0-1,TS+2,2); rcx(ctx,c,x0-1,y0+TS-1,TS+2,2); rcx(ctx,c,x0-1,y0-1,2,TS+2); rcx(ctx,c,x0+TS-1,y0-1,2,TS+2);
@@ -14109,10 +14144,10 @@ function guideDraw(ctx){
     rcx(ctx,P.y1,ax-Math.floor(w2/2),y2,w2,1); } }
 function guideSync(){
   var el=document.getElementById('hguide'); if(!el) return;
-  var t=(TUT||PLACE)?null:guideTarget(),key=t?(t.q.id+'|'+ME.map):'';
+  var t=(TUT||PLACE)?null:guideTarget(),key=t?(t.q.id+'|'+ME.map+'|'+(t.warp?t.warp.x+','+t.warp.y:'')):'';
   if(el.__k===key) return; el.__k=key;
   if(!t){ el.hidden=true; return; }
-  var here=(ME.map===t.map),dir=(!here&&ME.map==='town'&&t.warp)?(t.warp.x>ME.tx?'오른쪽 ':'왼쪽 '):'';   /* 문이 화면 밖에 있어도 어느 쪽인지 알게 */
+  var here=(ME.map===t.map),dir=(!here&&t.warp)?({right:'오른쪽 ',left:'왼쪽 ',up:'위쪽 ',down:'아래쪽 '}[t.warp.dir]||''):'';   /* 문이 화면 밖에 있어도 어느 쪽인지 알게 */
   el.hidden=false;
   el.innerHTML='<b>'+(S.done.length?'다음 퀘스트':'여기서 첫 상담')+'</b>'+dir+esc(MAPS[t.map].name)+' '+esc(t.spot.label)+' 창구 · '+(here?'눌러서 상담':'눌러서 걷기');
   el.onclick=guideGo; }
@@ -14126,17 +14161,15 @@ function guideStep(t){
     if(Math.abs(s.x-ME.tx)+Math.abs(s.y-ME.ty)<=1){ GUIDE_AUTO=0; faceSpot(s); return triggerSpot(s); }
     var near=adjacentTo(m,s); if(!near){ GUIDE_AUTO=0; return; }
     return goTo(near.x,near.y,function(){ GUIDE_AUTO=0; faceSpot(s); drawScene(); triggerSpot(s); }); }
-  if(ME.map==='town'&&t.warp){ goTo(t.warp.x,t.warp.y,null); return guideWait(t); }
-  if(ME.map==='town'){ GUIDE_AUTO=0; return; }                /* 동네에서 갈 길이 없으면 멈춘다(되풀이 방지) */
-  if(S.onFoot){ S.onFoot=false; S.park=null; }                /* 지도에서 옮길 때와 같다 */
-  enterMap('town',MAPS.town.spawn.x,MAPS.town.spawn.y);
-  setTimeout(function(){ if(GUIDE_AUTO) guideStep(t); },300); }
+  if(t.warp){ var from=ME.map; goTo(t.warp.x,t.warp.y,null); return guideWait(t,from); }
+  GUIDE_AUTO=0; toast('여기서는 걸어서 갈 길이 없어요 · 지도에서 옮겨 보세요'); }   /* 갈 길이 없으면 멈춘다(되풀이 방지) */
 /* 문을 지나 건물 안으로 들어가면 이어서 창구까지 걷는다 */
-function guideWait(t){
+function guideWait(t,from){
   setTimeout(function(){
-    if(!GUIDE_AUTO||Date.now()-GUIDE_AUTO>10000){ GUIDE_AUTO=0; return; }
-    if(MOVE||TUT) return guideWait(t);
-    if(ME.map===t.map) return guideStep(t);
+    if(!GUIDE_AUTO||Date.now()-GUIDE_AUTO>45000){ GUIDE_AUTO=0; return; }
+    if(TUT){ GUIDE_AUTO=Date.now(); return guideWait(t,from); }   /* 말풍선을 읽는 동안은 시간을 세지 않는다 */
+    if(MOVE) return guideWait(t,from);
+    if(ME.map!==from){ var nt=guideTarget(); return nt&&nt.q.id===t.q.id?guideStep(nt):(GUIDE_AUTO=0); }   /* 맵을 하나 건너면 다음 길을 다시 찾아 이어 걷는다 */
     GUIDE_AUTO=0; },250); }
 /* 첫 이사: 박스에서 움막으로. 결과 화면 위에 잠깐 띄운다 */
 function moveBanner(o){
