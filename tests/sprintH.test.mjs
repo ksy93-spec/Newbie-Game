@@ -265,3 +265,17 @@ test('12. 리뷰 1014 QA: 인생 모드는 생일마다 체력·포만감이 찬
   assert.deepEqual(logs, []);
   await ctx.close();
 });
+
+test('13. 리뷰 1014 인연: 스무 살에 첫 만남이 열리고, 고르면 호감이 쌓이며 채점 없는 보기는 등급에 안 들어간다', async () => {
+  const { ctx, page, logs } = await open();
+  await page.evaluate(() => { lifeNew(); const p = lifeGen(lifeSeedNew()); S.life.prof = p; S.life.seed = p.seed; birthApply(); S.onboarded = true; S.tut = 1; S.tuts = ['intro']; save(); render('home'); });
+  const due = await page.evaluate(() => { const d = loveDue(S.life.age); return d && d.id; });
+  assert.ok(due, '스무 살에 열리는 인연 이벤트');
+  await page.evaluate((id) => lovePlay(id), due);
+  await page.waitForFunction(() => window.MQP, null, { timeout: 8000 });
+  await playCine(page, [0, 0, 0, 0, 0, 0], { timeout: 60000 });
+  const r = await page.evaluate(() => { const L = loveS(); return { aff: Object.values(L.aff || {}).reduce((a, b) => a + b, 0), log: L.log.length, seen: Object.keys(L.seen || {}).length }; });
+  assert.ok(r.aff > 0 && r.seen > 0, JSON.stringify(r));
+  assert.deepEqual(logs, []);
+  await ctx.close();
+});
