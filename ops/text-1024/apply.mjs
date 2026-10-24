@@ -1,11 +1,11 @@
 // haiku 에이전트들이 낸 고친 문장(out/*.json)을 게임에 넣는다. 위험한 고침은 버리고 이유를 적는다.
 // 실행: node ops/text-1024/apply.mjs [게임 html=prototype/newbie-quest-demo.html] [출력=같은 파일]
 import fs from 'fs'; import * as acorn from 'acorn';
-const IN = process.argv[2] || 'prototype/newbie-quest-demo.html', OUT = process.argv[3] || IN;
+const IN = process.argv[2] || 'prototype/newbie-quest-demo.html', OUT = process.argv[3] || IN, OUTDIR = process.env.OUTDIR || 'ops/text-1024/out';
 const html = fs.readFileSync(IN, 'utf8');
 const S = JSON.parse(fs.readFileSync('ops/text-1024/strings.json', 'utf8')), byId = Object.fromEntries(S.map((o) => [o.id, o]));
-const edits = {}; for (const f of fs.readdirSync('ops/text-1024/out').filter((f) => f.endsWith('.json'))) {
-  try { Object.assign(edits, JSON.parse(fs.readFileSync('ops/text-1024/out/' + f, 'utf8'))); } catch (e) { console.log('깨진 파일', f, e.message); } }
+const edits = {}; for (const f of fs.readdirSync(OUTDIR).filter((f) => f.endsWith('.json'))) {
+  try { Object.assign(edits, JSON.parse(fs.readFileSync(OUTDIR + '/' + f, 'utf8'))); } catch (e) { console.log('깨진 파일', f, e.message); } }
 const sig = (t, re) => (t.match(re) || []).join('|');
 const checks = [
   ['숫자', /\d+([.,]\d+)*/g], ['자리표시', /\{[^}]*\}/g], ['태그', /<[^>]+>/g], ['엔티티', /&[a-z#0-9]+;/g], ['원화', /[￦₩]/g], ['영문', /[A-Za-z]{2,}/g]];
