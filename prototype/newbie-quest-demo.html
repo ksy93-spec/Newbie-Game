@@ -722,6 +722,72 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
 .tutor .topt{min-height:40px;}                          /* 작은 터치 칸(U8) */
 .dslot canvas{width:40px!important;height:40px!important;}   /* 장비 칸 이름이 잘리지 않게(U11) */
 .paytool{height:auto;flex-shrink:0;}                    /* 계산기 카드가 줄어 글자가 잘리던 것(U12) */
+
+/* 태어남 카드(리뷰 1110): 첫인상. 머리말을 걷고 카드 한 장에 인물·요약·난이도를 담는다 */
+#onboard.birth .scroll>div:first-child{display:none!important;}
+#onboard.birth .scroll{gap:10px;padding-bottom:calc(84px + env(safe-area-inset-bottom));}
+#onboard.birth #obbody{margin:auto 0;gap:10px!important;}
+#onboard.birth #obpips{display:none;}
+.bhead{display:flex;align-items:center;justify-content:space-between;}
+.bpips{display:flex;gap:5px;} .bpips i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.2);} .bpips i.on{background:var(--acc,#FFC53C);}
+.bcard2{position:relative;border-radius:18px;padding:12px 14px 10px;color:#F4F2FF;background:linear-gradient(165deg,#2B3470 0%,#1B2148 55%,#151936 100%);
+  border:2px solid #FFC53C;box-shadow:0 0 0 4px rgba(255,197,60,.14),0 14px 34px rgba(0,0,0,.5);font-size:12px;line-height:1.5;overflow:hidden;}
+.bcard2::before{content:'';position:absolute;inset:0;background:radial-gradient(90% 55% at 78% 0%,rgba(255,197,60,.22),transparent 60%);pointer-events:none;}
+.bcard2.easy{border-color:#7BD98A;box-shadow:0 0 0 4px rgba(123,217,138,.14),0 14px 34px rgba(0,0,0,.5);}
+.bcard2.hard{border-color:#FF8A70;box-shadow:0 0 0 4px rgba(255,138,112,.14),0 14px 34px rgba(0,0,0,.5);}
+.bcard2>*{position:relative;}
+.bc-top{display:flex;justify-content:space-between;align-items:center;font-size:11px;}
+.bc-diff{padding:2px 9px;border-radius:99px;background:rgba(255,197,60,.18);color:#FFE7A8;}
+.easy .bc-diff{background:rgba(123,217,138,.18);color:#B9F2C2;} .hard .bc-diff{background:rgba(255,138,112,.18);color:#FFC4B6;}
+.bc-no{color:#8D94C4;font-size:10px;}
+.bc-hero{display:flex;align-items:flex-end;gap:12px;margin:6px 0 8px;}
+.bc-hero canvas{width:74px;height:auto;flex:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45));}
+.bc-id{display:flex;flex-direction:column;gap:1px;padding-bottom:6px;min-width:0;}
+.bc-id b{font-size:26px;line-height:1.15;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35);} .bc-id span{font-size:11px;color:#B8BEEA;}
+.bc-place{font-size:12px;color:#DCE0FF;word-break:keep-all;}
+.bc-chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0;}
+.bchip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);font-size:12px;color:#fff;}
+.bchip i{font-style:normal;font-size:10px;color:#9AA2D6;}
+.bc-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.bc-nums div{background:rgba(8,10,28,.55);border-radius:10px;padding:6px 4px;text-align:center;min-width:0;}
+.bc-nums span{display:block;font-size:10px;color:#9AA2D6;} .bc-nums b{font-size:15px;color:#FFE7A8;white-space:nowrap;}
+.bc-say{margin-top:8px;font-size:12px;color:#fff;word-break:keep-all;}
+.bc-more{margin-top:6px;width:100%;min-height:36px;background:none;border:0;border-top:1px dashed rgba(255,255,255,.18);color:#B8BEEA;font:inherit;font-size:11px;}
+.bc-detail{padding-top:4px;} .bc-detail .bcr{border-top-color:rgba(255,255,255,.14);} .bc-detail .bcr span,.bc-detail .bct span{color:#9AA2D6;}
+.bc-detail .bcr small{color:#8EE3A2;} .bc-detail .bci{color:#B8BEEA;} .bc-detail .bcg{margin-top:6px;}
+.bcard2 .bcf{color:#6F76A8;margin-top:6px;}
+.bprev{opacity:.8;}
+#obfoot{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(calc(100% - 32px),398px);display:flex;gap:8px;z-index:4;}
+#obfoot #obreroll{flex:0 0 118px;white-space:nowrap;min-height:52px;border-radius:14px;background:rgba(20,24,52,.92);color:#DCE0FF;border:1px solid rgba(255,255,255,.22);font-size:12px;}
+#obfoot #obreroll:disabled{opacity:.5;}
+#obfoot #obnext{position:static!important;flex:1;margin:0!important;}
+@keyframes bcflip{0%{transform:perspective(900px) rotateY(88deg) scale(.96);opacity:.2}60%{transform:perspective(900px) rotateY(-8deg) scale(1.01);opacity:1}100%{transform:none}}
+@keyframes bcpop{0%{transform:translateY(8px);opacity:0}100%{transform:none;opacity:1}}
+@media (prefers-reduced-motion:no-preference){
+  .bcard2{animation:bcflip .5s cubic-bezier(.2,.8,.2,1) both;}
+  .bcard2 .bchip,.bcard2 .bc-nums div{animation:bcpop .32s ease-out both;}
+  .bcard2 .bchip:nth-child(1){animation-delay:.28s}.bcard2 .bchip:nth-child(2){animation-delay:.36s}.bcard2 .bchip:nth-child(3){animation-delay:.44s}.bcard2 .bchip:nth-child(4){animation-delay:.52s}.bcard2 .bchip:nth-child(5){animation-delay:.6s}
+  .bcard2 .bc-nums div:nth-child(1){animation-delay:.7s}.bcard2 .bc-nums div:nth-child(2){animation-delay:.78s}.bcard2 .bc-nums div:nth-child(3){animation-delay:.86s}
+}
+
+/* 인생 막대와 생일 연출(리뷰 1110) */
+.lifebar{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;column-gap:6px;align-items:center;margin-top:3px;font-size:10px;color:#A9B0DA;}
+.lifebar .lb-a{font-family:var(--f-micro);font-size:9px;opacity:.8;}
+.lb-t{position:relative;height:6px;border-radius:99px;background:rgba(255,255,255,.12);}
+.lb-t>i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#7BD98A,#FFC53C);}
+#hlifeticks i{position:absolute;top:1px;width:2px;height:4px;margin-left:-1px;background:rgba(255,255,255,.35);border-radius:1px;}
+#hlifeticks i.mq{top:-1px;height:8px;background:#FFE7A8;}
+#hlifedot{position:absolute;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #FFC53C,0 0 8px rgba(255,197,60,.8);}
+#hlifetx{grid-column:1/4;font-weight:400;font-size:10px;line-height:13px;color:#C9CEF2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+#lbday{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;pointer-events:none;background:radial-gradient(75% 50% at 50% 48%,rgba(10,12,28,.94) 35%,rgba(10,12,28,.55) 100%);transition:opacity .4s;}
+#lbday.out{opacity:0;}
+.lbd-in{display:flex;flex-direction:column;align-items:center;gap:2px;color:#fff;text-align:center;text-shadow:0 2px 0 rgba(0,0,0,.5);}
+.lbd-k{font-size:12px;color:#FFE7A8;letter-spacing:.08em;}
+.lbd-in b{font-size:64px;line-height:1.05;color:#FFC53C;text-shadow:0 4px 0 #C2452D,0 0 30px rgba(255,197,60,.55);}
+.lbd-in b i{font-style:normal;font-size:24px;margin-left:2px;}
+.lbd-l{font-size:14px;} .lbd-s{font-size:11px;color:#B9F2C2;margin-top:4px;}
+@keyframes lbdin{0%{transform:scale(.6);opacity:0}55%{transform:scale(1.08);opacity:1}100%{transform:none}}
+@media (prefers-reduced-motion:no-preference){ .lbd-in{animation:lbdin .45s cubic-bezier(.2,.8,.2,1) both;} }
 </style>
 
 <div id="app">
@@ -760,6 +826,7 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
       </div>
       <div class="xpbar"><i id="hxp"></i></div>
       <div class="xpmeta"><span id="hnext">다음 Lv.2</span><span id="hxpv">0 / 100 XP</span></div>
+      <div class="lifebar" id="hlife" hidden><span class="lb-a">20</span><div class="lb-t"><i id="hlifef"></i><div id="hlifeticks"></div><em id="hlifedot"></em></div><span class="lb-a">60</span><b id="hlifetx"></b></div>
       <div class="needs">
         <div class="nd"><span>포만</span><div class="fullbar"><i id="hfull"></i></div><b id="hfullv">100</b></div>
         <div class="nd"><span>체력</span><div class="fullbar en"><i id="hen"></i></div><b id="henv">100</b></div>
@@ -4070,6 +4137,7 @@ function lifeStagePlay(st){
 function lifeStageCheck(){
   if(typeof loveSync==='function') loveSync();   /* romance 1014: 5장 나이·제목, 일반 모드면 되돌림 */
   if(!lifeOn()||!S.life||!S.onboarded||S.life.over||lifeStageCheck.t) return;
+  if(!S.tut||(!(S.done||[]).length&&S.life.age<=20)) return;   /* 첫 안내와 첫 퀘스트가 끝나기 전에는 컷신이 끼어들지 않는다(리뷰 1110) */
   if(!lifeStageReady(lifeStageNext())){ if(typeof loveCheck==='function') loveCheck(); return; }   /* romance 1014 */
   lifeStageCheck.t=setTimeout(function(){ lifeStageCheck.t=0;
     var st=lifeStageNext(); if(!lifeStageReady(st)) return;
@@ -5043,28 +5111,53 @@ function lifeKeys(p){ return {region:p.band==='수도권'?'cap':p.band==='광역
 /* ── 태어남 카드 화면 ── */
 function fxText(o){ var a=[]; if(o.coin) a.push('코인 '+(o.coin>0?'+':'')+o.coin);
   Object.keys(o.stat||{}).forEach(function(k){ a.push(THEMES[k].full+' +'+o.stat[k]); }); return a.join(' · '); }
+/* 카드 난이도: 첫 전세 보증금까지 얼마나 먼가(시작 코인·첫 거처)와 집 스탯 출발로 본다 */
+function lifeDiff(p){ var fx=lifeFx(p),sc=5+(fx.stat.ju||0)+(fx.coin-(TIER_DEP[7]-TIER_DEP[fx.tier]))/20;
+  return sc>=4?{k:'easy',t:'순탄한 출발',n:1}:sc>=-4?{k:'mid',t:'보통 출발',n:2}:{k:'hard',t:'빠듯한 출발',n:3}; }
+/* 카드 속 인물: 나이 드는 일러스트(lh_)를 부드럽게. 그림이 아직 안 읽혔으면 잠깐 뒤에 다시 */
+function birthPortrait(cv,p,n){
+  var k='lh_'+(p.sex==='F'?'f':'m')+'20',src=castCv(k);
+  if(!src){ if((n||0)<40) setTimeout(function(){ if(cv.isConnected) birthPortrait(cv,p,(n||0)+1); },120); return; }
+  cv.width=src.width; cv.height=src.height; var x=cv.getContext('2d'); x.imageSmoothingEnabled=true; x.imageSmoothingQuality='high'; x.drawImage(src,0,0); }
+/* 다시 뽑기와 시작 버튼을 화면 아래 한 줄에 둔다(예전에는 다시 뽑기가 카드 아래 화면 밖에 있었다) */
+function obFoot(on){
+  var nx=document.getElementById('obnext'),ft=document.getElementById('obfoot'),sc=nx&&nx.closest('.scroll'); if(!nx||!sc) return null;
+  if(on){ if(!ft){ ft=document.createElement('div'); ft.id='obfoot'; ft.innerHTML='<button class="btn btn--plain pix" id="obreroll"></button>'; sc.appendChild(ft); }
+    if(nx.parentNode!==ft) ft.appendChild(nx); return document.getElementById('obreroll'); }
+  if(ft){ sc.insertBefore(nx,ft); ft.parentNode.removeChild(ft); } return null; }
 function birthRender(body){
   var L=S.life; if(!L.prof) birthRoll();
-  var p=L.prof,fx=lifeFx(p),left=3-L.rolls;
+  var p=L.prof,fx=lifeFx(p),left=3-L.rolls,df=lifeDiff(p);
+  var b=LIFE_FX.band[p.band],inc=LIFE_FX.income.filter(function(x){ return x.v===p.income; })[0],pa=LIFE_FX.path.filter(function(x){ return x.v===p.path; })[0];
+  var chip=function(k,v){ return '<span class="bchip"><i>'+k+'</i>'+esc(v)+'</span>'; };
   var row=function(k,v,e){ return '<div class="bcr"><span>'+k+'</span><b>'+esc(v)+'</b><small>'+esc(e||'')+'</small></div>'; };
   var tmi=function(k,v){ return v?'<div class="bct"><span>'+k+'</span><b>'+esc(v)+'</b></div>':''; };
-  var b=LIFE_FX.band[p.band],inc=LIFE_FX.income.filter(function(x){ return x.v===p.income; })[0],pa=LIFE_FX.path.filter(function(x){ return x.v===p.path; })[0],lv=LIFE_FX.living[p.living];
-  body.innerHTML='<div class="ob-q">스무 살, 카드 한 장</div><div class="micro">통계를 바탕으로 태어나요. 다시 태어나기는 삼세판.</div>'+
-   '<div class="bcard pix"><div class="bch"><b>'+esc(p.name)+'</b><span>'+(p.sex==='M'?'남':'여')+' · '+p.birth+'생 · '+p.tti+'띠 · '+p.zodiac+'</span></div>'+
-   '<div class="bcl">'+esc(p.sido+' '+p.sgg+' '+p.dong)+' 출생 · '+esc(p.hs)+' 졸업</div>'+
-   '<div class="bcl">'+(p.path==='고졸'?'대학 대신 바로 일 찾기':esc(p.uni+' '+p.major)+' 1학년')+'</div>'+
-   row('출신',p.band==='그 외'?'비수도권':p.band,fxText(b))+row('형편',p.income,fxText({coin:0,stat:inc.stat}))+row('학교',p.path,fxText({coin:pa.coin||0,stat:pa.stat}))+
-   row('거처',p.living,'첫 집 '+fx.home)+row('성향',p.trait+' · '+p.mbti,fxText({stat:LIFE_FX.trait[p.trait]}))+
-   '<div class="bcs">시작 코인 ￦'+fx.coin+' · 첫 거처 '+fx.home+' · 스탯 합 +'+Object.keys(fx.stat).reduce(function(a,k){ return a+fx.stat[k]; },0)+'</div>'+
-   '<div class="bcg">'+tmi('혈액형',p.blood+'형')+tmi('키',p.height+'cm')+tmi('안경',p.glasses?'씀':'안 씀')+tmi('가족',p.parents+' · '+p.sibs+(p.multi?' · '+p.multi:''))+
-   tmi('반려동물',p.pet?'본가에 '+p.pet:'')+tmi('좋아하는 음식',p.food)+tmi('취미',p.hobby)+tmi('버릇',p.habit)+tmi('휴대폰',p.phone)+tmi('첫 알바',p.firstJob)+'</div>'+
-   '<div class="bcq">"'+esc(p.say)+'"</div><div class="bci">'+esc(p.intro)+'</div>'+
-   '<div class="bcf">인생 번호 '+p.seed+' · 가상의 인물입니다</div></div>';
-  if(L.prev.length) body.innerHTML+='<div class="micro" style="margin-top:6px">지난 카드 · '+L.prev.map(function(x){ return esc(x.name+' ('+x.line+')'); }).join(' · ')+'</div>';
-  var rb=document.createElement('button'); rb.className='btn btn--plain btn--wide pix'; rb.style.marginTop='8px';
-  rb.textContent=left>0?'다시 태어나기 (남은 '+left+'번)':'마지막 카드예요'; rb.disabled=left<=0;
-  rb.onclick=function(){ sfx('pick'); birthRoll(); obRender(); };
-  body.appendChild(rb); }
+  var sum=Object.keys(fx.stat).reduce(function(a,k){ return a+fx.stat[k]; },0);
+  document.getElementById('onboard').classList.add('birth');
+  body.innerHTML='<div class="bhead"><div class="ob-q">스무 살, 카드 한 장</div><div class="bpips">'+[0,1,2].map(function(i){ return '<i class="'+(i<L.rolls?'on':'')+'"></i>'; }).join('')+'</div></div>'+
+   '<div class="bcard2 '+df.k+(birthRender.flip?' flip':'')+'">'+
+    '<div class="bc-top"><span class="bc-diff">'+'★★★'.slice(0,df.n)+' '+df.t+'</span><span class="bc-no">'+p.seed+'</span></div>'+
+    '<div class="bc-hero"><canvas id="bcface"></canvas><div class="bc-id"><b>'+esc(p.name)+'</b>'+
+      '<span>'+p.birth+' · '+p.tti+'띠</span><span>'+esc(p.mbti)+' · '+p.blood+'형 · '+p.height+'cm</span></div></div>'+
+    '<div class="bc-place">'+esc(p.sido+' '+p.sgg+' '+p.dong)+' 출생 · '+esc(p.hs)+'<br>'+(p.path==='고졸'?'대학 대신 바로 일 찾기':esc(p.uni+' '+p.major)+' 1학년')+'</div>'+
+    '<div class="bc-chips">'+chip('출신',p.band==='그 외'?'비수도권':p.band)+chip('형편',p.income)+chip('학교',p.path)+chip('거처',p.living)+chip('성향',p.trait)+'</div>'+
+    '<div class="bc-nums"><div><span>시작 코인</span><b>￦'+fx.coin+'</b></div><div><span>첫 거처</span><b>'+esc(fx.home)+'</b></div><div><span>스탯 출발</span><b>+'+sum+'</b></div></div>'+
+    '<div class="bc-say">"'+esc(p.say)+'"</div>'+
+    '<button class="bc-more" id="bcmore" aria-expanded="false">자세히 보기 ▾</button>'+
+    '<div class="bc-detail" id="bcdetail" hidden>'+
+      row('출신',p.band==='그 외'?'비수도권':p.band,fxText(b))+row('형편',p.income,fxText({coin:0,stat:inc.stat}))+row('학교',p.path,fxText({coin:pa.coin||0,stat:pa.stat}))+
+      row('거처',p.living,'첫 집 '+fx.home)+row('성향',p.trait+' · '+p.mbti,fxText({stat:LIFE_FX.trait[p.trait]}))+
+      '<div class="bcg">'+tmi('안경',p.glasses?'씀':'안 씀')+tmi('가족',p.parents+' · '+p.sibs+(p.multi?' · '+p.multi:''))+
+      tmi('반려동물',p.pet?'본가에 '+p.pet:'')+tmi('좋아하는 음식',p.food)+tmi('취미',p.hobby)+tmi('버릇',p.habit)+tmi('휴대폰',p.phone)+tmi('첫 알바',p.firstJob)+'</div>'+
+      '<div class="bci">'+esc(p.intro)+'</div></div>'+
+    '<div class="bcf">인생 번호 '+p.seed+' · 통계를 바탕으로 만든 가상의 인물입니다</div></div>';
+  if(L.prev.length) body.innerHTML+='<div class="micro bprev">지난 카드 · '+L.prev.map(function(x){ return esc(x.name+' ('+x.line+')'); }).join(' · ')+'</div>';
+  birthPortrait(document.getElementById('bcface'),p); birthRender.flip=0;
+  var mb=document.getElementById('bcmore'),dt=document.getElementById('bcdetail');
+  mb.onclick=function(){ var open=dt.hidden; dt.hidden=!open; mb.setAttribute('aria-expanded',open?'true':'false'); mb.textContent=open?'접기 ▴':'자세히 보기 ▾'; sfx('tap'); };
+  var rb=obFoot(true);
+  rb.textContent=left>0?'다시 뽑기 ('+left+')':'마지막 카드'; rb.disabled=left<=0;
+  rb.onclick=function(){ sfx('pick'); birthRender.flip=1; birthRoll(); obRender(); var sc=document.querySelector('#onboard .scroll'); if(sc) sc.scrollTop=0; }; }
 
 /* ── 나이 ── */
 function lifeChAge(id){ return LIFE_AGES[id]||null; }
@@ -5076,7 +5169,7 @@ function lifeTick(){
   if(n>L.age){ var jump=n-L.age; L.age=n;
     /* 인생 모드는 한 해가 몇 분이다. 생일마다 체력·포만감을 채워 '체력 차기 기다리기'로 몇 시간씩 멈추지 않게 한다(리뷰 1014 QA: 한 판의 81%가 대기) */
     needTick(); S.energy=100; S.full=Math.max(S.full||0,fullMax());
-    setTimeout(function(){ if(!MQP) toast((jump>1?n+'살 · '+jump+'년이 흘렀어요':n+'살이 됐어요')+' · 체력·배 가득'); hudRefresh(); },700); }
+    setTimeout(function(){ if(!MQP) lifeBirthday(n,jump); hudRefresh(); },700); }
   if(S.status==='대학생'&&((p.path==='전문대'&&L.age>=22)||L.age>=24)){ S.status='취준생'; S.prep=0; if(!mqDone('job')) setTimeout(function(){ if(!MQP&&S.status==='취준생') toast('졸업했어요 · 이제 취준생'); },1400); }
   if(S.status!=='직장인'&&typeof mqDone==='function'&&mqDone('job')){ S.status='직장인'; S.company=S.company||'중소기업'; }
   /* story-logic 1014 */ /* 기숙사는 학생 때까지. 졸업(전문대 22, 4년제 24)하면 다음 칸으로 나간다. 원룸 월세가 열려 있으면 첫 월세 계약이 이어진다 */
@@ -5089,6 +5182,36 @@ function lifeTick(){
   if(S.status==='직장인'){ var y=L.age-LIFE_AGES.job; S.years=y<1?0:y<=3?2:5; }
   S.age=L.age<=24?24:L.age<=29?29:L.age<=34?34:40;
   if([L.age,S.status,S.years,S.age].join('|')!==before) save(); }
+/* 생일: 화면 가운데 큰 나이와 한 줄. 토스트 한 줄로 지나가던 한 해를 눈에 띄게(리뷰 1110) */
+var LIFE_BDAY={21:'술자리 계산이 서툴다',22:'선배 소리를 듣기 시작했다',23:'졸업이 보이기 시작한다',24:'이력서를 쓰는 나이',25:'월급날을 세기 시작했다',26:'내 이름으로 계약서를 쓴다',27:'카드 명세서가 무섭다',28:'청첩장이 오기 시작했다',29:'아홉수라는 말을 들었다',
+ 30:'서른, 생각보다 별일 없다',31:'건강검진 결과를 유심히 본다',32:'축의금 장부가 생겼다',33:'보험 약관을 처음 읽었다',34:'청년 기준의 마지막 해',35:'부모님 건강이 신경 쓰인다',36:'대출 금리 뉴스를 챙겨 본다',37:'집 얘기가 남 얘기가 아니다',38:'후배에게 밥을 사는 쪽이 됐다',39:'또 아홉수',
+ 40:'마흔, 몸이 먼저 안다',41:'야근 다음 날이 길다',42:'연금 통지서를 열어 봤다',43:'배우는 데 다시 돈을 쓴다',44:'동창회 화제가 건강이다',45:'부모님 곁을 생각한다',46:'퇴직금 계산기를 돌려 봤다',47:'돋보기가 필요할지도',48:'집과 대출을 다시 본다',49:'마지막 아홉수',
+ 50:'쉰, 절반을 넘겼다',51:'명함보다 건강이 자산이다',52:'후배가 팀장이 됐다',53:'연말정산이 손에 익었다',54:'국민연금 예상액을 조회했다',55:'퇴직이 달력에 보인다',56:'두 번째 일을 생각한다',57:'손주 얘기를 듣는 나이',58:'남길 것을 정리한다',59:'마지막 출근이 다가온다'};
+function lifeBirthday(n,jump){
+  var app=document.getElementById('app'); if(!app) return;
+  var old=document.getElementById('lbday'); if(old&&old.parentNode) old.parentNode.removeChild(old);
+  var el=document.createElement('div'); el.id='lbday'; el.setAttribute('role','status');
+  el.innerHTML='<div class="lbd-in"><span class="lbd-k">'+(jump>1?jump+'년이 흘렀다':'생일')+'</span><b>'+n+'<i>살</i></b><span class="lbd-l">'+esc(LIFE_BDAY[n]||'한 살 더 먹었다')+'</span><span class="lbd-s">체력·포만감 가득</span></div>';
+  app.appendChild(el); sfx('level');
+  setTimeout(function(){ el.classList.add('out'); setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },400); },1700); }
+/* 상태창 인생 막대: 스물에서 예순까지 어디쯤인지, 다음 생일까지 얼마나 남았는지 */
+function lifeBarDraw(){
+  var el=document.getElementById('hlife'); if(!el) return;
+  if(!lifeOn()||!S.life||!S.onboarded){ el.hidden=true; return; }
+  el.hidden=false;
+  var age=S.life.age,need=S.life.over?0:lifeActsTo(age+1),per=lifePer(age),fr=S.life.over?1:Math.max(0,Math.min(.98,1-need/per));
+  var pct=Math.max(0,Math.min(100,((age-20)+fr)/40*100));
+  document.getElementById('hlifef').style.width=pct+'%'; document.getElementById('hlifedot').style.left=pct+'%';
+  var tk=document.getElementById('hlifeticks');
+  if(!tk.childNodes.length){ var ages=[]; Object.keys(LIFE_AGES).forEach(function(k){ if(k!=='end') ages.push(LIFE_AGES[k]); });
+    LIFE_STAGES.forEach(function(st){ if(st.id!=='end'&&ages.indexOf(st.age)<0) ages.push(st.age); });
+    ages.forEach(function(a){ var i=document.createElement('i'); i.style.left=((a-20)/40*100)+'%'; if(LIFE_AGES.job===a||LIFE_AGES.lease===a||LIFE_AGES.card===a||LIFE_AGES.car===a||LIFE_AGES.wedding===a||LIFE_AGES.home===a) i.className='mq'; tk.appendChild(i); }); }
+  var nx=(typeof mqNext==='function')?mqNext():null,st=lifeStageNext(),nt='';
+  if(S.life.over) nt='예순 · 한 판을 다 살았어요';
+  else { var k=Math.ceil(need); nt=(k>0?'다음 생일까지 '+k+'개':'곧 생일');
+    var na=nx&&LIFE_AGES[nx.id]>age?LIFE_AGES[nx.id]:null,sa=st&&st.age>age?st.age:null,ta=na&&sa?Math.min(na,sa):(na||sa);
+    if(ta) nt+=' · '+ta+'살 '+(ta===na?nx.title:st.title); }
+  document.getElementById('hlifetx').textContent=nt; }
 function hudName(){ return lifeOn()&&S.life?S.life.age+'살 · Lv.'+S.lv:S.status+' Lv.'+S.lv; }   /* 신분은 아래 줄(hsub)에 있다 */
 /* 장을 시작하면 그 장의 나이가 된다. 처음이면 세월 컷신을 먼저 튼다 */
 var LIFE_YKEY={job:'y24',lease:'y26',card:'y27',car:'y29',wedding:'y32',home:'y37'};
@@ -6804,7 +6927,7 @@ function todaySheet(eod){
 function todayBtn(){
   var b=document.getElementById('htoday'); if(!b||!S||!S.onboarded) return;
   var n=(quizAvail()?1:0)+(restoreOffer()?1:0)+((S.msNew||[]).length?1:0);
-  b.innerHTML='오늘 할 일'+(n?' <b>'+n+'</b>':'');
+  b.innerHTML=(lifeOn()?'올해 할 일':'오늘 할 일')+(n?' <b>'+n+'</b>':'');
   b.onclick=function(){ sfx('pick'); todaySheet(); }; }
 /* 한정 보상이나 끊긴 연속은 놓치기 쉬워서 그날 처음 한 번 알아서 펼친다 */
 function todayAuto(){
@@ -6902,7 +7025,10 @@ function heroCard(h,px,on){
   return b; }
 /* 상태창 얼굴. 고른 주인공의 초상 그림을 쓰고, 그림이 없으면 도트 얼굴을 쓴다 */
 function paintHudFace(){
-  var cv=document.getElementById('hudchar'),ill=castCv('hp_'+heroOf().id);
+  var cv=document.getElementById('hudchar'),lh=(typeof lifeHeroCv==='function')?lifeHeroCv():null;
+  if(lh){ var q=lh.width/(lh.lw||lh.width),sw=lh.width,sh=Math.round(sw*38/40); cv.width=40*q; cv.height=38*q;
+    var hx=hiCtx(cv); hx.clearRect(0,0,cv.width,cv.height); hx.drawImage(lh,0,0,sw,sh, 2*q,1*q,36*q,Math.round(36*q*38/40)); return; }
+  var ill=castCv('hp_'+heroOf().id);
   if(!ill){ if(cv.width!==40){ cv.width=40; cv.height=38; cv.style.imageRendering=''; } paintHero(cv,'idle',0,-12,-2); return; }
   var k=ill.width/(ill.lw||ill.width);                 /* 그림 해상도 배율(보통 4) */
   cv.width=40*k; cv.height=38*k;
@@ -6933,7 +7059,8 @@ function obRender_(){
     catch(e){ ev('err',{at:'birthRender',m:String(e).slice(0,80)}); S.life=lifeFresh(); save(); birthRender(body); }   /* 저장이 깨졌으면 새 카드로 */
     var pp=document.getElementById('obpips'); pp.innerHTML=''; steps.forEach(function(_,i){ var e=document.createElement('i'); if(i<=obStep) e.className='on'; pp.appendChild(e); });
     var bn=document.getElementById('obnext'); bn.disabled=false; bn.textContent='이 인생으로 살기';
-    paintHero(document.getElementById('obchar'),'idle',0); return; }
+    return; }
+  document.getElementById('onboard').classList.remove('birth'); obFoot(false);
   if(key==='avatar'){
     if(!HEROMAP[S.hero]) pickHero('newbie');
     body.innerHTML='<div class="ob-q">누구로 시작할까요?</div>'+
@@ -9614,6 +9741,7 @@ function hudRefresh(){
   var n=need(S.lv),tt=totals(),e;
   if((e=document.getElementById('hnm'))) e.textContent=hudName();
   if(lifeOn()&&(e=document.getElementById('hsub'))) e.textContent=whyLine();
+  if(typeof lifeBarDraw==='function') lifeBarDraw();
   if((e=document.getElementById('hcoin'))) e.textContent=S.coin;
   if((e=document.getElementById('hatk'))) e.textContent=tt.atk;
   if((e=document.getElementById('hdefc'))) e.textContent=tt.def;

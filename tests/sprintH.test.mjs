@@ -56,9 +56,9 @@ test('2. 인생 모드 한 판: 카드 삼세판 → 태어남 → 나이 → �
   await page.evaluate(() => { Object.assign(S, { status: '직장인', years: 2, company: '중소기업', region: '수도권', age: 29 }); S.onboarded = true; S.lv = 7; save(); });
   await page.evaluate(() => { lifeNew(); obStep = 0; stopWalk(); obRender(); go('onboard'); });
   assert.match(await page.textContent('#obbody'), /인생 번호 v1-/);
-  for (let i = 0; i < 2; i++) await page.click('#obbody button:has-text("다시 태어나기")');
+  for (let i = 0; i < 2; i++) await page.click('#obreroll');
   assert.equal(await page.evaluate(() => S.life.rolls), 3);
-  assert.equal(await page.locator('#obbody button:has-text("마지막 카드")').isDisabled(), true);
+  assert.equal(await page.locator('#obreroll').isDisabled(), true);
   await page.click('#obnext');                        // 이 인생으로 살기 → 바로 시작(겉모습은 카드가 정한다)
   await playCine(page, [], { timeout: 30000 });       // 태어남 컷신
   const h = await page.evaluate(() => ({ hud: document.getElementById('hnm').textContent, mode: S.mode, coin: S.coin, slot: SLOT }));
