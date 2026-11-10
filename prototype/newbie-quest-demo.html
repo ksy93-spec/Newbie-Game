@@ -11915,6 +11915,16 @@ function renderQuests(){
   buildTabs(document.getElementById('tab-quests'),'quests'); }
 
 function bigCharCanvas(cv){
+  var lh=lifeOn()?lifeHeroCv():null;
+  if(lh){                                   /* 인생 모드: 일러스트 주인공을 4배 해상도로. 탈것·펫은 옆에 세운다 */
+    var q=lh.width/(lh.lw||lh.width); cv.width=112*q; cv.height=72*q; cv.style.imageRendering='auto';
+    var lx=hiCtx(cv),mt2=MOUNTS[S.equip.mount],pt=PETS[S.equip.pet]; lx.clearRect(0,0,cv.width,cv.height);
+    lx.drawImage(lh,Math.round(cv.width*((mt2&&mt2.kind)||(pt&&pt.kind)?0.30:0.5)-lh.width/2),cv.height-lh.height);
+    lx.imageSmoothingEnabled=false;
+    if(mt2&&mt2.kind){ var mc=mountCv(S.equip.mount); if(mc){ var ms=Math.min(q,(cv.height-4)/mc.height); lx.drawImage(mc,Math.round(cv.width*0.66-mc.width*ms/2),cv.height-Math.round(mc.height*ms),Math.round(mc.width*ms),Math.round(mc.height*ms)); } }
+    if(pt&&pt.kind){ var pc2=petCv(pt.kind,0); lx.drawImage(pc2,cv.width-pc2.width*q-6*q,cv.height-pc2.height*q,pc2.width*q,pc2.height*q); }
+    return; }
+  if(cv.width!==112){ cv.width=112; cv.height=72; cv.style.imageRendering=''; }
   var ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
   ctx.clearRect(0,0,cv.width,cv.height);
   /* 미리보기에서는 셋 다 왼쪽을 보게 맞춘다. 탈것 합성은 오른쪽을 보므로 뒤집고,
@@ -11940,6 +11950,11 @@ function thumbFor(slot,id){
     return cv; }
   if(slot==='weapon'){ var g=Gr(26,26); drawWeapon(g,{equip:{weapon:id}},13,22);
     shade(g); outline(g,P.s5); blitG(ctx,g,0,0); return cv; }
+  if(lifeOn()&&(slot==='head'||slot==='top'||slot==='bottom')){      /* 인생 모드: 일러스트에 입혀서 그 부분만 오려 낸다 */
+    var k0=S.equip[slot]; S.equip[slot]=id; var lc=lifeHeroCv(); S.equip[slot]=k0;
+    if(lc){ var cr=slot==='head'?[0,0,1,.42]:slot==='top'?[0,.38,1,.36]:[0,.64,1,.36],N=104,sw=lc.width,sh=lc.height,
+        cx0=cr[0]*sw,cy0=cr[1]*sh,cw0=cr[2]*sw,ch0=cr[3]*sh,sc=Math.min(N/cw0,N/ch0)*0.94;
+      cv.width=N; cv.height=N; ctx=hiCtx(cv); ctx.drawImage(lc,cx0,cy0,cw0,ch0,(N-cw0*sc)/2,(N-ch0*sc)/2,cw0*sc,ch0*sc); return cv; } }
   var keep=S.equip[slot]; S.equip[slot]=id;
   var src=heroCv('idle',0); S.equip[slot]=keep;
   var crop={top:[19,30],head:[19,4],bottom:[19,42]}[slot]||[19,20];
@@ -13363,15 +13378,46 @@ function opaqueBox(cv,key){
 /* 인생 모드 주인공: 카드의 성별과 지금 나이(20·32·45·60 그림)에 맞는 일러스트. 장비 윗옷·바지 색은 _t·_b 그림에 곱해 입힌다 */
 function lifeHeroKey(){ var p=(S.life&&S.life.prof)||{},a=(S.life&&S.life.age)||20;
   return 'lh_'+(p.sex==='F'?'f':'m')+(a<28?20:a<40?32:a<53?45:60); }
+/* 머리 장비를 일러스트 위에 직접 그리는 자리. 그림 안 좌표(저장 해상도)다: lx·rx 눈 가운데, ey 눈 높이, x0·x1 머리 둘레, top 머리 꼭대기 */
+var LH_ANCH={ lh_m20:{lx:43,rx:72,ey:66,x0:3,x1:94,top:2}, lh_m32:{lx:41,rx:72,ey:63,x0:3,x1:93,top:3},
+  lh_m45:{lx:41,rx:73,ey:62,x0:4,x1:94,top:3}, lh_m60:{lx:42,rx:75,ey:62,x0:4,x1:94,top:3},
+  lh_f20:{lx:48,rx:81,ey:64,x0:10,x1:104,top:2}, lh_f32:{lx:40,rx:72,ey:61,x0:6,x1:90,top:2},
+  lh_f45:{lx:48,rx:81,ey:60,x0:10,x1:102,top:2}, lh_f60:{lx:45,rx:74,ey:61,x0:6,x1:96,top:3} };
+function lhRR(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+function lifeGearDraw(c,k,hd){
+  var A=LH_ANCH[k]; if(!A||!hd||!hd.gear) return; var ol='#2C2C31',cx=(A.x0+A.x1)/2;
+  c.save(); c.lineJoin='round'; c.lineCap='round'; c.strokeStyle=ol; c.lineWidth=3;
+  if(hd.gear==='glass'){
+    var r=11.5,dk=!!hd.dark; c.lineWidth=2.6;
+    [A.lx,A.rx].forEach(function(x){ c.beginPath(); c.arc(x,A.ey,r,0,Math.PI*2);
+      c.fillStyle=dk?'rgba(26,26,38,.88)':'rgba(170,210,255,.22)'; c.fill(); c.stroke();
+      if(dk){ c.strokeStyle='rgba(255,255,255,.55)'; c.lineWidth=2; c.beginPath(); c.arc(x,A.ey,r-4,Math.PI*1.1,Math.PI*1.45); c.stroke(); c.strokeStyle=ol; c.lineWidth=3; } });
+    c.beginPath(); c.moveTo(A.lx+r,A.ey-2); c.quadraticCurveTo((A.lx+A.rx)/2,A.ey-6,A.rx-r,A.ey-2); c.stroke();
+    c.beginPath(); c.moveTo(A.lx-r,A.ey-3); c.lineTo(A.x0+17,A.ey-5); c.moveTo(A.rx+r,A.ey-3); c.lineTo(A.rx+r+5,A.ey-5); c.stroke(); }
+  else if(hd.gear==='beanie'){
+    var c1=hd.color||'#5B6BD6',c2=hd.color2||'#3F4DAF',yb=A.ey-25,tp=Math.max(2,A.top);
+    c.beginPath(); c.moveTo(A.x0,yb); c.bezierCurveTo(A.x0-2,tp+10,cx-30,tp,cx,tp);
+    c.bezierCurveTo(cx+30,tp,A.x1+2,tp+10,A.x1,yb); c.closePath(); c.fillStyle=c1; c.fill(); c.stroke();
+    c.strokeStyle=c2; c.lineWidth=2; for(var i=-3;i<=3;i++){ c.beginPath(); c.moveTo(cx+i*10,tp+3+Math.abs(i)*3); c.lineTo(cx+i*12,yb-3); c.stroke(); }
+    c.strokeStyle=ol; c.lineWidth=3; lhRR(c,A.x0-3,yb-2,A.x1-A.x0+6,13,5); c.fillStyle=c2; c.fill(); c.stroke();
+    c.strokeStyle='rgba(255,255,255,.35)'; c.lineWidth=2; c.beginPath(); c.moveTo(A.x0+8,yb+1); c.lineTo(A.x1-8,yb+1); c.stroke(); }
+  else if(hd.gear==='band'){
+    var yt=A.ey-27;
+    lhRR(c,A.x0+1,yt,A.x1-A.x0-2,11,5); c.fillStyle='#C8453A'; c.fill(); c.stroke();
+    c.fillStyle='#E8776B'; c.fillRect(A.x0+8,yt+2,A.x1-A.x0-18,2);
+    var kx=A.x1-12; c.fillStyle='#A6352C'; c.beginPath(); c.moveTo(kx,yt+8); c.lineTo(kx-7,yt+27); c.lineTo(kx+1,yt+23); c.lineTo(kx+4,yt+29); c.lineTo(kx+8,yt+9); c.closePath(); c.fill(); c.stroke();
+    c.beginPath(); c.arc(kx+1,yt+6,5,0,Math.PI*2); c.fillStyle='#C8453A'; c.fill(); c.stroke(); }
+  c.restore(); }
 function lifeHeroCv(){
   if(!lifeOn()||!S.life||!S.life.prof) return null;
   var k=lifeHeroKey(),base=castCv(k); if(!base) return null;
-  var o=equipOpts(),key='LH'+k+'|'+o.top+'|'+o.bot; if(PCACHE[key]) return PCACHE[key];
+  var o=equipOpts(),hd=ITEMS[S.equip.head],key='LH'+k+'|'+o.top+'|'+o.bot+'|'+(hd&&hd.gear?S.equip.head:''); if(PCACHE[key]) return PCACHE[key];
   var cv=mkcv(base.width,base.height),ctx=cv.getContext('2d'); ctx.drawImage(base,0,0);
   [[k+'_t',o.top],[k+'_b',o.bot]].forEach(function(x){ var m=castCv(x[0]); if(!m||!x[1]) return;
     var t=mkcv(m.width,m.height),tc=t.getContext('2d'); tc.drawImage(m,0,0);
     tc.globalCompositeOperation='multiply'; tc.fillStyle=x[1]; tc.fillRect(0,0,t.width,t.height);
     tc.globalCompositeOperation='destination-in'; tc.drawImage(m,0,0); ctx.drawImage(t,0,0); });
+  lifeGearDraw(ctx,k,hd);
   cv.lw=base.lw; cv.lh=base.lh; PCACHE[key]=cv; return cv; }
 function portraitSrc(k){
   if(k==='hero'&&lifeOn()){ var lc=lifeHeroCv(); if(lc) return {cv:lc,key:'lh|'+lifeHeroKey()+'|'+JSON.stringify(S.equip),right:false,k:lc.width/lc.lw}; }
