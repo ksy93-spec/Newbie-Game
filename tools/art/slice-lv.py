@@ -1,7 +1,7 @@
 """인연 인물 시트(LV1 등)를 잘라 assets/art/npc_<열쇠>.webp로 넣는다.
 H1과 같은 방식: 자홍 배경을 지우고, 게임 안 키 64 기준으로 4배 크기로 부드럽게 줄인다.
 키는 시트 안 인물 키의 중앙값을 64로 잡아 사람마다 키 차이(아기는 작게)를 살린다.
-실행: python3.13 tools/art/slice-lv.py LV1   (그다음 node tools/art/embed.mjs). 시트는 LV1, L2
+실행: python3.13 tools/art/slice-lv.py LV1   (그다음 node tools/art/embed.mjs). 시트는 LV1, L2, T1
 """
 import json, os, sys
 import numpy as np
@@ -14,6 +14,8 @@ SHEETS = {
     'LV1': dict(cols=4, rows=4, names=['lvSeoF', 'lvSeoM', 'lvHanF', 'lvHanM', 'lvJiF', 'lvJiM', 'lvSoF', 'lvSoM',
                                       'lvYoonF', 'lvYoonM', 'lvMinF', 'lvMinM', 'lvEunF', 'lvEunM', 'lvBaby', 'lvMgr']),
     'L2': dict(cols=4, rows=2, names=['mom', 'dad', 'toddler', 'teen', 'doctor', 'banker', 'teamlead', 'teacher'], small=['toddler'], scale={'teen': 0.88}),
+    'T1': dict(cols=4, rows=4, names=['boss', 'boy', 'deskf', 'fp', 'girl', 'gma', 'gpa', 'halbae', 'mlmf', 'officem', 'partnerF', 'partnerM', 'peerf', 'peerm'],
+               small=['boy', 'girl'], scale={'boy': 0.82, 'girl': 0.82}),
 }
 LH, HI = 64, 4
 OUTLINE = np.array([44, 44, 49])

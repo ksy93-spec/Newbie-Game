@@ -184,8 +184,12 @@ test('7. 켜다가 스크립트가 멈춰도 빈 화면에 갇히지 않는다: 
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();
   await page.addInitScript(() => {
-    if (window.name === 'boomed') return; window.name = 'boomed';   // 파일 주소는 새로고침 때 저장소가 비기도 해서 창 이름으로 한 번만
+    if (window.name.startsWith('boomed')) return; window.name = 'boomed';   // 파일 주소는 새로고침 때 저장소가 비기도 해서 창 이름으로 한 번만
     localStorage.setItem('nq.v8', JSON.stringify({ onboarded: false })); localStorage.setItem('nq.album.v1', '[]');
+    // 새로고침 때 저장소가 비어도 확인되게, 보관 기록과 앨범 손댐을 새로고침 전에 창 이름에 적어 둔다
+    const sset = Storage.prototype.setItem, srem = Storage.prototype.removeItem;
+    Storage.prototype.setItem = function (k, v) { if (String(k).startsWith('nq.rescue.')) window.name += '|rescued'; if (k === 'nq.album.v1') window.name += '|albumTouched'; return sset.call(this, k, v); };
+    Storage.prototype.removeItem = function (k) { if (k === 'nq.album.v1') window.name += '|albumTouched'; return srem.call(this, k); };
     Object.defineProperty(window, 'QUESTS', { configurable: true, set() { throw new Error('테스트용 시작 오류'); }, get() { return undefined; } });
   });
   await page.goto(BASE);
@@ -193,9 +197,9 @@ test('7. 켜다가 스크립트가 멈춰도 빈 화면에 갇히지 않는다: 
   assert.match(await page.textContent('#obbody'), /멈췄어요[\s\S]*테스트용 시작 오류/);
   await page.click('#obnext');
   await page.waitForFunction(() => window.__BOOTED, null, { timeout: 10000 });
-  const r = await page.evaluate(() => ({ v8: localStorage.getItem('nq.v8') && JSON.parse(localStorage.getItem('nq.v8')).onboarded, rescue: Object.keys(localStorage).some((k) => k.startsWith('nq.rescue.')), album: localStorage.getItem('nq.album.v1') }));
+  const r = await page.evaluate(() => ({ rescue: window.name.includes('|rescued'), albumTouched: window.name.includes('|albumTouched') }));
   assert.ok(r.rescue, '지운 기록은 따로 보관');
-  assert.equal(r.album, '[]', '앨범은 그대로');
+  assert.ok(!r.albumTouched, '앨범은 그대로');
   await ctx.close();
 });
 
