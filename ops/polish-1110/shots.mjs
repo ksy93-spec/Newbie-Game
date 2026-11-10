@@ -13,7 +13,7 @@ for (let i = 0; i < 3; i++) { await page.evaluate(() => MQP.next({ type: 'test' 
 await page.evaluate(async () => { for (let i = 0; i < 200 && window.MQP; i++) { MQP.next({ type: 'test' }); await new Promise((r) => setTimeout(r, 30)); } });
 await page.waitForTimeout(1500); await page.evaluate(() => { for (let i = 0; i < 20 && TUT; i++) endTalk(); }); await page.waitForTimeout(600); await shot('05-home');
 await page.evaluate(() => { S.done.push('zz1', 'zz2'); hudRefresh(); }); await page.waitForTimeout(1300); await shot('05b-birthday'); await page.waitForTimeout(1500);
-await page.evaluate(() => { S.tut = 1; S.tuts = ['intro', 'room', 'town']; const q = QUESTS.find((x) => fits(x) && QPLACE[x.id]); startQuest(q.id); }); await page.waitForTimeout(1500); await shot('06-quest');
+await page.evaluate(() => { S.tut = 1; S.tuts = ['intro', 'room', 'town']; guideGo(); }); await page.waitForFunction(() => document.querySelector('#quest.on') || window.TALK, null, { timeout: 15000 }).catch(() => {}); await page.waitForTimeout(1800); await shot('06-quest');
 await page.evaluate(() => { render('char'); }); await page.waitForTimeout(600); await shot('07-char');
 await page.evaluate(() => { render('shop'); }); await page.waitForTimeout(600); await shot('08-shop');
 await page.evaluate(() => { render('home'); enterMap('room', 3, 3); }); await page.waitForTimeout(800); await shot('09-room');

@@ -4017,7 +4017,8 @@ function load(){ var o=null;
   /* 저장 칸과 모드를 맞춘다. 인생 칸인데 인생 기록이 비었거나 빠진 칸이 있으면 채운다(빈 화면에 갇히던 것) */
   if(SLOT==='life'){ o.mode='life'; var lf=lifeFresh(); if(!o.life||typeof o.life!=='object') o.life=lf;
     Object.keys(lf).forEach(function(k){ if(o.life[k]===undefined||o.life[k]===null&&(k==='anch'||k==='yrs'||k==='prev')) o.life[k]=lf[k]; });
-    if(!o.onboarded&&!o.life.prof){ o.life.rolls=Math.min(o.life.rolls||0,2); o.life.applied=false; } }
+    if(!o.onboarded&&!o.life.prof){ o.life.rolls=Math.min(o.life.rolls||0,2); o.life.applied=false; }
+    if(o.life.prof){ var hh=o.life.prof.sex==='F'?'mukbang':'newbie'; if(o.hero!==hh){ o.hero=hh; o.avatar=o.life.prof.sex==='F'?'stuF':'stuM'; if(o.look) o.look.haircol=-1; } } }
   else o.mode='normal';
   if(o.avatar==='imgM') o.avatar='stuM';
   if(o.avatar==='imgF') o.avatar='stuF';
@@ -5088,7 +5089,7 @@ function birthApply(){
   S.tier=S.peak=S.paid=S.lastTier=fx.tier; S.status=fx.status; S.living=p.living; S.region=p.band; S.age=24;
   S.years=null; S.prep=(fx.status==='취준생')?0:null; S.company=null;
   S.avatar=p.sex==='F'?'stuF':'stuM';
-  if(HEROMAP[p.hero]) pickHero(p.hero);
+  pickHero(p.sex==='F'?'mukbang':'newbie');                   /* 지도 도트는 카드 그림과 닮은 검은 머리 남·여로(리뷰 1110) */
   L.t0=Date.now(); applyLifeTiers(); save(); }
 
 /* ── 인생 모드 거처: 본가 방·기숙사 ──
@@ -5156,7 +5157,7 @@ function birthRender(body){
     '<div class="bc-detail" id="bcdetail" hidden>'+
       row('출신',p.band==='그 외'?'비수도권':p.band,fxText(b))+row('형편',p.income,fxText({coin:0,stat:inc.stat}))+row('학교',p.path,fxText({coin:pa.coin||0,stat:pa.stat}))+
       row('거처',p.living,'첫 집 '+fx.home)+row('성향',p.trait+' · '+p.mbti,fxText({stat:LIFE_FX.trait[p.trait]}))+
-      '<div class="bcg">'+tmi('안경',p.glasses?'씀':'안 씀')+tmi('가족',p.parents+' · '+p.sibs+(p.multi?' · '+p.multi:''))+
+      '<div class="bcg">'+tmi('가족',p.parents+' · '+p.sibs+(p.multi?' · '+p.multi:''))+
       tmi('반려동물',p.pet?'본가에 '+p.pet:'')+tmi('좋아하는 음식',p.food)+tmi('취미',p.hobby)+tmi('버릇',p.habit)+tmi('휴대폰',p.phone)+tmi('첫 알바',p.firstJob)+'</div>'+
       '<div class="bci">'+esc(p.intro)+'</div></div>'+
     '<div class="bcf">인생 번호 '+p.seed+' · 통계를 바탕으로 만든 가상의 인물입니다</div></div>';
@@ -6898,8 +6899,9 @@ function dripAdOpen(qid,after){
     toast(id?'새 퀘스트가 열렸어요 · '+QMAP[id].title:'열 퀘스트가 더 없어요');
     if(after) after(id); }); }
 function lockedDialog(q){
-  var h='<div class="ih"><div><span class="inm">'+esc(q.title)+'</span><span class="isub">'+esc(q.npc)+' · 내일 열림</span></div></div><hr>'+
-    '<div class="il"><i>◆</i>오늘 열린 새 퀘스트는 여기까지예요. 매일 '+DRIP_DAILY+'개씩 새로 열려요.</div>',bt=[];
+  var lo=lifeOn();
+  var h='<div class="ih"><div><span class="inm">'+esc(q.title)+'</span><span class="isub">'+esc(q.npc)+(lo?' · 곧 열림':' · 내일 열림')+'</span></div></div><hr>'+
+    '<div class="il"><i>◆</i>'+(lo?'먼저 열린 퀘스트를 풀면 이어서 열려요.':'오늘 열린 새 퀘스트는 여기까지예요. 매일 '+DRIP_DAILY+'개씩 새로 열려요.')+'</div>',bt=[];
   if(adLeft('unl')>0) bt.push({t:'광고 보고 이 퀘스트 열기 · 오늘 '+adLeft('unl')+'회 남음',f:function(){ dripAdOpen(q.id,function(){ closeTip(); }); }});
   else h+='<div class="il warn"><i>◆</i>'+AD_DONE+'</div>';
   openTip(h,'#FFC53C',bt); sheetStack(); }
@@ -12017,8 +12019,12 @@ function dollSlot(slot,label){
 function renderChar(){
   var tt=totals(),fb=furniBonus();
   var cv=document.getElementById('charbig'),cx=cv.getContext('2d'),av=AVATARS[S.avatar]||{};
+  var lhc=(typeof lifeHeroCv==='function')?lifeHeroCv():null;
+  if(lhc){ var K=4; if(cv.width!==64*K){ cv.width=64*K; cv.height=64*K; } cx=cv.getContext('2d'); cx.imageSmoothingEnabled=true; cx.imageSmoothingQuality='high'; cx.clearRect(0,0,cv.width,cv.height);
+    var dh=cv.height*.94,dw=lhc.width*dh/lhc.height; cx.drawImage(lhc,(cv.width-dw)/2,cv.height-dh,dw,dh); cv.style.imageRendering='auto'; }
+  else { if(cv.width!==64){ cv.width=64; cv.height=64; cv.style.imageRendering=''; cx=cv.getContext('2d'); }
   cx.imageSmoothingEnabled=false; cx.clearRect(0,0,64,64);
-  drawFlip(cx,heroCv('idle',0),0,0,!!av.faceRight);
+  drawFlip(cx,heroCv('idle',0),0,0,!!av.faceRight); }
   document.getElementById('catk').textContent=tt.atk;
   document.getElementById('cdef').textContent=tt.def;
   document.getElementById('ccoin').textContent=S.coin;
