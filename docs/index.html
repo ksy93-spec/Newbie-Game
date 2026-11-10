@@ -10650,6 +10650,22 @@ function drawRing(ctx,cx,cy,tone){
   rcx(ctx,tone,cx-4,cy+2,8,1);
 }
 function rr0(ctx,x,y,w,h,c){ rcx(ctx,c,x+1,y,w-2,h); rcx(ctx,c,x,y+1,w,h-2); }
+/* 지도 위 인물을 일러스트로 그린다(인생 모드). 화면 해상도로 한 번 줄여 두고 쓴다 */
+var MAPH=40;                                       /* 키 64짜리 그림이 지도에서 차지하는 높이(논리 px). 도트 인물과 같다 */
+function actorImg(c,hl){
+  if(!c||!c.height) return null; var z=Math.max(1,zoomOf(curMap())),dh=Math.max(8,Math.round(hl*RES*z)); c._ac=c._ac||{};
+  if(c._ac[dh]) return c._ac[dh];
+  var cur=c; while(cur.height/2>dh){ var t=mkcv(Math.max(1,Math.round(cur.width/2)),Math.round(cur.height/2)),tx=t.getContext('2d');
+    tx.imageSmoothingEnabled=true; tx.imageSmoothingQuality='high'; tx.drawImage(cur,0,0,t.width,t.height); cur=t; }
+  var w=Math.max(1,Math.round(c.width*dh/c.height)),o=mkcv(w,dh),ox=o.getContext('2d'); ox.imageSmoothingEnabled=true; ox.imageSmoothingQuality='high'; ox.drawImage(cur,0,0,w,dh);
+  return (c._ac[dh]={cv:o,w:w/(RES*z),h:hl}); }
+function npcActor(key){
+  if(!key||!lifeOn()) return null; var c=castCv('npc_'+key); if(!c) return null;
+  return actorImg(c,MAPH*(c.lh||64)/64); }
+function drawActor(ctx,ai,cx,fy,flip,tilt,bob,shadow){
+  if(shadow!==false){ ctx.fillStyle='rgba(46,39,64,.28)'; ctx.beginPath(); ctx.ellipse(cx,fy-1,ai.w*0.5+1,2.2,0,0,Math.PI*2); ctx.fill(); }
+  ctx.save(); ctx.translate(cx,fy-(bob||0)); if(tilt) ctx.rotate(tilt); if(flip) ctx.scale(-1,1);
+  ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high'; ctx.drawImage(ai.cv,-ai.w/2,-ai.h,ai.w,ai.h); ctx.restore(); }
 function drawSpot(ctx,s,px,py){
   if(s.kind==='ep'||s.kind==='review'){
     rcx(ctx,P.b3,px+3,py+10,3,6); rcx(ctx,P.b3,px+10,py+10,3,6);
@@ -10680,7 +10696,8 @@ function drawSpot(ctx,s,px,py){
       rcx(ctx,P.s2,px+4,py-1,8,1); rcx(ctx,P.s2,px+4,py+2,6,1); }
     return; }
   if(s.kind==='desk'||s.behind){                                /* 창구: 사람은 책상 뒤에 선다 */
-    var k2=spotFace(s),im2=npcTop(k2,0,0);
+    var k2=spotFace(s),ai2=npcActor(k2),im2=ai2?null:npcTop(k2,0,0);
+    if(ai2) drawActor(ctx,ai2,px+TS/2,py+9,false,0,0,false); else
     ctx.drawImage(im2,px+Math.round((TS-im2.width)/2),py-im2.height+9);
     var tc=tileAt(curMap(),s.x,s.y);
     if(tc==='C'){ rcx(ctx,'#B9A88C',px,py+4,TS,TS-4); rcx(ctx,'#8A7A64',px,py+TS-3,TS,3); rcx(ctx,'#D6C6A8',px,py+4,TS,2); }
@@ -10690,6 +10707,8 @@ function drawSpot(ctx,s,px,py){
       rcx(ctx,P.s4,lx,py+7,lw,9); ctx.fillStyle=P.p0; ctx.fillText(s.label,lx+2,py+8); }
     return; }
   var key=spotFace(s); if(!key) return;
+  var ai=npcActor(key);
+  if(ai){ drawActor(ctx,ai,px+TS/2,py+TS+2,s.dir===2,0,0); return; }
   var im=npcTop(key,s.dir==null?0:s.dir,0);
   ctx.drawImage(im,px+Math.round((TS-im.width)/2),py+TS-im.height+2);
 }
@@ -10927,6 +10946,8 @@ function drawScene(){
     var wf=0;
     if(MOVE&&MOVE.dur){ wf=(MOVE.t<MOVE.dur/2)?(ME.step?3:1):2; }
     var riding=rideHere();
+    var lhc=(!riding&&lifeOn())?lifeHeroCv():null,ai=lhc&&actorImg(lhc,MAPH*(lhc.lh||64)/64);
+    if(ai){ var st=(wf===1)?-0.06:(wf===3)?0.06:0; drawActor(ctx,ai,p.x+TS/2,p.y+TS+2,ME.dir===2,st,(wf===2)?1.5:0,false); return; }
     var im=heroTop(ME.dir,wf),bob=(wf===2&&!riding)?1:0;              /* 두 발이 스칠 때 몸이 한 칸 뜬다 */
     ctx.drawImage(im,Math.round(p.x+(TS-im.width)/2),Math.round(p.y+TS-im.height+2)-bob); }});
   var pw=petTick(m);
@@ -10935,7 +10956,7 @@ function drawScene(){
   cast.forEach(function(c){ c.draw(); });
   if(m.night) drawNight(ctx,m,x0,x1,y0,y1);
   (m.spots||[]).forEach(function(s){
-    var mk=spotMark(s),cx2=s.x*TS+TS/2,top=s.y*TS-(s.kind==='ep'||s.kind==='review'?6:(s.kind==='desk'||s.behind)?28:16);
+    var mk=spotMark(s),cx2=s.x*TS+TS/2,top=s.y*TS-(s.kind==='ep'||s.kind==='review'?6:(s.kind==='desk'||s.behind)?28+(lifeOn()?6:0):16+(lifeOn()&&spotFace(s)&&castCv('npc_'+spotFace(s))?6:0));
     if(mk==='lock') drawLock(ctx,cx2,top);
     else if(mk){ drawMark(ctx,cx2,top,(mk==='!')?P.y1:mk==='q'?'#D9B8FF':P.p0); }
     else if(s.kind==='npc'||s.kind==='boss'||(s.kind==='desk'&&deskDone(s))) drawDone(ctx,s.x*TS+7,s.y*TS-(s.kind==='desk'?22:8)); });
