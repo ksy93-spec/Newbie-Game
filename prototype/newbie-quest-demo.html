@@ -517,7 +517,7 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
 #opening{position:fixed;inset:0;z-index:9999;background:#0C0A18;display:flex;align-items:center;justify-content:center;
   transition:opacity .5s steps(5);cursor:pointer;touch-action:manipulation}
 #opening canvas{image-rendering:auto;display:block}
-#opening .omenu{position:absolute;left:50%;bottom:calc(14% + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:3;
+#opening .omenu{position:absolute;left:50%;bottom:calc(22% + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:3;
   width:min(78vw,300px);display:flex;flex-direction:column;gap:8px;}
 #opening .omb{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;padding:10px 12px;cursor:pointer;
   background:rgba(20,16,38,.86);border:2px solid #57517A;color:#FFFDF6;font-family:var(--f-ui);font-size:14px;line-height:18px;}
@@ -788,6 +788,11 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
 .lbd-l{font-size:14px;} .lbd-s{font-size:11px;color:#B9F2C2;margin-top:4px;}
 @keyframes lbdin{0%{transform:scale(.6);opacity:0}55%{transform:scale(1.08);opacity:1}100%{transform:none}}
 @media (prefers-reduced-motion:no-preference){ .lbd-in{animation:lbdin .45s cubic-bezier(.2,.8,.2,1) both;} }
+
+.lctop{display:flex;gap:10px;align-items:flex-end;} .lctop canvas{width:64px;height:auto;flex:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.4));}
+.lctl{display:flex;flex-wrap:wrap;gap:4px 6px;} .lctl span{font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.08);white-space:nowrap;}
+.lctl b{color:#FFE79B;margin-right:4px;font-weight:400;}
+.lcg b{word-break:keep-all;font-size:11px;}
 </style>
 
 <div id="app">
@@ -1939,6 +1944,9 @@ function shareCardOut(){
   var txt='뉴비 퀘스트 · '+TIERS[S.tier].name+' · Lv.'+S.lv+' · 연속 '+S.streak+'일\n'+SHARE_PITCH+'\n'+SHARE_BASE;
   var note=document.getElementById('sharenote');
   function say(m){ if(note){ note.hidden=false; note.textContent=m; } }
+  shareCvOut(cv,txt,say); }
+/* 캔버스 한 장을 이미지로 공유하거나 저장한다. 안 되면 문구와 링크로 */
+function shareCvOut(cv,txt,say){
   cv.toBlob(function(blob){
     if(!blob){ shareTextOut(txt,'뉴비 퀘스트',say); return; }
     var file=null;
@@ -5071,7 +5079,8 @@ function lifeFx(p){
 function birthRoll(){
   var L=S.life; if(L.rolls>=3&&L.prof) return;
   if(L.prof) L.prev.push({name:L.prof.name,line:L.prof.sido+' '+L.prof.sgg+' · '+L.prof.mbti});
-  L.seed=lifeSeedNew(); L.prof=lifeGen(L.seed); L.rolls++; save(); }
+  var hs=!L.prof&&!L.rolls&&/[#&]life=(v1-[2-9A-Z]{6})\b/.exec(location.hash||'');       /* 친구가 보낸 인생 번호: 첫 카드로 */
+  L.seed=hs?hs[1]:lifeSeedNew(); L.prof=lifeGen(L.seed); L.rolls++; save(); }
 function birthApply(){
   var L=S.life,p=L.prof,fx=lifeFx(p); if(!p||L.applied) return;
   L.applied=true; S.coin=fx.coin;
@@ -5254,13 +5263,62 @@ function lifeSummary(stopped){
     line:[p.band==='그 외'?'비수도권':p.band,p.income,p.path,p.living,p.trait].join(' · '),title:tid,titleName:stopped?'중간에 멈춘 인생':(LIFE_TITLES[tid]||LIFE_TITLES.light).name,
     age:S.life.age,tier:tierNameOf(S,S.tier),coin:S.coin,lv:S.lv,stats:JSON.parse(JSON.stringify(S.stats)),
     ch:MQ_LIST.filter(function(c){ return mqDone(c.id); }).length,boss:BOSSES.filter(function(b){ return bossCleared(b.id); }).length,
-    mins:Math.max(1,Math.round((S.life.ms||0)/60000)),with:(typeof loveWith==='function'?loveWith():'')}; }
+    mins:Math.max(1,Math.round((S.life.ms||0)/60000)),with:(typeof loveWith==='function'?loveWith():''),sex:p.sex||'M',tl:lifeTimeline()}; }
+/* 결산 연표: 실제로 그 일을 겪은 나이 */
+function lifeTimeline(){
+  var Y=S.life.yrs||{},out=[],add=function(a,t){ if(a>1) out.push([a,t]); };
+  add(Y.job,'첫 취업'); add(Y.lease,'첫 전세 계약'); add(Y.card,'첫 신용카드'); add(Y.car,'첫 차');
+  var L=S.life.love;
+  if(L&&L.married) add(L.married,(L.partner&&L.partner.name&&L.partner.name!=='배우자'?L.partner.name+'와 ':'')+'결혼');
+  else if(L&&L.stage==='solo') add(Y.wedding,'혼자 사는 설계');
+  if(L&&L.kidAges) L.kidAges.forEach(function(a,i){ add(a,(i?'둘째':'첫아이')+' 태어남'); });
+  add(Y.home,'첫 내 집');
+  if(out.length>7) out=out.filter(function(r){ return r[1]!=='첫 신용카드'; });
+  if(out.length>7) out=out.filter(function(r){ return r[1]!=='첫 차'; });
+  return out.sort(function(a,b){ return a[0]-b[0]; }).slice(0,7); }
+/* 결산 카드·공유 이미지 속 인물 그림 열쇠 */
+function lifeFaceKey(sm){ var a=sm.stopped?(sm.age||20):60; return 'lh_'+(sm.sex==='F'?'f':'m')+(a<28?20:a<40?32:a<53?45:60); }
+/* 공유 이미지(1080×1350): 칭호, 인물, 연표, 숫자 네 칸, 인생 번호 */
+function lifeShareCv(sm){
+  var W=1080,H=1350,cv=mkcv(W,H),x=cv.getContext('2d'),T=LIFE_TITLES[sm.title],FF='Galmuri14,Galmuri11,monospace';
+  var g=x.createLinearGradient(0,0,W,H); g.addColorStop(0,'#2E3A7A'); g.addColorStop(.55,'#1B2148'); g.addColorStop(1,'#101330');
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+  var rg=x.createRadialGradient(W*.75,120,20,W*.75,120,620); rg.addColorStop(0,'rgba(255,197,60,.28)'); rg.addColorStop(1,'rgba(255,197,60,0)'); x.fillStyle=rg; x.fillRect(0,0,W,H);
+  x.fillStyle='rgba(255,255,255,.5)'; for(var i=0;i<60;i++){ var sx=60+((i*7919+13)%(W-120)),sy=60+((i*104729+7)%440); x.globalAlpha=.25+(i%4)*.15; x.fillRect(sx,sy,(i%5)?3:5,(i%5)?3:5); } x.globalAlpha=1;
+  x.strokeStyle='#FFC53C'; x.lineWidth=6; x.strokeRect(30,30,W-60,H-60); x.strokeStyle='rgba(255,197,60,.3)'; x.lineWidth=2; x.strokeRect(44,44,W-88,H-88);
+  x.textBaseline='top'; x.imageSmoothingEnabled=true; x.imageSmoothingQuality='high';
+  x.fillStyle='#B8BEEA'; x.font='34px '+FF; x.fillText('뉴비 퀘스트 · 인생 모드',84,84);
+  x.fillStyle='#FFE7A8'; x.font='40px '+FF; x.fillText('인생 결산  20 → '+(sm.stopped?sm.age:60)+'살',84,136);
+  x.fillStyle='#C2452D'; x.font='bold 104px '+FF; x.fillText(sm.titleName,84,214); x.fillStyle='#FFC53C'; x.fillText(sm.titleName,84,206);
+  if(T){ x.fillStyle='#DCE0FF'; x.font='36px '+FF; T.lines.forEach(function(l,j){ x.fillText(l,86,340+j*50); }); }
+  var face=castCv(lifeFaceKey(sm)),fy=520;
+  if(face){ var fh=520,fw=face.width*fh/face.height; x.fillStyle='rgba(8,10,28,.45)'; x.beginPath(); x.ellipse(84+fw/2,fy+fh-6,fw*.62,26,0,0,7); x.fill();
+    x.drawImage(face,84,fy,fw,fh); }
+  var tx=430; x.fillStyle='#fff'; x.font='bold 76px '+FF; x.fillText(sm.name||'',tx,fy+6);
+  x.fillStyle='#B8BEEA'; x.font='32px '+FF; x.fillText((sm.birth||'')+'생 · '+(sm.mbti||''),tx,fy+100); x.fillText((sm.place||'').trim()+' 출생',tx,fy+144);
+  var tl=(sm.tl||[]).slice(0,7),ty=fy+214;
+  x.fillStyle='rgba(255,255,255,.18)'; x.fillRect(tx+13,ty+12,3,Math.max(0,tl.length*46-30));
+  tl.forEach(function(r,j){ var yy=ty+j*46; x.fillStyle='#FFC53C'; x.beginPath(); x.arc(tx+14,yy+18,9,0,7); x.fill();
+    x.fillStyle='#FFE7A8'; x.font='32px '+FF; x.fillText(r[0]+'살',tx+38,yy); x.fillStyle='#fff'; x.fillText(r[1],tx+138,yy); });
+  var cells=[['사는 곳',sm.tier],['모은 코인','￦'+sm.coin],['메인',sm.ch+'/6'],['함께',(sm.with||'혼자').replace(/^함께 · /,'')]],cw=(W-168-36)/4,cy=1090;
+  cells.forEach(function(c,j){ var cx=84+j*(cw+12); x.fillStyle='rgba(8,10,28,.6)'; x.fillRect(cx,cy,cw,128);
+    x.fillStyle='#9AA2D6'; x.font='26px '+FF; x.fillText(c[0],cx+16,cy+16);
+    x.fillStyle='#FFE7A8'; var fs2=36; x.font=fs2+'px '+FF; while(x.measureText(c[1]).width>cw-28&&fs2>20){ fs2-=2; x.font=fs2+'px '+FF; } x.fillText(c[1],cx+16,cy+66); });
+  x.fillStyle='#8D94C4'; x.font='28px '+FF; x.fillText('인생 번호 '+(sm.seed||'')+' · 같은 번호로 같은 카드를 받아요',84,1234);
+  x.fillStyle='#6F76A8'; x.font='24px '+FF; x.fillText('통계를 바탕으로 만든 가상의 인물입니다',84,1270);
+  return cv; }
+function lifeShareOut(sm){
+  ev('life_share',{title:sm.title});
+  var txt='뉴비 퀘스트 인생 모드 · 예순 결산 "'+sm.titleName+'"\n내 인생 번호 '+sm.seed+' 로 같은 카드 받기: '+SHARE_BASE+'#life='+sm.seed;
+  shareCvOut(lifeShareCv(sm),txt,function(m){ if(m) toast(m); }); }
 function albumLoad(){ try{ return JSON.parse(localStorage.getItem(KEY_ALBUM)||'[]'); }catch(e){ return []; } }
 function albumAdd(sum){ var a=albumLoad(); a.unshift(sum); a=a.slice(0,30); try{ localStorage.setItem(KEY_ALBUM,JSON.stringify(a)); }catch(e){} }
 function lifeCardHtml(sm){
   var T=LIFE_TITLES[sm.title],st=sm.stats||{};
+  setTimeout(function(){ var c=document.getElementById('lcface'),src=castCv(lifeFaceKey(sm)); if(c&&src){ c.width=src.width; c.height=src.height; var q=c.getContext('2d'); q.imageSmoothingEnabled=true; q.imageSmoothingQuality='high'; q.drawImage(src,0,0); } },30);
   return '<div class="lcard"><div class="lch">인생 결산 · 20 → '+(sm.stopped?sm.age:60)+'살</div>'+
-   '<div class="lct">'+esc(sm.titleName)+'</div>'+(T?'<div class="lcl">'+T.lines.map(esc).join('<br>')+'</div>':'')+
+   '<div class="lctop"><canvas id="lcface"></canvas><div><div class="lct">'+esc(sm.titleName)+'</div>'+(T?'<div class="lcl">'+T.lines.map(esc).join('<br>')+'</div>':'')+'</div></div>'+
+   ((sm.tl||[]).length?'<div class="lctl">'+sm.tl.map(function(r){ return '<span><b>'+r[0]+'</b>'+esc(r[1])+'</span>'; }).join('')+'</div>':'')+
    '<div class="lcn">'+esc(sm.name||'')+' · '+esc(sm.birth||'')+'생 · '+esc(sm.mbti||'')+'</div><div class="lcp">'+esc(sm.place)+' 출생 · '+esc(sm.line)+'</div>'+
    '<div class="lcg"><div><span>사는 곳</span><b>'+esc(sm.tier)+'</b></div><div><span>모은 코인</span><b>￦'+sm.coin+'</b></div><div><span>메인</span><b>'+sm.ch+'/6</b></div><div><span>보스</span><b>'+sm.boss+'/3</b></div></div>'+
    '<div class="lcs">'+['ju','sik','ui','geum','jik'].map(function(k){ return THEMES[k].full+' '+(st[k]||0); }).join(' · ')+'</div>'+
@@ -5278,7 +5336,7 @@ function lifeEnd(){
 function lifeAfter(sm){
   S.life.cardSeen=1; save();
   openTip(lifeCardHtml(sm),'#FFC53C',[
-    {t:'친구에게 공유하기',f:function(){ shareTextOut('뉴비 퀘스트 인생 모드 · 예순 결산 "'+sm.titleName+'" · '+sm.tier+'\n인생 번호 '+sm.seed+'\n'+SHARE_BASE,'뉴비 퀘스트',function(m){ if(m) toast(m); }); }},
+    {t:'결산 카드 공유하기',f:function(){ lifeShareOut(sm); }},
     {t:'다시 태어나기',f:function(){ closeTip(); lifeNew(true); obStep=0; stopWalk(); obRender(); go('onboard'); }}]); }
 /* 새 인생: 인생 칸을 새로 시작한다. 진행 중이던 인생은 앨범에 "중간에 멈춘 인생"으로 */
 function lifeNew(skipAlbum){
@@ -13072,13 +13130,13 @@ function openingStart(){
     var phase=OPEN.menu?0:t%22;                            /* 타이틀 10초 → 이야기 12초. 메뉴가 떠 있으면 타이틀에 머문다 */
     if(OPEN.go){                                            /* 동전을 넣었다 */
       var gt=(now-OPEN.go)/1000;
-      logo(LY); txt('사회초년생 생존 RPG',W/2,LY+38,8,'#CDEEFF','c','#1B1826');
+      logo(LY); txt('스무 살부터 예순까지, 한 판 인생',W/2,LY+38,8,'#CDEEFF','c','#1B1826');
       if(Math.floor(gt*10)%2===0) txt('PLAYER 1  START!',W/2,PY,8,'#FFE79B','c','#1B1826');
       if(gt<0.12){ ctx.fillStyle='rgba(255,255,255,.6)'; ctx.fillRect(0,0,W,H); }
     } else if(phase<10){                                    /* 타이틀 */
       var drop=Math.min(1,t/0.9),ly=Math.round(LY-(1-drop)*(1-drop)*(LY+40))+(t<1.2&&t>0.9?Math.round(Math.sin((t-0.9)*20)*2):0);
       logo(ly);
-      if(t>1) txt('사회초년생 생존 RPG',W/2,LY+38,8,'#CDEEFF','c','#1B1826');
+      if(t>1) txt('스무 살부터 예순까지, 한 판 인생',W/2,LY+38,8,'#CDEEFF','c','#1B1826');
       if(t>1.4&&!OPEN.menu){ var blink=Math.floor(t*2.2)%2===0,alt=Math.floor(t/2)%2===0;
         if(blink) txt(alt?'INSERT COIN':'PRESS ANY KEY',W/2,PY,8,'#FFFDF6','c','#1B1826'); }
     } else {                                                /* 데모: 이야기 화면 */
@@ -13102,7 +13160,7 @@ function openingStart(){
     var sl=slots(),a=[],al=albumLoad().length;
     if(sl.l&&!sl.l.life.over) a.push({k:'lcont',t:'이어하기 · 인생',s:(sl.l.life.prof?sl.l.life.prof.name+' · ':'')+sl.l.life.age+'살 · '+sl.l.status+' · 메인 '+Object.keys((sl.l.mq&&sl.l.mq.done)||{}).length+'/6'});
     if(sl.n) a.push({k:'cont',t:sl.l?'이어하기 · 일반':'이어하기',s:'Lv.'+sl.n.lv+' · '+tierNameOf(sl.n,sl.n.tier)+(sl.n.mq&&sl.n.mq.done?' · 메인 '+Object.keys(sl.n.mq.done).length+'/6':'')});
-    a.push({k:'life',t:'인생 모드 (추천)',s:'스무 살 카드 한 장으로 예순까지'});
+    a.push({k:'life',t:'인생 모드',s:'카드 한 장 뽑고, 스무 살부터 예순까지'});
     a.push({k:'new',t:sl.n?'처음부터 하기':'일반 모드',s:sl.n?'일반 기록을 지우고 새로 시작':'하루 한 장, 천천히'});
     if(al) a.push({k:'album',t:'인생 앨범',s:al+'번의 인생'});
     if(S&&S.prologue) a.push({k:'pro',t:'프롤로그 다시 보기'});
