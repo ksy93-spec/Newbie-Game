@@ -1,7 +1,7 @@
 """인연 인물 시트(LV1 등)를 잘라 assets/art/npc_<열쇠>.webp로 넣는다.
 H1과 같은 방식: 자홍 배경을 지우고, 게임 안 키 64 기준으로 4배 크기로 부드럽게 줄인다.
 키는 시트 안 인물 키의 중앙값을 64로 잡아 사람마다 키 차이(아기는 작게)를 살린다.
-실행: python3.13 tools/art/slice-lv.py LV1   (그다음 node tools/art/embed.mjs)
+실행: python3.13 tools/art/slice-lv.py LV1   (그다음 node tools/art/embed.mjs). 시트는 LV1, L2
 """
 import json, os, sys
 import numpy as np
@@ -13,6 +13,7 @@ OUT = os.path.join(ROOT, 'assets/art')
 SHEETS = {
     'LV1': dict(cols=4, rows=4, names=['lvSeoF', 'lvSeoM', 'lvHanF', 'lvHanM', 'lvJiF', 'lvJiM', 'lvSoF', 'lvSoM',
                                       'lvYoonF', 'lvYoonM', 'lvMinF', 'lvMinM', 'lvEunF', 'lvEunM', 'lvBaby', 'lvMgr']),
+    'L2': dict(cols=4, rows=2, names=['mom', 'dad', 'toddler', 'teen', 'doctor', 'banker', 'teamlead', 'teacher'], small=['toddler'], scale={'teen': 0.88}),
 }
 LH, HI = 64, 4
 OUTLINE = np.array([44, 44, 49])
@@ -47,12 +48,12 @@ for i, name in enumerate(cfg['names']):
     keep = np.isin(lab, [j + 1 for j, s in enumerate(sizes) if s > 200])
     ys, xs = np.where(keep)
     cells.append((name, cx, cy, ys.min(), ys.max() + 1, xs.min(), xs.max() + 1, keep))
-ref = float(np.median([c[4] - c[3] for c in cells if c[0] != 'lvBaby']))
+ref = float(np.median([c[4] - c[3] for c in cells if c[0] not in cfg.get('small', ['lvBaby'])]))
 for name, cx, cy, y0, y1, x0, x1, keep in cells:
     rgb = a[cy + y0:cy + y1, cx + x0:cx + x1]
     k = keep[y0:y1, x0:x1].astype(np.float32)
     bh, bw = y1 - y0, x1 - x0
-    lh = max(8, round(LH * bh / ref)); lw = max(1, round(lh * bw / bh))
+    lh = max(8, round(LH * bh / ref * cfg.get('scale', {}).get(name, 1))); lw = max(1, round(lh * bw / bh))
     o_rgb, o_al = shrink(rgb, k, lw * HI, lh * HI)
     im = Image.fromarray(np.dstack([o_rgb, (np.clip(o_al * 1.1, 0, 1) * 255).astype(np.uint8)]), 'RGBA')
     key = 'npc_' + name
