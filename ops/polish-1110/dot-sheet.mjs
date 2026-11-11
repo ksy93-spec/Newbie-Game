@@ -15,6 +15,6 @@ await p.evaluate(() => {
   document.body.innerHTML = ''; document.body.style.cssText = 'margin:0;background:#9bb38a';
   var cv = document.createElement('canvas'); cv.width = 1180; cv.height = 760; document.body.appendChild(cv); var x = cv.getContext('2d'); x.imageSmoothingEnabled = false;
   x.fillStyle = '#b9c7a8'; x.fillRect(0, 0, 1180, 760); x.fillStyle = '#d8d4cc'; x.fillRect(0, 380, 1180, 380);
-  rows.forEach(function (r, i) { r.forEach(function (im, j) { x.drawImage(im, 0, 0, im.width, im.height, 8 + j * (im.width * 2.6 + 34), 6 + i * 94, im.width * 2.6, im.height * 2.6); }); });
+  rows.forEach(function (r, i) { r.forEach(function (im, j) { var k = im.hd || 1, w = im.width / k, hh = im.height / k; x.drawImage(im, 0, 0, im.width, im.height, 8 + j * 96, 6 + i * 94, w * 2.5, hh * 2.5); }); });
 });
 await p.screenshot({ path: process.argv[2] }); await b.close();
