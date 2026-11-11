@@ -11792,6 +11792,12 @@ function fxAnswer(right,btn,blocked){
     if(blocked) fxText(c.x,c.y-22,'막기!','#9BDCF7',24);
     else { var h=document.getElementById('qhearts'); if(h){ var hc=fxAt(h); fxBurst(hc.x,hc.y,['#F4705A','#B93A2D','#FFB3A6'],14,200); } } } }
 /* 결과: 별이 하나씩 박히고, 셋이면 색종이. 레벨이 오르면 한 번 더 */
+/* 별 상자: 퀘스트에서 딴 별을 모으면 상자가 열린다. 한 번 깬 퀘스트라도 별 셋을 노릴 이유가 된다 */
+var STAR_CHEST=[5,12,20,30,45,60,80,100,125,150];
+function starTotal(){ var t=0,k; for(k in (S.stars||{})) t+=S.stars[k]||0; return t; }
+function starChest(){ var got=[],t=starTotal(); S.starBox=S.starBox||0;
+  while(S.starBox<STAR_CHEST.length&&t>=STAR_CHEST[S.starBox]){ var c=100+S.starBox*60; S.coin+=c; got.push(c); S.starBox++; }
+  return got; }
 function starsOf(correct,total){ return correct>=total?3:(correct>=Math.ceil(total*0.6)?2:1); }
 function fxResult(stars,levelUp,coin){
   var row=document.getElementById('rstars'); if(!row) return;
@@ -13354,11 +13360,15 @@ function finish(failed){
     var rcx=rcv.getContext('2d'); rcx.imageSmoothingEnabled=false; rcx.clearRect(0,0,48,68); rcx.drawImage(rdot,0,0); }
   else paintHero(rcv,failed?'idle':'cheer',0);
   rcv.classList.remove('rjump'); if(!failed&&fxOk()){ void rcv.offsetWidth; rcv.classList.add('rjump'); }
+  var g=document.getElementById('rgains'); g.innerHTML='';
   var rst=document.getElementById('rstars'),nst=failed?0:starsOf(RUN.correct,q.qs.length);
   if(rst){ rst.hidden=!!failed; rst.querySelectorAll('i').forEach(function(s2){ s2.classList.remove('on'); }); }
-  if(!failed&&!q.keys){ S.stars=S.stars||{}; if((S.stars[q.id]||0)<nst){ S.stars[q.id]=nst; save(); } }
+  if(!failed&&!q.keys){ S.stars=S.stars||{}; if((S.stars[q.id]||0)<nst) S.stars[q.id]=nst;
+    var boxes=starChest(),stt=starTotal(),nxt=STAR_CHEST[S.starBox||0]; save();
+    var ds=document.createElement('div'); ds.className='gain'; ds.innerHTML='<span>모은 별</span><b>★ '+stt+(nxt?' · 다음 상자까지 '+(nxt-stt):'')+'</b>'; g.appendChild(ds);
+    boxes.forEach(function(c,bi){ var db2=document.createElement('div'); db2.className='gain'; db2.innerHTML='<span>별 상자 열림!</span><b>￦'+c+'</b>'; g.appendChild(db2);
+      setTimeout(function(){ sfx('open'); if(fxOk()){ var bc=fxAt(db2); fxBurst(bc.x,bc.y,['#FFC53C','#FFE79B','#FFFFFF'],26,280); fxText(bc.x,bc.y-20,'별 상자 ￦'+c,'#FFC53C',26); } },1700+bi*400); }); }
   if(!failed) fxResult(nst,S.lv>before.lv,coin);
-  var g=document.getElementById('rgains'); g.innerHTML='';
   Object.keys(q.stat).forEach(function(k){ var d=document.createElement('div'); d.className='gain';
     d.innerHTML='<span>'+THEMES[k].full+' 스탯</span><b>'+(failed?'':'+'+Math.round(q.stat[k]*ratio)+' → ')+S.stats[k]+'</b>'; g.appendChild(d); });
   var d2=document.createElement('div'); d2.className='gain';
