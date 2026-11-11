@@ -829,6 +829,80 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
 .btn:active,.choice:active,.tabbar button:active{transform:translateY(2px);}
 #home .xpbar i{transition:width .5s steps(10);}
 #quest{position:relative;}
+
+/* ══════════ 화면 스킨 v3: 도트 RPG 틀 (2026-11) ══════════
+   옛 온라인 RPG의 상태창처럼: 짙은 갈색 테두리, 모서리를 한 칸 깎은 판, 위는 밝고 아래는 어두운 입체 단추.
+   번짐·그러데이션·둥근 모서리는 쓰지 않는다. 그림자는 안쪽 한 줄로만 낸다(판을 깎으면 바깥 그림자는 잘린다). */
+:root{--ink:#2B160E;--pan:#2A3154;--pan2:#1D2340;--panhi:#46508A;--gold:#FFC53C;--goldhi:#FFE79B;--gold2:#C98A12;--paper:#FFF8EA;--paper2:#E9D9B4;
+  --px:polygon(0 3px,3px 3px,3px 0,calc(100% - 3px) 0,calc(100% - 3px) 3px,100% 3px,100% calc(100% - 3px),calc(100% - 3px) calc(100% - 3px),calc(100% - 3px) 100%,3px 100%,3px calc(100% - 3px),0 calc(100% - 3px));}
+body{background:#12162C;}
+/* 단추 */
+.btn{border:3px solid var(--ink);border-radius:0;background:#62C85C;color:#12301A;box-shadow:inset 0 3px 0 #A5EE9A,inset 0 -5px 0 #3A9A48;clip-path:var(--px);}
+.btn:active{box-shadow:inset 0 5px 0 #3A9A48,inset 0 -2px 0 #A5EE9A;}
+.btn--plain{background:var(--paper);color:var(--ink);border:3px solid var(--ink);box-shadow:inset 0 3px 0 #FFFFFF,inset 0 -5px 0 var(--paper2);}
+.btn--plain:active{box-shadow:inset 0 5px 0 var(--paper2);}
+.btn[disabled]{background:#CFC8B8;color:#8C8474;box-shadow:inset 0 -5px 0 #B5AD9C;}
+.btn.btn--danger{color:#B93A2D;border-color:var(--ink);}
+/* 카드·보기·말풍선 */
+.card,.wrow,.item,.epcard,.chkrow,.hcell,.bcell,.dslot{border-radius:0;border-width:3px!important;border-color:var(--ink)!important;box-shadow:inset 0 -4px 0 rgba(43,22,14,.14)!important;clip-path:var(--px);}
+.bosscard{border-radius:0;border:3px solid var(--ink);box-shadow:inset 0 -4px 0 rgba(0,0,0,.25);clip-path:var(--px);}
+.choice{border-radius:0!important;border-width:3px!important;border-color:var(--ink)!important;box-shadow:inset 0 3px 0 #FFFFFF,inset 0 -5px 0 var(--paper2)!important;background-color:var(--paper);clip-path:var(--px);}
+.choice.ok{background-color:#62C85C;box-shadow:inset 0 3px 0 #A5EE9A,inset 0 -5px 0 #3A9A48!important;}
+.choice.no{background-color:#F4705A;box-shadow:inset 0 3px 0 #FFA898,inset 0 -5px 0 #B93A2D!important;}
+.dlg,.explain{border-radius:0;border:3px solid var(--ink);background:var(--paper);box-shadow:inset 0 -4px 0 var(--paper2);clip-path:var(--px);}
+.dlg .nm{display:inline-block;align-self:flex-start;background:var(--pan);color:var(--goldhi);border:2px solid var(--ink);padding:1px 8px;margin-bottom:4px;box-shadow:inset 0 2px 0 var(--panhi);}
+.explain.good{background:#EAF7DF;box-shadow:inset 0 -4px 0 #C4E4AE;} .explain.bad{background:#FBE6E0;box-shadow:inset 0 -4px 0 #EFC1B6;}
+.gain{border:3px solid var(--ink);background:var(--paper);box-shadow:inset 0 -3px 0 var(--paper2);}
+.qhead,.chead{background:var(--paper);border-bottom:3px solid var(--ink);box-shadow:inset 0 -3px 0 var(--paper2);}
+.stage{border-bottom:3px solid var(--ink);}
+.itip{border-radius:0;border:3px solid var(--ink);box-shadow:inset 0 3px 0 var(--panhi);background:var(--pan);}
+.itip .ithumb{border-radius:0;border:2px solid var(--ink);background:var(--pan2);}
+.toast{border-radius:0;border:3px solid var(--ink);box-shadow:inset 0 2px 0 var(--panhi);background:var(--pan);color:#fff;clip-path:var(--px);}
+/* 상태창 */
+#home .hud{background:var(--pan);border-bottom:3px solid var(--ink);box-shadow:inset 0 -3px 0 var(--pan2);padding:calc(6px + env(safe-area-inset-top)) 10px 9px;gap:5px;}
+#home #hudchar{width:52px!important;height:49px!important;background:#8FD4F0;border:3px solid var(--ink);border-radius:0;box-shadow:inset 0 0 0 2px var(--gold);box-sizing:content-box;}
+#home .hud-top{gap:8px;}
+#home .hud-top .nm{font-size:14px;line-height:18px;text-shadow:1px 1px 0 var(--ink);}
+#home .cchip{background:var(--pan2);border:2px solid var(--ink);border-radius:0;color:#fff;padding:2px 7px;box-shadow:inset 0 2px 0 var(--panhi);}
+#home .cchip.coin{background:var(--gold);color:#3A2600;border-color:var(--ink);box-shadow:inset 0 2px 0 var(--goldhi),inset 0 -3px 0 var(--gold2);}
+#home .xpbar{height:13px;border:2px solid var(--ink);border-radius:0;background:var(--pan2);}
+#home .xpbar i{border-radius:0;background:#62C85C;box-shadow:inset 0 2px 0 #A5EE9A,inset 0 -3px 0 #3A9A48;}
+#home .xpmeta{position:relative;margin-top:-18px;height:13px;line-height:13px;padding:0 6px;font-size:9px;color:#fff;text-shadow:1px 1px 0 var(--ink),-1px 0 0 var(--ink);pointer-events:none;}
+#home .fullbar{height:9px;border:2px solid var(--ink);border-radius:0;background:var(--pan2);}
+#home .fullbar i{border-radius:0;box-shadow:inset 0 2px 0 rgba(255,255,255,.35),inset 0 -2px 0 rgba(0,0,0,.25);}
+#home .needs{margin-top:3px;gap:5px;}
+#home .needs .nd{grid-template-rows:auto;color:#D6DAF5;}
+#home .needs .nd b{display:none;}
+/* 지도 위 단추들 */
+.zonetag,.mqchip,.chkchip,.menuchip,.minimap{border-radius:0;background:rgba(29,35,64,.92);border:2px solid var(--ink);box-shadow:inset 0 2px 0 var(--panhi);backdrop-filter:none;-webkit-backdrop-filter:none;}
+.mqchip.on{border-color:var(--ink);box-shadow:inset 0 0 0 2px var(--gold);}
+.guidechip{border-radius:0;border:3px solid var(--ink);background:var(--gold);box-shadow:inset 0 3px 0 var(--goldhi),inset 0 -4px 0 var(--gold2);clip-path:var(--px);}
+.dpad button{border-radius:0;background:rgba(29,35,64,.86);border:2px solid var(--ink);box-shadow:inset 0 2px 0 var(--panhi),inset 0 -3px 0 #141830;}
+.dpad button:active{box-shadow:inset 0 3px 0 #141830;}
+.tutor{border:3px solid var(--ink);border-radius:0;box-shadow:inset 0 -4px 0 var(--paper2);background:var(--paper);}
+.tutor .topt{border:2px solid var(--ink);border-radius:0;background:#FFFFFF;box-shadow:inset 0 -3px 0 var(--paper2);}
+.travel{background:rgba(29,35,64,.96);backdrop-filter:none;-webkit-backdrop-filter:none;}
+.travel button{border:2px solid var(--ink);border-radius:0;background:var(--paper);box-shadow:inset 0 -3px 0 var(--paper2);}
+#home .sceneinfo{background:var(--pan);border-top:3px solid var(--ink);box-shadow:inset 0 3px 0 var(--panhi);padding:3px 14px 2px;}
+#home .def b{font-size:18px;line-height:20px;}
+.todaybtn{min-height:28px;padding:3px 12px;}
+#home .def{background:var(--pan2);border:2px solid var(--ink);border-radius:0;box-shadow:inset 0 2px 0 var(--panhi);}
+.todaybtn{border:3px solid var(--ink);border-radius:0;background:var(--gold);box-shadow:inset 0 3px 0 var(--goldhi),inset 0 -4px 0 var(--gold2);clip-path:var(--px);}
+/* 아래 탭 */
+.tabbar{background:var(--pan);border-top:3px solid var(--ink);box-shadow:inset 0 3px 0 var(--panhi);}
+.tab{border-radius:0;color:#A9B0DA;}
+.tab.on{background:var(--pan2);color:var(--gold);box-shadow:inset 0 3px 0 var(--gold),inset 0 0 0 2px var(--ink);}
+/* 첫 화면 */
+#onboard .scroll{background:var(--pan2);}
+#onboard .opt{background:var(--pan);border:3px solid var(--ink);border-radius:0;box-shadow:inset 0 3px 0 var(--panhi),inset 0 -4px 0 #141830;transition:none;clip-path:var(--px);}
+#onboard .opt[aria-pressed="true"]{background:#4A548F;border-color:var(--ink);box-shadow:inset 0 0 0 3px var(--gold);}
+#onboard .pips i{border-radius:0;}
+#onboard #obnext{background:var(--gold);color:#3A2600;box-shadow:inset 0 3px 0 var(--goldhi),inset 0 -5px 0 var(--gold2);}
+#onboard #obnext[disabled]{background:#3A4270;color:#8E95C4;box-shadow:inset 0 -5px 0 #2A3154;}
+#onboard #obchar{filter:none;}
+.charstage{background:var(--pan2)!important;}
+.charstage .cchip.coin{border:2px solid var(--ink);border-radius:0;background:var(--gold);box-shadow:inset 0 2px 0 var(--goldhi),inset 0 -3px 0 var(--gold2);}
+@media(min-width:520px){#app{border:3px solid var(--ink);border-radius:0;box-shadow:none;}}
 </style>
 
 <div id="app">
@@ -8418,13 +8492,25 @@ function dotGear(x,k,pose,hd,blink){
     else R(E[0][0]-9,E[0][2]+1,E[0][0]-3,E[0][2]+1,fr);
     return; }
   if(g!=='beanie'&&g!=='band') return;
-  var cap=et-5,id=x.getImageData(0,0,48,68),d=id.data,c1=hex2rgb(g==='band'?'#C8453A':(hd.color||'#5B6BD6')),c2=hex2rgb(g==='band'?'#A6352C':(hd.color2||'#3F4DAF')),y,xx,i,l;
-  for(y=0;y<=cap+2;y++) for(xx=0;xx<48;xx++){ i=(y*48+xx)*4; if(d[i+3]<128) continue; l=(d[i]+d[i+1]+d[i+2])/3;
-    var edge=(xx===0||xx===47||y===0||d[i-4+3]<128||d[i+4+3]<128||(y>0&&d[i-192+3]<128));
-    if(g==='band'){ if(y<cap||edge) continue; var cc=(y===cap+2)?c2:c1; d[i]=cc[0]; d[i+1]=cc[1]; d[i+2]=cc[2]; continue; }
-    if(edge) continue;                                       /* 외곽선은 남긴다 */
-    var c=(y>=cap)?c2:c1,sh=(y>=cap)?1:(l>120?1.12:l>70?1:.86);
-    d[i]=Math.min(255,c[0]*sh); d[i+1]=Math.min(255,c[1]*sh); d[i+2]=Math.min(255,c[2]*sh); }
+  var cap=et-5,id=x.getImageData(0,0,48,68),d=id.data,c1=hex2rgb(g==='band'?'#C8453A':(hd.color||'#5B6BD6')),c2=hex2rgb(g==='band'?'#A6352C':(hd.color2||'#3F4DAF')),ik=[43,22,14],y,xx,i,l;
+  function on(xx,y){ return xx>=0&&xx<48&&y>=0&&y<68&&d[(y*48+xx)*4+3]>=128; }
+  function put(xx,y,c,sh){ if(xx<0||xx>=48||y<0||y>=68) return; var j=(y*48+xx)*4; d[j]=Math.min(255,c[0]*(sh||1)); d[j+1]=Math.min(255,c[1]*(sh||1)); d[j+2]=Math.min(255,c[2]*(sh||1)); d[j+3]=255; }
+  if(g==='band'){                                            /* 머리띠: 눈썹 위 세 줄을 머리 모양대로 두른다 */
+    for(y=cap;y<=cap+2;y++) for(xx=0;xx<48;xx++){ if(!on(xx,y)) continue; var edge=!on(xx-1,y)||!on(xx+1,y); if(!edge) put(xx,y,(y===cap+2)?c2:c1); }
+    x.putImageData(id,0,0); return; }
+  /* 비니: 삐친 머리를 누르고 둥근 모자를 씌운다. 모자 너비는 눈썹 위 줄의 머리 너비, 꼭대기는 머리 꼭대기 */
+  var x0=48,x1=-1,top=68; for(xx=0;xx<48;xx++) if(on(xx,cap+1)){ if(xx<x0) x0=xx; if(xx>x1) x1=xx; }
+  for(y=0;y<cap;y++){ for(xx=0;xx<48;xx++) if(on(xx,y)){ top=y; break; } if(top<68) break; }
+  if(x1<0||top>=cap) { x.putImageData(id,0,0); return; }
+  top=Math.max(0,top+1); var cx0=(x0+x1)/2,hw=(x1-x0)/2+1,hh=cap-top;
+  for(y=0;y<=cap;y++) for(xx=0;xx<48;xx++){ var j2=(y*48+xx)*4,t=(cap-y)/hh,w=(t>1)?-1:hw*Math.sqrt(Math.max(0,1-t*t)),dx=Math.abs(xx-cx0);
+    if(dx<=w-1) put(xx,y,c1,(xx<cx0-hw*.35)?1.14:(xx>cx0+hw*.45)?.84:1);
+    else if(dx<=w) put(xx,y,ik);
+    else if(y<cap) d[j2+3]=0; }                              /* 모자 밖으로 삐친 머리는 지운다 */
+  var bl=Math.round(cx0-hw)+1,br=Math.round(cx0+hw)-1;
+  for(xx=bl;xx<=br;xx++){ put(xx,cap,c2,1.1); put(xx,cap+1,c2); put(xx,cap+2,c2,.85); put(xx,cap+3,ik); }
+  [cap,cap+1,cap+2].forEach(function(yy){ put(bl-1,yy,ik); put(br+1,yy,ik); });
+  for(xx=Math.round(cx0-hw)+2;xx<Math.round(cx0+hw);xx+=3) put(xx,cap+1,c2,.8);                 /* 골지 */
   x.putImageData(id,0,0); }
 function heroDot(dir,f){
   var k=dotLookKey(),base=castCv(k); if(!base) return null;
@@ -13132,7 +13218,10 @@ var HEARTS=2;
 var RUN=null;
 /** 말 거는 사람에 맞는 손그림을 스테이지에 세운다. 캔버스는 원본 크기, 확대는 정수 배율로만. */
 function paintQuestNpc(name){
-  var cv=document.getElementById('qnpcspr'),S3=3;
+  var cv=document.getElementById('qnpcspr'),S3=3,nd=npcDot(npcKeyFor(name));
+  if(nd){ cv.width=48; cv.height=68; cv.style.width='144px'; cv.style.height='204px'; cv.style.imageRendering='pixelated';   /* 도트 조연은 세 배로 */
+    var qx=cv.getContext('2d'); qx.imageSmoothingEnabled=false; qx.clearRect(0,0,48,68); qx.drawImage(nd,0,0); return; }
+  cv.style.imageRendering='';
   spriteInto(cv,'npc_'+npcKeyFor(name),S3); }
 /* 보기 순서를 섞는다. 문항 95개의 정답이 전부 첫 번째 보기였다. 몇 문제만 풀면
    내용이 아니라 위치를 외우게 된다. */
