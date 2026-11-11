@@ -291,7 +291,7 @@ test('8. 캐릭터 카드 공유: 문구에 한 줄 소개와 링크가 들어�
   const { ctx, page, errors } = await open({ boot: true });
   const base = await st(page, () => SHARE_BASE), pitch = await st(page, () => SHARE_PITCH);
   assert.match(base, /^https:\/\//);
-  assert.equal(pitch, '사회초년생 생활 RPG, 뉴비 퀘스트');
+  assert.equal(pitch, '사회초년생 생활 RPG, 상경해서 살아남기');
   await page.evaluate(() => render('char'));
   for (const mode of ['file', 'text', 'copy']) {
     await stubShare(page, mode);
@@ -303,7 +303,7 @@ test('8. 캐릭터 카드 공유: 문구에 한 줄 소개와 링크가 들어�
     assert.equal(o.files, mode === 'file', mode);
     assert.ok(o.text.includes(base), `${mode}: 링크가 있다 · ${o.text}`);
     assert.ok(o.text.includes(pitch), `${mode}: 한 줄 소개가 있다`);
-    assert.match(o.text, /^뉴비 퀘스트 · /);
+    assert.match(o.text, /^상경해서 살아남기 · /);
     if (mode === 'copy') assert.match(await page.locator('#sharenote').innerText(), /복사/);
   }
   // 카드 그림에도 소개와 주소 자리가 있다 (예외 없이 그려진다)
