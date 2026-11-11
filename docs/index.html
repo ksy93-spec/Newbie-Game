@@ -7403,7 +7403,7 @@ var TOPC={};
 function mirrorCv(cv){
   var o=mkcv(cv.width,cv.height),x=o.getContext('2d');
   x.imageSmoothingEnabled=false;
-  x.translate(cv.width,0); x.scale(-1,1); x.drawImage(cv,0,0); return o;
+  x.translate(cv.width,0); x.scale(-1,1); x.drawImage(cv,0,0); if(cv.hd) o.hd=cv.hd; return o;
 }
 /* ── 손에 든 것 ───────────────────────────────────────────────────────
    18×26칸 안에서도 무엇을 들었는지는 보여야 한다. 안 그러면 옷과 무기를 사는 이유가 없다. */
@@ -7936,6 +7936,60 @@ function outlineSel(g){ var n=g.d.map(function(r){ return r.slice(); }),y,x,k,c;
     for(k=0;k<4;k++){ c=nb[k]; if(c!==null&&c!==undefined){ hit=c; break; } }
     if(hit!==null) n[y][x]=HEXRE.test(hit)?mixHex(hit,'#17132A',.72):P.s5; }
   g.d=n; }
+/* ── 두 배 밀도 도트 ──
+   틀(22×32)로 몸을 짠 다음 가로세로 두 배로 늘리면서 계단진 모서리를 둥글게 다듬고(Scale2x),
+   얼굴은 늘린 뒤에 새로 찍는다. 눈이 4×4칸이 되어 눈빛, 눈썹, 입, 볼까지 들어간다.
+   지도에서 차지하는 크기는 그대로다. 캔버스에 hd=2를 달아 두고 그릴 때 반으로 줄인다. */
+function scale2xG(g){ var o=Gr(g.w*2,g.h*2),y,x;
+  function q(x,y){ var v=(y>=0&&y<g.h&&x>=0&&x<g.w)?g.d[y][x]:null; return v===undefined?null:v; }
+  for(y=0;y<g.h;y++) for(x=0;x<g.w;x++){ var c=q(x,y),A=q(x,y-1),B=q(x+1,y),C=q(x-1,y),D=q(x,y+1),e0=c,e1=c,e2=c,e3=c;
+    if(C===A&&C!==D&&A!==B) e0=A; if(A===B&&A!==C&&B!==D) e1=B; if(D===C&&D!==B&&C!==A) e2=C; if(B===D&&B!==A&&D!==C) e3=D;
+    o.d[2*y][2*x]=e0; o.d[2*y][2*x+1]=e1; o.d[2*y+1][2*x]=e2; o.d[2*y+1][2*x+1]=e3; }
+  return o; }
+function faceHD(g,pal,dir,p){
+  if(dir===3) return;
+  function h(x,y,c){ if(y>=0&&y<g.h&&x>=0&&x<g.w) g.d[y][x]=c; }
+  var E=pal.e,ey=20,xs=(dir===2)?[28]:[16,28],iris=mixHex(E,'#8A6A5A',.32),lip=mixHex(pal.S,'#9A3F45',.5),i;
+  if(!p.shades) xs.forEach(function(ex){
+    if(!p.hat) for(i=0;i<4;i++) h(ex+i,ey-(p.glasses?3:2),pal.d);                              /* 눈썹 */
+    if(p.glasses){ var fr='#4A4560',ln=mixHex(pal.s,'#DFF3FF',.6),a,b2;               /* 얇은 테 안경: 렌즈 4×4, 안에는 작은 눈 */
+      for(a=0;a<4;a++) for(b2=0;b2<4;b2++) h(ex+a,ey+b2,ln);
+      for(a=0;a<4;a++){ h(ex+a,ey-1,fr); h(ex+a,ey+4,fr); h(ex-1,ey+a,fr); h(ex+4,ey+a,fr); }
+      if(p.blink){ h(ex+1,ey+2,E); h(ex+2,ey+2,E); } else { h(ex+1,ey+1,E); h(ex+2,ey+1,E); h(ex+1,ey+2,E); h(ex+2,ey+2,E); }
+      if(dir===2){ for(a=22;a<27;a++) h(a,ey+1,fr); } else if(ex===16){ for(a=21;a<27;a++) h(a,ey+1,fr); }
+      return; }
+    if(p.blink){ for(i=0;i<4;i++) h(ex+i,ey+2,E); h(ex,ey+3,E); h(ex+3,ey+3,E); return; }
+    if(p.eyes==='smile'){ h(ex+1,ey+1,E); h(ex+2,ey+1,E); h(ex,ey+2,E); h(ex+3,ey+2,E); return; }
+    for(i=0;i<4;i++){ h(ex+i,ey,E); h(ex+i,ey+1,E); h(ex+i,ey+2,i>=2?iris:E); }
+    h(ex+1,ey+3,E); h(ex+2,ey+3,iris); h(ex+1,ey+1,pal.w); h(ex,ey,pal.s); h(ex+3,ey+3,pal.s); h(ex,ey+3,pal.s);
+    if(p.mark==='tired') for(i=0;i<4;i++) h(ex+i,ey+4,'#A08FB0'); });
+  var ck=(p.mark==='blush')?'#F49A92':mixHex(pal.s,'#F28B82',.42);
+  if(dir===2){ h(28,25,ck); h(29,25,ck); h(30,25,ck); if(!p.beard){ h(33,26,lip); h(34,26,lip); } return; }
+  [13,32].forEach(function(cx){ h(cx,25,ck); h(cx+1,25,ck); h(cx+2,25,ck); h(cx+1,26,ck); });
+  h(24,24,pal.S);                                                                             /* 코 */
+  if(!p.beard){ if(p.eyes==='smile'||p.smile){ h(22,26,lip); h(23,27,lip); h(24,27,lip); h(25,27,lip); h(26,26,lip); }
+    else { h(23,27,lip); h(24,27,lip); h(25,27,lip); } } }
+function personTopHD(p,dir,f){
+  if(f==='b'){ p=Object.assign({},p,{blink:1}); f=0; }
+  if(dir===1) return mirrorCv(personTopHD(p,2,p.blink?'b':f));
+  var g=Gr(PW,PH),pal=pPal(p);
+  if(dir!==3) hairBack2(g,pal,p,dir);
+  props2(g,pal,p,dir,f,0); body2(g,pal,p,dir,f);
+  if(dir===3) hairBack2(g,pal,p,dir);
+  tpl(g,FACE2[dir],pal);
+  if(dir===2){ px2(g,17,10,pal.s); px2(g,17,11,pal.S); }
+  hairOn2(g,pal,p,dir); faceGear2(g,pal,p.glasses?Object.assign({},p,{glasses:0}):p,dir); robe2(g,pal,p,dir); props2(g,pal,p,dir,f,1);
+  if(p.weapon){ var side=(dir===2)?1:0; topWeapon(g,p.weapon,side,POX+(side?12:17),POY+21); }
+  var G=scale2xG(g); faceHD(G,pal,dir,p); polishG(G); outlineSel(G);
+  var cv=toCanvas(G); cv.hd=2; return cv; }
+/* 이미 그려 둔 작은 그림(탈것에 탄 모습)을 두 배 밀도로 늘린다 */
+function epxCv(cv){ var w=cv.width,h=cv.height,sd=cv.getContext('2d').getImageData(0,0,w,h),s0=new Uint32Array(sd.data.buffer);
+  var o=mkcv(w*2,h*2),oc=o.getContext('2d'),dd=oc.createImageData(w*2,h*2),d=new Uint32Array(dd.data.buffer),x,y;
+  function q(x,y){ if(x<0||y<0||x>=w||y>=h) return 0; var v=s0[y*w+x]; return (v>>>24)<8?0:v; }
+  for(y=0;y<h;y++) for(x=0;x<w;x++){ var c=q(x,y),A=q(x,y-1),B=q(x+1,y),C=q(x-1,y),D=q(x,y+1),e0=c,e1=c,e2=c,e3=c;
+    if(C===A&&C!==D&&A!==B) e0=A; if(A===B&&A!==C&&B!==D) e1=B; if(D===C&&D!==B&&C!==A) e2=C; if(B===D&&B!==A&&D!==C) e3=D;
+    var i=(2*y)*(2*w)+2*x; d[i]=e0; d[i+1]=e1; d[i+2*w]=e2; d[i+2*w+1]=e3; }
+  oc.putImageData(dd,0,0); o.hd=2; return o; }
 function personTopCv(p,dir,f){
   if(f==='b'){ p=Object.assign({},p,{blink:1}); f=0; }          /* 눈 깜빡임 컷 */
   if(dir===1) return mirrorCv(personTopCv(p,2,p.blink?'b':f));
@@ -8084,7 +8138,7 @@ function heroTop(dir,f){
   var key='HT'+dir+f+'|'+(L.haircol)+(L.skin||0)+E.top+E.bottom+E.weapon+E.head+(mt?E.mount:'-')+S.avatar+S.hero+((lifeOn()&&S.life)?(S.life.age>=53?'c':S.life.age>=40?'b':'a'):'');
   if(TOPC[key]) return TOPC[key];
   var p=heroDesc();
-  var cv=(mt&&mt.kind)?ridingCv(p,mt.kind,dir,f,mt.top):personTopCv(p,dir,f);
+  var cv=(mt&&mt.kind)?epxCv(ridingCv(p,mt.kind,dir,f==='b'?0:f,mt.top)):personTopHD(p,dir,f);
   return (TOPC[key]=cv);
 }
 /* 조연도 역할이 보여야 한다. 흰머리에 지팡이면 동네 어른, 명찰에 흰 셔츠면 창구 직원. */
@@ -8106,7 +8160,7 @@ var NPC_TOP={
 };
 function npcTop(key,dir,f){
   var k='NT'+key+dir+f; if(TOPC[k]) return TOPC[k];
-  return (TOPC[k]=personTopCv(NPC_TOP[key]||NPC_TOP.peerm,dir,f));
+  return (TOPC[k]=personTopHD(NPC_TOP[key]||NPC_TOP.peerm,dir,f));
 }
 /* ══════════ 세간 ══════════
    방이 생겼으니 채울 것도 필요하다. 라면 다섯 봉지에서 시작해서, 냉장고와 세탁기를 지나,
@@ -10680,9 +10734,11 @@ function drawRing(ctx,cx,cy,tone){
 }
 function rr0(ctx,x,y,w,h,c){ rcx(ctx,c,x+1,y,w-2,h); rcx(ctx,c,x,y+1,w,h-2); }
 /* 서 있는 사람: 윗몸이 한 칸 오르내리며 숨을 쉰다 */
+function spW(im){ return im.width/(im.hd||1); } function spH(im){ return im.height/(im.hd||1); }
 function drawPerson(ctx,im,x,y,breath){
-  if(!breath||im.height<30){ ctx.drawImage(im,x,y); return; }
-  var c=25; ctx.drawImage(im,0,c,im.width,im.height-c,x,y+c,im.width,im.height-c); ctx.drawImage(im,0,0,im.width,c,x,y+1,im.width,c); }
+  var k=im.hd||1,w=im.width/k,h=im.height/k;
+  if(!breath||h>36){ ctx.drawImage(im,0,0,im.width,im.height,x,y,w,h); return; }
+  var c=25; ctx.drawImage(im,0,c*k,im.width,im.height-c*k,x,y+c,w,h-c); ctx.drawImage(im,0,0,im.width,c*k,x,y+1,w,c); }
 function drawSpot(ctx,s,px,py){
   if(s.kind==='ep'||s.kind==='review'){
     rcx(ctx,P.b3,px+3,py+10,3,6); rcx(ctx,P.b3,px+10,py+10,3,6);
@@ -10714,7 +10770,7 @@ function drawSpot(ctx,s,px,py){
     return; }
   if(s.kind==='desk'||s.behind){                                /* 창구: 사람은 책상 뒤에 선다 */
     var k2=spotFace(s),im2=npcTop(k2,0,0);
-    ctx.drawImage(im2,px+Math.round((TS-im2.width)/2),py-im2.height+9);
+    drawPerson(ctx,im2,px+Math.round((TS-spW(im2))/2),py-spH(im2)+9,false);
     var tc=tileAt(curMap(),s.x,s.y);
     if(tc==='C'){ rcx(ctx,'#B9A88C',px,py+4,TS,TS-4); rcx(ctx,'#8A7A64',px,py+TS-3,TS,3); rcx(ctx,'#D6C6A8',px,py+4,TS,2); }
     else if(tc==='T'){ rcx(ctx,'#8A6A44',px,py+4,TS,TS-6); rcx(ctx,'#A5825A',px,py+4,TS,2); }
@@ -10726,7 +10782,7 @@ function drawSpot(ctx,s,px,py){
   var sd=s.x*7+s.y*13,nd=s.dir==null?0:s.dir,bl=(nd!==3)&&((TICK+sd*11)%84)<5;
   var im=npcTop(key,nd,bl?'b':0);
   rcx(ctx,'rgba(30,26,48,.2)',px+3,py+TS,10,2); rcx(ctx,'rgba(30,26,48,.14)',px+2,py+TS+1,12,1);
-  drawPerson(ctx,im,px+Math.round((TS-im.width)/2),py+TS-im.height+2,Math.floor((TICK+sd*3)/10)%2===1);
+  drawPerson(ctx,im,px+Math.round((TS-spW(im))/2),py+TS-spH(im)+2,Math.floor((TICK+sd*3)/10)%2===1);
 }
 /* ── 나 ──────────────────────────────────────────────────────────────── */
 var ME={map:'town',tx:2,ty:4,dir:0,step:0};
@@ -10964,7 +11020,7 @@ function drawScene(){
     var riding=rideHere();
     var idle=(wf===0&&!riding),hb=idle&&ME.dir!==3&&(TICK%76)<5;
     var im=heroTop(ME.dir,hb?'b':wf),bob=(wf===2&&!riding)?1:0;              /* 두 발이 스칠 때 몸이 한 칸 뜬다 */
-    drawPerson(ctx,im,Math.round(p.x+(TS-im.width)/2),Math.round(p.y+TS-im.height+2)-bob,idle&&Math.floor(TICK/10)%2===1); }});
+    drawPerson(ctx,im,Math.round(p.x+(TS-spW(im))/2),Math.round(p.y+TS-spH(im)+2)-bob,idle&&Math.floor(TICK/10)%2===1); }});
   var pw=petTick(m);
   if(pw) cast.push({y:pw.fy*TS,draw:function(){ drawPet(ctx,pw); }});
   cast.sort(function(a,b){ return a.y-b.y; });
@@ -13415,8 +13471,8 @@ function playCinema(panels,onDone,host){
 function sceneStars(ctx,t,W,H,n){ for(var i=0;i<(n||30);i++){ var x=Math.floor(hrand(i,9,1)*W),y=Math.floor(hrand(i,9,2)*H*0.5);
   if(((Math.floor(t*5)+i)%23)<19){ ctx.fillStyle=i%6?'#6B6380':'#C9C3D6'; ctx.fillRect(x,y,1,1); } } }
 /* 좌표는 1배 기준 왼쪽 위로 받고, 발밑을 기준으로 2배로 키워 그린다. 어두운 화면에서 사람이 작으면 안 읽힌다 */
-function sceneP(ctx,p,x,y,dir,f,sc){ sc=sc||2; var c=personTopCv(p,dir,f),cx=x+12,base=y+34;
-  ctx.drawImage(c,Math.round(cx-c.width*sc/2),Math.round(base-c.height*sc),c.width*sc,c.height*sc); return c; }
+function sceneP(ctx,p,x,y,dir,f,sc){ sc=sc||2; var c=personTopHD(p,dir,f),cx=x+12,base=y+34,w=spW(c)*sc,h=spH(c)*sc;
+  ctx.drawImage(c,0,0,c.width,c.height,Math.round(cx-w/2),Math.round(base-h),w,h); return c; }
 function sceneHero(ctx,x,y,dir,f,sc){ if(scenePortrait(ctx,'hero',x+12,y+34,dir,f)) return; return sceneP(ctx,heroDesc(),x,y,dir,f,sc); }
 function sceneGpa(ctx,x,y,dir,f,sc){ if(scenePortrait(ctx,'halbae',x+12,y+34,dir,f)) return; return sceneP(ctx,NPC_TOP.halbae,x,y,dir,f,sc); }
 /* 컷신에 인물 그림(대화창과 같은 그림)을 세운다. cx는 가운데, base는 발끝 줄.
