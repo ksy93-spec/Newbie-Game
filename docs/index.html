@@ -7656,10 +7656,13 @@ function faceFeat2(g,pal,dir,p){
   E.forEach(function(xx){ var a=xx[0],b=xx[1];
     if(p.eyes==='smile'){ px2(g,a,9,pal.e); px2(g,b,9,pal.e); px2(g,a-1,10,pal.e); px2(g,b+1,10,pal.e);
       px2(g,a,11,pal.S); px2(g,b,11,pal.S); return; }
+    if(p.blink){ px2(g,a,8,pal.d); px2(g,b,8,pal.d); rc2(g,a,10,b,10,pal.e); return; }
     px2(g,a,8,pal.d); px2(g,b,8,pal.d);                                      /* 눈썹 */
     px2(g,a,9,pal.w); px2(g,b,9,pal.e); rc2(g,a,10,b,10,pal.e); });          /* 눈: 위 안쪽에 빛 */
   if(dir===2){ px2(g,17,10,pal.s); px2(g,17,11,pal.S); px2(g,15,12,pal.S); }
   else px2(g,11,11,pal.S);
+  if(p.mark!=='blush'&&p.mark!=='tired'){ var ck=mixHex(pal.s,'#F28B82',.38);                /* 옅은 볼 */
+    if(dir===2) px2(g,13,12,ck); else { px2(g,6,12,ck); px2(g,15,12,ck); } }
   if(p.mark==='tired'&&p.eyes!=='smile') E.forEach(function(xx){ rc2(g,xx[0],11,xx[1],11,'#A08FB0'); });   /* 다크서클 */
   if(p.mark==='blush'){ if(dir===2) rc2(g,13,12,14,12,'#F49A92'); else { rc2(g,6,12,7,12,'#F49A92'); rc2(g,14,12,15,12,'#F49A92'); } }
   if(p.eyes==='smile'&&dir!==2){ px2(g,10,12,pal.S); px2(g,11,12,pal.S); px2(g,12,12,pal.S); }
@@ -7920,8 +7923,22 @@ function props2(g,pal,p,dir,f,layer){
   if(pr==='files'){ if(dir===2) rc2(g,5,17,7,22,P.k1); else { rc2(g,1,19,4,24,P.k1); rc2(g,1,19,4,20,P.k4); } }
 }
 
+/* 도트 다듬기: 가장자리 명암을 한 단 더 넣고(왼쪽 위는 밝게, 오른쪽 아래는 어둡게), 외곽선은 검정 대신 옆 칸 색을 어둡게 한 색으로 두른다 */
+var HEXRE=/^#[0-9a-fA-F]{6}$/;
+function polishG(g){ var s0=g.d.map(function(r){ return r.slice(); }),y,x;
+  function at(x,y){ return (y>=0&&y<g.h&&x>=0&&x<g.w)?s0[y][x]:null; }
+  for(y=0;y<g.h;y++) for(x=0;x<g.w;x++){ var c=s0[y][x]; if(c===null||!HEXRE.test(c)||c==='#FFFFFF'||c==='#141A2C') continue;
+    if(at(x,y+1)===null||at(x+1,y)===null) g.d[y][x]=mixHex(c,'#1E1A30',.17);
+    else if(at(x,y-1)===null||at(x-1,y)===null) g.d[y][x]=mixHex(c,'#FFFFFF',.13); } }
+function outlineSel(g){ var n=g.d.map(function(r){ return r.slice(); }),y,x,k,c;
+  for(y=0;y<g.h;y++) for(x=0;x<g.w;x++){ if(g.d[y][x]!==null) continue;
+    var nb=[gp(g,x,y+1),gp(g,x+1,y),gp(g,x-1,y),gp(g,x,y-1)],hit=null;
+    for(k=0;k<4;k++){ c=nb[k]; if(c!==null&&c!==undefined){ hit=c; break; } }
+    if(hit!==null) n[y][x]=HEXRE.test(hit)?mixHex(hit,'#17132A',.72):P.s5; }
+  g.d=n; }
 function personTopCv(p,dir,f){
-  if(dir===1) return mirrorCv(personTopCv(p,2,f));
+  if(f==='b'){ p=Object.assign({},p,{blink:1}); f=0; }          /* 눈 깜빡임 컷 */
+  if(dir===1) return mirrorCv(personTopCv(p,2,p.blink?'b':f));
   var g=Gr(PW,PH),pal=pPal(p);
   if(dir!==3) hairBack2(g,pal,p,dir);
   props2(g,pal,p,dir,f,0);
@@ -7934,7 +7951,7 @@ function personTopCv(p,dir,f){
   robe2(g,pal,p,dir);
   props2(g,pal,p,dir,f,1);
   if(p.weapon){ var side=(dir===2)?1:0; topWeapon(g,p.weapon,side,POX+(side?12:17),POY+21); }
-  outline(g,P.s5);
+  polishG(g); outlineSel(g);
   return toCanvas(g);
 }
 
@@ -8051,6 +8068,9 @@ function heroDesc(){
     hs:(av.name===(AVATARS[hr.av]||{}).name&&hr.hs)||((av.name==='여')?'bob':'short'),eyes:hr.eyes,mark:hr.mark,weapon:(E.weapon==='goldpen')?'goldpen':(wp&&wp.gear),
     hood:o.ts==='hood',badge:o.ts==='badge',sharp:o.ts==='sharp',puff:o.ts==='puff',
     stripe:o.bs==='stripe',shirt:(E.top==='shirt'||!o.ts)?1:0};     /* 일러스트처럼 재킷 안 흰 깃 */
+  if(lifeOn()&&S.life){ var ag=S.life.age||20;                 /* 나이가 들면 도트 주인공도 머리가 센다(일러스트 45·60과 같이) */
+    if(ag>=53) p.hair={b:'#A8A39B',s:'#8B867E',h:'#D2CDC6'};
+    else if(ag>=40) p.hair={b:mixHex(hc.b,'#8E8A86',.3),s:mixHex(hc.s||dimHex(hc.b),'#77736F',.3),h:'#A39E98'}; }
   var hg=hd&&hd.gear;
   if(hg==='glass'){ if(hd.dark) p.shades=1; else p.glasses=1; }
   else if(hr.glasses) p.glasses=1;
@@ -8061,7 +8081,7 @@ function heroDesc(){
 function heroTop(dir,f){
   var E=S.equip,L=S.look||{},mt=MOUNTS[E.mount];
   if(!rideHere()) mt=null;                          /* 방·건물 안·휴게소·여행지에서는 내려서 걷는다 */
-  var key='HT'+dir+f+'|'+(L.haircol)+(L.skin||0)+E.top+E.bottom+E.weapon+E.head+(mt?E.mount:'-')+S.avatar+S.hero;
+  var key='HT'+dir+f+'|'+(L.haircol)+(L.skin||0)+E.top+E.bottom+E.weapon+E.head+(mt?E.mount:'-')+S.avatar+S.hero+((lifeOn()&&S.life)?(S.life.age>=53?'c':S.life.age>=40?'b':'a'):'');
   if(TOPC[key]) return TOPC[key];
   var p=heroDesc();
   var cv=(mt&&mt.kind)?ridingCv(p,mt.kind,dir,f,mt.top):personTopCv(p,dir,f);
@@ -10659,6 +10679,10 @@ function drawRing(ctx,cx,cy,tone){
   rcx(ctx,tone,cx-4,cy+2,8,1);
 }
 function rr0(ctx,x,y,w,h,c){ rcx(ctx,c,x+1,y,w-2,h); rcx(ctx,c,x,y+1,w,h-2); }
+/* 서 있는 사람: 윗몸이 한 칸 오르내리며 숨을 쉰다 */
+function drawPerson(ctx,im,x,y,breath){
+  if(!breath||im.height<30){ ctx.drawImage(im,x,y); return; }
+  var c=25; ctx.drawImage(im,0,c,im.width,im.height-c,x,y+c,im.width,im.height-c); ctx.drawImage(im,0,0,im.width,c,x,y+1,im.width,c); }
 function drawSpot(ctx,s,px,py){
   if(s.kind==='ep'||s.kind==='review'){
     rcx(ctx,P.b3,px+3,py+10,3,6); rcx(ctx,P.b3,px+10,py+10,3,6);
@@ -10699,8 +10723,10 @@ function drawSpot(ctx,s,px,py){
       rcx(ctx,P.s4,lx,py+7,lw,9); ctx.fillStyle=P.p0; ctx.fillText(s.label,lx+2,py+8); }
     return; }
   var key=spotFace(s); if(!key) return;
-  var im=npcTop(key,s.dir==null?0:s.dir,0);
-  ctx.drawImage(im,px+Math.round((TS-im.width)/2),py+TS-im.height+2);
+  var sd=s.x*7+s.y*13,nd=s.dir==null?0:s.dir,bl=(nd!==3)&&((TICK+sd*11)%84)<5;
+  var im=npcTop(key,nd,bl?'b':0);
+  rcx(ctx,'rgba(30,26,48,.2)',px+3,py+TS,10,2); rcx(ctx,'rgba(30,26,48,.14)',px+2,py+TS+1,12,1);
+  drawPerson(ctx,im,px+Math.round((TS-im.width)/2),py+TS-im.height+2,Math.floor((TICK+sd*3)/10)%2===1);
 }
 /* ── 나 ──────────────────────────────────────────────────────────────── */
 var ME={map:'town',tx:2,ty:4,dir:0,step:0};
@@ -10936,8 +10962,9 @@ function drawScene(){
     var wf=0;
     if(MOVE&&MOVE.dur){ wf=(MOVE.t<MOVE.dur/2)?(ME.step?3:1):2; }
     var riding=rideHere();
-    var im=heroTop(ME.dir,wf),bob=(wf===2&&!riding)?1:0;              /* 두 발이 스칠 때 몸이 한 칸 뜬다 */
-    ctx.drawImage(im,Math.round(p.x+(TS-im.width)/2),Math.round(p.y+TS-im.height+2)-bob); }});
+    var idle=(wf===0&&!riding),hb=idle&&ME.dir!==3&&(TICK%76)<5;
+    var im=heroTop(ME.dir,hb?'b':wf),bob=(wf===2&&!riding)?1:0;              /* 두 발이 스칠 때 몸이 한 칸 뜬다 */
+    drawPerson(ctx,im,Math.round(p.x+(TS-im.width)/2),Math.round(p.y+TS-im.height+2)-bob,idle&&Math.floor(TICK/10)%2===1); }});
   var pw=petTick(m);
   if(pw) cast.push({y:pw.fy*TS,draw:function(){ drawPet(ctx,pw); }});
   cast.sort(function(a,b){ return a.y-b.y; });
