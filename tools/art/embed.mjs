@@ -10,7 +10,7 @@ const root = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '../
 const dir = path.join(root, 'assets/art');
 const html = path.join(root, 'prototype/newbie-quest-demo.html');
 /* 게임에서 쓰는 묶음만 넣는다. 엽서(pc_)와 외벽 질감(tx_)은 쓰는 곳이 생기면 더한다. */
-const USE = ['npc_', 'it_', 'fu_', 'ho_', 'bg_', 'ui_', 'hp_', 'lh_'];
+const USE = ['npc_', 'it_', 'fu_', 'ho_', 'bg_', 'ui_', 'hp_', 'lh_', 'dh_', 'dn_'];   // dh_·dn_: 도트 시트를 변환한 주인공 띠와 조연
 
 const index = JSON.parse(fs.readFileSync(path.join(dir, 'index.json'), 'utf8'));
 const rows = Object.keys(index).filter((k) => USE.some((p) => k.startsWith(p))).sort().map((k) => {
@@ -18,7 +18,9 @@ const rows = Object.keys(index).filter((k) => USE.some((p) => k.startsWith(p))).
   const b64 = fs.readFileSync(path.join(dir, k + '.webp')).toString('base64');
   return ' ' + JSON.stringify(k) + ':[' + w + ',' + h + ",'" + b64 + "']";
 });
-const block = '/* ART_DATA_BEGIN */\nvar ART={\n' + rows.join(',\n') + '\n};\n/* ART_DATA_END */';
+const anchFile = path.join(dir, 'dot-anch.json');
+const anch = fs.existsSync(anchFile) ? fs.readFileSync(anchFile, 'utf8').trim() : '{}';   // 도트 주인공의 눈 자리(slice-dot.py가 쓴다)
+const block = '/* ART_DATA_BEGIN */\nvar ART={\n' + rows.join(',\n') + '\n};\nvar DOTA=' + anch + ';\n/* ART_DATA_END */';
 const src = fs.readFileSync(html, 'utf8');
 const re = /\/\* ART_DATA_BEGIN \*\/[\s\S]*?\/\* ART_DATA_END \*\//;
 if (!re.test(src)) { console.error('표시(ART_DATA_BEGIN/END)를 찾지 못했다'); process.exit(1); }
