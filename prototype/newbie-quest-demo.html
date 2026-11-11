@@ -793,6 +793,25 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
 .lctl{display:flex;flex-wrap:wrap;gap:4px 6px;} .lctl span{font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.08);white-space:nowrap;}
 .lctl b{color:#FFE79B;margin-right:4px;font-weight:400;}
 .lcg b{word-break:keep-all;font-size:11px;}
+
+/* 손맛: 점 입자 캔버스, 화면 번쩍, 통통 튀기, 결과 별 */
+#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:9000;image-rendering:pixelated;}
+#fxflash{position:fixed;inset:0;pointer-events:none;z-index:8990;opacity:0;}
+#fxflash.on{animation:fxflash .28s steps(4) both;}
+@keyframes fxflash{0%{opacity:.42}100%{opacity:0}}
+.fxpop{animation:fxpop .3s steps(5);}
+@keyframes fxpop{0%{transform:scale(1)}35%{transform:scale(1.22)}100%{transform:scale(1)}}
+.rstars{display:flex;gap:10px;justify-content:center;height:44px;align-items:center;}
+.rstars i{width:36px;height:36px;display:block;background:#CFC6B4;clip-path:polygon(50% 0,61% 33%,100% 36%,70% 58%,81% 100%,50% 76%,19% 100%,30% 58%,0 36%,39% 33%);transform:scale(.8);}
+.rstars i.on{background:#FFC53C;animation:starin .34s steps(5) both;filter:drop-shadow(0 3px 0 #B8842A);}
+.rstars i:nth-child(2){width:44px;height:44px;}
+@keyframes starin{0%{transform:scale(2.2) rotate(-30deg);opacity:0}60%{transform:scale(.9) rotate(4deg);opacity:1}100%{transform:scale(1)}}
+.rjump{animation:rjump .5s steps(5) 3;}
+@keyframes rjump{0%,100%{transform:translateY(0)}45%{transform:translateY(-14px)}}
+.combo{position:absolute;right:12px;top:58px;font-family:var(--f-display);font-size:16px;line-height:20px;color:#FFC53C;text-shadow:2px 0 0 #2B160E,-2px 0 0 #2B160E,0 2px 0 #2B160E,0 -2px 0 #2B160E;z-index:5;pointer-events:none;}
+.btn:active,.choice:active,.tabbar button:active{transform:translateY(2px);}
+#home .xpbar i{transition:width .5s steps(10);}
+#quest{position:relative;}
 </style>
 
 <div id="app">
@@ -909,6 +928,7 @@ body{background:radial-gradient(120% 80% at 50% 0%,#232A55 0%,#0E1022 70%);}
     <div class="scroll dither">
       <canvas id="rchar" width="64" height="64" style="width:160px;height:160px"></canvas>
       <div class="big outline" id="rbig">퀘스트 완료</div>
+      <div class="rstars" id="rstars" hidden><i></i><i></i><i></i></div>
       <div class="num" style="color:var(--g3)" id="rxp">+0 XP</div>
       <div class="gains" id="rgains"></div>
       <div id="rupgrade" hidden></div>
@@ -5278,7 +5298,7 @@ function lifeBirthday(n,jump){
   var old=document.getElementById('lbday'); if(old&&old.parentNode) old.parentNode.removeChild(old);
   var el=document.createElement('div'); el.id='lbday'; el.setAttribute('role','status');
   el.innerHTML='<div class="lbd-in"><span class="lbd-k">'+(jump>1?jump+'년이 흘렀다':'생일')+'</span><b>'+n+'<i>살</i></b><span class="lbd-l">'+esc(LIFE_BDAY[n]||'한 살 더 먹었다')+'</span><span class="lbd-s">체력·포만감 가득</span></div>';
-  app.appendChild(el); sfx('level');
+  app.appendChild(el); sfx('level'); fxConfetti(60);
   setTimeout(function(){ el.classList.add('out'); setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },400); },1700); }
 /* 상태창 인생 막대: 스물에서 예순까지 어디쯤인지, 다음 생일까지 얼마나 남았는지 */
 function lifeBarDraw(){
@@ -10200,7 +10220,12 @@ function hudRefresh(){
   if((e=document.getElementById('hnm'))) e.textContent=hudName();
   if(lifeOn()&&(e=document.getElementById('hsub'))) e.textContent=whyLine();
   if(typeof lifeBarDraw==='function') lifeBarDraw();
-  if((e=document.getElementById('hcoin'))) e.textContent=S.coin;
+  if((e=document.getElementById('hcoin'))){ e.textContent=S.coin;       /* 돈이 늘었으면 동전이 지갑으로 날아든다 */
+    var hp0=hudRefresh.prev,hm0=document.getElementById('home'); hudRefresh.prev=S.coin;
+    if(hp0!=null&&S.coin!==hp0&&hm0&&hm0.classList.contains('on')&&!(typeof MQP!=='undefined'&&MQP)){
+      if(S.coin>hp0){ var gn=S.coin-hp0,sc0=document.getElementById('scene'),c0=sc0?fxAt(sc0):{x:innerWidth/2,y:innerHeight/2};
+        fxCoins(c0,e.parentNode,Math.min(10,3+Math.floor(gn/40))); fxText(c0.x,c0.y-30,'+￦'+gn,'#FFC53C',24); }
+      else fxPop(e.parentNode); } }
   if((e=document.getElementById('hatk'))) e.textContent=tt.atk;
   if((e=document.getElementById('hdefc'))) e.textContent=tt.def;
   if((e=document.getElementById('hnext'))) e.textContent='다음 Lv.'+(S.lv+1);
@@ -10215,7 +10240,7 @@ function hudRefresh(){
 function eggAt(m,x,y){ var r=null; (m.eggs||[]).forEach(function(e){ if(e.x===x&&e.y===y&&!eggFound(e.id)) r=e; }); return r; }
 function checkEgg(){
   var m=curMap(),e=eggAt(m,ME.tx,ME.ty); if(!e) return;
-  markEgg(e.id); sfx('coin'); ev('egg',{id:e.id});
+  markEgg(e.id); sfx('coin'); ev('egg',{id:e.id}); var esc0=document.getElementById('scene'); if(esc0){ var ec0=fxAt(esc0); fxBurst(ec0.x,ec0.y,['#FFE79B','#FFC53C','#FFFFFF'],18,230); }
   var x2=perkSum('eggx2')?2:1; e={id:e.id,msg:e.msg,coin:(e.coin||0)*x2,xp:(e.xp||0)*x2,ramen:e.ramen,item:e.item};
   grant(e);
   toast(e.msg+(e.coin?' ￦'+e.coin:'')+(e.xp?' · 경험치 +'+e.xp:'')); }
@@ -11242,6 +11267,7 @@ function tileCache(m){
   for(y=0;y<m.h;y++) for(x=0;x<m.w;x++){ ch=tileAt(m,x,y); drawTile(c,m,ch,x*TS,y*TS,x,y); if(ch==='w') anim.push(x,y); }
   return (TCACHE={m:m,k:k,cv:cv,anim:anim}); }
 /* ── 그리기 ──────────────────────────────────────────────────────────── */
+var DUST=[];
 function drawScene(){
   var cv=document.getElementById('scene'); if(!cv) return;
   var ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
@@ -11292,11 +11318,15 @@ function drawScene(){
     var wf=0;
     if(MOVE&&MOVE.dur){ wf=(MOVE.t<MOVE.dur/2)?(ME.step?3:1):2; }
     var riding=rideHere();
+    if(MOVE&&(wf===1||wf===3)&&drawScene.wf!==wf&&!riding) DUST.push({x:p.x+TS/2,y:p.y+TS+1,t:performance.now()}); drawScene.wf=wf;
     var idle=(wf===0&&!riding),hb=idle&&ME.dir!==3&&(TICK%76)<5;
     var im=heroTop(ME.dir,hb?'b':wf),bob=(wf===2&&!riding)?1:0;              /* 두 발이 스칠 때 몸이 한 칸 뜬다 */
     drawPerson(ctx,im,Math.round(p.x+(TS-spW(im))/2),Math.round(p.y+TS-spH(im)+2)-bob,idle&&Math.floor(TICK/10)%2===1); }});
   var pw=petTick(m);
   if(pw) cast.push({y:pw.fy*TS,draw:function(){ drawPet(ctx,pw); }});
+  var dnow=performance.now(); DUST=DUST.filter(function(d){ return dnow-d.t<360; });           /* 발밑 먼지: 두 점이 벌어지며 사라진다 */
+  DUST.forEach(function(d){ var k=(dnow-d.t)/360,o=Math.round(2+k*4),sz=k<.5?2:1,cl=k<.6?'rgba(255,255,255,.7)':'rgba(255,255,255,.4)';
+    rcx(ctx,cl,Math.round(d.x-o-sz),Math.round(d.y-1-k*3),sz,sz); rcx(ctx,cl,Math.round(d.x+o),Math.round(d.y-1-k*3),sz,sz); });
   cast.sort(function(a,b){ return a.y-b.y; });
   cast.forEach(function(c){ c.draw(); });
   if(m.night) drawNight(ctx,m,x0,x1,y0,y1);
@@ -11623,6 +11653,69 @@ function adjacentTo(m,s){
     if(d<bd){ bd=d; best={x:x,y:y}; } }
   return best;
 }
+/* ══════════ 손맛 ══════════
+   누른 것에 화면이 답해야 재미가 붙는다. 정답이면 점이 튀고 글자가 솟고, 틀리면 화면이 흔들린다.
+   동전은 지갑으로 날아가고, 완주하면 색종이가 내린다. 전부 네모난 점을 격자에 맞춰 그린다(번짐·그러데이션 없음).
+   '움직임 줄이기'를 켠 기기에서는 아무것도 하지 않는다. */
+var FXS={cv:null,x:null,ps:[],raf:0,u:3,t:0,d:1};
+function fxOk(){ try{ if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches) return false; }catch(e){} return !(S&&S.fx===false); }
+function fxSize(){ var c=FXS.cv; if(!c) return; FXS.d=Math.min(3,window.devicePixelRatio||1); c.width=Math.round(innerWidth*FXS.d); c.height=Math.round(innerHeight*FXS.d); FXS.u=Math.max(2,Math.round(innerWidth/120)); }
+function fxCv(){ if(FXS.cv) return FXS.cv; var c=document.createElement('canvas'); c.id='fx'; c.setAttribute('aria-hidden','true'); document.body.appendChild(c);
+  FXS.cv=c; FXS.x=c.getContext('2d'); fxSize(); addEventListener('resize',fxSize); return c; }
+function fxAt(el){ var r=el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2}; }
+function fxPush(p){ fxCv(); p.t=-(p.delay||0); FXS.ps.push(p); if(!FXS.raf){ FXS.t=performance.now(); FXS.raf=requestAnimationFrame(fxLoop); } }
+function fxLoop(now){
+  var dt=Math.min(50,now-FXS.t)/1000,x=FXS.x,u=FXS.u,ps=FXS.ps,i,p,k,gx,gy,s; FXS.t=now;
+  x.setTransform(FXS.d,0,0,FXS.d,0,0); x.clearRect(0,0,innerWidth,innerHeight); x.imageSmoothingEnabled=false;
+  for(i=ps.length-1;i>=0;i--){ p=ps[i]; p.t+=dt; if(p.t<0) continue;
+    if(p.t>=p.life){ ps.splice(i,1); if(p.done){ try{ p.done(); }catch(e){} } continue; }
+    k=p.t/p.life;
+    if(p.to){ var e=k*k*(3-2*k); p.x=p.x0+(p.to.x-p.x0)*e; p.y=p.y0+(p.to.y-p.y0)*e-Math.sin(k*Math.PI)*p.arc; }
+    else { p.vy+=(p.g||0)*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; }
+    gx=Math.round(p.x/u)*u; gy=Math.round(p.y/u)*u;
+    if(p.txt){ s=Math.round(p.size*(k<.12?.6+k/.12*.6:k<.22?1.2-(k-.12)/.1*.2:1)); x.globalAlpha=(k>.85)?.5:1;
+      x.font='bold '+s+'px Galmuri14,Galmuri11,monospace'; x.textAlign='center'; x.textBaseline='middle';
+      x.fillStyle='#2B160E'; [[-2,0],[2,0],[0,-2],[0,2],[-2,2],[2,2],[2,-2],[-2,-2]].forEach(function(o){ x.fillText(p.txt,gx+o[0],gy+o[1]); });
+      x.fillStyle=p.col; x.fillText(p.txt,gx,gy); x.globalAlpha=1; }
+    else if(p.coin){ s=u*3; x.fillStyle='#2B160E'; x.fillRect(gx-u,gy-u,s+2*u,s+2*u); x.fillStyle='#FFC53C'; x.fillRect(gx,gy,s,s);
+      x.fillStyle='#FFE79B'; x.fillRect(gx,gy,s,u); x.fillStyle='#B8842A'; x.fillRect(gx+u,gy+u,u,u); }
+    else { if(k>.75&&((i+Math.floor(p.t*30))%2)) continue;             /* 사라질 때는 깜빡인다 */
+      s=(p.sz||1)*u; x.fillStyle=p.col; x.fillRect(gx,gy,s,s); } }
+  if(ps.length) FXS.raf=requestAnimationFrame(fxLoop); else { FXS.raf=0; x.clearRect(0,0,innerWidth,innerHeight); } }
+function fxBurst(x,y,cols,n,spd,g){ if(!fxOk()) return;
+  for(var i=0;i<n;i++){ var a=Math.random()*Math.PI*2,v=(spd||220)*(.35+Math.random()*.75);
+    fxPush({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-(spd||220)*.35,g:(g==null?700:g),life:.45+Math.random()*.35,sz:Math.random()<.35?2:1,col:cols[i%cols.length]}); } }
+function fxText(x,y,str,col,size,delay){ if(!fxOk()) return; fxPush({x:x,y:y,vx:0,vy:-46,g:0,life:.95,txt:str,col:col||'#FFE79B',size:size||22,delay:delay||0}); }
+function fxConfetti(n){ if(!fxOk()) return; var cols=['#F4705A','#FFC53C','#62C85C','#6EC8F0','#A87BE0','#FFF8EC'];
+  for(var i=0;i<n;i++) fxPush({x:Math.random()*innerWidth,y:-10-Math.random()*60,vx:(Math.random()-.5)*120,vy:120+Math.random()*180,g:160,life:1.7+Math.random()*.9,sz:Math.random()<.5?2:1,col:cols[i%cols.length],delay:Math.random()*.5}); }
+/* 동전 n개가 from에서 to 요소로 휘어 날아간다. 닿을 때마다 딸깍, 다 닿으면 cb */
+function fxCoins(from,toEl,n,cb){ if(!fxOk()||!toEl){ if(cb) cb(); return; } var to=fxAt(toEl),left=n;
+  for(var i=0;i<n;i++) (function(i){ fxPush({x0:from.x+(Math.random()-.5)*60,y0:from.y+(Math.random()-.5)*40,x:from.x,y:from.y,to:to,arc:40+Math.random()*50,life:.55+i*.02,delay:i*.045,coin:1,
+    done:function(){ if(i%2===0) sfx('tick'); fxPop(toEl); if(--left===0&&cb) cb(); }}); })(i); }
+function fxFlash(col){ if(!fxOk()) return; var d=document.getElementById('fxflash'); if(!d){ d=document.createElement('div'); d.id='fxflash'; document.body.appendChild(d); }
+  d.style.background=col; d.classList.remove('on'); void d.offsetWidth; d.classList.add('on'); }
+function fxShake(el){ if(!fxOk()||!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(function(){ el.classList.remove('shake'); },650); }
+function fxPop(el){ if(!el||!fxOk()) return; el.classList.remove('fxpop'); void el.offsetWidth; el.classList.add('fxpop'); }
+/* 퀘스트: 정답이면 점이 튀고 "정답!"이나 "n 콤보!"가 솟는다. 틀리면 화면이 흔들리고 목숨에서 조각이 떨어진다 */
+function fxBuy(){ if(!fxOk()) return; fxBurst(innerWidth/2,innerHeight*.3,['#FFE79B','#FFC53C','#FFFFFF','#6EC8F0'],22,260); fxText(innerWidth/2,innerHeight*.3,'구매 완료!','#FFE79B',24); }
+function fxAnswer(right,btn,blocked){
+  if(!fxOk()||!btn) return; var c=fxAt(btn),n=RUN.combo||0;
+  if(right){ fxBurst(c.x,c.y,['#62C85C','#FFE79B','#FFFFFF','#9BE38A'],n>=3?30:18,n>=3?320:250);
+    fxText(c.x,c.y-22,n>=2?n+' 콤보!':'정답!',n>=2?'#FFC53C':'#9BE38A',n>=4?30:n>=2?26:22); fxPop(btn); }
+  else { fxShake(document.getElementById('quest')); fxFlash(blocked?'#6EC8F0':'#F4705A');
+    if(blocked) fxText(c.x,c.y-22,'막기!','#9BDCF7',24);
+    else { var h=document.getElementById('qhearts'); if(h){ var hc=fxAt(h); fxBurst(hc.x,hc.y,['#F4705A','#B93A2D','#FFB3A6'],14,200); } } } }
+/* 결과: 별이 하나씩 박히고, 셋이면 색종이. 레벨이 오르면 한 번 더 */
+function starsOf(correct,total){ return correct>=total?3:(correct>=Math.ceil(total*0.6)?2:1); }
+function fxResult(stars,levelUp,coin){
+  var row=document.getElementById('rstars'); if(!row) return;
+  row.querySelectorAll('i').forEach(function(s,i){ if(i>=stars) return;
+    setTimeout(function(){ s.classList.add('on'); sfx(i===2?'open':'tick'); if(fxOk()){ var c=fxAt(s); fxBurst(c.x,c.y,['#FFC53C','#FFE79B','#FFFFFF'],12,200); } },350+i*330); });
+  if(!fxOk()) return;
+  setTimeout(function(){ var rx=document.getElementById('rxp'); if(rx&&coin){ var c=fxAt(rx); for(var i=0;i<Math.min(16,4+Math.floor(coin/15));i++)
+      fxPush({x:c.x,y:c.y,vx:(Math.random()-.5)*260,vy:-220-Math.random()*200,g:900,life:.9+Math.random()*.3,coin:1,delay:i*.03}); } },200);
+  if(stars===3) setTimeout(function(){ fxConfetti(70); fxText(innerWidth/2,innerHeight*.22,'PERFECT!','#FFC53C',34); },350+3*330);
+  if(levelUp) setTimeout(function(){ fxConfetti(50); fxFlash('#FFE79B'); },150); }
 function toast(msg){
   var el=document.getElementById('htoast'); if(!el) return;
   el.textContent=msg; el.hidden=false;
@@ -12376,7 +12469,7 @@ function shopConfirm(slot,id,it){
   openTip.thumb=thumbFor(slot,id);
   openTip(h,'#FFC53C',[{t:'￦'+it.cost+'에 사서 입기',f:function(){
       if(S.coin<it.cost||S.owned.indexOf(id)>=0){ closeTip(); return; }
-      S.coin-=it.cost; S.owned.push(id); S.equip[slot]=id; sfx('coin');
+      S.coin-=it.cost; S.owned.push(id); S.equip[slot]=id; sfx('coin'); fxBuy();
       ev('buy',{slot:slot,id:id,cost:it.cost}); save(); closeTip(); renderShop(); toast(it.name+' 샀어요 · 바로 입었어요'); }}]); }
 /* ── 캐릭터 상태창 ───────────────────────────────────────────────────
    장비·거처·세간을 한 화면에서 바꾼다. 몸 둘레의 칸을 누르면 아래 가방이 그 칸의 물건으로
@@ -12569,7 +12662,7 @@ function gearTip(slot,id){
     var away=(slot==='pet'&&it.kind&&!petHome()),mql=mqShopLock(slot,id);
     if(mql) h+='<div class="il warn"><i>◆</i>'+mql+'</div>';
     bt.push({t:mql?'아직 못 삼':away?'키울 집이 없어요':S.coin<it.cost?'코인 모자람 (￦'+it.cost+')':'￦'+it.cost+'에 사기',off:!!mql||away||S.coin<it.cost,
-      f:function(){ S.coin-=it.cost; S.owned.push(id); S.equip[slot]=id; sfx('coin');
+      f:function(){ S.coin-=it.cost; S.owned.push(id); S.equip[slot]=id; sfx('coin'); fxBuy();
         ev('buy',{slot:slot,id:id,cost:it.cost,from:'char'}); save(); closeTip(); renderChar(); }}); }
   openTip(h,r.c,bt); }
 function houseTip(i){
@@ -13047,7 +13140,7 @@ function startQuest(q){
   RUN={q:q,i:0,hearts:HEARTS,correct:0,marks:[],
     kan:Math.min(4,1+Math.floor(tt.atk/15))+perkSum('kan'),       /* 공격이 높을수록 오답 지우기를 더 쓴다 */
     mak:Math.min(3,Math.floor(tt.def/30))+perkSum('mak')};         /* 방어가 높을수록 틀려도 버틴다 */
-  ev('quest_start',{id:q.id,theme:q.theme,n:q.qs.length});
+  ev('quest_start',{id:q.id,theme:q.theme,n:q.qs.length}); comboTag();
   document.getElementById('qnpc').textContent=q.npc;
   battleWipe(function(){ paintQuestNpc(q.npc); go('quest'); stepQuest(true); }); }
 function stepQuest(intro){
@@ -13097,6 +13190,7 @@ function answer(idx,btn){
     if(+b.dataset.orig===item.ok) b.classList.add('ok'); else if(b===btn) b.classList.add('no'); });
   if(right) RUN.correct++; else if(RUN.mak>0){ RUN.mak--; blocked=true; } else RUN.hearts--;
   RUN.marks[RUN.i]=right; sfx(right?'good':'bad');
+  RUN.combo=right?(RUN.combo||0)+1:0; RUN.maxCombo=Math.max(RUN.maxCombo||0,RUN.combo); fxAnswer(right,btn,blocked); comboTag();
   drawHearts(); drawProg(false); refreshRamen();
   ev('quest_answer',{id:RUN.q.id,i:RUN.i,ok:right});
   var ex=document.getElementById('qexplain');
@@ -13111,6 +13205,9 @@ function answer(idx,btn){
   ex.hidden=false;
   wireNext(); reveal(document.getElementById('qnext')); }
 /* 목숨이 남았으면 다음 문제로, 다 잃었으면 결과로. 라면을 먹으면 다시 불러서 이어 간다. */
+function comboTag(){ var q=document.getElementById('quest'),t=document.getElementById('qcombo'); if(!q) return;
+  if(!t){ t=document.createElement('div'); t.id='qcombo'; t.className='combo'; q.appendChild(t); }
+  var n=(RUN&&RUN.combo)||0; t.hidden=n<2; if(n>=2){ t.textContent=n+' 콤보'; fxPop(t); } }
 function wireNext(){
   var next=document.getElementById('qnext'); next.hidden=false;
   if(RUN.hearts<=0){                              /* 목숨을 다 잃으면 남은 문항은 묻지 않는다 */
@@ -13163,7 +13260,15 @@ function finish(failed){
   rxp.textContent=failed?'보상 없음 · 틀린 문항은 복습에 담았어요':'+'+xp+' XP · ￦'+coin;
   rxp.style.color=failed?P.s2:''; rxp.style.fontSize=failed?'14px':'';
   if(!failed){ if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)) rxp.textContent='+0 XP · ￦0'; countUp(rxp,xp,coin); }
-  paintHero(document.getElementById('rchar'),failed?'idle':'cheer',0);
+  var rcv=document.getElementById('rchar'),rdot=heroDot(0,0);          /* 결과 화면의 주인공도 도트. 깼으면 폴짝 뛴다 */
+  if(rdot){ rcv.width=48; rcv.height=68; rcv.style.width='144px'; rcv.style.height='204px'; rcv.style.imageRendering='pixelated';
+    var rcx=rcv.getContext('2d'); rcx.imageSmoothingEnabled=false; rcx.clearRect(0,0,48,68); rcx.drawImage(rdot,0,0); }
+  else paintHero(rcv,failed?'idle':'cheer',0);
+  rcv.classList.remove('rjump'); if(!failed&&fxOk()){ void rcv.offsetWidth; rcv.classList.add('rjump'); }
+  var rst=document.getElementById('rstars'),nst=failed?0:starsOf(RUN.correct,q.qs.length);
+  if(rst){ rst.hidden=!!failed; rst.querySelectorAll('i').forEach(function(s2){ s2.classList.remove('on'); }); }
+  if(!failed&&!q.keys){ S.stars=S.stars||{}; if((S.stars[q.id]||0)<nst){ S.stars[q.id]=nst; save(); } }
+  if(!failed) fxResult(nst,S.lv>before.lv,coin);
   var g=document.getElementById('rgains'); g.innerHTML='';
   Object.keys(q.stat).forEach(function(k){ var d=document.createElement('div'); d.className='gain';
     d.innerHTML='<span>'+THEMES[k].full+' 스탯</span><b>'+(failed?'':'+'+Math.round(q.stat[k]*ratio)+' → ')+S.stats[k]+'</b>'; g.appendChild(d); });
