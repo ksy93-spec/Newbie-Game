@@ -7934,7 +7934,7 @@ function outlineSel(g){ var n=g.d.map(function(r){ return r.slice(); }),y,x,k,c;
   for(y=0;y<g.h;y++) for(x=0;x<g.w;x++){ if(g.d[y][x]!==null) continue;
     var nb=[gp(g,x,y+1),gp(g,x+1,y),gp(g,x-1,y),gp(g,x,y-1)],hit=null;
     for(k=0;k<4;k++){ c=nb[k]; if(c!==null&&c!==undefined){ hit=c; break; } }
-    if(hit!==null) n[y][x]=HEXRE.test(hit)?mixHex(hit,'#17132A',.72):P.s5; }
+    if(hit!==null) n[y][x]=HEXRE.test(hit)?mixHex(hit,'#17132A',.8):P.s5; }
   g.d=n; }
 /* ── 두 배 밀도 도트 ──
    틀(22×32)로 몸을 짠 다음 가로세로 두 배로 늘리면서 계단진 모서리를 둥글게 다듬고(Scale2x),
@@ -7969,18 +7969,117 @@ function faceHD(g,pal,dir,p){
   h(24,24,pal.S);                                                                             /* 코 */
   if(!p.beard){ if(p.eyes==='smile'||p.smile){ h(22,26,lip); h(23,27,lip); h(24,27,lip); h(25,27,lip); h(26,26,lip); }
     else { h(23,27,lip); h(24,27,lip); h(25,27,lip); } } }
+/* ── 2등신 머리 (레퍼런스 ops/art/DOT-REF-1·2) ──
+   큰 둥근 얼굴, 세로로 긴 눈과 눈빛, 벌린 입, 넓은 볼터치, 덩어리진 머리카락과 윤기 띠.
+   몸은 틀을 두 배로 늘린 것을 쓰고, 머리만 48×68칸 위에 직접 그린다. dir 0 앞, 2 오른쪽, 3 뒤. */
+function hdCap(G,cx,cy,rx,ry,c,cond){
+  for(var y=-ry;y<=ry;y++){ var t=1-(y*y)/(ry*ry); if(t<0) continue; var w=Math.round(rx*Math.sqrt(t));
+    for(var x=-w;x<=w;x++){ if(!cond||cond(cx+x,cy+y)) sp(G,cx+x,cy+y,c); } } }
+function hdStyle(p){ var hs=p.hs||'short'; if(hs==='bald'&&p.robe) return 'sage'; return hs; }
+function hairBackHD(G,pal,p,dir){
+  var hs=hdStyle(p),H=pal.h,D=pal.d;
+  if(dir===2){
+    if(hs==='long'||hs==='wave'){ rr(G,5,12,22,52,H,5); rc(G,7,51,20,52,D); if(hs==='wave'){ el(G,5,30,2,4,H); el(G,5,44,2,4,H); } }
+    if(hs==='sage'){ rr(G,7,14,16,42,H,3); }
+    return; }
+  if(hs==='long'||hs==='wave'){ rr(G,8,12,40,46,H,5); rc(G,10,45,38,46,D);
+    if(hs==='wave'){ el(G,8,28,2,4,H); el(G,40,28,2,4,H); el(G,8,40,2,4,H); el(G,40,40,2,4,H); } }
+  if(hs==='sage'){ rr(G,5,14,11,42,H,3); rr(G,36,14,42,42,H,3); } }
+function hdShine(G,pal,cx,top){                     /* 윤기 띠: 정수리 아래로 휘는 밝은 줄, 군데군데 끊는다 */
+  var HL=mixHex(pal.h,'#FFFFFF',.3);
+  for(var x=cx-12;x<=cx+11;x++){ if(((x-cx+40)%7)===0) continue; var y=top+5+Math.round((x-cx)*(x-cx)/44);
+    if(gp(G,x,y)===pal.h) sp(G,x,y,HL); if(gp(G,x,y+1)===pal.h) sp(G,x,y+1,HL); } }
+function hdEye(G,x,y,pal,p,w){
+  var E='#1E1626',i,j;
+  if(p.blink){ for(i=0;i<w;i++) sp(G,x+i,y+4,E); return; }
+  if(p.eyes==='smile'){ sp(G,x,y+4,E); for(i=1;i<w-1;i++) sp(G,x+i,y+3,E); sp(G,x+w-1,y+4,E); return; }
+  for(j=0;j<7;j++) for(i=0;i<w;i++){ if((j===0||j===6)&&(i===0||i===w-1)) continue; sp(G,x+i,y+j,E); }
+  sp(G,x+w-2,y+1,'#FFFFFF'); sp(G,x+w-2,y+2,'#FFFFFF'); if(p.mark==='tired') for(i=0;i<w;i++) sp(G,x+i,y+8,'#B9A3C4'); }
+function hdMouth(G,x,y,pal,p,side){
+  var L='#7A2E33',T='#F0756B';
+  if(p.beard) return;
+  if(p.shades||p.mark==='tired'){ sp(G,x+1,y+1,L); sp(G,x+2,y+1,L); return; }
+  if(p.eyes==='smile'){ sp(G,x,y,L); sp(G,x+1,y+1,L); sp(G,x+2,y+1,L); sp(G,x+3,y,L); return; }
+  if(side){ rc(G,x,y,x+2,y,L); sp(G,x,y+1,T); sp(G,x+1,y+1,T); sp(G,x+1,y+2,L); return; }
+  rc(G,x,y,x+3,y,L); sp(G,x,y+1,L); sp(G,x+1,y+1,T); sp(G,x+2,y+1,T); sp(G,x+3,y+1,L); sp(G,x+1,y+2,L); sp(G,x+2,y+2,L); }
+function headHD(G,pal,p,dir){
+  var hs=hdStyle(p),H=pal.h,D=pal.d,sk=pal.s,sS=pal.S,x,y,i,cx=24;
+  var ck=(p.mark==='blush')?'#F4938C':mixHex(sk,'#F2857C',.5),fall=(hs==='bob'||hs==='long'||hs==='wave');
+  function perm(cx0,cy0,R){ for(var a=180;a<=360;a+=24){ var r=a*Math.PI/180; el(G,Math.round(cx0+R*Math.cos(r)),Math.round(cy0+R*Math.sin(r)*0.82),3,3,H); } }
+  if(dir===3){                                             /* 뒤통수 */
+    if(hs==='bald'){ el(G,7,22,2,3,sk); el(G,41,22,2,3,sk); el(G,24,20,15,13,sk); hdCap(G,24,20,15,13,H,function(x,y){ return y>=20&&y<=29; }); rc(G,19,31,29,33,sk); }
+    else { if(!fall) { el(G,7,22,2,3,sk); el(G,41,22,2,3,sk); }
+      el(G,24,18,17,15,H);
+      if(hs==='short'||hs==='pony'||hs==='bun'||hs==='sage'){ rc(G,20,32,28,33,sk); }
+      if(hs==='perm') perm(24,17,17);
+      if(hs==='bob'){ rr(G,6,12,42,35,H,7); rc(G,9,34,39,35,D); }
+      if(hs==='long'||hs==='wave'){ rr(G,7,12,41,46,H,6); rc(G,10,45,38,46,D); for(i=16;i<=32;i+=8) rc(G,i,30,i,43,D); }
+      if(hs==='pony'){ el(G,24,37,4,7,H); rc(G,22,31,26,32,p.acc||'#F4705A'); }
+      if(hs==='bun'||hs==='sage'){ el(G,24,4,5,4,H); rc(G,21,7,27,8,D); }
+      hdShine(G,pal,24,3); }
+  } else if(dir===2){                                      /* 오른쪽 보기 */
+    el(G,24,20,14,13,sk); sp(G,39,22,sk); sp(G,39,23,sk);                       /* 코끝 */
+    if(hs==='bald'){ el(G,14,19,4,6,H); }
+    else {
+      var rx=(hs==='perm')?18:17;
+      hdCap(G,22,15,rx-1,13,H,function(x,y){ var fr=(x<=33)?15:15-Math.round((x-33)*0.9); if(hs==='sage'||hs==='bun') fr-=4; return y<fr||(x<=20&&y<28); });
+      hdCap(G,24,20,14,13,H,function(x,y){ return x<=16&&y<31; });                 /* 뒤통수까지 덮는다 */
+      if(hs==='perm') perm(22,15,17);
+      if(hs==='bob'){ rr(G,7,12,23,35,H,5); rc(G,9,34,21,35,D); }
+      if(hs==='long'||hs==='wave'){ rr(G,7,12,23,36,H,4); }
+      if(hs==='pony'){ el(G,7,30,4,7,H); rc(G,9,23,12,24,p.acc||'#F4705A'); }
+      if(hs==='bun'||hs==='sage'){ el(G,12,6,5,4,H); }
+      hdShine(G,pal,22,2); }
+    if(!fall){ el(G,22,22,2,3,sk); sp(G,22,22,sS); sp(G,22,23,sS); }
+    for(y=8;y<34;y++) for(x=10;x<41;x++) if(gp(G,x,y)===sk&&(gp(G,x,y-1)!==null&&gp(G,x,y-1)!==sk&&gp(G,x,y-1)!==sS&&y<19)) sp(G,x,y,sS);   /* 앞머리 그늘 */
+    if(!p.shades){ if(!p.hat&&gp(G,31,16)===sk) rc(G,30,16,33,16,D); hdEye(G,30,19,pal,p,3); }
+    else { rc(G,28,19,40,23,'#1E1626'); rc(G,16,20,28,20,'#1E1626'); sp(G,30,20,'#6B6380'); }
+    if(p.glasses){ var fr2='#3A3446'; rc(G,28,17,35,17,fr2); rc(G,28,27,35,27,fr2); rc(G,27,18,27,26,fr2); rc(G,36,18,36,26,fr2); rc(G,21,21,26,21,fr2); }
+    el(G,27,27,2,1,ck); hdMouth(G,33,28,pal,p,1);
+    if(p.beard){ var b=p.beard; for(i=0;i<14;i++){ var w2=Math.max(1,9-Math.floor(i*0.6)); rc(G,38-w2,27+i,38,27+i,b); } rc(G,32,26,39,27,b); }
+  } else {                                                 /* 앞 */
+    el(G,8,22,2,3,sk); el(G,40,22,2,3,sk); sp(G,8,22,sS); sp(G,40,22,sS); sp(G,8,23,sS); sp(G,40,23,sS);
+    el(G,24,20,15,13,sk);
+    if(hs==='bald'){ el(G,8,17,3,5,H); el(G,40,17,3,5,H); for(x=18;x<=30;x+=4){ rc(G,x,11,x+2,11,sS); } }
+    else {
+      var rxc=(hs==='perm')?19:17,ryc=(hs==='perm')?14:13;
+      hdCap(G,24,15,rxc,ryc,H,function(x,y){ var dx=Math.abs(x-24),fr;
+        if(hs==='short'){ fr=(x<=30)?15+Math.round((30-x)*0.1):12+Math.round((x-30)*0.35); if(x===31||x===32) fr=10; return y<fr||(dx>=14&&y<21); }
+        if(hs==='bob'||hs==='pony'){ fr=(x===17||x===18||x===30||x===31)?15:17; return y<fr||(dx>=13&&(hs==='bob'||y<22)); }
+        if(hs==='perm'){ fr=14+((x>>2)%2)*2; return y<fr||(dx>=14&&y<26); }
+        if(hs==='sage'){ return y<10||(dx>=14&&y<24); }
+        fr=10+Math.round(dx*0.5); return y<fr||(dx>=13&&(hs!=='bun'||y<22)); });   /* long·wave·bun: 가운데 가르마 */
+      if(hs==='perm') perm(24,15,18);
+      if(hs==='short'){ rc(G,18,1,20,1,H); rc(G,24,0,25,1,H); rc(G,29,1,31,1,H); sp(G,12,5,H); sp(G,36,5,H); }   /* 삐친 머리 */
+      if(hs==='bob'){ rr(G,5,14,10,35,H,3); rr(G,38,14,43,35,H,3); rc(G,6,34,9,35,D); rc(G,39,34,42,35,D); }
+      if(hs==='long'||hs==='wave'){ rr(G,6,14,10,38,H,2); rr(G,38,14,42,38,H,2); }
+      if(hs==='pony'){ el(G,43,31,3,7,H); rc(G,40,24,43,25,p.acc||'#F4705A'); }
+      if(hs==='bun'||hs==='sage'){ el(G,24,3,5,3,H); rc(G,21,6,27,7,D); }
+      hdShine(G,pal,24,2); }
+    for(y=8;y<34;y++) for(x=9;x<40;x++) if(gp(G,x,y)===sk&&(gp(G,x,y-1)!==null&&gp(G,x,y-1)!==sk&&gp(G,x,y-1)!==sS&&y<19)) sp(G,x,y,sS);   /* 앞머리 그늘 */
+    if(!p.shades){ [15,30].forEach(function(ex){ if(!p.hat&&gp(G,ex+1,16)===sk) rc(G,ex,16,ex+3,16,D); hdEye(G,ex,19,pal,p,4); }); }
+    else { rc(G,11,19,37,23,'#1E1626'); rc(G,8,20,40,20,'#1E1626'); sp(G,14,20,'#6B6380'); sp(G,15,20,'#6B6380'); sp(G,28,20,'#6B6380'); sp(G,29,20,'#6B6380'); }
+    if(p.glasses){ var frc='#3A3446'; [13,28].forEach(function(gx){ rc(G,gx+1,17,gx+6,17,frc); rc(G,gx+1,27,gx+6,27,frc); rc(G,gx,18,gx,26,frc); rc(G,gx+7,18,gx+7,26,frc); }); rc(G,21,21,27,21,frc); rc(G,9,21,12,21,frc); rc(G,36,21,39,21,frc); }
+    el(G,14,27,3,1,ck); el(G,34,27,3,1,ck); hdMouth(G,22,28,pal,p,0);
+    if(p.beard){ var bb=p.beard,bs=dimHex(bb); rc(G,17,27,31,28,bb); for(i=0;i<15;i++){ var hw=Math.max(1,8-Math.floor(i*0.5)); rc(G,24-hw,29+i,24+hw-1,29+i,bb); } rc(G,23,31,24,40,bs); }
+  }
+  if(p.hat){ var hl=mixHex(p.hat,'#FFFFFF',.22),hb=p.hatband||dimHex(p.hat),hx0=(dir===2)?5:6,hx1=(dir===2)?39:42,hc=(dir===2)?22:24;
+    hdCap(G,hc,13,(hx1-hx0)/2,12,p.hat,function(x,y){ return y<13; }); rc(G,hx0,12,hx1,14,hb); rc(G,hc-8,4,hc-2,4,hl);
+    if(dir===2) rc(G,hx1,13,hx1+4,14,hb); }
+  if(p.band){ var bx0=(dir===2)?8:8,bx1=(dir===2)?38:40; for(x=bx0;x<=bx1;x++) for(y=10;y<=12;y++) if(gp(G,x,y)!==null) sp(G,x,y,p.band);
+    if(dir!==2){ rc(G,39,9,42,13,p.band); rc(G,40,14,41,18,p.band); } }
+}
 function personTopHD(p,dir,f){
   if(f==='b'){ p=Object.assign({},p,{blink:1}); f=0; }
   if(dir===1) return mirrorCv(personTopHD(p,2,p.blink?'b':f));
-  var g=Gr(PW,PH),pal=pPal(p);
-  if(dir!==3) hairBack2(g,pal,p,dir);
+  var g=Gr(PW,PH),pal=pPal(p),x,y;
   props2(g,pal,p,dir,f,0); body2(g,pal,p,dir,f);
-  if(dir===3) hairBack2(g,pal,p,dir);
-  tpl(g,FACE2[dir],pal);
-  if(dir===2){ px2(g,17,10,pal.s); px2(g,17,11,pal.S); }
-  hairOn2(g,pal,p,dir); faceGear2(g,pal,p.glasses?Object.assign({},p,{glasses:0}):p,dir); robe2(g,pal,p,dir); props2(g,pal,p,dir,f,1);
+  robe2(g,pal,p.beard?Object.assign({},p,{beard:0}):p,dir); props2(g,pal,p,dir,f,1);
   if(p.weapon){ var side=(dir===2)?1:0; topWeapon(g,p.weapon,side,POX+(side?12:17),POY+21); }
-  var G=scale2xG(g); faceHD(G,pal,dir,p); polishG(G); outlineSel(G);
+  var B=scale2xG(g),G=Gr(PW*2,PH*2);
+  if(dir!==3) hairBackHD(G,pal,p,dir);
+  for(y=0;y<B.h;y++) for(x=0;x<B.w;x++) if(B.d[y][x]!==null) G.d[y][x]=B.d[y][x];
+  headHD(G,pal,p,dir); polishG(G); outlineSel(G);
   var cv=toCanvas(G); cv.hd=2; return cv; }
 /* 이미 그려 둔 작은 그림(탈것에 탄 모습)을 두 배 밀도로 늘린다 */
 function epxCv(cv){ var w=cv.width,h=cv.height,sd=cv.getContext('2d').getImageData(0,0,w,h),s0=new Uint32Array(sd.data.buffer);
@@ -8123,6 +8222,7 @@ function heroDesc(){
     hood:o.ts==='hood',badge:o.ts==='badge',sharp:o.ts==='sharp',puff:o.ts==='puff',
     stripe:o.bs==='stripe',shirt:(E.top==='shirt'||!o.ts)?1:0};     /* 일러스트처럼 재킷 안 흰 깃 */
   if(lifeOn()&&S.life){ var ag=S.life.age||20;                 /* 나이가 들면 도트 주인공도 머리가 센다(일러스트 45·60과 같이) */
+    if((S.life.prof||{}).sex==='F') p.hs=(ag<28)?'bob':(ag<40)?'pony':'perm'; p.eyes=null; p.mark=null;
     if(ag>=53) p.hair={b:'#A8A39B',s:'#8B867E',h:'#D2CDC6'};
     else if(ag>=40) p.hair={b:mixHex(hc.b,'#8E8A86',.3),s:mixHex(hc.s||dimHex(hc.b),'#77736F',.3),h:'#A39E98'}; }
   var hg=hd&&hd.gear;
